@@ -47,3 +47,5 @@ not
 ```
 models.Resrouce.query( ...
 ```
+
+Testing github/slack integration.
