@@ -1,0 +1,401 @@
+#,RESOURCE,Group
+1,Medical Labs,HS
+2,Pathology,Tissue
+3,Battle Building Clinical Research Unit,Peds
+4,Infusion Center ECCCC,CC
+5,EPIC ,EPIC
+6,Translation Services,HS
+7,Claude Moore Health Sciences Library,Library
+8,Office for Research in the SOM ,Research Admin
+9,SOM Radiological Research Facilities ,Radiology
+10,Child Health Research Center,Iniative
+11,Office of Animal Welfare and Institutional Animal Care and Use Committee,Animal
+12,Telemedicine Rural Health Care Pilot Program,Iniative
+13,Latino Health Initiative,Iniative
+14,SOM Research Advisory Committee,Research Admin
+15,UVA-Wise Healthy Appalachia Institute,Iniative
+16,Peirce-Cottler Laboratory ,Core/lab
+17,Center for Applied Biomechanics,Core/lab
+18,Microfabrication Laboratories ,Core/lab
+19,W.M. Keck Center for Cellular Imaging,Core/lab
+20,Office of the Vice President for Research (VPR),Research Admin
+21,Office of Sponsored Programs (OSP),OSP
+22,Institutional Review Board for Health Sciences Research (IRB-HSR),Reg
+23,Institutional Review Board for the Social and Behavioral Sciences IRB-SBS,Reg
+24,Investigational Drug Services,IDS
+25,Public Health Sciences @ the Library (PHS @ Library),Library
+26,Data Services at the Health Sciences Library (Data @ HSL),Library
+27,Data Analysis Support Hub (DASH),Library
+28,StatLab,Library
+29,Libra,
+30,Research Concierge Services,
+31,School of Medicine Clinical Trials Office (SOM CTO),CTO
+32,Clinical Research Units,CTO
+33,Cancer Center Office for Clinical Research (CC OCR),CC
+34,Post Approval Monitoring and Education Program (PAM / ED),Reg
+35,ResearchNet,Research Admin
+36,BeSmart,BeSmart
+37,Advanced Microscopy Facility,Core/lab
+38,Antibody Engineering & Technology Core,Core/lab
+39,Bioinformatics Core,CADRE
+40,"Biomolecular Analysis Facility, Mass Spectrometry Core",Core/lab
+41,Biomolecular Magnetic Resonance Facility,Core/lab
+42,Biorepository and Tissue Research Facility (BTRF),Tissue
+43,Genome Analysis and Technology Core,Core/lab
+44,Exercise Physiology Core Laboratory (EPCL),Core/lab
+45,Flow Cytometry Core Facility,Core/lab
+46,Genetically Engineered Murine Model Core,Core/lab
+47,Molecular Electron Microscopy Core,Core/lab
+48,Molecular Imaging Core,Core/lab
+49,Molmart Core,Core/lab
+50,Research Histology Core,Core/lab
+51,Stem Cell Core,Core/lab
+52,Tissue Culture Facility,Core/lab
+53,UVA Department of Telehealth,HS
+54,UVA-Wise The Appalachian Prosperity Project (APP),Iniative
+55,Data Sciences Institute,Iniative
+56,Translational Health Research Institute of Virginia (THRIV),Iniative
+57,Brain Institute,Iniative
+58,Global Infectious Diseases Institute,Iniative
+59,Myles H. Thaler Center for AIDS and Human Retrovirus Research,Iniative
+60,Computation and Data Resource Exchange (CADRE),CADRE
+61,Clinical Data Repository,HS Analytics
+62,Rivanna,CADRE
+63,Ivy: Secure Compute Environment,CADRE
+64,ARCS Viz Lab,CADRE
+65,Clinical Research Connect (CRConnect),Reg
+66,ResearchUVA,OSP
+67,OnCore,CTO
+68,University Records Management Application (URMA) ,Reg
+69,UVA Information Security,InfoSec
+70,Beirne B. Carter Center for Immunology Research,Iniative
+71,Center for Membrane and Cell Physiology,Iniative
+72,Center for Public Health Genomics,Iniative
+73,Paul Mellon Urologic Oncology Institute,Iniative
+74,Robert M. Berne Cardiovascular Research Center,Iniative
+75,Virginia Center for Regulatory and Translational Sciences,Iniative
+76,BIG-Center for Brain Immunology & Glia,Iniative
+77,Center for Advanced Vision Science,Iniative
+78,Center for Behavioral Health and Technology,Iniative
+79,Center for Biomedical Ethics and Humanities,Iniative
+80,Center for Cell Clearance,Iniative
+81,Center for Cell Signaling,Iniative
+82,Center for Global Health,Iniative
+83,Center for Health Policy,Iniative
+84,"Center for Immunity, Inflammation and Regenerative Medicine",Iniative
+85,Center for Research in Reproduction,Iniative
+86,"Institute of Law, Psychiatry and Public Policy",Iniative
+87,Cancer Center Research,CC
+88,UVA Health System,n/a
+89,Carilion Clinic Medical Center,
+90,Epic,
+91,Translation Services,
+92,Carilion Core Research Laboratory,
+93,Core Human Neuroimaging Lab (HNL),
+94,Core Human behavioral testing facilities,
+95,Fluorescence Assisted Cell Sorting (FACS) Core Facility,
+96,Super Resolution Core Microscopy Facility,
+97,Animal Behavioral Core,
+98,Optical Imaging Core,
+99,VTCRI tissue processing and cryo-electron microscopy core facilities,
+100,Genomics Research Laboratory ,
+101,Data Analysis Core (DAC) ,
+102,Core Computational Facility,
+103,COPASI Platform,
+104,Pathosystems Resource Integration Center (PATRIC) Platform  ,
+105,Synthetic Information Viewer (SIV) ,
+106,my4sight platform ,
+107,GDSCalc platform ,
+108,Social and Decision Analytics Laboratory,
+109,Data Science for the Public Good Program,
+110,Discovery Analytics Center,
+111,New River Academic Health Department,
+112,Virginia Tech Center for Public Health Practice and Research (CPHPR) ,
+113,Virginia Cooperative Extension (VCE),
+114,Institutional Review Board,
+115,Life Sciences 1 (LS1),
+116,Integrated Life Sciences Building (ILSB),
+117,Virginia Tech Carilion Research Institute (VTCRI) Laboratory Animal Facility,
+118,Carilion Clinic Investigational Drug Services ,
+119,Human Patient Clinical Research Facilities,
+120,The Office of Research – VTCSOM,
+121,The Cube,
+122,Carilion Clinic Telehealth/Telemedicine ,
+123,Clinical Research Coordinator Mentoring Program,CTO
+124,Clinical Trials Budget and Billing,CTO
+125,Study Billing Coverage Analysis,Reg
+126,Multi-Center Trails Management,CTO
+127,FDA IND/IDE preparation and submission,CTO
+128,Protocol Development,CTO
+129,Protocol Development - Cancer Center,CC
+130,FDA IND/IDE preparation and submission - Cancer Center,CC
+131,Inova Health System,
+132,Inova Comprehensive Addiction Treatment Services (CATS),
+133,Inova Medical Library,
+134,Epic ,
+135,Translation Services,
+136,Inova Translational Medicine Institute (ITMI),
+137,ITMI Data and Analytics Resources,
+138,ITMI Physical Plant and Laboratories,
+139,ITMI Genomic Laboratory and Biorepository,
+140,Genomics: Clinical and Lab Processes,
+141,Global Genomics and Bioinformatics Research Institute (GGBRI),
+142,The Grants Management Office (GMO),
+143,Inova Office of Research (IOR) ,
+144,Inova Review Board (IRB),
+145,Inpatient Phase I and Clinical Trials Unit ,
+146,Investigational Drug Services ,
+147,Inova Telehealth/Telemedicine ,
+148,The Center for Open Science (COS),COS
+149,Licensing and Ventures Group (LVG),LVG
+150,Cancer Center Clinical Trials Recruitment and Outreach Specialist,CC
+151,iTHRIV UVA Recruitment Specialist,THRIV
+152,iTHRIV Clinical Research Access Committee,
+153,iTHRIV Diversity Specialist,THRIV
+154,iTHRIV Partnership Manager,
+155,iTHRIV Inova Recruitment Specialist,
+156,iTHRIV Inova Quality Assuarance Consultant,
+157,CTSA Trial Innovation Center (TIC),
+158,CTSA Recuitment Innovation Center (RIC),
+159,CTSA Trial Innovation Network (TIN),
+160,CTSA Center for Leading Innovation and Collaboration (CLIC),
+161,iTHRIV Inova Research Concierge Lead,
+162,iTHRIV VTC Research Concierge Lead,
+163,iTHRIV Technology Liaison UVA,Data/Informatics
+164,Environmental Health and Safety: Shipping Hazardous Materials,Reg
+165,Environmental Health and Safety: Institutional Biosafety Committee (IBC),Reg
+166,iTHRIV Community Engagement Steering Committee,
+167,iTHRIV Clinical Data Analytics Manager UVA,Data/Informatics
+168,iTHRIV Elements/VIVO Manager,CADRE
+169,iTHRIV REDCap/i2b2 Manager UVA,HS Analytics
+170,iTHRIV Research Data Manager UVA,Data/Informatics
+171,REDCap eCRF Development,HS Analytics
+172,MUSIC eCRF Development,HS Analytics
+173,Oncore eCRF Development,CTO
+174,iTHRIV Studios,Studios
+175,iTHRIV Community Avisory Boards,Studios
+176,iTHRIV Web Apps Developer,
+177,iTHRIV VIVO Developer,CADRE
+178,iTHRIV Team Science Project Manager,
+179,iTHRIV Informatics Co-Lead UVA,Data/Informatics
+180,iTHRIV Informatics Co-Lead UVA,Data/Informatics
+181,iTHRIV Informatics Lead Inova,
+182,iTHRIV Clinical Data Analytics Manager Inova,
+183,iTHRIV Technology Liaison Inova,
+184,iTHRIV Data Officer Inova,
+185,iTHRIV Informatics Lead Carilion,
+186,iTHRIV Informatics Lead Virginia Tech,
+187,iTHRIV Technology Liaison Virginia Tech,
+188,iTHRIV i2b2 Manager VTC,
+189,iTHRIV Research Data Manager VTC,
+190,iTHRIV Research Data Manager VTC,
+191,iTHRIV Software Engineer VTC,
+192,iTHRIV Community Project Co-Lead and Team Science Leader UVA,Studios
+193,iTHRIV Community Project Co-Lead UVA,Studios
+194,iTHRIV Community Liaison,Studios
+195,iTHRIV Community Research and Engagement,Studios
+196,iTHRIV Community Studios,
+197,iTHRIV Pilot Grant Project Manager,
+198,iTHRIV Studio Liaison Inova,
+199,iTHRIV Community Liaison Inova,
+200,iTHRIV Community & Collaboration Project Lead VTC,
+201,iTHRIV Community Engagement Coordinator VTC,
+202,iTHRIV Studio Liaison VTC,
+203,iTHRIV Translational Endeavors Project Lead UVA,Studios
+204,iTHRIV Workforce Development Coordinator UVA,
+205,iTHRIV Data Education and Outreach Coordinator UVA,Data/Informatics
+206,iTHRIV Translational Endeavors Project Lead Inova,
+207,iTHRIV Workforce Development Coordinator Inova,
+208,Clinical Research Coordinator Educator Inova,
+209,iTHRIV Data Education and Outreach Coordinator Inova,
+210,iTHRIV Translational Endeavors Project Lead VTC,
+211,iTHRIV Education Program Development VTC,
+212,Clinical Research Coordinator Educator VTC,
+213,iTHRIV Data Education and Outreach Coordinator VTC,
+214,iTHRIV Research Methods Project Lead UVA,Studios
+215,iTHRIV UVA Co-Lead BERD UVA,
+216,iTHRIV UVA Co-Lead BERD UVA,
+217,iTHRIV UVA Section Lead for Regulatory Knowledge and Support (RKS),Research Admin
+218,iTHRIV UVA Biostatistician BERD,PHS
+219,iTHRIV UVA Statistician BERD,PHS
+220,iTHRIV UVA Biostatistician BERD,PHS
+221,iTHRIV UVA BERD Collaboration Coordinator,PHS
+222,iTHRIV UVA Education Coordinator for BERD Collaboration,PHS
+223,ITHRIV UVA Graduate Research Assistant BERD,PHS
+224,iTHRIV UVA Regulatory Writer/Coordinator,
+225,iTHRIV Inova Project Lead BERD ,
+226,iTHRIV Bioinformatics Services Inova,
+227,iTHRIV Bioinformatics Services Inova,
+228,Functional Assessment Lab,
+229,iTHRIV VTC Project Lead BERD ,
+230,iTHRIV VTC BERD Collaboration Coordinator,
+231,iTHRIV VTC Biostatistician BERD,
+232,iTHRIV VTC Regulatory Writer/Coordinator,
+233,iTHRIV VTC Graduate Research Assistant BERD,
+234,iTHRIV UVA Project Co-Lead Hub ,
+235,iTHRIV UVA Project Co-Lead Hub ,
+236,iTHRIV UVA Diversity Lead,
+237,iTHRIV UVA Geriatrics Lead,
+238,iTHRIV UVA Pediatrics Lead,
+239,iTHRIV UVA Latino Lead,
+240,iTHRIV UVA Quality Assurance Consultant,
+241,iTHRIV Inova Hub Project Lead,
+242,iTHRIV VTC Special Populations Site Lead,
+243,iTHRIV VTC Project Lead Hub,
+244,iTHRIV VTC Recruitment Specialist,
+245,iTHRIV VTC Quality Assurance Consultant,
+246,iTHRIV UVA Network Capacity Project Co-Lead,
+247,iTHRIV UVA Network Capacity Project Co-Lead,
+248,iTHRIV Hub Liaison Team Lead,
+249,iTHRIV Trial Innovation Network Contract Liaison,OSP
+250,iTHRIV i2b2 Project Manager,
+251,iTHRIV Inova Network Capacity Project Lead,
+252,iTHRIV VTC Network Capacity Project Lead,
+253,iTHRIV Instutional Career Development (K) UVA Co-Lead,
+254,iTHRIV Instutional Career Development (K) UVA Co-Lead,
+255,"iTHRIV Instutional Career Development (K) UVA Mentor Selection, Training and Oversight Co-Lead",
+256,"iTHRIV Instutional Career Development (K) UVA Mentor Selection, Training and Oversight Co-Lead",
+257,iTHRIV Instutional Career Development (K) UVA Curriculum Lead,
+258,iTHRIV Instutional Career Development (K) UVA Assessment Lead,
+259,iTHRIV Instutional Career Development (K) UVA Bioethics Lead,
+260,iTHRIV Instutional Career Development (K) VTC Lead,
+261,iTHRIV Instutional Career Development (K) VTC Admin Support,
+262,Clinical Data Repository within Amazon Web Services,
+263,Clinical Conductor CTMS Manager,
+264,REDCap eCRF Developer,
+265,REDCap eCRF Developer,
+266,Digital Infuzion N of 1 eCRF ,
+267,Medical Center Grant Pricing Tool,CTO
+268,Pivot,CADRE
+269,GrantForward,CADRE
+270,Funding Discovery Resources,CADRE
+271,Conflict of Interest Committee,Research Admin
+272,Embryonic Stem Cell Research Oversight (ESCRO) Committee,Reg
+273,Certificate of Confidentiality (COC),
+274,Family Education Rights and Privacy Act (FERPA) review,Reg
+275,Investigational Drug Services (IDS) Committee ,IDS
+276,NICU Committee,Peds
+277,Radiation Safety Committee (RSC),Reg
+278,New Medical Device Approval,Reg
+279,Export Controls,Reg
+280,Health System Radiology,Radiology
+281,Cancer Center Data Safety and Monitoring Committee,CC
+282,Cancer Center Office of Clinical Research Regulatory Affairs,CC
+283,Center for Engineering in Medicine,Iniative
+284,Human Investigations Involving Radiology Exposure (HIRE) Committee,Reg
+285,School of Medicine Clinical Trials Office,CTO
+286,UVA Center for Wireless Heatlh,Iniative
+287,Link Lab,Iniative
+288,3 Cavaliers,Research Admin
+289,Cancer Center Protocol Review Committee,CC
+290,Radioactive Drug Research Committee,Reg
+291,SOM CTO Approval,CTO
+292,Highly Sensitive Data Approval,InfoSec
+293,EPIC reporting workbench,EPIC
+294,Office for Research in the SOM Seed Grants,Research Admin
+295,iTHRIV Seed Grants,THRIV
+296,LVG Seed Fund,LVG
+297,Phlebotomy,Tissue
+298,,
+299,,
+300,,
+301,,
+302,,
+303,,
+304,,
+305,,
+306,,
+307,,
+308,,
+309,,
+310,,
+311,,
+312,,
+313,,
+314,,
+315,,
+316,,
+317,,
+318,,
+319,,
+320,,
+321,,
+322,,
+323,,
+324,,
+325,,
+326,,
+327,,
+328,,
+329,,
+330,,
+331,,
+332,,
+333,,
+334,,
+335,,
+336,,
+337,,
+338,,
+339,,
+340,,
+341,,
+342,,
+343,,
+344,,
+345,,
+346,,
+347,,
+348,,
+349,,
+350,,
+351,,
+352,,
+353,,
+354,,
+355,,
+356,,
+357,,
+358,,
+359,,
+360,,
+361,,
+362,,
+363,,
+364,,
+365,,
+366,,
+367,,
+368,,
+369,,
+370,,
+371,,
+372,,
+373,,
+374,,
+375,,
+376,,
+377,,
+378,,
+379,,
+380,,
+381,,
+382,,
+383,,
+384,,
+385,,
+386,,
+387,,
+388,,
+389,,
+390,,
+391,,
+392,,
+393,,
+394,,
+395,,
+396,,
+397,,
+398,,
+399,,
+400,,
