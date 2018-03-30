@@ -11,6 +11,48 @@ resources.  It uses Elastic Search as a full text search engine for
 locating resources.  It will use Nutch to crawl a currated list of
 related websites.
 
+## Database Setup
+### Creating a Database
+*NOTE:* The configuration is currently set up to use "ed_pass" as a
+password.  You will be promoted to enter a password when you connect.
+```BASH
+$ sudo su postgres
+$ createuser -D -A -P ed_user
+$ createdb ithriv -O ed_user ed_platform
+$ exit
+```
+If you are using Ubuntu you will likely need to
+[enable PSQL](https://help.ubuntu.com/community/PostgreSQL#Managing_users_and_rights)
+to manage it's own users.
+
+
+### Database Definition
+Each time you modify your data models you will need to create new
+migrations. The following command will compare the database to the code
+and create new migrations as needed.  You can edit this newly generated
+file - it will show up under migrations/versions
+```BASH
+$ flask db migrate
+```
+
+### Updating the Database
+You will need to update your database each time you return to do a
+pull to make sure all the migrations are run.  Use this:
+```BASH
+$ flask db upgrade
+```
+
+### Load in the seed data
+This will pull in initial values into the database.
+```BASH
+$ flask initdb example_data/resources.csv
+```
+
+### Clear out the database
+This will remove all data from the database
+```BASH
+$ flask cleardb
+```
 
 ## Best Practices
 There are a few things I hope to do consistently for this project,
