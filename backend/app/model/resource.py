@@ -1,9 +1,10 @@
 import datetime
 
 from marshmallow import Schema, post_load, fields
-from app import app, db
-from app.model.institution import ThrivInstitution
-from app.model.type import ThrivType
+from app import app, db, ma
+from app.model.institution import ThrivInstitutionSchema
+from app.model.type import ThrivTypeSchema
+
 
 class ThrivResource(db.Model):
     '''A resource is meta data about a website, database, group, institution or other entity that might prove useful
@@ -21,6 +22,11 @@ class ThrivResourceSchema(Schema):
   id = fields.Str()
   name = fields.Str()
   description = fields.Str()
+  type = fields.Nested(ThrivTypeSchema())
+  institution = fields.Nested(ThrivInstitutionSchema())
+  _links = ma.Hyperlinks({
+      'self': ma.URLFor('resourceendpoint', id='<id>'),
+      'collection': ma.URLFor('resourcelistendpoint')})
 
   @post_load
   def make_resource(self, data):

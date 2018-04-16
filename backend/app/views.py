@@ -1,7 +1,11 @@
-from flask import jsonify
+import urllib
 
-from app import app
+import elasticsearch
+from flask import jsonify, url_for, request
+
+from app import app, db, ma, elastic_index
 from app.model.resource import ThrivResource, ThrivResourceSchema
+from app.model.search import Search, SearchSchema
 import flask_restful
 from flask_restful import reqparse
 
@@ -21,7 +25,8 @@ class ResourceEndpoint(flask_restful.Resource):
 
 
     def get(self, id):
-        return ThrivResourceSchema().dump(thriv_resources[id])
+        resource = db.session.query(ThrivResource).filter(id == id).first()
+        return ThrivResourceSchema().dump(resource)
     def delete(self, id):
         del thriv_resources[id]
     def put(self, id):
@@ -38,11 +43,40 @@ class ResourceListEndpoint(flask_restful.Resource):
         resources = schema.dump(thriv_resources.values())
         return jsonify(resources)
 
-
 @app.route('/api', methods=['GET'])
 def root():
-    return "iTHRIV API"
+    _links = {"_links":{
+        "resources": url_for("resourcelistendpoint"),
+    }}
+    return jsonify(_links)
+
+@app.route('/api/resource/search', methods=['POST'])
+def search_resources():
+    request_data = request.get_json()
+    search = SearchSchema().load(request_data).data
+    try:
+        results = elastic_index.search_resources(search)
+    except elasticsearch.ElasticsearchException as e:
+#        raise RestException(RestException.ELASTIC_ERROR)
+        pass
+    search.total = results.hits.total
+    facets = {}
+    for facet_name in results.facets:
+        counts = []
+        for category, hit_count, is_selected in results.facets[facet_name]:
+            counts.append({'category':category, 'hit_count':hit_count, 'is_selected': is_selected})
+        facets[facet_name] = counts
+    print(jsonify(facets))
+    search.facets = facets
+    resources = []
+    for hit in results:
+        resource = ThrivResource.query.filter_by(id=hit.id).first()
+        if(resource is not None):
+            resources.append(resource)
+    search.resources = ThrivResourceSchema().dump(resources, many=True).data
+    return SearchSchema().jsonify(search)
 
 
-api.add_resource(ResourceListEndpoint, '/api/resources')
-api.add_resource(ResourceEndpoint, '/api/resources/<id>')
+
+api.add_resource(ResourceListEndpoint, '/api/resource')
+api.add_resource(ResourceEndpoint, '/api/resource/<id>')
