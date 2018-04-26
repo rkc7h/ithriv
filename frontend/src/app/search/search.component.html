@@ -1,0 +1,62 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav #sidenav class="sidenav">
+    <h2><span>Filters</span>
+      <div class="spacer"></div>
+      <button mat-icon-button (click)="sidenav.close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </h2>
+    <div class="spacer"></div>
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let facet of resourceQuery.facets">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{facet.field}}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-list>
+          <mat-list-item *ngFor="let count of facet.facetCounts" (click)="addFilter(facet.field, count.category)">
+            {{count.category}}
+            <div class="spacer"></div>
+            {{count.hit_count}}
+          </mat-list-item>
+        </mat-list>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-sidenav>
+
+  <form class="search-box" [formGroup]="searchForm">
+    <mat-input-container>
+      <input matInput #query type="search" formControlName="searchBox" placeholder="Search" value="{{resourceQuery.query}}">
+    </mat-input-container>
+    <button mat-raised-button (click)="updateQuery(query.value)" aria-label="Run Search">
+      <mat-icon>search</mat-icon>
+    </button>
+  </form>
+
+
+  <ul class="applied-filters">
+    <li *ngIf="!sidenav.opened">
+      <button mat-icon-button (click)="sidenav.open()"><i class="material-icons">add_circle_outline</i></button>
+      Add a filter
+    </li>
+    <li *ngIf="resourceQuery.query">
+      <button mat-icon-button (click)="updateQuery()"><i class="material-icons">remove_circle_outline</i></button>
+      Search: {{resourceQuery.query}}
+    </li>
+
+    <li *ngFor="let filter of resourceQuery.filters">
+      <button mat-icon-button (click)="removeFilter(filter)"><i class="material-icons">remove_circle_outline</i>
+      </button>
+      {{filter.field}} : {{filter.value}}
+    </li>
+  </ul>
+
+  <app-resource-list [resources]="resources"
+                     infiniteScroll
+                     [infiniteScrollDistance]="1"
+                     [infiniteScrollThrottle]="300"
+                     (scrolled)="onScroll()"></app-resource-list>
+
+</mat-sidenav-container>
+

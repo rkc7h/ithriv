@@ -1,0 +1,82 @@
+// Import theming functions
+@import '~@angular/material/theming';
+// Import your custom theme
+@import '../../uva_material';
+// Load the UVA Theme
+@include uva-theme($uva-theme);
+
+form.search-box {
+  background: transparent;
+  border-radius: 5px;
+  padding: 0px 20px 0 20px;
+  margin: 10px 0 0 0;
+  display: flex;
+
+  button {
+    max-height: 50px;
+  }
+}
+
+.container {
+  min-height: 600px;
+}
+
+.mat-sidenav {
+
+  width: 100%;
+
+  h2 {
+    display: flex;
+
+    span {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+
+@media screen and (min-width: 480px) {
+  .mat-sidenav {
+    width: 400px;
+  }
+}
+
+.applied-filters > li {
+  list-style: none;
+}
+
+.mat-drawer-container {
+  background: transparent;
+}
+
+mat-list-item {
+  cursor: pointer;
+}
+
+mat-list-item:hover {
+//  background-color: mat-color($uva-primary, 100)
+}
+
+form.search-box mat-input-container {
+  flex: 2 0 auto;
+  line-height: 30px;
+}
+
+input {
+  flex: 1 1 auto;
+  border: none;
+}
+
+input:focus{
+  outline: none;
+}
+
+input:active {
+  border: none;
+}
+
+button {
+  flex: 0 0 auto;
+  border: none;
+}
+

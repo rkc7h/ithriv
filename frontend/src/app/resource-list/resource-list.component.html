@@ -1,0 +1,9 @@
+<div
+  class="container"
+  fxLayout="row wrap"
+  fxLayout.xs="column"
+  fxLayoutAlign="center"
+  fxLayoutGap="10px"
+  fxLayoutGap.xs="0">
+  <app-resource *ngFor="let resource of resources" [resource]="resource"></app-resource>
+</div>
