@@ -10,3 +10,4 @@ class ThrivType(db.Model):
 class ThrivTypeSchema(Schema):
     id = fields.Integer()
     name = fields.String()
+

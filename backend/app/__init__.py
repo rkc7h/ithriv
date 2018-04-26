@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import click
@@ -17,6 +18,10 @@ app.config.from_pyfile('config.py')
 # Variables defined here will override those in the default configuration
 if "APP_CONFIG_FILE" in os.environ:
     app.config.from_envvar('APP_CONFIG_FILE')
+
+# Enable CORS
+if(app.config["CORS_ENABLED"]) :
+    cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 # Database Configuration
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -47,6 +52,14 @@ def cleardb():
     from app import data_loader
     data_loader = data_loader.DataLoader(db,"")
     data_loader.clear()
+
+@app.cli.command()
+def index_resources():
+    """Delete all information from the database."""
+    click.echo('Loading data into Elastic Search')
+    from app import data_loader
+    data_loader = data_loader.DataLoader(db,"")
+    data_loader.build_index()
 
 
 from app import views

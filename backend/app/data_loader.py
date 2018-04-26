@@ -3,7 +3,7 @@ from flask import json
 from app.model.resource import ThrivResource
 from app.model.institution import ThrivInstitution
 from app.model.type import ThrivType
-from app import db
+from app import db, elastic_index
 import csv
 
 class DataLoader():
@@ -41,6 +41,9 @@ class DataLoader():
             institution = ThrivInstitution(name = inst_name)
         db.session.add(institution)
         return institution
+
+    def build_index(self):
+        elastic_index.load_resources(db.session.query(ThrivResource).all())
 
     def clear(self):
         db.session.query(ThrivResource).delete()

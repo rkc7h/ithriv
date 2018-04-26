@@ -5,7 +5,7 @@ from flask import jsonify, url_for, request
 
 from app import app, db, ma, elastic_index
 from app.model.resource import ThrivResource, ThrivResourceSchema
-from app.model.search import Search, SearchSchema
+from app.model.search import Search, Facet, FacetCount, SearchSchema
 import flask_restful
 from flask_restful import reqparse
 
@@ -40,8 +40,8 @@ class ResourceEndpoint(flask_restful.Resource):
 class ResourceListEndpoint(flask_restful.Resource):
     def get(self):
         schema = ThrivResourceSchema(many=True)
-        resources = schema.dump(thriv_resources.values())
-        return jsonify(resources)
+        resources = db.session.query(ThrivResource).all()
+        return schema.dump(resources)
 
 @app.route('/api', methods=['GET'])
 def root():
@@ -60,14 +60,14 @@ def search_resources():
 #        raise RestException(RestException.ELASTIC_ERROR)
         pass
     search.total = results.hits.total
-    facets = {}
+
+    search.facets = []
     for facet_name in results.facets:
-        counts = []
+        facet = Facet(facet_name)
+        facet.facetCounts = []
         for category, hit_count, is_selected in results.facets[facet_name]:
-            counts.append({'category':category, 'hit_count':hit_count, 'is_selected': is_selected})
-        facets[facet_name] = counts
-    print(jsonify(facets))
-    search.facets = facets
+            facet.facetCounts.append(FacetCount(category, hit_count, is_selected))
+        search.facets.append(facet)
     resources = []
     for hit in results:
         resource = ThrivResource.query.filter_by(id=hit.id).first()

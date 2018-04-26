@@ -1,14 +1,18 @@
+# Set enivoronment variable to testing before loading.
+
 import unittest
+import os
+import json
+
+
+os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
+
 from app.model.resource import ThrivResource
 from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
 
 from app import app, db, elastic_index
-import os
-import json
 
-# Set enivoronment variable to testing before loading.
-os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
 class TestCase(unittest.TestCase):
 
@@ -125,5 +129,8 @@ class TestCase(unittest.TestCase):
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 2)
         self.assertTrue("facets" in search_results)
-        self.assertTrue("type" in search_results["facets"])
-        self.assertTrue("type" in search_results["facets"])
+        self.assertEqual(2, len(search_results["facets"]))
+        self.assertTrue("facetCounts" in search_results["facets"][0])
+        self.assertTrue("category" in search_results["facets"][0]["facetCounts"][0])
+        self.assertTrue("hit_count" in search_results["facets"][0]["facetCounts"][0])
+        self.assertTrue("is_selected" in search_results["facets"][0]["facetCounts"][0])
