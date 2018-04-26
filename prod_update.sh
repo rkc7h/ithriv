@@ -22,15 +22,17 @@ export ENV=$1
 
 export FLASK_APP=./backend/app/__init__.py
 
-# Update the database
+# Set the home directory
 export HOME_DIR=`pwd`
 echo "Running from ${HOME_DIR}"
 
+# activate the pip environment we are running inside of, and upgrade any
+# library dependencies.
+source ./backend/python-env/bin/activate
 export FLASK_APP=${HOME_DIR}/backend/app/__init__.py
-
-
-# Continue to update conda in case I can get that working ...
 eval 'cd ${HOME_DIR}/backend && pip install -r requirements.txt'
+
+# Load up the staging environment
 if [ "$ENV" == "staging" ]; then 
    eval 'cd ${HOME_DIR}/backend && flask cleardb'
 fi
