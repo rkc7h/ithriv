@@ -23,9 +23,12 @@ export ENV=$1
 export FLASK_APP=./backend/app/__init__.py
 
 # Update the database
-source ./backend/python-env/bin/activate
 export HOME_DIR=`pwd`
 echo "Running from ${HOME_DIR}"
+
+export FLASK_APP=${HOME_DIR}/backend/app/__init__.py
+
+
 # Continue to update conda in case I can get that working ...
 eval 'cd ${HOME_DIR}/backend && pip install -r requirements.txt'
 if [ "$ENV" == "staging" ]; then 
