@@ -20,6 +20,8 @@ fi
 
 export ENV=$1
 
+export FLASK_APP=./backend/app/__init__.py
+
 # Update the database
 source ./backend/python-env/bin/activate
 export HOME_DIR=`pwd`
