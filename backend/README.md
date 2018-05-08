@@ -11,6 +11,30 @@ resources.  It uses Elastic Search as a full text search engine for
 locating resources.  It will use Nutch to crawl a currated list of
 related websites.
 
+### Prerequisites
+* Python 3 and python3-dev, and some cryptography libraries 
+```bash
+sudo apt-get install python3 python3-dev
+sudo apt-get install -y libssl-dev libffi-dev
+```
+
+### Project Setup
+* Please use Python 3's virtual environment setup, and install the
+dependencies in requirements.txt
+```bash
+python3 -m venv python-env
+source python-env/bin/activate
+```
+
+* Consider using an auto-environment like pythons autoenv, and creating
+a shell script that gets executed whenever you enter the backend directory.
+My .env file looks like this (but isn't committed as you might have
+different needs)
+```
+source python-env/bin/activate
+export FLASK_APP=./app/__init__.py
+```
+
 ## Database Setup
 ### Creating a Database
 *NOTE:* The configuration is currently set up to use "ed_pass" as a
@@ -63,22 +87,7 @@ please follow these guidelines:
 Don't commit code that doesn't have at least some basic testing of the
 new functionality.  Don't commit code without all tests passing.
 
-### Project Setup
-* Please use Python 3's virtual environment setup, and install the
-dependencies in requirements.txt
-```
-python3 -m venv python-env
-source python-env/bin/activate
-```
 
-* Consider using an auto-environment like pythons autoenv, and creating
-a shell script that gets executed whenever you enter the backend directory.
-My .env file looks like this (but isn't committed as you might have
-different needs)
-```
-source python-env/bin/activate
-export FLASK_APP=./app/__init__.py
-```
 
 ### Database calls
 * Favor db.session.query over using the models for these calls.
