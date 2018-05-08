@@ -2,7 +2,13 @@
   <mat-card-header>
     <mat-card-title>
       <div class="mat-card-pre-title">{{resource.name}}</div>
-      {{resource.description}}
     </mat-card-title>
+    <mat-card-subtitle>
+      <div *ngIf="resource.owner">Owner: {{resource.owner}}</div>
+      <div *ngIf="resource.website">{{resource.website}}</div>
+    </mat-card-subtitle>
   </mat-card-header>
+  <mat-card-content>
+      {{resource.description}}
+  </mat-card-content>
 </mat-card>

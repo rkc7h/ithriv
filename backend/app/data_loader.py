@@ -23,7 +23,8 @@ class DataLoader():
             for row in reader:
                 type = self.get_type_by_name(row[3])
                 institution = self.get_inst_by_name(row[2])
-                resource = ThrivResource(id=row[0], name=row[1], description=row[12], type=type, institution=institution)
+                resource = ThrivResource(id=row[0], name=row[1], description=row[12], type=type, institution=institution,
+                                         owner=row[5], website=row[9])
                 db.session.add(resource)
                 print(resource)
         db.session.commit()
@@ -44,6 +45,11 @@ class DataLoader():
 
     def build_index(self):
         elastic_index.load_resources(db.session.query(ThrivResource).all())
+
+    def clear_index(self):
+        print("Clearing the index")
+        elastic_index.clear()
+
 
     def clear(self):
         db.session.query(ThrivResource).delete()

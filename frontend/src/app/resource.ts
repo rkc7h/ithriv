@@ -7,5 +7,7 @@ export interface Resource {
   description: '';
   type: '';
   institution: '';
+  website: '';
+  owner: '';
   links: Links;
 }

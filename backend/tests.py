@@ -41,11 +41,13 @@ class TestCase(unittest.TestCase):
         self.assertTrue("_links" in response)
 
     def construct_resource(self, type="TestyType", institution="TestyU",
-                           name="Test Resource", description="Some stuff bout it"):
+                           name="Test Resource", description="Some stuff bout it",
+                           owner="Mac Daddy Test", website="testy.edu"):
         type_obj = ThrivType(name=type)
         inst_obj = ThrivInstitution(name=institution)
         resource = ThrivResource(name=name, description=description,
-                                 type=type_obj, institution=inst_obj)
+                                 type=type_obj, institution=inst_obj,
+                                 owner=owner, website=website)
         db.session.add(resource)
         db.session.commit()
         return resource
@@ -82,6 +84,24 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["institution"]["name"], 'TestyU')
 
+    def test_resource_has_website(self):
+        self.construct_resource(website='testy.edu')
+        rv = self.app.get('/api/resource/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["website"], 'testy.edu')
+
+    def test_resource_has_owner(self):
+        self.construct_resource(owner="Mac Daddy Test")
+        rv = self.app.get('/api/resource/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["owner"], 'Mac Daddy Test')
+
     def test_resource_has_links(self):
         self.construct_resource()
         rv = self.app.get('/api/resource/1',
@@ -110,6 +130,20 @@ class TestCase(unittest.TestCase):
         resource = self.construct_resource(name="space kittens", description="Flight of the fur puff")
         self.index_resource(resource)
         data = {'query': 'fur puff', 'filters': []}
+        search_results = self.search(data)
+        self.assertEqual(len(search_results["resources"]), 1)
+
+    def test_search_resource_by_website(self):
+        resource = self.construct_resource(website="www.stuff.edu")
+        self.index_resource(resource)
+        data = {'query': 'www.stuff.edu', 'filters': []}
+        search_results = self.search(data)
+        self.assertEqual(len(search_results["resources"]), 1)
+
+    def test_search_resource_by_owner(self):
+        resource = self.construct_resource(owner="Mr. McDoodle Pants")
+        self.index_resource(resource)
+        data = {'query': 'McDoodle', 'filters': []}
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
 

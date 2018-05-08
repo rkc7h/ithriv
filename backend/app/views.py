@@ -57,6 +57,7 @@ def search_resources():
     try:
         results = elastic_index.search_resources(search)
     except elasticsearch.ElasticsearchException as e:
+        raise e
 #        raise RestException(RestException.ELASTIC_ERROR)
         pass
     search.total = results.hits.total
