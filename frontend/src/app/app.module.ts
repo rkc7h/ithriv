@@ -22,11 +22,15 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {ResourceApiService} from './resource-api.service';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import { AvailabilityComponent } from './availability/availability.component';
+import { BrowseComponent } from './browse/browse.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'search', pathMatch: 'full'},
   {path: 'search/:query', component: SearchComponent, data: {title: 'Search'}},
   {path: 'search', component: SearchComponent, data: {title: 'Search'}},
+  {path: 'browse', component: BrowseComponent, data: {title: 'Browse'}},
+  {path: 'browse/:category', component: BrowseComponent, data: {title: 'Browse'}},
 
   ];
 
@@ -36,7 +40,9 @@ const routes: Routes = [
     ResourceSearchComponent,
     ResourceComponent,
     ResourceListComponent,
-    SearchComponent
+    SearchComponent,
+    AvailabilityComponent,
+    BrowseComponent
   ],
   imports: [
     BrowserModule,

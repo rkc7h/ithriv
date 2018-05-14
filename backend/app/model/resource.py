@@ -2,6 +2,7 @@ import datetime
 
 from marshmallow import Schema, post_load, fields
 from app import app, db, ma
+from app.model.availability import Availability, AvailabilitySchema
 from app.model.institution import ThrivInstitutionSchema
 from app.model.type import ThrivTypeSchema
 
@@ -18,7 +19,8 @@ class ThrivResource(db.Model):
     website = db.Column(db.String)
     type_id = db.Column('type_id', db.Integer(), db.ForeignKey('type.id'))
     institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
-
+    availabilities = db.relationship(lambda: Availability,  cascade="all, delete-orphan",
+                                     backref=db.backref('resource', lazy=True))
 
 class ThrivResourceSchema(Schema):
     id = fields.Str()
@@ -28,6 +30,7 @@ class ThrivResourceSchema(Schema):
     website = fields.String()
     type = fields.Nested(ThrivTypeSchema())
     institution = fields.Nested(ThrivInstitutionSchema())
+    availabilities = fields.Nested(AvailabilitySchema(), many=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourceendpoint', id='<id>'),
         'collection': ma.URLFor('resourcelistendpoint')})

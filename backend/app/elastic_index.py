@@ -105,6 +105,7 @@ class ElasticResource(DocType):
     institution = Keyword()
     website = Keyword()
     owner = Text()
+    viewable_institution = Keyword(multi=True)
 
 class ResourceSearch(elasticsearch_dsl.FacetedSearch):
     def __init__(self, *args, **kwargs):

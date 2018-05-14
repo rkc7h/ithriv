@@ -40,17 +40,17 @@ elastic_index = ElasticIndex(app)
 def initdb():
     """Initialize the database."""
     filename = 'example_data/resources.csv'
-    click.echo('Init the db with %s' % filename)
     from app import data_loader
-    data_loader = data_loader.DataLoader(db, filename)
+    data_loader = data_loader.DataLoader()
     data_loader.load_resources()
+    data_loader.load_availability()
 
 @app.cli.command()
 def cleardb():
     """Delete all information from the database."""
     click.echo('Clearing out the database')
     from app import data_loader
-    data_loader = data_loader.DataLoader(db,"")
+    data_loader = data_loader.DataLoader()
     data_loader.clear()
 
 @app.cli.command()
@@ -58,7 +58,7 @@ def initindex():
     """Delete all information from the elastic search Index."""
     click.echo('Loading data into Elastic Search')
     from app import data_loader
-    data_loader = data_loader.DataLoader(db,"")
+    data_loader = data_loader.DataLoader()
     data_loader.build_index()
 
 @app.cli.command()
@@ -66,7 +66,7 @@ def clearindex():
     """Delete all information from the elasticsearch index"""
     click.echo('Removing Data from Elastic Search')
     from app import data_loader
-    data_loader = data_loader.DataLoader(db,"")
+    data_loader = data_loader.DataLoader()
     data_loader.clear_index()
 
 @app.cli.command()
@@ -74,10 +74,11 @@ def reset():
     """Remove all data and recreate it from the example data files"""
     click.echo('Rebuilding the databases from the example data files')
     from app import data_loader
-    data_loader = data_loader.DataLoader(db,"")
+    data_loader = data_loader.DataLoader()
     data_loader.clear_index()
     data_loader.clear()
     data_loader.load_resources()
+    data_loader.load_availability()
     data_loader.build_index()
 
 

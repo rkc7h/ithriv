@@ -4,6 +4,7 @@ import unittest
 import os
 import json
 
+from app.model.availability import Availability
 
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
@@ -42,13 +43,20 @@ class TestCase(unittest.TestCase):
 
     def construct_resource(self, type="TestyType", institution="TestyU",
                            name="Test Resource", description="Some stuff bout it",
-                           owner="Mac Daddy Test", website="testy.edu"):
+                           owner="Mac Daddy Test", website="testy.edu", available_to=None):
         type_obj = ThrivType(name=type)
         inst_obj = ThrivInstitution(name=institution)
         resource = ThrivResource(name=name, description=description,
                                  type=type_obj, institution=inst_obj,
                                  owner=owner, website=website)
         db.session.add(resource)
+
+        if available_to is not None:
+            institution = ThrivInstitution(name=available_to)
+            db.session.add(institution)
+            availability = Availability(resource=resource, institution=institution,
+                                        available=True)
+            db.session.add(availability)
         db.session.commit()
         return resource
 
@@ -101,6 +109,19 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["owner"], 'Mac Daddy Test')
+
+    def test_resource_has_availability(self):
+        self.construct_resource(owner="Mac Daddy Test", available_to="UVA")
+        rv = self.app.get('/api/resource/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertIsNotNone(response["availabilities"])
+        self.assertIsNotNone(response["availabilities"][0])
+        self.assertEqual(True, response["availabilities"][0]["available"])
+        self.assertEqual("UVA", response["availabilities"][0]["institution"]["name"])
+        print(str(response['availabilities']))
 
     def test_resource_has_links(self):
         self.construct_resource()

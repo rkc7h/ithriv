@@ -1,0 +1,5 @@
+<ul>
+  <li *ngFor="let avail of resource.availabilities">
+    <img *ngIf="avail.available" src="/assets/institutions/{{avail.institution.name}}.png"/>
+  </li>
+</ul>
