@@ -1,11 +1,31 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to the iTRHIV Portal!
-  </h1>
-</div>
-<div class="content">
-  <router-outlet></router-outlet>
-</div>
+<div class="main">
 
 
+  <mat-toolbar class="mat-toolbar">
+    <mat-toolbar-row class="menubar">
+      <a href="#" (click)="goSearch($event)">Search</a>
+    </mat-toolbar-row>
+    <mat-toolbar-row fxLayout="row wrap" fxLayoutAlign="space-around center" class="logo">
+      <a href="#" aria-label="Go Home">iTHRIV Logo</a>
+
+      <div class="browse">
+        <a href="#" (click)="goBrowse($event, 'learn')">Learn</a>
+        &bull;
+        <a href="#" (click)="goBrowse($event, 'propose')">Propose</a>
+        &bull;
+        <a href="#" (click)="goBrowse($event, 'conduct')">Conduct</a>
+        &bull;
+        <a href="#" (click)="goBrowse($event, 'connect')">Connect</a>
+      </div>
+
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+
+  <!--The content below is only a placeholder and can be replaced.-->
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+
+
+</div>

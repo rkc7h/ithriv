@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-
+import { CommonModule } from '@angular/common';
 import { AppComponent } from './app.component';
 import { ResourceSearchComponent } from './resource-search/resource-search.component';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
@@ -21,7 +21,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ResourceApiService} from './resource-api.service';
 import {HttpClientModule} from '@angular/common/http';
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
 
@@ -45,6 +45,7 @@ const routes: Routes = [
     BrowseComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     RouterModule.forRoot(routes, {useHash: true}),
