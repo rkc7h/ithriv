@@ -39,9 +39,10 @@ fi
 eval 'cd ${HOME_DIR}/backend && flask db upgrade'
 eval 'cd ${HOME_DIR}/backend && flask db migrate'
 if [ "$ENV" == "staging" ]; then 
-    eval 'cd ${HOME_DIR}/backend && flask initdb example_data/resources.csv'
+    eval 'cd ${HOME_DIR}/backend && flask initdb'
 fi
-eval 'cd ${HOME_DIR}/backend && flask index_resources'
+eval 'cd ${HOME_DIR}/backend && flask clearindex'
+eval 'cd ${HOME_DIR}/backend && flask initindex'
 
 # Rebuild the front end.
 eval 'cd ${HOME_DIR}/frontend && npm install'
