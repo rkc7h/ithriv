@@ -32,7 +32,7 @@ export class SearchComponent implements OnInit {
     this.resources = [];
     this.route.params.subscribe(params => {
       const query = ('query' in params ? params['query'] : '');
-      this.resourceQuery = {query: query, filters:[], facets: [], total:0, size: 20, start:0, resources:[]};
+      this.resourceQuery = {query: query, filters: [], facets: [], total: 0, size: 20, start: 0, resources: []};
     });
     renderer.listen(window, 'resize', (event) => {
       this.checkWindowWidth();
@@ -108,6 +108,7 @@ export class SearchComponent implements OnInit {
   addFilter(field: string, value: string) {
     this.resourceQuery.filters.push({field: field, value: value});
     this.showFilters = false;
+    this.resourceQuery.start = 0;
     this.doSearch();
   }
 
@@ -117,6 +118,7 @@ export class SearchComponent implements OnInit {
       this.resourceQuery.filters.splice(index, 1);
     }
     this.showFilters = false;
+    this.resourceQuery.start = 0;
     this.doSearch();
   }
 

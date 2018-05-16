@@ -63,7 +63,9 @@ class ElasticIndex:
                              id=r.id,
                              name=r.name,
                              description=r.description,
-                             last_updated = r.last_updated
+                             last_updated = r.last_updated,
+                             website=r.website,
+                             owner=r.owner
                              )
 
         if (r.institution != None):
@@ -101,6 +103,9 @@ class ElasticResource(DocType):
     description = Text()
     type = Keyword()
     institution = Keyword()
+    website = Keyword()
+    owner = Text()
+    viewable_institution = Keyword(multi=True)
 
 class ResourceSearch(elasticsearch_dsl.FacetedSearch):
     def __init__(self, *args, **kwargs):
@@ -111,7 +116,7 @@ class ResourceSearch(elasticsearch_dsl.FacetedSearch):
         super(ResourceSearch, self).__init__(*args, **kwargs)
 
     doc_types = [ElasticResource]
-    fields = ['name^10', 'description^5', 'type^2', 'institution']
+    fields = ['name^10', 'description^5', 'type^2', 'institution', 'owner', 'website']
 
     facets = {
         'type': elasticsearch_dsl.TermsFacet(field='type'),

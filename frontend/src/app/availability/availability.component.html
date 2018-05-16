@@ -1,0 +1,11 @@
+<div
+  class="container"
+  fxLayout="row wrap"
+  fxLayout.xs="column"
+  fxLayoutAlign="center"
+  fxLayoutGap="10px"
+  fxLayoutGap.xs="0">
+  <div *ngFor="let avail of resource.availabilities">
+    <img *ngIf="avail.available" src="/assets/institutions/{{avail.institution.name}}.png"/>
+  </div>
+</div>

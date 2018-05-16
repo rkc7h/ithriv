@@ -2,6 +2,7 @@ import datetime
 
 from marshmallow import Schema, post_load, fields
 from app import app, db, ma
+from app.model.availability import Availability, AvailabilitySchema
 from app.model.institution import ThrivInstitutionSchema
 from app.model.type import ThrivTypeSchema
 
@@ -14,20 +15,26 @@ class ThrivResource(db.Model):
     name = db.Column(db.String)
     last_updated= db.Column(db.DateTime, default=datetime.datetime.now)
     description = db.Column(db.String)
+    owner = db.Column(db.String)
+    website = db.Column(db.String)
     type_id = db.Column('type_id', db.Integer(), db.ForeignKey('type.id'))
     institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
+    availabilities = db.relationship(lambda: Availability,  cascade="all, delete-orphan",
+                                     backref=db.backref('resource', lazy=True))
 
 class ThrivResourceSchema(Schema):
+    id = fields.Str()
+    name = fields.Str()
+    description = fields.Str()
+    owner = fields.String()
+    website = fields.String()
+    type = fields.Nested(ThrivTypeSchema())
+    institution = fields.Nested(ThrivInstitutionSchema())
+    availabilities = fields.Nested(AvailabilitySchema(), many=True)
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('resourceendpoint', id='<id>'),
+        'collection': ma.URLFor('resourcelistendpoint')})
 
-  id = fields.Str()
-  name = fields.Str()
-  description = fields.Str()
-  type = fields.Nested(ThrivTypeSchema())
-  institution = fields.Nested(ThrivInstitutionSchema())
-  _links = ma.Hyperlinks({
-      'self': ma.URLFor('resourceendpoint', id='<id>'),
-      'collection': ma.URLFor('resourcelistendpoint')})
-
-  @post_load
-  def make_resource(self, data):
-    return ThrivResource(**data)
+    @post_load
+    def make_resource(self, data):
+        return ThrivResource(**data)

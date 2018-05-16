@@ -20,7 +20,7 @@
       "prefix": "app",
       "styles": [
         "styles.css",
-        "uva_material.scss"
+        "ithriv_material.scss"
       ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",

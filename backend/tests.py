@@ -4,6 +4,8 @@ import unittest
 import os
 import json
 
+from app.model.availability import Availability
+from app.model.category import Category
 
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
@@ -39,16 +41,35 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertTrue("_links" in response)
+        self.assertTrue("categories" in response['_links'])
+        self.assertTrue("resources" in response['_links'])
+
 
     def construct_resource(self, type="TestyType", institution="TestyU",
-                           name="Test Resource", description="Some stuff bout it"):
+                           name="Test Resource", description="Some stuff bout it",
+                           owner="Mac Daddy Test", website="testy.edu", available_to=None):
         type_obj = ThrivType(name=type)
         inst_obj = ThrivInstitution(name=institution)
         resource = ThrivResource(name=name, description=description,
-                                 type=type_obj, institution=inst_obj)
+                                 type=type_obj, institution=inst_obj,
+                                 owner=owner, website=website)
         db.session.add(resource)
+
+        if available_to is not None:
+            institution = ThrivInstitution(name=available_to)
+            db.session.add(institution)
+            availability = Availability(resource=resource, institution=institution,
+                                        available=True)
+            db.session.add(availability)
         db.session.commit()
         return resource
+
+    def construct_category(self, name="Test Category", description="A category to test with!", parent=None):
+        category = Category(name=name, description=description)
+        if parent is not None:
+            category.parent = parent
+        db.session.add(category)
+        return category
 
     def index_resource(self, resource):
         elastic_index.add_resource(resource)
@@ -63,6 +84,18 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["id"], '1')
         self.assertEqual(response["name"], 'Test Resource')
         self.assertEqual(response["description"], 'Some stuff bout it')
+
+    def test_category_basics(self):
+        category = self.construct_category()
+        rv = self.app.get('/api/category/1',
+                           follow_redirects=True,
+                           content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["id"], 1)
+        self.assertEqual(response["name"], 'Test Category')
+        self.assertEqual(response["description"], 'A category to test with!')
+
 
     def test_resource_has_type(self):
         self.construct_resource()
@@ -82,6 +115,37 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["institution"]["name"], 'TestyU')
 
+    def test_resource_has_website(self):
+        self.construct_resource(website='testy.edu')
+        rv = self.app.get('/api/resource/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["website"], 'testy.edu')
+
+    def test_resource_has_owner(self):
+        self.construct_resource(owner="Mac Daddy Test")
+        rv = self.app.get('/api/resource/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["owner"], 'Mac Daddy Test')
+
+    def test_resource_has_availability(self):
+        self.construct_resource(owner="Mac Daddy Test", available_to="UVA")
+        rv = self.app.get('/api/resource/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertIsNotNone(response["availabilities"])
+        self.assertIsNotNone(response["availabilities"][0])
+        self.assertEqual(True, response["availabilities"][0]["available"])
+        self.assertEqual("UVA", response["availabilities"][0]["institution"]["name"])
+        print(str(response['availabilities']))
+
     def test_resource_has_links(self):
         self.construct_resource()
         rv = self.app.get('/api/resource/1',
@@ -91,6 +155,57 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["_links"]["self"], '/api/resource/1')
         self.assertEqual(response["_links"]["collection"], '/api/resource')
+
+    def test_category_has_links(self):
+        self.construct_category()
+        rv = self.app.get('/api/category/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["_links"]["self"], '/api/category/1')
+        self.assertEqual(response["_links"]["collection"], '/api/category')
+
+    def test_category_has_children(self):
+        c1 = self.construct_category()
+        c2 = self.construct_category(name="I'm the kid", description="A Child Category", parent=c1)
+        rv = self.app.get('/api/category/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["children"][0]['id'], 2)
+        self.assertEqual(response["children"][0]['name'], "I'm the kid")
+
+    def test_category_has_parents_and_that_parent_has_no_children(self):
+        c1 = self.construct_category()
+        c2 = self.construct_category(name="I'm the kid", description="A Child Category", parent=c1)
+        c3 = self.construct_category(name="I'm the grand kid", description="A Child Category", parent=c2)
+        rv = self.app.get('/api/category/3',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["parent"]['id'], 2)
+        self.assertNotIn("children", response["parent"])
+
+
+    def test_category_depth_is_limited(self):
+        c1 = self.construct_category()
+        c2 = self.construct_category(name="I'm the kid", description="A Child Category", parent=c1)
+        c3 = self.construct_category(name="I'm the grand kid", description="A Child Category", parent=c2)
+        c4 = self.construct_category(name="I'm the great grand kid", description="A Child Category", parent=c3)
+
+        rv = self.app.get('/api/category',
+                          follow_redirects=True,
+                          content_type="application/json")
+
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+
+        self.assertEqual(1, len(response))
+        self.assertEqual(1, len(response[0]["children"]))
+
 
     def search(self, query):
         '''Executes a query, returning the resulting search results object.'''
@@ -110,6 +225,20 @@ class TestCase(unittest.TestCase):
         resource = self.construct_resource(name="space kittens", description="Flight of the fur puff")
         self.index_resource(resource)
         data = {'query': 'fur puff', 'filters': []}
+        search_results = self.search(data)
+        self.assertEqual(len(search_results["resources"]), 1)
+
+    def test_search_resource_by_website(self):
+        resource = self.construct_resource(website="www.stuff.edu")
+        self.index_resource(resource)
+        data = {'query': 'www.stuff.edu', 'filters': []}
+        search_results = self.search(data)
+        self.assertEqual(len(search_results["resources"]), 1)
+
+    def test_search_resource_by_owner(self):
+        resource = self.construct_resource(owner="Mr. McDoodle Pants")
+        self.index_resource(resource)
+        data = {'query': 'McDoodle', 'filters': []}
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
 

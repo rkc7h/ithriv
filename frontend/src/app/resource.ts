@@ -1,4 +1,6 @@
 import {Links} from './links';
+import {Availability} from './availability';
+import {Institution} from './institution';
 
 export interface Resource {
 
@@ -6,6 +8,9 @@ export interface Resource {
   name: '';
   description: '';
   type: '';
-  institution: '';
+  institution: Institution;
+  website: '';
+  owner: '';
+  availabilities: Availability[];
   links: Links;
 }
