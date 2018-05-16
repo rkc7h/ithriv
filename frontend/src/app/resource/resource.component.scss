@@ -1,7 +1,7 @@
 // Import theming functions
 @import '~@angular/material/theming';
 // Import your custom theme
-@import '../../uva_material.scss';
+@import '../../ithriv_material';
 // Load the UVA Theme
 @include uva-theme($uva-theme);
 
@@ -31,4 +31,9 @@ mat-card-subtitle {
 mat-card-subtitle div {
   padding: 0;
   margin: 0;
+}
+
+mat-card-content {
+  height: 100px;
+  overflow: hidden;
 }
