@@ -44,6 +44,7 @@ def initdb():
     data_loader = data_loader.DataLoader()
     data_loader.load_resources()
     data_loader.load_availability()
+    data_loader.load_categories()
 
 @app.cli.command()
 def cleardb():
@@ -79,6 +80,7 @@ def reset():
     data_loader.clear()
     data_loader.load_resources()
     data_loader.load_availability()
+    data_loader.load_categories()
     data_loader.build_index()
 
 

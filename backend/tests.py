@@ -5,6 +5,7 @@ import os
 import json
 
 from app.model.availability import Availability
+from app.model.category import Category
 
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
@@ -40,6 +41,9 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertTrue("_links" in response)
+        self.assertTrue("categories" in response['_links'])
+        self.assertTrue("resources" in response['_links'])
+
 
     def construct_resource(self, type="TestyType", institution="TestyU",
                            name="Test Resource", description="Some stuff bout it",
@@ -60,6 +64,13 @@ class TestCase(unittest.TestCase):
         db.session.commit()
         return resource
 
+    def construct_category(self, name="Test Category", description="A category to test with!", parent=None):
+        category = Category(name=name, description=description)
+        if parent is not None:
+            category.parent = parent
+        db.session.add(category)
+        return category
+
     def index_resource(self, resource):
         elastic_index.add_resource(resource)
 
@@ -73,6 +84,18 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["id"], '1')
         self.assertEqual(response["name"], 'Test Resource')
         self.assertEqual(response["description"], 'Some stuff bout it')
+
+    def test_category_basics(self):
+        category = self.construct_category()
+        rv = self.app.get('/api/category/1',
+                           follow_redirects=True,
+                           content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["id"], 1)
+        self.assertEqual(response["name"], 'Test Category')
+        self.assertEqual(response["description"], 'A category to test with!')
+
 
     def test_resource_has_type(self):
         self.construct_resource()
@@ -132,6 +155,57 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["_links"]["self"], '/api/resource/1')
         self.assertEqual(response["_links"]["collection"], '/api/resource')
+
+    def test_category_has_links(self):
+        self.construct_category()
+        rv = self.app.get('/api/category/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["_links"]["self"], '/api/category/1')
+        self.assertEqual(response["_links"]["collection"], '/api/category')
+
+    def test_category_has_children(self):
+        c1 = self.construct_category()
+        c2 = self.construct_category(name="I'm the kid", description="A Child Category", parent=c1)
+        rv = self.app.get('/api/category/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["children"][0]['id'], 2)
+        self.assertEqual(response["children"][0]['name'], "I'm the kid")
+
+    def test_category_has_parents_and_that_parent_has_no_children(self):
+        c1 = self.construct_category()
+        c2 = self.construct_category(name="I'm the kid", description="A Child Category", parent=c1)
+        c3 = self.construct_category(name="I'm the grand kid", description="A Child Category", parent=c2)
+        rv = self.app.get('/api/category/3',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["parent"]['id'], 2)
+        self.assertNotIn("children", response["parent"])
+
+
+    def test_category_depth_is_limited(self):
+        c1 = self.construct_category()
+        c2 = self.construct_category(name="I'm the kid", description="A Child Category", parent=c1)
+        c3 = self.construct_category(name="I'm the grand kid", description="A Child Category", parent=c2)
+        c4 = self.construct_category(name="I'm the great grand kid", description="A Child Category", parent=c3)
+
+        rv = self.app.get('/api/category',
+                          follow_redirects=True,
+                          content_type="application/json")
+
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+
+        self.assertEqual(1, len(response))
+        self.assertEqual(1, len(response[0]["children"]))
+
 
     def search(self, query):
         '''Executes a query, returning the resulting search results object.'''

@@ -2,6 +2,7 @@ import sys
 from flask import json
 
 from app.model.availability import Availability
+from app.model.category import Category
 from app.model.resource import ThrivResource
 from app.model.institution import ThrivInstitution
 from app.model.type import ThrivType
@@ -14,6 +15,7 @@ class DataLoader:
     def __init__(self, directory="./example_data"):
         self.resource_file = directory + "/resources.csv"
         self.availability_file = directory + "/resource_availability.csv"
+        self.category_file = directory + "/categories.csv"
         print("Data loader initialized")
 
     def load_resources(self):
@@ -49,6 +51,24 @@ class DataLoader:
             db.session.commit()
             print("Availability loaded.  There are now %i availability records in the database." % db.session.query(Availability).count())
 
+    def load_categories(self):
+        with open(self.category_file, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
+            header = next(reader, None)  # use headers to set availability
+
+            for row in reader:
+                id = eval(row[0])
+                if row[3] != '':
+                    parent_id = eval(row[3])
+                    category = Category(id=id, name=row[1], description=row[2], parent_id=parent_id)
+                else:
+                    category = Category(id=id, name=row[1], description=row[2])
+
+                db.session.add(category)
+            db.session.commit()
+            print("Categories.  There are now %i category records in the database." % db.session.query(Category).count())
+
+
 
     def get_resource_by_id(self, id):
         resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
@@ -79,7 +99,9 @@ class DataLoader:
 
 
     def clear(self):
+        db.session.query(Availability).delete()
         db.session.query(ThrivResource).delete()
         db.session.query(ThrivInstitution).delete()
         db.session.query(ThrivType).delete()
+        db.session.query(Category).delete()
         db.session.commit()
