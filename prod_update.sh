@@ -37,8 +37,7 @@ if [ "$ENV" == "staging" ]; then
    eval 'cd ${HOME_DIR}/backend && flask cleardb'
 fi
 eval 'cd ${HOME_DIR}/backend && flask db upgrade'
-eval 'cd ${HOME_DIR}/backend && flask db migrate'
-if [ "$ENV" == "staging" ]; then 
+if [ "$ENV" == "staging" ]; then
     eval 'cd ${HOME_DIR}/backend && flask initdb'
 fi
 eval 'cd ${HOME_DIR}/backend && flask clearindex'

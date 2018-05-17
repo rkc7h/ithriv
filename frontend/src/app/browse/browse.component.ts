@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {ResourceApiService} from '../resource-api.service';
+import {Category} from '../category';
 
 @Component({
   selector: 'app-browse',
@@ -8,19 +10,40 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class BrowseComponent implements OnInit {
 
-  category_name = 'Unknown';
+  categoryId = 1;
+  isDataLoaded = false;
+  category: Category;
 
   constructor(private router: Router,
-              private route: ActivatedRoute) {
-    this.route.params.subscribe( params =>
-      this.category_name = params['category']);
+              private route: ActivatedRoute,
+              private api: ResourceApiService) {
+    this.route.params.subscribe( params => {
+        this.categoryId = params['category'];
+        this.loadCategory(this.categoryId);
+    });
+  }
+
+
+  loadCategory(categoryId: Number) {
+    this.api.getCategory(categoryId).subscribe(
+      (category) => {
+        this.category = category;
+        this.isDataLoaded = true;
+      }
+    );
+  }
+
+  goBrowse($event, category) {
+    $event.preventDefault();
+    this.router.navigate(['browse', category]);
   }
 
   ngOnInit() {
   }
 
+
   header_image() {
-    return 'assets/browse/header-' + this.category_name + '.png';
+    return 'assets/browse/header-' + this.category.name.toLowerCase() + '.png';
   }
 
 
