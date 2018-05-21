@@ -7,7 +7,7 @@ class RestException(Exception):
     ELASTIC_ERROR = {'code': 'elastic_error', 'message':"Error connecting to ElasticSearch."}
     NOT_YOUR_ACCOUNT = {'code': 'permission_denied', 'message': 'You may not edit another users account.'}
     PERMISSON_DENIED = {'code': 'permission_denied', 'message': 'You are not authorized to make this call.'}
-    INVALID_RESOURCE = {'code': 'invalid_resource', 'message': 'Unable to save the provided resource.'}
+    INVALID_OBJECT = {'code': 'invalid_object', 'message': 'Unable to save the provided object.'}
 
     def __init__(self, payload, status_code=None, details=None):
         Exception.__init__(self)

@@ -13,6 +13,7 @@ class ThrivInstitution(db.Model):
 class ThrivInstitutionSchema(Schema):
     id = fields.Integer()
     name = fields.String()
+    description = fields.String()
 
     @post_load
     def make_inst(self, data):

@@ -246,7 +246,7 @@ class TestCase(unittest.TestCase):
 
     def search(self, query):
         '''Executes a query, returning the resulting search results object.'''
-        rv = self.app.post('/api/resource/search', data=json.dumps(query), follow_redirects=True,
+        rv = self.app.post('/apigit /search', data=json.dumps(query), follow_redirects=True,
                            content_type="application/json")
         self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
@@ -300,3 +300,36 @@ class TestCase(unittest.TestCase):
         self.assertTrue("category" in search_results["facets"][0]["facetCounts"][0])
         self.assertTrue("hit_count" in search_results["facets"][0]["facetCounts"][0])
         self.assertTrue("is_selected" in search_results["facets"][0]["facetCounts"][0])
+
+    def test_create_institution(self):
+        institution = {"name":"Ender's Academy for wayward space boys", "description":"A school, in outerspace, with weightless games"}
+        rv = self.app.post('/api/institution', data=json.dumps(institution), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response['name'], 'Ender\'s Academy for wayward space boys')
+        self.assertEqual(response['description'], 'A school, in outerspace, with weightless games')
+        self.assertEqual(response['id'], 1)
+        self.assertIsNotNone(db.session.query(ThrivInstitution).filter_by(id=1).first())
+
+    def test_list_instititions(self):
+        i1 = ThrivInstitution(name="Delmar's", description="autobody")
+        i2 = ThrivInstitution(name="News Leader", description="A once formidablele news source")
+        db.session.add(i1)
+        db.session.add(i2)
+        db.session.commit()
+        rv = self.app.get('/api/institution', content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(2, len(response))
+
+    def test_delete_institution(self):
+        institution = {"name": "Ender's Academy for wayward space boys",
+                       "description": "A school, in outerspace, with weightless games"}
+        rv = self.app.post('/api/institution', data=json.dumps(institution), content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        rv = self.app.delete('/api/institution/%i' % response['id'])
+        self.assertSuccess(rv)
+        self.assertEquals(0, db.session.query(ThrivInstitution).filter_by(id=1).count())
+
+
+
