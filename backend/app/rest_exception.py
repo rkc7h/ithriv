@@ -1,6 +1,6 @@
 class RestException(Exception):
     status_code = 400
-    NOT_FOUND = {'code': 'not_found', 'message': 'Unknown path.'}
+    NOT_FOUND = {'code': 'not_found', 'message': 'Unknown path.', 'status_code':404}
     TOKEN_INVALID = {'code': 'token_invalid', 'message': 'Please log in again.'}
     TOKEN_EXPIRED = {'code': 'token_expired', 'message': 'Your session timed out.  Please log in again.'}
     TOKEN_MISSING = {'code': 'token_missing', 'message': 'Your are not logged in.'}
@@ -11,6 +11,8 @@ class RestException(Exception):
 
     def __init__(self, payload, status_code=None, details=None):
         Exception.__init__(self)
+        if 'status_code' in payload:
+            self.status_code = payload['status_code']
         if status_code is not None:
             self.status_code = status_code
         if details is not None:

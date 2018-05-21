@@ -101,7 +101,25 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response['name'], 'Edwarardos Lemonade and Oil Change')
         self.assertEqual(response['description'], 'Better fluids for you and your car.')
 
+    def test_delete_resource(self):
+        r = self.construct_resource()
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertSuccess(rv)
 
+        rv = self.app.delete('/api/resource/1', content_type="application/json")
+        self.assertSuccess(rv)
+
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertEqual(404, rv.status_code)
+
+    def test_create_resource(self):
+        resource = {'name':"Barbarella's Funky Gun", 'description':"A thing. In a movie, or something."}
+        rv = self.app.post('/api/resource', data=json.dumps(resource), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response['name'], 'Barbarella\'s Funky Gun')
+        self.assertEqual(response['description'], 'A thing. In a movie, or something.')
+        self.assertEqual(response['id'], '1')
 
     def test_category_basics(self):
         category = self.construct_category()
@@ -113,17 +131,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["id"], 1)
         self.assertEqual(response["name"], 'Test Category')
         self.assertEqual(response["description"], 'A category to test with!')
-
-    def add_resource_to_category(self):
-        resource = self.construct_resource()
-        category = self.construct_category()
-        rv = self.app.put('/api/category/1/resources', data=json.dumps(resource), content_type="application/json")
-        self.assertSuccess(rv)
-        resource = self.app.get('/api/resource/1')
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response["id"], 1)
-
-
 
     def test_resource_has_type(self):
         self.construct_resource()

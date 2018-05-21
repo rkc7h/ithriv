@@ -29,10 +29,13 @@ class ResourceEndpoint(flask_restful.Resource):
 
     def get(self, id):
         resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
+        if resource is None: raise RestException(RestException.NOT_FOUND)
         return ThrivResourceSchema().dump(resource)
 
     def delete(self, id):
-        del thriv_resources[id]
+        db.session.query(ThrivResource).filter_by(id=id).delete()
+        db.session.commit()
+        return None
 
     def put(self, id):
         request_data = request.get_json()
@@ -40,7 +43,7 @@ class ResourceEndpoint(flask_restful.Resource):
         try:
             load_result = ThrivResourceSchema().load(request_data)
             db.session.query(ThrivResource).filter_by(id=id).update({
-                "name": load_result.data.name,
+                "name": load_result.data.namense,
                 "description": load_result.data.description
                 })
             db.session.commit()
@@ -56,6 +59,18 @@ class ResourceListEndpoint(flask_restful.Resource):
         schema = ThrivResourceSchema(many=True)
         resources = db.session.query(ThrivResource).all()
         return schema.dump(resources)
+
+    def post(self):
+        schema = ThrivResourceSchema()
+        request_data = request.get_json()
+        try:
+            load_result = ThrivResourceSchema().load(request_data).data
+            db.session.add(load_result)
+            db.session.commit()
+            return schema.dump(load_result)
+        except ValidationError as err:
+            raise RestException(RestException.INVALID_RESOURCE,
+                                details=load_result.errors)
 
 
 class CategoryEndpoint(flask_restful.Resource):
@@ -126,3 +141,4 @@ api.add_resource(ResourceListEndpoint, '/api/resource')
 api.add_resource(ResourceEndpoint, '/api/resource/<id>')
 api.add_resource(CategoryListEndpoint, '/api/category')
 api.add_resource(CategoryEndpoint, '/api/category/<id>')
+
