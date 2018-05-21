@@ -8,6 +8,7 @@ class Category(db.Model):
     name = db.Column(db.String)
     description = db.Column(db.String)
     parent_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    icon = db.Column(db.String)
     children = db.relationship("Category",
                                backref=db.backref('parent', remote_side=[id]))
 

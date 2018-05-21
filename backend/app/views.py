@@ -2,6 +2,7 @@ import urllib
 
 import elasticsearch
 from flask import jsonify, url_for, request
+from marshmallow import ValidationError
 
 from app import app, db, ma, elastic_index
 from app.model.category import Category, CategorySchema
@@ -10,6 +11,7 @@ from app.model.search import Search, Facet, FacetCount, SearchSchema
 import flask_restful
 from flask_restful import reqparse
 
+from app.rest_exception import RestException
 
 api = flask_restful.Api(app)
 
@@ -33,10 +35,19 @@ class ResourceEndpoint(flask_restful.Resource):
         del thriv_resources[id]
 
     def put(self, id):
-        args = parser.parse_args()
-        resource = args['resource']
-        thriv_resources[id] = resource
-        return resource
+        request_data = request.get_json()
+        request_data["availabilities"] = []
+        try:
+            load_result = ThrivResourceSchema().load(request_data)
+            db.session.query(ThrivResource).filter_by(id=id).update({
+                "name": load_result.data.name,
+                "description": load_result.data.description
+                })
+            db.session.commit()
+            return ThrivResourceSchema().dump(db.session.query(ThrivResource).filter_by(id=id).first())
+        except ValidationError as err:
+            raise RestException(RestException.INVALID_RESOURCE,
+                                details=load_result.errors)
 
 
 class ResourceListEndpoint(flask_restful.Resource):

@@ -31,8 +31,10 @@ class TestCase(unittest.TestCase):
         pass
 
     def assertSuccess(self, rv):
+        data = json.loads(rv.get_data(as_text=True))
         self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
-                        "BAD Response:" + rv.status + ".")
+                        "BAD Response: %i. \n %s" %
+                        (rv.status_code, json.dumps(data)))
 
     def test_base_endpoint(self):
         rv = self.app.get('/api',
@@ -85,6 +87,22 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["name"], 'Test Resource')
         self.assertEqual(response["description"], 'Some stuff bout it')
 
+    def test_modify_resource_basics(self):
+        self.construct_resource()
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        response['name'] = 'Edwarardos Lemonade and Oil Change'
+        response['description'] = 'Better fluids for you and your car.'
+        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json")
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response['name'], 'Edwarardos Lemonade and Oil Change')
+        self.assertEqual(response['description'], 'Better fluids for you and your car.')
+
+
+
     def test_category_basics(self):
         category = self.construct_category()
         rv = self.app.get('/api/category/1',
@@ -95,6 +113,16 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["id"], 1)
         self.assertEqual(response["name"], 'Test Category')
         self.assertEqual(response["description"], 'A category to test with!')
+
+    def add_resource_to_category(self):
+        resource = self.construct_resource()
+        category = self.construct_category()
+        rv = self.app.put('/api/category/1/resources', data=json.dumps(resource), content_type="application/json")
+        self.assertSuccess(rv)
+        resource = self.app.get('/api/resource/1')
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["id"], 1)
+
 
 
     def test_resource_has_type(self):
@@ -155,6 +183,8 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["_links"]["self"], '/api/resource/1')
         self.assertEqual(response["_links"]["collection"], '/api/resource')
+
+
 
     def test_category_has_links(self):
         self.construct_category()

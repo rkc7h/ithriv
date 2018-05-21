@@ -1,54 +1,59 @@
-Id,Name,Description,Parent
-1,Learn,,
-2,Propose,,
-3,Conduct,,
-4,Connect,,
-5,Clinical Translational Research,,1
-6,Data Science and Analytics,,1
-7,Certifications and Degrees,,1
-8,Regulatory Training,,1
-9,iTHRIV Scholars Program,,1
-10,CTSA Network Resources,,1
-11,Feasibility,,2
-12,Study Population Analysis,,11
-13,Cost Analysis,,11
-14,Studio Consults,,2
-15,"Biostatics, Epidemiology and Research Design",,2
-16,Research Ethics,,2
-17,Regulatory Knowledge and Support,,2
-18,Reproducibility and Rigor,,2
-19,Funding Resources,,2
-20,Protocol Writing,,2
-21,FDA IND/IDE,,2
-22,Intellectual Property,,2
-23,Multi-Center Study Planning,,2
-24,Study Activation,,2
-25,Data,,3
-26,Data Sources,,25
-27,Data Capture and eCRFs,,25
-28,Data Storage,,25
-29,Data Analytics,,25
-30,Data Analytics – Consults,,29
-31,Analytics Tools,,29
-32,Administrative Tools,,3
-33,Epic,,32
-34,CTMS,,32
-35,Finances,,32
-36,Research Facilities,,3
-37,Health System Resources,,3
-38,Research Cores and Laboratories,,3
-39,Investigational Drug Services,,3
-40,Regulator Considerations,,3
-41,Human Research Protection Oversight,,3
-42,Consults,,3
-43,Logistical Resources,,3
-44,CTSA Network Resources,,3
-45,Community Resources,,4
-46,Community Collaboration,,4
-47,Investigator Collaboration,,4
-48,Open Science,,4
-49,Dissemination,,4
-50,Commercialization,,4
-51,iTHRIV Research Centers and Initiatives,,4
-52,Quality and Process Improvement,,4
-53,CTSA Network Resources,,52
+Id,Name,Description,Parent,Icon
+1,Learn,"This is dummy text that establishes the content of the Learn mode in the system. It should help orient the user to what they can accomplish in the sections contained within this mode. The text should be brief, but descriptive, allowing the user to feel comfortable that they are in the appropriate portion of the site for their current tasks.",,
+2,Propose,,,
+3,Conduct,,,
+4,Connect,,,
+5,General Clinical Translation Research,This should be a brief statement about the nature of the Writing Assistance section and the resources users can find within it. It should briefly describe the contents of this section and give an overview of the resources that will be within it.,1,g_translate
+6,Data Science and Analytics,,1,donut_large
+7,Certifications and Degrees,,1,face
+8,Regulatory Training,,1,train
+9,iTHRIV Scholars Program,,1,gavel
+10,CTSA Network Resources,,1,
+101,Definitions and Glossary,The dummy text is a page description on the next page that establishes the content of the definitions and glossary category.,10,
+102,Sample iTHRIV Projects,This is dummy text an excerpt from the page description that establishes the content of the sample iTHRIV projects category,10,
+103,Innovative Approaches,The dummy text is a page description on the next page that establishes the content of the innovative approaches category.,10,
+104,Research Pathways,This is dummy text an excerpt from the page description on the next page that establishes the content of the research pathways category,10,
+11,Feasibility,,2,
+12,Study Population Analysis,,11,
+13,Cost Analysis,,11,
+14,Studio Consults,,2,
+15,"Biostatics, Epidemiology and Research Design",,2,
+16,Research Ethics,,2,
+17,Regulatory Knowledge and Support,,2,
+18,Reproducibility and Rigor,,2,
+19,Funding Resources,,2,
+20,Protocol Writing,,2,
+21,FDA IND/IDE,,2,
+22,Intellectual Property,,2,
+23,Multi-Center Study Planning,,2,
+24,Study Activation,,2,
+25,Data,,3,
+26,Data Sources,,25,
+27,Data Capture and eCRFs,,25,
+28,Data Storage,,25,
+29,Data Analytics,,25,
+30,Data Analytics – Consults,,29,
+31,Analytics Tools,,29,
+32,Administrative Tools,,3,
+33,Epic,,32,
+34,CTMS,,32,
+35,Finances,,32,
+36,Research Facilities,,3,
+37,Health System Resources,,3,
+38,Research Cores and Laboratories,,3,
+38,Research Cores and Laboratories,,3,
+39,Investigational Drug Services,,3,
+40,Regulator Considerations,,3,
+41,Human Research Protection Oversight,,3,
+42,Consults,,3,
+43,Logistical Resources,,3,
+44,CTSA Network Resources,,3,
+45,Community Resources,,4,
+46,Community Collaboration,,4,
+47,Investigator Collaboration,,4,
+48,Open Science,,4,
+49,Dissemination,,4,
+50,Commercialization,,4,
+51,iTHRIV Research Centers and Initiatives,,4,
+52,Quality and Process Improvement,,4,
+53,CTSA Network Resources,,52,

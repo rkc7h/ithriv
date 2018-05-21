@@ -1,5 +1,6 @@
 from app import db
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, post_load
+
 
 class ThrivInstitution(db.Model):
     __tablename__ = 'institution'
@@ -8,7 +9,11 @@ class ThrivInstitution(db.Model):
     description = db.Column(db.String)
     resources = db.relationship('ThrivResource', backref=db.backref('institution', lazy=True))
 
+
 class ThrivInstitutionSchema(Schema):
     id = fields.Integer()
     name = fields.String()
 
+    @post_load
+    def make_inst(self, data):
+        return ThrivInstitution(**data)

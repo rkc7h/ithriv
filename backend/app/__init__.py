@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -7,6 +7,7 @@ import os
 from flask_marshmallow import Marshmallow
 
 from app.elastic_index import ElasticIndex
+from app.rest_exception import RestException
 
 app = Flask(__name__, instance_relative_config=True)
 
@@ -35,6 +36,19 @@ migrate = Migrate(app, db)
 
 # Search System
 elastic_index = ElasticIndex(app)
+
+
+# Handle errors consistently
+@app.errorhandler(RestException)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
+
+@app.errorhandler(404)
+def handle_404(error):
+    return handle_invalid_usage(RestException(RestException.NOT_FOUND, 404))
+
 
 @app.cli.command()
 def initdb():

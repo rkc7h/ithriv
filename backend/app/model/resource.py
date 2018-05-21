@@ -22,6 +22,7 @@ class ThrivResource(db.Model):
     availabilities = db.relationship(lambda: Availability,  cascade="all, delete-orphan",
                                      backref=db.backref('resource', lazy=True))
 
+
 class ThrivResourceSchema(Schema):
     id = fields.Str()
     name = fields.Str()
@@ -30,10 +31,11 @@ class ThrivResourceSchema(Schema):
     website = fields.String()
     type = fields.Nested(ThrivTypeSchema())
     institution = fields.Nested(ThrivInstitutionSchema())
-    availabilities = fields.Nested(AvailabilitySchema(), many=True)
+    #availabilities = fields.Nested(AvailabilitySchema(), many=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourceendpoint', id='<id>'),
-        'collection': ma.URLFor('resourcelistendpoint')})
+        'collection': ma.URLFor('resourcelistendpoint')},
+        dump_only=True)
 
     @post_load
     def make_resource(self, data):
