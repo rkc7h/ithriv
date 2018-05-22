@@ -30,8 +30,8 @@ class ThrivResourceSchema(Schema):
     owner = fields.String()
     website = fields.String()
     type = fields.Nested(ThrivTypeSchema())
-    institution = fields.Nested(ThrivInstitutionSchema())
-    #availabilities = fields.Nested(AvailabilitySchema(), many=True)
+    institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True)
+    availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourceendpoint', id='<id>'),
         'collection': ma.URLFor('resourcelistendpoint')},

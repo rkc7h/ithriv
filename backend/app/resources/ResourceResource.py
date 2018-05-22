@@ -22,7 +22,8 @@ class ResourceEndpoint(flask_restful.Resource):
         request_data = request.get_json()
         request_data["availabilities"] = []
         try:
-            load_result = ThrivResourceSchema().load(request_data).data
+            load_result, errors = ThrivResourceSchema().load(request_data)
+            if errors: raise RestException(RestException.INVALID_RESOURCE, details=errors)
             db.session.query(ThrivResource).filter_by(id=id).update({
                 "name": load_result.name,
                 "description": load_result.description

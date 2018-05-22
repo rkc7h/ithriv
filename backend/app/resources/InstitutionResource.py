@@ -11,7 +11,7 @@ class InstitutionEndpoint(flask_restful.Resource):
     schema = ThrivInstitutionSchema()
 
     def get(self, id):
-        model = db.session.query(ThrivInstitution).filter_by(id == id).first()
+        model = db.session.query(ThrivInstitution).filter_by(id=id).first()
         if model is None: raise RestException(RestException.NOT_FOUND)
         return self.schema.dump(model)
 

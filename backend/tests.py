@@ -1,14 +1,11 @@
 # Set enivoronment variable to testing before loading.
-
-import unittest
 import os
-import json
-
-from app.model.availability import Availability
-from app.model.category import Category
-
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
+import unittest
+import json
+from app.model.availability import Availability
+from app.model.category import Category
 from app.model.resource import ThrivResource
 from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
@@ -19,16 +16,17 @@ from app import app, db, elastic_index
 class TestCase(unittest.TestCase):
 
     def setUp(self):
+        self.ctx = app.test_request_context()
         self.app = app.test_client()
         db.create_all()
-        self.ctx = app.test_request_context()
         self.ctx.push()
 
     def tearDown(self):
-        self.ctx.pop()
+        db.session.commit()
+        db.session.close()
         db.drop_all()
         elastic_index.clear()
-        pass
+        self.ctx.pop()
 
     def assertSuccess(self, rv):
         data = json.loads(rv.get_data(as_text=True))
@@ -246,7 +244,7 @@ class TestCase(unittest.TestCase):
 
     def search(self, query):
         '''Executes a query, returning the resulting search results object.'''
-        rv = self.app.post('/apigit /search', data=json.dumps(query), follow_redirects=True,
+        rv = self.app.post('/api/search', data=json.dumps(query), follow_redirects=True,
                            content_type="application/json")
         self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
@@ -331,5 +329,17 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         self.assertEquals(0, db.session.query(ThrivInstitution).filter_by(id=1).count())
 
-
+    def test_modify_institution(self):
+        institution = {"name": "Ender's Academy for wayward space boys",
+                       "description": "A school, in outerspace, with weightless games"}
+        rv = self.app.post('/api/institution', data=json.dumps(institution), content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        response["name"] = "My little bronnie"
+        response["description"] = "A biopic on the best and brightest adults who are 'My Little Pony' fans."
+        rv = self.app.put('/api/institution/%i' % response['id'],
+                          data=json.dumps(response), content_type="application/json")
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/institution/%i' % response["id"])
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals("My little bronnie", response["name"])
 
