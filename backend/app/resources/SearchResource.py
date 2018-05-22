@@ -3,8 +3,9 @@ import flask_restful
 from flask import request
 
 from app import elastic_index, RestException
-from app.model.resource import ThrivResourceSchema, ThrivResource
-from app.model.search import SearchSchema, Facet, FacetCount
+from app.model.resource import ThrivResource
+from app.model.search import Facet, FacetCount
+from app.resources.schema import SearchSchema, ThrivResourceSchema
 
 
 class SearchEndpoint(flask_restful.Resource):

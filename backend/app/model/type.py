@@ -9,10 +9,3 @@ class ThrivType(db.Model):
     resources = db.relationship('ThrivResource', backref=db.backref('type', lazy=True))
 
 
-class ThrivTypeSchema(Schema):
-    id = fields.Integer()
-    name = fields.String()
-
-    @post_load
-    def make_type(self, data):
-        return ThrivType(**data)

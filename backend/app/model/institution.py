@@ -1,6 +1,6 @@
-from app import db
-from marshmallow import Schema, fields, post_load
+from marshmallow_sqlalchemy import ModelSchema
 
+from app import db
 
 class ThrivInstitution(db.Model):
     __tablename__ = 'institution'
@@ -8,13 +8,3 @@ class ThrivInstitution(db.Model):
     name = db.Column(db.String)
     description = db.Column(db.String)
     resources = db.relationship('ThrivResource', backref=db.backref('institution', lazy=True))
-
-
-class ThrivInstitutionSchema(Schema):
-    id = fields.Integer()
-    name = fields.String()
-    description = fields.String()
-
-    @post_load
-    def make_inst(self, data):
-        return ThrivInstitution(**data)

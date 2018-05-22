@@ -81,7 +81,7 @@ class TestCase(unittest.TestCase):
                           content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response["id"], '1')
+        self.assertEqual(response["id"], 1)
         self.assertEqual(response["name"], 'Test Resource')
         self.assertEqual(response["description"], 'Some stuff bout it')
 
@@ -156,7 +156,7 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response['name'], 'Barbarella\'s Funky Gun')
         self.assertEqual(response['description'], 'A thing. In a movie, or something.')
-        self.assertEqual(response['id'], '1')
+        self.assertEqual(response['id'], 1)
 
     def test_category_basics(self):
         category = self.construct_category()

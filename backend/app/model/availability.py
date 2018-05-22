@@ -1,7 +1,6 @@
 from app import db
-from marshmallow import Schema, fields, post_load
 
-from app.model.institution import ThrivInstitutionSchema, ThrivInstitution
+from app.model.institution import ThrivInstitution
 
 
 class Availability(db.Model):
@@ -12,15 +11,3 @@ class Availability(db.Model):
     institution = db.relationship(ThrivInstitution)
     viewable = db.Column(db.Boolean())
     available = db.Column(db.Boolean())
-
-
-class AvailabilitySchema(Schema):
-    id = fields.Integer()
-    institution = fields.Nested(ThrivInstitutionSchema())
-    resource_id = fields.Integer()
-    viewable = fields.Boolean()
-    available = fields.Boolean()
-
-    @post_load
-    def make_availability(self, data):
-        return Availability(**data)

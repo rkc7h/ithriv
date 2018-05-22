@@ -38,6 +38,12 @@ migrate = Migrate(app, db)
 elastic_index = ElasticIndex(app)
 
 
+# Constructing for a problem when building urls when the id is null.
+# there is a fix in the works for this, see
+# https://github.com/kids-first/kf-api-dataservice/pull/219
+handler = lambda error, endpoint, values: ''
+app.url_build_error_handlers.append(handler)
+
 # Handle errors consistently
 @app.errorhandler(RestException)
 def handle_invalid_usage(error):

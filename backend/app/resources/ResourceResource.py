@@ -1,9 +1,12 @@
+import datetime
+
 import flask_restful
 from flask import request
 from marshmallow import ValidationError
 
 from app import RestException, db
-from app.model.resource import ThrivResource, ThrivResourceSchema
+from app.model.resource import ThrivResource
+from app.resources.schema import ThrivResourceSchema
 
 
 class ResourceEndpoint(flask_restful.Resource):
@@ -21,18 +24,13 @@ class ResourceEndpoint(flask_restful.Resource):
     def put(self, id):
         request_data = request.get_json()
         request_data["availabilities"] = []
-        try:
-            load_result, errors = ThrivResourceSchema().load(request_data)
-            if errors: raise RestException(RestException.INVALID_RESOURCE, details=errors)
-            db.session.query(ThrivResource).filter_by(id=id).update({
-                "name": load_result.name,
-                "description": load_result.description
-                })
-            db.session.commit()
-            return ThrivResourceSchema().dump(db.session.query(ThrivResource).filter_by(id=id).first())
-        except ValidationError as err:
-            raise RestException(RestException.INVALID_RESOURCE,
-                                details=load_result.errors)
+        instance = db.session.query(ThrivResource).filter_by(id=id).first()
+        updated, errors = ThrivResourceSchema().load(request_data, instance=instance)
+        updated.last_updated = datetime.datetime.now()
+        if errors: raise RestException(RestException.INVALID_RESOURCE, details=errors)
+        db.session.add(updated)
+        db.session.commit()
+        return ThrivResourceSchema().dump(updated)
 
 
 class ResourceListEndpoint(flask_restful.Resource):

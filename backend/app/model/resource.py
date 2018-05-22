@@ -1,10 +1,7 @@
 import datetime
 
-from marshmallow import Schema, post_load, fields
-from app import app, db, ma
-from app.model.availability import Availability, AvailabilitySchema
-from app.model.institution import ThrivInstitutionSchema
-from app.model.type import ThrivTypeSchema
+from app import db
+from app.model.availability import Availability
 
 
 class ThrivResource(db.Model):
@@ -23,24 +20,3 @@ class ThrivResource(db.Model):
                                      backref=db.backref('resource', lazy=True))
 
 
-class ThrivResourceSchema(Schema):
-    id = fields.Integer()
-    name = fields.Str()
-    description = fields.Str()
-    last_updated = fields.DateTime()
-    owner = fields.String()
-    website = fields.String()
-    institution_id = fields.Integer()
-    type_id = fields.Integer()
-    type = fields.Nested(ThrivTypeSchema(), dump_only=True)
-    institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True)
-    availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
-    _links = ma.Hyperlinks({
-        'self': ma.URLFor('resourceendpoint', id='<id>'),
-        'collection': ma.URLFor('resourcelistendpoint'),
-        'institution': ma.UrlFor('institutionendpoint', id='<institution.id>')},
-        dump_only=True)
-
-    @post_load
-    def make_resource(self, data):
-        return ThrivResource(**data)

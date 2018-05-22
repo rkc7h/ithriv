@@ -48,38 +48,3 @@ class Filter():
     def __init__(self, field, value):
         self.field = field
         self.value = value
-
-class SearchSchema(ma.Schema):
-
-    class FilterSchema(ma.Schema):
-        field = fields.Str()
-        value = fields.Str()
-
-        @post_load
-        def make_filter(self, data):
-            return Filter(**data)
-
-    class FacetSchema(ma.Schema):
-
-        class FacetCountSchema(ma.Schema):
-            category = fields.Str()
-            hit_count = fields.Integer()
-            is_selected = fields.Boolean()
-
-        field = fields.Str()
-        facetCounts = ma.List(ma.Nested(FacetCountSchema))
-
-
-    query = fields.Str()
-    start = fields.Integer()
-    size = fields.Integer()
-    filters = ma.List(ma.Nested(FilterSchema))
-    total = fields.Integer(dump_only=True)
-    resources = fields.List(fields.Dict(), dump_only=True)
-    facets = ma.List(ma.Nested(FacetSchema), dump_only=True)
-    # facets = fields.Dict(dump_only=True)
-    ordered = True
-
-    @post_load
-    def make_search(self, data):
-        return Search(**data)

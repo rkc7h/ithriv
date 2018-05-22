@@ -1,7 +1,8 @@
 import flask_restful
 
 from app import db
-from app.model.category import CategorySchema, Category
+from app.model.category import Category
+from app.resources.schema import CategorySchema
 
 
 class CategoryEndpoint(flask_restful.Resource):
