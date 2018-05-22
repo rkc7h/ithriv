@@ -13,7 +13,7 @@ class ThrivResource(db.Model):
     __tablename__ = 'resource'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    last_updated= db.Column(db.DateTime, default=datetime.datetime.now)
+    last_updated = db.Column(db.DateTime, default=datetime.datetime.now)
     description = db.Column(db.String)
     owner = db.Column(db.String)
     website = db.Column(db.String)
@@ -24,17 +24,21 @@ class ThrivResource(db.Model):
 
 
 class ThrivResourceSchema(Schema):
-    id = fields.Str()
+    id = fields.Integer()
     name = fields.Str()
     description = fields.Str()
+    last_updated = fields.DateTime()
     owner = fields.String()
     website = fields.String()
-    type = fields.Nested(ThrivTypeSchema())
+    institution_id = fields.Integer()
+    type_id = fields.Integer()
+    type = fields.Nested(ThrivTypeSchema(), dump_only=True)
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True)
     availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourceendpoint', id='<id>'),
-        'collection': ma.URLFor('resourcelistendpoint')},
+        'collection': ma.URLFor('resourcelistendpoint'),
+        'institution': ma.UrlFor('institutionendpoint', id='<institution.id>')},
         dump_only=True)
 
     @post_load

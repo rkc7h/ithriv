@@ -91,6 +91,9 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         response['name'] = 'Edwarardos Lemonade and Oil Change'
         response['description'] = 'Better fluids for you and your car.'
+        response['website'] = 'http://sartography.com'
+        response['owner'] = 'Daniel GG Dog Da Funk-a-funka'
+        orig_date = response['last_updated']
         rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json")
         self.assertSuccess(rv)
         rv = self.app.get('/api/resource/1', content_type="application/json")
@@ -98,6 +101,42 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response['name'], 'Edwarardos Lemonade and Oil Change')
         self.assertEqual(response['description'], 'Better fluids for you and your car.')
+        self.assertEqual(response['website'], 'http://sartography.com')
+        self.assertEqual(response['owner'], 'Daniel GG Dog Da Funk-a-funka')
+        self.assertNotEqual(orig_date, response['last_updated'])
+
+    def test_set_resource_institution(self):
+        self.construct_resource()
+        inst = ThrivInstitution(name="Billy Bob Thorton's School for mean short men with big heads")
+        db.session.add(inst)
+        db.session.commit()
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        response['institution_id'] = inst.id
+        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json")
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response['institution']['name'], "Billy Bob Thorton's School for mean short men with big heads")
+        self.assertEqual(response['institution_id'], inst.id)
+
+    def test_set_resource_type(self):
+        self.construct_resource()
+        type = ThrivType(name="A sort of greenish purple apricot like thing. ")
+        db.session.add(type)
+        db.session.commit()
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        response['type_id'] = type.id
+        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json")
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response['type']['name'], "A sort of greenish purple apricot like thing. ")
+        self.assertEqual(response['type_id'], type.id)
+
 
     def test_delete_resource(self):
         r = self.construct_resource()
