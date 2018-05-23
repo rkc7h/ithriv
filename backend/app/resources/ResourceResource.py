@@ -23,7 +23,6 @@ class ResourceEndpoint(flask_restful.Resource):
 
     def put(self, id):
         request_data = request.get_json()
-        request_data["availabilities"] = []
         instance = db.session.query(ThrivResource).filter_by(id=id).first()
         updated, errors = ThrivResourceSchema().load(request_data, instance=instance)
         updated.last_updated = datetime.datetime.now()

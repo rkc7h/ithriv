@@ -23,17 +23,12 @@ class InstitutionEndpoint(flask_restful.Resource):
 
     def put(self, id):
         request_data = request.get_json()
-        try:
-            load_result = ThrivInstitutionSchema().load(request_data)
-            db.session.query(ThrivInstitution).filter_by(id=id).update({
-                "name": load_result.data.name,
-                "description": load_result.data.description
-                })
-            db.session.commit()
-            return self.schema.dump(db.session.query(ThrivInstitution).filter_by(id=id).first())
-        except ValidationError as err:
-            raise RestException(RestException.INVALID_OBJECT,
-                                details=load_result.errors)
+        instance = db.session.query(ThrivInstitution).filter_by(id=id).first()
+        updated, errors = self.schema.load(request_data, instance=instance)
+        if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
+        db.session.add(updated)
+        db.session.commit()
+        return self.schema.dump(updated)
 
 
 class InstitutionListEndpoint(flask_restful.Resource):
