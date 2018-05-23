@@ -3,9 +3,8 @@ from flask import request
 from marshmallow import ValidationError
 
 from app import RestException, db
-from app.model.institution import ThrivInstitution
 from app.model.type import ThrivType
-from app.resources.schema import ThrivInstitutionSchema, ThrivTypeSchema
+from app.resources.schema import ThrivTypeSchema
 
 
 class TypeEndpoint(flask_restful.Resource):

@@ -1,8 +1,5 @@
 # Set enivoronment variable to testing before loading.
 import os
-
-from app.resources.schema import ThrivTypeSchema
-
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
 import unittest
