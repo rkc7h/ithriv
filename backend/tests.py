@@ -1,5 +1,8 @@
 # Set enivoronment variable to testing before loading.
 import os
+
+from app.resources.schema import ThrivTypeSchema
+
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
 import unittest
@@ -381,4 +384,41 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/institution/%i' % response["id"])
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals("My little bronnie", response["name"])
+
+    def test_create_type(self):
+        type = {"name": "A typey typer type"}
+        rv = self.app.post('/api/type', data=json.dumps(type), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        response["name"] = "A typey typer type"
+        self.assertEquals(1, db.session.query(ThrivType).count())
+
+    def test_edit_type(self):
+        type = ThrivType(name="one way")
+        db.session.add(type)
+        db.session.commit()
+        rv = self.app.get('/api/type/%i' % type.id, content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        response['name'] = "or another"
+        rv = self.app.put('/api/type/%i' % type.id, data=json.dumps(response), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        response["name"] = "or another"
+
+    def test_delete_type(self):
+        type = ThrivType(name="one way")
+        db.session.add(type)
+        db.session.commit()
+        self.assertEquals(1, db.session.query(ThrivType).count())
+        rv = self.app.delete('/api/type/%i' % type.id, content_type="application/json")
+        self.assertEquals(0, db.session.query(ThrivType).count())
+
+    def test_list_types(self):
+        db.session.add(ThrivType(name="a"))
+        db.session.add(ThrivType(name="b"))
+        db.session.add(ThrivType(name="c"))
+        db.session.commit()
+        rv = self.app.get('/api/type', content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(3, len(response))
 
