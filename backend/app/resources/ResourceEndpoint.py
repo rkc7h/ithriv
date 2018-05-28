@@ -5,6 +5,7 @@ from flask import request
 from marshmallow import ValidationError
 
 from app import RestException, db
+from app.model.resource_category import ResourceCategory
 from app.model.resource import ThrivResource
 from app.resources.schema import ThrivResourceSchema
 

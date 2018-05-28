@@ -4,6 +4,7 @@ from app import  ma
 from app.model.category import Category
 from app.model.institution import ThrivInstitution
 from app.model.resource import ThrivResource
+from app.model.resource_category import ResourceCategory
 from app.model.search import Filter, Search
 from app.model.type import ThrivType
 
@@ -60,12 +61,23 @@ class CategorySchema(ModelSchema):
     """Provides detailed information about a category, including all the children"""
     class Meta:
         model = Category
-        fields = ('id', 'name', 'description', 'children', 'parent', '_links')
+        fields = ('id', 'name', 'description', 'children', 'parent_id', 'parent', '_links')
+    parent_id = fields.Integer(required=False, allow_none=True)
     children = fields.Nested('self', many=True, dump_only=True)
     parent = fields.Nested(ParentCategorySchema, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('categoryendpoint', id='<id>'),
         'collection': ma.URLFor('categorylistendpoint')})
+
+
+class ResourceCategorySchema(ModelSchema):
+    class Meta:
+        model = ResourceCategory
+        fields = ('id', 'resource_id', 'category_id', '_links')
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('resourcecategoryendpoint', id='<id>'),
+        'category': ma.URLFor('categoryendpoint', id='<category_id>'),
+        'resource': ma.URLFor('resourceendpoint', id='<resource_id>')})
 
 
 class SearchSchema(ma.Schema):

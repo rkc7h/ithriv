@@ -1,5 +1,11 @@
 # Set enivoronment variable to testing before loading.
 import os
+
+from flask import jsonify
+
+from app.model.resource_category import ResourceCategory
+from app.resources.schema import CategorySchema
+
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
 import unittest
@@ -418,4 +424,80 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/type', content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(3, len(response))
+
+    def test_get_resource_by_category(self):
+        c = self.construct_category()
+        r = self.construct_resource()
+        cr = ResourceCategory(resource=r, category=c)
+        db.session.add(cr)
+        db.session.commit()
+        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(1, len(response))
+        self.assertEquals(r.id, response[0]["id"])
+        self.assertEquals(r.description, response[0]["description"])
+
+    def test_get_category_by_resource(self):
+        c = self.construct_category()
+        r = self.construct_resource()
+        cr = ResourceCategory(resource=r, category=c)
+        db.session.add(cr)
+        db.session.commit()
+        rv = self.app.get('/api/resource/%i/category' % r.id, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(1, len(response))
+        self.assertEquals(c.id, response[0]["id"])
+        self.assertEquals(c.description, response[0]["description"])
+
+    def test_add_category_to_resource(self):
+        c = self.construct_category()
+        r = self.construct_resource()
+
+        rc_data = {"resource_id": r.id, "category_id": c.id}
+
+        rv = self.app.post('/api/resource_category', data=json.dumps(rc_data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(c.id, response["category_id"])
+        self.assertEquals(r.id, response["resource_id"])
+
+    def test_remove_category_from_resource(self):
+        self.test_add_category_to_resource()
+        rv = self.app.delete('/api/resource_category/%i' % 1)
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/resource/%i/category' % 1, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(0, len(response))
+
+    def test_create_category(self):
+        c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!"}
+        rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(c["name"], response["name"])
+        self.assertEquals(c["description"], response["description"])
+
+    def test_create_child_category(self):
+        parent = Category(name= "Desk Stuffs", description = "The many stuffs on my desk")
+        db.session.add(parent)
+        db.session.commit()
+        c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!", "parent_id": parent.id}
+        rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(parent.id, response["parent"]["id"])
+
+    def test_update_category(self):
+        c = Category(name="Desk Stuffs", description="The many stuffs on my desk")
+        db.session.add(c)
+        db.session.commit()
+        c.description="A new better description of the crap all over my desk right now.  It's a mess."
+        rv = self.app.put('/api/category/%i' % c.id, data=json.dumps(CategorySchema().dump(c).data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(c.description, response["description"])
+
 

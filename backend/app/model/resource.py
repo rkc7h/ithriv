@@ -1,7 +1,6 @@
 import datetime
-
-from app import db
 from app.model.availability import Availability
+from app import db
 
 
 class ThrivResource(db.Model):
@@ -18,5 +17,6 @@ class ThrivResource(db.Model):
     institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
     availabilities = db.relationship(lambda: Availability,  cascade="all, delete-orphan",
                                      backref=db.backref('resource', lazy=True))
+
 
 
