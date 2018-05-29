@@ -1,6 +1,7 @@
 
 export interface Links {
-  collection: String;
-  image: String;
-  self: String;
+  collection: string;
+  image: string;
+  self: string;
+  resources: string;
 }

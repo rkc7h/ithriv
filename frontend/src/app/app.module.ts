@@ -24,6 +24,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
+import { CategoryComponent } from './category/category.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'search', pathMatch: 'full'},
@@ -31,6 +32,7 @@ const routes: Routes = [
   {path: 'search', component: SearchComponent, data: {title: 'Search'}},
   {path: 'browse', component: BrowseComponent, data: {title: 'Browse'}},
   {path: 'browse/:category', component: BrowseComponent, data: {title: 'Browse'}},
+  {path: 'category/:category', component: CategoryComponent, data: {title: 'Category'}},
 
   ];
 
@@ -42,7 +44,8 @@ const routes: Routes = [
     ResourceListComponent,
     SearchComponent,
     AvailabilityComponent,
-    BrowseComponent
+    BrowseComponent,
+    CategoryComponent
   ],
   imports: [
     CommonModule,

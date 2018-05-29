@@ -33,9 +33,9 @@ export class BrowseComponent implements OnInit {
     );
   }
 
-  goBrowse($event, category) {
+  goCategory($event, category) {
     $event.preventDefault();
-    this.router.navigate(['browse', category]);
+    this.router.navigate(['category', category]);
   }
 
   ngOnInit() {

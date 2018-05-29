@@ -16,3 +16,24 @@
   }
 
 }
+
+.sub-category {
+  border-top: 5px solid orangered;
+  margin: 40px;
+}
+
+.sub-sub-category {
+  flex: 1 1 5em;
+  margin: 10px;
+  min-width: 200px;
+  max-width: 200px;
+  min-height: 90px;
+
+  mat-card-title a {
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+}
+
+
