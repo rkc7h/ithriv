@@ -2,8 +2,6 @@ import flask_restful
 from flask import request
 
 from app import db, RestException
-from app.model.category import Category
-from app.model.resource import ThrivResource
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema, ThrivResourceSchema, ResourceCategorySchema
 
@@ -12,7 +10,7 @@ class ResourceByCategoryEndpoint(flask_restful.Resource):
     schema = ThrivResourceSchema()
 
     def get(self, category_id):
-        resource_categories = db.session.query(ResourceCategory).filter(Category.id == category_id).all()
+        resource_categories = db.session.query(ResourceCategory).filter(ResourceCategory.category_id == category_id).all()
         resources = [rc.resource for rc in resource_categories]
         return self.schema.dump(resources,many=True)
 
@@ -21,7 +19,7 @@ class CategoryByResourceEndpoint(flask_restful.Resource):
     schema = CategorySchema()
 
     def get(self, resource_id):
-        resource_categories = db.session.query(ResourceCategory).filter(ThrivResource.id == resource_id).all()
+        resource_categories = db.session.query(ResourceCategory).filter(ResourceCategory.resource_id == resource_id).all()
         categories = [rc.category for rc in resource_categories]
         return self.schema.dump(categories,many=True)
 

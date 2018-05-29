@@ -54,7 +54,9 @@ class ParentCategorySchema(ModelSchema):
     parent = fields.Nested('self', dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('categoryendpoint', id='<id>'),
-        'collection': ma.URLFor('categorylistendpoint')})
+        'collection': ma.URLFor('categorylistendpoint'),
+        'resources': ma.URLFor('resourcebycategoryendpoint', category_id='<id>')
+    })
 
 
 class CategorySchema(ModelSchema):
@@ -67,7 +69,9 @@ class CategorySchema(ModelSchema):
     parent = fields.Nested(ParentCategorySchema, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('categoryendpoint', id='<id>'),
-        'collection': ma.URLFor('categorylistendpoint')})
+        'collection': ma.URLFor('categorylistendpoint'),
+        'resources': ma.URLFor('resourcebycategoryendpoint', category_id='<id>')
+    })
 
 
 class ResourceCategorySchema(ModelSchema):
@@ -76,9 +80,8 @@ class ResourceCategorySchema(ModelSchema):
         fields = ('id', 'resource_id', 'category_id', '_links')
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourcecategoryendpoint', id='<id>'),
-        'category': ma.URLFor('categoryendpoint', id='<category_id>'),
-        'resource': ma.URLFor('resourceendpoint', id='<resource_id>')})
-
+        'category': ma.URLFor('categoryendpoint', id='<category_id>')
+    })
 
 class SearchSchema(ma.Schema):
 

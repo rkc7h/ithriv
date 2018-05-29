@@ -1,13 +1,11 @@
 # Set enivoronment variable to testing before loading.
 import os
+os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
 from flask import jsonify
 
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema
-
-os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
-
 import unittest
 import json
 from app.model.availability import Availability
@@ -500,4 +498,9 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(c.description, response["description"])
 
+    def test_category_has_color_based_on_parent(self):
+        self.assertTrue(False)
+
+    def test_category_can_have_icon(self):
+        self.assertTrue(False)
 
