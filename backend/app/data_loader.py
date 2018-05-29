@@ -5,6 +5,7 @@ from app.model.availability import Availability
 from app.model.category import Category
 from app.model.resource import ThrivResource
 from app.model.institution import ThrivInstitution
+from app.model.resource_category import ResourceCategory
 from app.model.type import ThrivType
 from app import db, elastic_index
 import csv
@@ -16,6 +17,7 @@ class DataLoader:
         self.resource_file = directory + "/resources.csv"
         self.availability_file = directory + "/resource_availability.csv"
         self.category_file = directory + "/categories.csv"
+        self.resource_category_file = directory + "/resource_categories.csv"
         print("Data loader initialized")
 
     def load_resources(self):
@@ -58,17 +60,32 @@ class DataLoader:
 
             for row in reader:
                 id = eval(row[0])
-                if row[3] != '':
-                    parent_id = eval(row[3])
-                    category = Category(id=id, name=row[1], description=row[2], parent_id=parent_id)
+                if row[1] != '':
+                    parent_id = eval(row[1])
+                    category = Category(id=id, name=row[3], description=row[4], parent_id=parent_id)
                 else:
-                    category = Category(id=id, name=row[1], description=row[2])
+                    category = Category(id=id, name=row[3], description=row[4])
 
                 db.session.add(category)
             db.session.commit()
             print("Categories.  There are now %i category records in the database." % db.session.query(Category).count())
 
+    def load_resource_categories(self):
+        with open(self.resource_category_file, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
+            next(reader, None)  # use headers to set availability
 
+            for row in reader:
+                if not row[4]: continue
+                resource_id = eval(row[0])
+                category_id = eval(row[4])
+
+                resource_category = ResourceCategory(resource_id=resource_id,
+                                                     category_id=category_id)
+                db.session.add(resource_category)
+            db.session.commit()
+            print("There are now %i links between resources and categories in the database." %
+                  db.session.query(ResourceCategory).count())
 
     def get_resource_by_id(self, id):
         resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
@@ -99,6 +116,7 @@ class DataLoader:
 
 
     def clear(self):
+        db.session.query(ResourceCategory).delete()
         db.session.query(Availability).delete()
         db.session.query(ThrivResource).delete()
         db.session.query(ThrivInstitution).delete()

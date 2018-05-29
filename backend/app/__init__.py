@@ -56,15 +56,18 @@ def handle_404(error):
     return handle_invalid_usage(RestException(RestException.NOT_FOUND, 404))
 
 
-@app.cli.command()
-def initdb():
-    """Initialize the database."""
-    filename = 'example_data/resources.csv'
-    from app import data_loader
-    data_loader = data_loader.DataLoader()
+def _load_data(data_loader):
     data_loader.load_resources()
     data_loader.load_availability()
     data_loader.load_categories()
+    data_loader.load_resource_categories()
+
+@app.cli.command()
+def initdb():
+    """Initialize the database."""
+    from app import data_loader
+    data_loader = data_loader.DataLoader()
+    _load_data(data_loader)
 
 @app.cli.command()
 def cleardb():
@@ -98,10 +101,7 @@ def reset():
     data_loader = data_loader.DataLoader()
     data_loader.clear_index()
     data_loader.clear()
-    data_loader.load_resources()
-    data_loader.load_availability()
-    data_loader.load_categories()
-    data_loader.build_index()
+    _load_data(data_loader)
 
 
 from app import views
