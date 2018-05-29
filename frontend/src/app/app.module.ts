@@ -25,6 +25,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
 import { CategoryComponent } from './category/category.component';
+import { CategoryFormComponent } from './category-form/category-form.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'search', pathMatch: 'full'},
@@ -33,6 +34,7 @@ const routes: Routes = [
   {path: 'browse', component: BrowseComponent, data: {title: 'Browse'}},
   {path: 'browse/:category', component: BrowseComponent, data: {title: 'Browse'}},
   {path: 'category/:category', component: CategoryComponent, data: {title: 'Category'}},
+  {path: 'category_form/:category', component: CategoryFormComponent, data: {title: 'Category Form'}},
 
   ];
 
@@ -45,7 +47,8 @@ const routes: Routes = [
     SearchComponent,
     AvailabilityComponent,
     BrowseComponent,
-    CategoryComponent
+    CategoryComponent,
+    CategoryFormComponent
   ],
   imports: [
     CommonModule,
@@ -73,6 +76,9 @@ const routes: Routes = [
     MatSidenavModule,
     MatDialogModule,
     MatDatepickerModule
+  ],
+  entryComponents: [
+    CategoryFormComponent
   ],
   providers: [
     {

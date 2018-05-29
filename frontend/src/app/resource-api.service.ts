@@ -35,5 +35,8 @@ export class ResourceApiService {
     return result;
   }
 
+  updateCategory(category: Category): Observable<Category> {
+    return this.httpClient.put<Category>(this.apiRoot + category._links.self, category)
+  }
 
 }

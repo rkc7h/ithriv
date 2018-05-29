@@ -2,8 +2,13 @@
 
   <div class="header"
        [ngStyle]="{'background-image': 'url(' + header_image() + ')'}">
-    <h1>{{category.name}}</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+    <h1>{{category.name}}
+      <button mat-mini-fab (click)="openEdit(category)" aria-label="Edit Category">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </h1>
+    <p *ngIf="category.description">{{category.description}}</p>
+    <p *ngIf="!category.description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
       magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
       consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
     </p>
@@ -11,8 +16,13 @@
 
   <div>
     <mat-card *ngFor="let c of category.children" class="sub-category">
-      <mat-card-title>{{c.name}}</mat-card-title>
-      <mat-card-subtitle>This should be a brief statement about the nature of the Writing Assistance section and the
+      <mat-card-title>{{c.name}}
+        <button mat-mini-fab (click)="openEdit(c)" aria-label="Edit Category">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </mat-card-title>
+      <mat-card-subtitle *ngIf="c.description">{{c.description}}</mat-card-subtitle>
+      <mat-card-subtitle *ngIf="!c.description">This should be a brief statement about the nature of the Writing Assistance section and the
         resources users can find within it. It should briefly describe the contents of this section and give an overview
         of the resources that will be within it.
       </mat-card-subtitle>
@@ -24,8 +34,13 @@
         fxLayoutGap="10px"
         fxLayoutGap.xs="0">
         <mat-card *ngFor="let sc of c.children" class="sub-sub-category">
-          <mat-card-title><a href="#" (click)="goCategory($event, sc.id)">{{sc.name}}</a></mat-card-title>
-          <mat-card-subtitle>The dummy text is a page description on the next page that establishes the content of the
+          <mat-card-title><a href="#" (click)="goCategory($event, sc.id)">{{sc.name}}</a>
+            <button mat-mini-fab (click)="openEdit(sc)" aria-label="Edit Category">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </mat-card-title>
+          <mat-card-subtitle *ngIf="sc.description">{{sc.description}}</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="!sc.description">The dummy text is a page description on the next page that establishes the content of the
             definitions and glossary category.
           </mat-card-subtitle>
         </mat-card>

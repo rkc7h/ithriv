@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ResourceApiService} from '../resource-api.service';
 import {Category} from '../category';
+import {MatDialog} from '@angular/material';
+import {CategoryFormComponent} from '../category-form/category-form.component';
 
 @Component({
   selector: 'app-browse',
@@ -16,7 +18,8 @@ export class BrowseComponent implements OnInit {
 
   constructor(private router: Router,
               private route: ActivatedRoute,
-              private api: ResourceApiService) {
+              private api: ResourceApiService,
+              private dialog: MatDialog) {
     this.route.params.subscribe( params => {
         this.categoryId = params['category'];
         this.loadCategory(this.categoryId);
@@ -31,6 +34,13 @@ export class BrowseComponent implements OnInit {
         this.isDataLoaded = true;
       }
     );
+  }
+
+  openEdit(category: Category) {
+    const dialogRef = this.dialog.open(CategoryFormComponent, {
+      width: '250px',
+      data: {category}
+    });
   }
 
   goCategory($event, category) {
