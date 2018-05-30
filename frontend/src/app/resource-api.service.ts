@@ -20,11 +20,10 @@ export class ResourceApiService {
 
 
   private handleError(error: HttpErrorResponse) {
-    let message = "";
+    let message = 'Something bad happened; please try again later.';
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error.message);
-      message = 'Something bad happened; please try again later.';
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong,
@@ -35,39 +34,39 @@ export class ResourceApiService {
       message = error.error.message;
     }
     // return an observable with a user-facing error message
+    // FIXME: Log all error messages to Google Analytics
     return throwError(message);
   };
 
 
   searchResources(query: ResourceQuery): Observable<ResourceQuery> {
-    const result = this.httpClient.post<ResourceQuery>(this.search_resource_url, query);
-    console.log('The Result is: ' + result);
-    return result;
+    return this.httpClient.post<ResourceQuery>(this.search_resource_url, query)
+      .pipe(catchError(this.handleError));
   }
 
   getCategory(id: Number): Observable<Category> {
-    const result = this.httpClient.get<Category>(this.category_url + "/" + id);
-    return result;
+    return this.httpClient.get<Category>(this.category_url + '/' + id)
+      .pipe(catchError(this.handleError));
   }
 
   getCategoryResources(category: Category): Observable<Resource[]> {
-    const result = this.httpClient.get<Resource[]>(this.apiRoot + category._links.resources);
-    return result;
+    return this.httpClient.get<Resource[]>(this.apiRoot + category._links.resources)
+      .pipe(catchError(this.handleError));
   }
 
   updateCategory(category: Category): Observable<Category> {
     return this.httpClient.put<Category>(this.apiRoot + category._links.self, category)
+      .pipe(catchError(this.handleError));
   }
 
   addCategory(category: Category): Observable<Category> {
     return this.httpClient.post<Category>(this.category_url, category)
+      .pipe(catchError(this.handleError));
   }
 
   deleteCategory(category: Category): Observable<any> {
     return this.httpClient.delete<Category>(this.apiRoot + category._links.self)
-      .pipe(
-        catchError(this.handleError)
-      );
+      .pipe(catchError(this.handleError));
   }
 
 }
