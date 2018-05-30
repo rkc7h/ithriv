@@ -18,6 +18,7 @@ export class CategoryFormComponent implements OnInit {
   description: FormControl;
   category: Category;
   showConfirmDelete = false;
+  error: string;
 
   constructor(private api: ResourceApiService,
               public dialogRef: MatDialogRef<CategoryFormComponent>,
@@ -97,7 +98,8 @@ export class CategoryFormComponent implements OnInit {
         }
       }
       this.dialogRef.close();
-    });
+    },
+    error => this.error = error
+    );
   }
-
 }
