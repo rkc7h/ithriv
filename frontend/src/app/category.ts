@@ -4,6 +4,7 @@ export interface Category {
   id: number;
   name: string;
   description: string;
-  children: Category[];
-  _links: Links;
+  parent_id?: number;
+  children?: Category[];
+  _links?: Links;
 }

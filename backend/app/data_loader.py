@@ -32,6 +32,9 @@ class DataLoader:
                 db.session.add(resource)
             print("Resources loaded.  There are now %i resources into the database." % db.session.query(ThrivResource).count())
         db.session.commit()
+        db.session.execute("SELECT setval('resource_id_seq', "
+                           "COALESCE((SELECT MAX(id) + 1 FROM resource), 1), false);")
+        db.session.commit()
 
     def load_availability(self):
         with open(self.availability_file, newline='') as csvfile:
@@ -67,6 +70,10 @@ class DataLoader:
                     category = Category(id=id, name=row[3], description=row[4])
 
                 db.session.add(category)
+            # As we manually set the ids, we need to update the sequence manually as well.
+            db.session.commit()
+            db.session.execute("SELECT setval('category_id_seq', "
+                               "COALESCE((SELECT MAX(id) + 1 FROM category), 1), false);")
             db.session.commit()
             print("Categories.  There are now %i category records in the database." % db.session.query(Category).count())
 

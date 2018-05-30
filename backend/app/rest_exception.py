@@ -8,6 +8,7 @@ class RestException(Exception):
     NOT_YOUR_ACCOUNT = {'code': 'permission_denied', 'message': 'You may not edit another users account.'}
     PERMISSON_DENIED = {'code': 'permission_denied', 'message': 'You are not authorized to make this call.'}
     INVALID_OBJECT = {'code': 'invalid_object', 'message': 'Unable to save the provided object.'}
+    CAN_NOT_DELETE = {'code': 'can_not_delete', 'message': 'You must delete all dependent records first.'}
 
     def __init__(self, payload, status_code=None, details=None):
         Exception.__init__(self)

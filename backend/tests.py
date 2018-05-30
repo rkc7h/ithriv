@@ -284,6 +284,12 @@ class TestCase(unittest.TestCase):
         self.assertEqual(1, len(response))
         self.assertEqual(1, len(response[0]["children"]))
 
+    def test_delete_category(self):
+        c = self.construct_category()
+        self.assertEqual(1, db.session.query(Category).count())
+        rv = self.app.delete('/api/category/%i' % c.id)
+        self.assertSuccess(rv)
+        self.assertEqual(0, db.session.query(Category).count())
 
     def search(self, query):
         '''Executes a query, returning the resulting search results object.'''

@@ -1,6 +1,7 @@
 import flask_restful
 from flask import request
 from marshmallow import ValidationError
+from sqlalchemy.exc import IntegrityError
 
 from app import db, RestException
 from app.model.category import Category
@@ -15,9 +16,12 @@ class CategoryEndpoint(flask_restful.Resource):
         return self.schema.dump(category)
 
     def delete(self, id):
-        category = db.session.query(Category).filter(Category.id == id).first()
-        db.session.delete(category)
-        return self.schema.dump(category)
+        try:
+            db.session.query(Category).filter(Category.id == id).delete()
+            db.session.commit()
+        except IntegrityError as error:
+            raise RestException(RestException.CAN_NOT_DELETE)
+        return
 
     def put(self, id):
         request_data = request.get_json()
@@ -39,11 +43,9 @@ class CategoryListEndpoint(flask_restful.Resource):
 
     def post(self):
         request_data = request.get_json()
-        try:
-            load_result = self.category_schema.load(request_data).data
-            db.session.add(load_result)
-            db.session.commit()
-            return self.category_schema.dump(load_result)
-        except ValidationError as err:
-            raise RestException(RestException.INVALID_RESOURCE,
-                                details=load_result.errors)
+        new_cat, errors = self.category_schema.load(request_data)
+        if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
+        db.session.add(new_cat)
+        db.session.commit()
+        return self.category_schema.dump(new_cat)
+

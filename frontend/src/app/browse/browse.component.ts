@@ -36,12 +36,20 @@ export class BrowseComponent implements OnInit {
     );
   }
 
-  openEdit(category: Category) {
+  openEdit(category: Category, parent: Category = null) {
     const dialogRef = this.dialog.open(CategoryFormComponent, {
-      width: '250px',
-      data: {category}
+      width: '300px',
+      data: {'edit': category, 'parent_category': parent}
     });
   }
+
+  openAdd(category: Category) {
+    const dialogRef = this.dialog.open(CategoryFormComponent, {
+      width: '300px',
+      data: {'parent_category': category}
+    });
+  }
+
 
   goCategory($event, category) {
     $event.preventDefault();

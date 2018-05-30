@@ -1,13 +1,13 @@
 <form *ngIf="isDataLoaded" [formGroup]="categoryForm" novalidate (ngSubmit)="onSubmit()"
       class="container"
-      fxLayout="row"
+      fxLayout="column"
       fxLayoutWrap
       fxLayout.xs="column"
       fxLayoutAlign="start"
       fxLayoutGap="10px"
       fxLayoutGap.xs="0">
 
-  <div fxFlex="50%">
+  <div fxFlex="100%">
     <h2>Category Details</h2>
     <mat-form-field>
       <input matInput formControlName="name" placeholder="Name" class="form-control">
@@ -27,8 +27,17 @@
   <div class="display">
     <div class="button">
       <button type="submit" mat-raised-button>Save</button>
-      <button type="button" mat-raised-button (click)="onReset()">Reset</button>
+      <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
+      <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
     </div>
   </div>
+
+
+  <div id="confirm_delete" class="display" *ngIf="showConfirmDelete">
+    <div class="button">
+      <button type="button" mat-raised-button (click)="onDelete()">Permanently Delete This Category!!!</button>
+    </div>
+  </div>
+
 
 </form>
