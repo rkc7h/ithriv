@@ -1,8 +1,10 @@
+
+import {debounceTime} from 'rxjs/operators';
 import {Component, Input, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {MatSidenav} from '@angular/material';
-import 'rxjs/add/operator/debounceTime';
+
 import {Filter, ResourceQuery} from '../resource-query';
 import {Resource} from '../resource';
 import {ResourceApiService} from '../resource-api.service';
@@ -58,8 +60,8 @@ export class SearchComponent implements OnInit {
 
     this.searchBox.setValue(this.resourceQuery.query);
 
-    this.searchBox.valueChanges
-      .debounceTime(300).subscribe(query => {
+    this.searchBox.valueChanges.pipe(
+      debounceTime(300)).subscribe(query => {
         this.resourceQuery.query = query;
         this.doSearch();
     });

@@ -26,9 +26,9 @@
   </mat-sidenav>
 
   <form class="search-box" [formGroup]="searchForm">
-    <mat-input-container>
+    <mat-form-field>
       <input matInput #query type="search" formControlName="searchBox" placeholder="Search" value="{{resourceQuery.query}}">
-    </mat-input-container>
+    </mat-form-field>
     <button mat-raised-button (click)="updateQuery(query.value)" aria-label="Run Search">
       <mat-icon>search</mat-icon>
     </button>

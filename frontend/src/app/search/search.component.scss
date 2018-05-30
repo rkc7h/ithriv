@@ -57,7 +57,7 @@ mat-list-item:hover {
 //  background-color: mat-color($uva-primary, 100)
 }
 
-form.search-box mat-input-container {
+form.search-box mat-form-field {
   flex: 2 0 auto;
   line-height: 30px;
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { catchError, retry } from 'rxjs/operators';
-import {Observable, throwError} from 'rxjs/Observable';
+import {Observable, throwError} from 'rxjs';
 import {environment} from '../environments/environment';
 import {ResourceQuery} from './resource-query';
 import {Category} from './category';
