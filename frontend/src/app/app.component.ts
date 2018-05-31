@@ -16,4 +16,10 @@ export class AppComponent {
     this.router.navigate(['browse', category]);
   }
 
+  goSearch($event) {
+    $event.preventDefault();
+    this.router.navigate(['search']);
+  }
+
+
 }

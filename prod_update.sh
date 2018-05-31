@@ -45,7 +45,7 @@ eval 'cd ${HOME_DIR}/backend && flask initindex'
 
 # Rebuild the front end.
 eval 'cd ${HOME_DIR}/frontend && npm install'
-eval 'cd ${HOME_DIR}/frontend && ng build --environment=${ENV}'    
+eval 'cd ${HOME_DIR}/frontend && ng build -c ${ENV}'    
 
 # Reload apache
 echo "Reloading Apache"
