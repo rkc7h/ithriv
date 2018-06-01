@@ -1,5 +1,9 @@
 <div *ngIf="isDataLoaded">
-  <h1>{{category.name}}</h1>
+  <h1>{{category.name}}
+    <button mat-mini-fab (click)="openAddResource()" aria-label="Add Resource">
+      <mat-icon>add</mat-icon>
+    </button>
+  </h1>
 
   <app-resource-list [resources]="resources"></app-resource-list>
 </div>

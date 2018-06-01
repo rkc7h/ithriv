@@ -6,6 +6,7 @@ import {environment} from '../environments/environment';
 import {ResourceQuery} from './resource-query';
 import {Category} from './category';
 import {Resource} from './resource';
+import {ResourceCategory} from './resource-category';
 
 @Injectable()
 export class ResourceApiService {
@@ -13,6 +14,7 @@ export class ResourceApiService {
   apiRoot = environment.api;
   resource_url = `${this.apiRoot}/api/resource`;
   category_url = `${this.apiRoot}/api/category`;
+  resource_category_url = `${this.apiRoot}/api/resource_category`;
   search_resource_url = `${this.apiRoot}/api/search`;
   token: string;
 
@@ -36,7 +38,7 @@ export class ResourceApiService {
     // return an observable with a user-facing error message
     // FIXME: Log all error messages to Google Analytics
     return throwError(message);
-  };
+  }
 
 
   searchResources(query: ResourceQuery): Observable<ResourceQuery> {
@@ -66,6 +68,27 @@ export class ResourceApiService {
 
   deleteCategory(category: Category): Observable<any> {
     return this.httpClient.delete<Category>(this.apiRoot + category._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateResource(resource: Resource): Observable<Resource> {
+    return this.httpClient.put<Resource>(this.apiRoot + resource._links.self, resource)
+      .pipe(catchError(this.handleError));
+  }
+
+  addResource(resource: Resource): Observable<Resource> {
+    return this.httpClient.post<Resource>(this.resource_url, resource)
+      .pipe(catchError(this.handleError));
+  }
+
+  linkResourceAndCategory(resource: Resource, category: Category): Observable<any> {
+    const rc: ResourceCategory = {resource_id: resource.id, category_id: category.id};
+    return this.httpClient.post<ResourceCategory>(this.resource_category_url, rc)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteResource(resource: Resource): Observable<any> {
+    return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
       .pipe(catchError(this.handleError));
   }
 

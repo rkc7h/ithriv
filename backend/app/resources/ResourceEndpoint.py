@@ -43,14 +43,11 @@ class ResourceListEndpoint(flask_restful.Resource):
     def post(self):
         schema = ThrivResourceSchema()
         request_data = request.get_json()
-        try:
-            load_result = ThrivResourceSchema().load(request_data).data
-            db.session.add(load_result)
-            db.session.commit()
-            return schema.dump(load_result)
-        except ValidationError as err:
-            raise RestException(RestException.INVALID_RESOURCE,
-                                details=load_result.errors)
+        resource, errors = ThrivResourceSchema().load(request_data)
+        if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
+        db.session.add(resource)
+        db.session.commit()
+        return schema.dump(resource)
 
 
 

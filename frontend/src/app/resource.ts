@@ -7,10 +7,10 @@ export interface Resource {
   id: number;
   name: '';
   description: '';
-  type: '';
-  institution: Institution;
-  website: '';
-  owner: '';
-  availabilities: Availability[];
-  links: Links;
+  type?: '';
+  institution?: Institution;
+  website?: '';
+  owner?: '';
+  availabilities?: Availability[];
+  _links?: Links;
 }

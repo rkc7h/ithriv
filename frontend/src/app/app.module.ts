@@ -26,6 +26,7 @@ import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
 import { CategoryComponent } from './category/category.component';
 import { CategoryFormComponent } from './category-form/category-form.component';
+import { ResourceFormComponent } from './resource-form/resource-form.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'search', pathMatch: 'full'},
@@ -48,7 +49,8 @@ const routes: Routes = [
     AvailabilityComponent,
     BrowseComponent,
     CategoryComponent,
-    CategoryFormComponent
+    CategoryFormComponent,
+    ResourceFormComponent
   ],
   imports: [
     CommonModule,
@@ -78,7 +80,7 @@ const routes: Routes = [
     MatDatepickerModule
   ],
   entryComponents: [
-    CategoryFormComponent
+    CategoryFormComponent, ResourceFormComponent
   ],
   providers: [
     {
