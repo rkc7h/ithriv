@@ -16,6 +16,8 @@ export class CategoryFormComponent implements OnInit {
   categoryForm: FormGroup;
   name: FormControl;
   description: FormControl;
+  brief_description: FormControl;
+  icon: FormControl;
   category: Category;
   showConfirmDelete = false;
   error: string;
@@ -42,6 +44,9 @@ export class CategoryFormComponent implements OnInit {
   loadForm() {
     this.name = new FormControl([Validators.required, Validators.maxLength(256)]);
     this.description = new FormControl([Validators.required, Validators.minLength(20)]);
+    this.brief_description = new FormControl([Validators.required, Validators.minLength(20),
+                                                        Validators.maxLength(200)]);
+    this.icon = new FormControl();
 
     console.log('The category name ' + this.category.name);
 
@@ -53,6 +58,8 @@ export class CategoryFormComponent implements OnInit {
 
     this.name.patchValue(this.category.name);
     this.description.patchValue(this.category.description);
+    this.brief_description.patchValue(this.category.brief_description);
+    this.icon.patchValue(this.category.icon);
 
 //    this.name.valueChanges.subscribe(t => this.category.name = t);
 //    this.description.valueChanges.subscribe(t => this.category.description = t);
@@ -64,6 +71,8 @@ export class CategoryFormComponent implements OnInit {
     if (this.categoryForm.valid) {
       this.category.name = this.name.value;
       this.category.description = this.description.value;
+      this.category.brief_description = this.brief_description.value;
+      this.category.icon = this.icon.value;
       if (this.createNew) {
         this.api.addCategory(this.category).subscribe(c => {
           this.category = c;

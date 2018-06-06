@@ -63,11 +63,11 @@ class DataLoader:
 
             for row in reader:
                 id = eval(row[0])
+                category = Category(id=id, name=row[3], description=row[4], icon=row[5], color=row[6], image=row[7])
                 if row[1] != '':
                     parent_id = eval(row[1])
-                    category = Category(id=id, name=row[3], description=row[4], parent_id=parent_id)
+                    category.parent_id = parent_id
                 else:
-                    category = Category(id=id, name=row[3], description=row[4])
 
                 db.session.add(category)
             # As we manually set the ids, we need to update the sequence manually as well.

@@ -477,12 +477,18 @@ class TestCase(unittest.TestCase):
         self.assertEquals(0, len(response))
 
     def test_create_category(self):
-        c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!"}
+        c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!",
+             "color": "#000", "brief_description":"Funky Bowls!", "image":"image.png",
+             "icon":"icon.png"}
         rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(c["name"], response["name"])
         self.assertEquals(c["description"], response["description"])
+        self.assertEquals(c["brief_description"], response["brief_description"])
+        self.assertEquals(c["icon"], response["icon"])
+        self.assertEquals(c["color"], response["color"])
+        self.assertEquals(c["image"], response["image"])
 
     def test_create_child_category(self):
         parent = Category(name= "Desk Stuffs", description = "The many stuffs on my desk")
@@ -504,9 +510,13 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(c.description, response["description"])
 
-    def test_category_has_color_based_on_parent(self):
-        self.assertTrue(False)
 
-    def test_category_can_have_icon(self):
-        self.assertTrue(False)
-
+    def test_category_has_parents_color_if_not_set(self):
+        parent = Category(name= "Beer", description = "There are lots of types of beer.", color="#A52A2A")
+        db.session.add(parent)
+        db.session.commit()
+        c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!", "parent_id": parent.id}
+        rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals("#A52A2A", response["color"])

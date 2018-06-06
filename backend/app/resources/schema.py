@@ -57,7 +57,8 @@ class ParentCategorySchema(ModelSchema):
     """Provides a view of the parent category, all the way to the top, but ignores children"""
     class Meta:
         model = Category
-        fields = ('id', 'name', 'description', 'parent', '_links')
+        fields = ('id', 'name', 'brief_description', 'description', 'parent',
+                  'icon', 'color', 'image', '_links')
     parent = fields.Nested('self', dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('categoryendpoint', id='<id>'),
@@ -70,11 +71,16 @@ class CategorySchema(ModelSchema):
     """Provides detailed information about a category, including all the children"""
     class Meta:
         model = Category
-        fields = ('id', 'name', 'description', 'children', 'parent_id', 'parent', '_links')
+        fields = ('id', 'name', 'brief_description', 'description',
+                  'icon', 'color', 'image',
+                  'children', 'parent_id', 'parent', '_links')
     id = fields.Integer(required=False, allow_none=True)
+    icon = fields.String(required=False, allow_none=True)
+    image = fields.String(required=False, allow_none=True)
     parent_id = fields.Integer(required=False, allow_none=True)
     children = fields.Nested('self', many=True, dump_only=True)
     parent = fields.Nested(ParentCategorySchema, dump_only=True)
+    color = fields.Function(lambda obj: obj.calculate_color())
     _links = ma.Hyperlinks({
         'self': ma.URLFor('categoryendpoint', id='<id>'),
         'collection': ma.URLFor('categorylistendpoint'),
