@@ -27,9 +27,11 @@ import { BrowseComponent } from './browse/browse.component';
 import { CategoryComponent } from './category/category.component';
 import { CategoryFormComponent } from './category-form/category-form.component';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  {path: '', redirectTo: 'search', pathMatch: 'full'},
+  {path: '', redirectTo: 'home', pathMatch: 'full'},
+  {path: 'home', component: HomeComponent, data: {title: 'Home'}},
   {path: 'search/:query', component: SearchComponent, data: {title: 'Search'}},
   {path: 'search', component: SearchComponent, data: {title: 'Search'}},
   {path: 'browse', component: BrowseComponent, data: {title: 'Browse'}},
@@ -50,7 +52,8 @@ const routes: Routes = [
     BrowseComponent,
     CategoryComponent,
     CategoryFormComponent,
-    ResourceFormComponent
+    ResourceFormComponent,
+    HomeComponent
   ],
   imports: [
     CommonModule,

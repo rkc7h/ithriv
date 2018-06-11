@@ -22,10 +22,16 @@ export class BrowseComponent implements OnInit {
               private dialog: MatDialog) {
     this.route.params.subscribe( params => {
         this.categoryId = params['category'];
-        this.loadCategory(this.categoryId);
+        if(this.categoryId) {
+          this.loadCategory(this.categoryId);
+        }
     });
   }
 
+  goBrowse($event, category) {
+    $event.preventDefault();
+    this.loadCategory(category);
+  }
 
   loadCategory(categoryId: Number) {
     this.api.getCategory(categoryId).subscribe(

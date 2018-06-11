@@ -67,8 +67,6 @@ class DataLoader:
                 if row[1] != '':
                     parent_id = eval(row[1])
                     category.parent_id = parent_id
-                else:
-
                 db.session.add(category)
             # As we manually set the ids, we need to update the sequence manually as well.
             db.session.commit()

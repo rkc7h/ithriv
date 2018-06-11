@@ -1,6 +1,5 @@
 import flask_restful
 from flask import request
-from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
 
 from app import db, RestException

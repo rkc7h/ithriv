@@ -1,0 +1,25 @@
+<div class="searchbox">
+  <form class="searchbox" (ngSubmit)="goSearch(query.value)" [formGroup]="form">
+    <input id="search_input" #query type="text" class="form-control" placeholder="Search iTRHIV Resources">
+    <button mat-button aria-label="Search">
+      <mat-icon aria-hidden="true" aria-hidden="true" role="presentation">search</mat-icon>
+    </button>
+  </form>
+</div>
+
+<div class="concierge">Need Help?  Request a Research Concierge Services Consultation</div>
+
+<h1>Available iTHRIV Tools</h1>
+<div id="tools">
+  <mat-card>
+    <img mat-card-image src="../../assets/tools/resources.png">
+    <mat-card-actions>
+      <button mat-button (click)="goBrowse()">Find Resources</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+
+<h1>myTHRIV Workspace</h1>
+
+Coming soon ...

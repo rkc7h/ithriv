@@ -5,18 +5,12 @@
     <mat-toolbar-row class="menubar">
       <a href="#" (click)="goSearch($event)">Search</a>
     </mat-toolbar-row>
-    <mat-toolbar-row fxLayout="row wrap" fxLayoutAlign="space-around center" class="logo">
-      <a href="#" aria-label="Go Home">iTHRIV Logo</a>
+    <mat-toolbar-row fxLayout fxLayoutAlign="start center" class="logo">
+      <img src="../assets/logo_box.png"/>
+      <span>Research Concierge Portal</span>
+      <span class="spacer"></span>
+      <img src="../assets/logo.png"/>
 
-      <div class="browse">
-        <a href="#" (click)="goBrowse($event, 1)">Learn</a>
-        &bull;
-        <a href="#" (click)="goBrowse($event, 2)">Propose</a>
-        &bull;
-        <a href="#" (click)="goBrowse($event, 3)">Conduct</a>
-        &bull;
-        <a href="#" (click)="goBrowse($event, 4)">Connect</a>
-      </div>
 
     </mat-toolbar-row>
   </mat-toolbar>

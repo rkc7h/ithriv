@@ -1,6 +1,16 @@
-<div id="browse" *ngIf="isDataLoaded">
+<div id="browse" >
 
-  <div class="header"
+  <div class="browse">
+    <a href="#" (click)="goBrowse($event, 1)">Learn</a>
+    &bull;
+    <a href="#" (click)="goBrowse($event, 2)">Propose</a>
+    &bull;
+    <a href="#" (click)="goBrowse($event, 3)">Conduct</a>
+    &bull;
+    <a href="#" (click)="goBrowse($event, 4)">Connect</a>
+  </div>
+
+  <div class="header" *ngIf="isDataLoaded"
        [ngStyle]="{'background-image': 'url(' + header_image() + ')'}">
     <h1>{{category.name}}
       <button mat-mini-fab (click)="openEdit(category)" aria-label="Edit Category">
@@ -17,8 +27,8 @@
     </p>
   </div>
 
-  <div>
-    <mat-card *ngFor="let c of category.children" class="sub-category">
+  <div *ngIf="isDataLoaded">
+    <mat-card *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top': '5px solid ' + c.color}">
       <mat-card-title>{{c.name}}
         <button mat-mini-fab (click)="openEdit(c, category)" aria-label="Edit Category">
           <mat-icon>edit</mat-icon>

@@ -57,8 +57,7 @@ class ParentCategorySchema(ModelSchema):
     """Provides a view of the parent category, all the way to the top, but ignores children"""
     class Meta:
         model = Category
-        fields = ('id', 'name', 'brief_description', 'description', 'parent',
-                  'icon', 'color', 'image', '_links')
+        fields = ('id', 'name', 'parent', '_links')
     parent = fields.Nested('self', dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('categoryendpoint', id='<id>'),

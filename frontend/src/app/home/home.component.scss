@@ -1,0 +1,65 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
+div.searchbox {
+  max-width: 600px;
+  margin: 20px auto 5px auto;
+  pading: 40px;
+  border: 1px solid #09783E;
+  border-radius: 10px;
+
+  form.searchbox {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    background: #fff;
+    margin: 0 30px 0 30px;
+    border-radius: 8px;
+    padding: 0;
+    height: 40px;
+
+    input {
+      flex: 1 1 auto;
+      border: none;
+      font-size: 20px;
+      width: 100%;
+      height: 38px;
+      padding-left: 10px;
+    }
+
+    textarea:focus, input:focus {
+      outline: none;
+    }
+  }
+}
+
+div.concierge {
+  margin: 5px auto;
+  font-size: .9em;
+  text-align: center;
+}
+
+h1 {
+  color: #09783E;
+  border-top: 1px solid lightgray;;
+  border-bottom: 1px solid lightgray;;
+  margin: 20px 0 20px 0px;
+}
+
+#tools {
+  margin: 20px;
+  mat-card {
+    max-width: 200px;
+    justify-content: center;
+    align-items: center;
+
+    button {
+      margin: auto;
+      color: #09783E;
+      font-weight: bold;
+      font-size: 20px;
+    }
+  }
+}

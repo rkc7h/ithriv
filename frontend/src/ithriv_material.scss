@@ -70,67 +70,39 @@ $mat-orange: (
   )
 );
 
-$uva-primary: mat-palette($mat-blue);
-$uva-accent: mat-palette($mat-orange);
+$ithriv-primary: mat-palette($mat-blue);
+$ithriv-accent: mat-palette($mat-orange);
 $my-app-warn:    mat-palette($mat-deep-orange);
 
-$uva-theme: mat-light-theme($uva-primary, $uva-accent, $my-app-warn);
+$ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $my-app-warn);
 
-@include angular-material-theme($uva-theme);
+@include angular-material-theme($ithriv-theme);
 
 
 // Define a mixin that accepts a theme and outputs the color styles for the component.
-@mixin uva-theme($theme) {
+@mixin ithriv-theme($theme) {
   // Extract whichever individual palettes you need from the theme.
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
 
 
-  // Use mat-color to extract individual colors from a palette as necessary.
-
-  body {
-    background-color: mat-color($primary, 50);
-    margin: 0px;
+  body, h1, h2, h3, h4, p {
+    font-family: 'Roboto', sans-serif;
   }
 
-  p {
-    color: #666;
-    font-weight: 400;
-    max-width: 600px;
+  button {
+    background-color: transparent;
+    border: none;
   }
 
-  h1, h2 {
-    background-color: #fff;
-    color: #000;
-    padding: 10px 10px;
-    margin: 0 0 10px 0;
+  button:not([disabled]):hover {
+    background-color: rgba(158, 158, 158, 0.2);
   }
 
-  h1 {
-    font-size: 24px;
+  button[disabled] {
+    color : rgba(0, 0, 0, 0.26);
+    background-color: transparent;
   }
 
-  h2 {
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  h2.mat-h2, h2.mat-title {
-    background-color: mat-contrast($primary, 900);
-    font-size: 24px;
-    line-height: 30px;
-    font-weight: 700;
-    margin: 0px;
-    padding: 0px;
-  }
-
-  .mat-raised-button {
-    background-color: #42BD41;
-    color: #fff;
-  }
-
-  .spacer {
-    flex: 1 1 auto;
-  }
 }
 

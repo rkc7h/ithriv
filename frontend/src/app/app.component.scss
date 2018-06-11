@@ -1,15 +1,17 @@
 // Import theming functions
 @import '~@angular/material/theming';
-// Import your custom theme
 @import '../ithriv_material';
-// Load the UVA Theme
-@include uva-theme($uva-theme);
+@include ithriv-theme($ithriv-theme);
 
 .main {
   max-width: 982px;
   margin: auto;
   @include mat-elevation(2);
   min-height: 800px;
+}
+
+.spacer {
+  flex: 1 1 auto;
 }
 
 .mat-toolbar {
@@ -20,24 +22,29 @@
       text-decoration: none;
       color:inherit;
     }
-    a:hover {
-      color: yellow;
-    }
   }
   .menubar {
     height: 30px;
     font-size: 12px;
+    text-align: right;
+    padding-right: 20px;
   }
+
+  .logo {
+    height: 75px;
+    font-size: 25px;
+    font-weight: bold;
+    line-height: 35px;
+    background-color: #fff;
+    color: #09783E;
+    border-bottom: 5px solid #09783E;
+    img {
+      margin-right: 10px;
+    }
+  }
+
 }
 
-.logo {
-  background-color: #007A3C;
-  min-height: 100px;
-  p {
-    color: white;
-    white-space: pre-wrap;
-  }
-}
 
 // Top-bar dark green: #005424
 // Menu-bar medium green: #007A3C (this one is also the generic/default green for resource pages, etc.)
