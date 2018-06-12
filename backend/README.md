@@ -117,8 +117,9 @@ $ flask run
 ```
 
 #### Start the frontend app
-In the `frontend` directory, execute the following command:
+In the `frontend` directory, execute the following commands:
 ```BASH
+$ npm install
 $ ng serve
 ```
 
