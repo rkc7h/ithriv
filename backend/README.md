@@ -85,7 +85,8 @@ $ flask db migrate
 ### Load in the seed data
 This will pull in initial values into the database.
 ```BASH
-$ flask initdb example_data/resources.csv
+$ flask initdb
+$ flask initindex
 ```
 
 ## Add a config file
@@ -126,9 +127,21 @@ $ ng serve
 ## Maintenance
 
 ### Clear out the database
-This will remove all data from the database
+This will remove all data from the database.
 ```BASH
 $ flask cleardb
+```
+
+### Clear indexes
+Delete all information from the ElasticSearch Index.
+```BASH
+$ flask clearindex
+```
+
+### Reseed database
+Remove all data and recreate it from the example data files.
+```BASH
+$ flask reset
 ```
 
 ## Best Practices
