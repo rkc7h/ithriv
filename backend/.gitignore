@@ -4,3 +4,4 @@
 instance
 python-env
 *.pyc
+.vscode/
