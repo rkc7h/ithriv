@@ -117,7 +117,7 @@ In the `backend` directory, execute the following command:
 $ flask run
 ```
 
-#### Start the frontend app
+### Start the frontend app
 In the `frontend` directory, execute the following commands:
 ```BASH
 $ npm install
