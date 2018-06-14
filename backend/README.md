@@ -96,12 +96,14 @@ $ mkdir instance && cp -r config instance/config
 ```
 
 ## Run the app
+Execute the following at the top level of the repository to start PostgreSQL, ElasticSearch, flask, and Angular all in one command:
+```BASH
+$ ./start.sh
+```
+
+Alternatively, you could start each of the services individually, using the commands below.
 
 ### Start PostgreSQL
-```BASH
-$ brew services start postgresql
-```
-or
 ```BASH
 $ pg_ctl -D /usr/local/var/postgres start
 ```
@@ -123,6 +125,13 @@ In the `frontend` directory, execute the following commands:
 $ npm install
 $ ng serve
 ```
+
+## Stopping the app
+Execute the following at the top level of the repository to stop all running services:
+```BASH
+$ ./stop.sh
+```
+
 
 ## Maintenance
 
