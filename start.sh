@@ -5,12 +5,29 @@
 
 # Set the home directory
 export HOME_DIR=`pwd`
+BACKEND_PATH="${HOME_DIR}/backend"
+FRONTEND_PATH="${HOME_DIR}/frontend"
+DATABASE_PATH="/usr/local/var/postgres"
+
 echo "Running from ${HOME_DIR}"
+pg_ctl start -D $DATABASE_PATH &
+POSTGRES_PID=$! # Save the process ID
 
-export CD_BACKEND="cd ${HOME_DIR}/backend"
-export CD_FRONTEND='cd ${HOME_DIR}/frontend'
+echo -e '\n\n*** Starting postgresql and elasticsearch... ***\n\n'
+elasticsearch &
+ELASTIC_PID=$! # Save the process ID
 
-# Start PostgreSQL, ElasticSearch, and the backend app
-eval "${CD_BACKEND} && brew services start postgresql && elasticsearch && flask run && ${CD_FRONTEND} && npm install && ng serve"
-echo "Starting datbase, search service, and backend app..."
-echo "App running at http://localhost:4200"
+echo -e '\n\n*** Starting backend app... ***\n\n'
+cd $BACKEND_PATH
+source python-env/bin/activate
+export FLASK_APP=./app/__init__.py
+flask run &
+FLASK_PID=$! # Save the process ID
+
+echo -e '\n\n*** Starting frontend app... ***\n\n'
+cd $FRONTEND_PATH
+ng serve &
+NG_PID=$! # Save the process ID
+
+echo -e '\n\n*** frontend app running at http://localhost:4200 ***\n\n'
+wait $POSTGRES_PID $ELASTIC_PID $FLASK_PID $NG_PID
