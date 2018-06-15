@@ -1,13 +1,21 @@
 <div class="main">
-
-
   <mat-toolbar class="mat-toolbar">
     <mat-toolbar-row class="menubar">
-      <a href="#" (click)="goSearch($event)">Search</a>
+      <button mat-button>
+        <mat-icon>person_add</mat-icon>
+        Register
+      </button>
+      <mat-divider [vertical]="true"></mat-divider>
+      <button mat-raised-button>
+        <mat-icon>account_circle</mat-icon>
+        Log in
+      </button>
     </mat-toolbar-row>
     <mat-toolbar-row fxLayout="row wrap" fxLayoutAlign="space-around center" class="logo">
+      <a href="#" aria-label="Go Home">Research Concierge Portal</a>
       <a href="#" aria-label="Go Home">iTHRIV Logo</a>
-
+    </mat-toolbar-row>
+    <mat-toolbar-row fxLayout="row wrap" fxLayoutAlign="space-around center" class="logo">
       <div class="browse">
         <a href="#" (click)="goBrowse($event, 1)">Learn</a>
         &bull;
@@ -19,8 +27,10 @@
       </div>
 
     </mat-toolbar-row>
+    <mat-toolbar-row>
+      <a href="#" (click)="goSearch($event)">Search</a>
+    </mat-toolbar-row>
   </mat-toolbar>
-
 
   <!--The content below is only a placeholder and can be replaced.-->
   <div class="content">
