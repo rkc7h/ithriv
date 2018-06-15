@@ -18,12 +18,10 @@ sudo apt-get install -y libssl-dev libffi-dev
 ```
 
 #### PostgreSQL
-MacOS:
-```BASH
-$ brew install postgres
-```
+* MacOS:
+[Download and install Postgres.app](https://postgresapp.com). This will install `postgres`, along with the command-line tools, including `psql`, `pg_ctl`, and others.
 
-Debian:
+* Debian:
 ```BASH
 $ apt-get install postgresql postgresql-client
 ```
@@ -60,6 +58,14 @@ export FLASK_APP=./app/__init__.py
 ## Database Setup
 ### Create a Database
 *NOTE:* The configuration is currently set up to use "ed_pass" as a password.  You will be promoted to enter a password when you connect.
+* MacOS:
+```BASH
+$ postgres -D /usr/local/var/postgres
+$ createuser --no-createdb --no-superuser --pwprompt ed_user
+$ createdb ithriv -O ed_user ed_platform
+```
+
+* Debian
 ```BASH
 $ sudo su postgres
 $ createuser --no-createdb --no-superuser --pwprompt ed_user
@@ -67,8 +73,6 @@ $ createdb ithriv -O ed_user ed_platform
 $ exit
 ```
 If you are using Ubuntu you will likely need to [enable PSQL](https://help.ubuntu.com/community/PostgreSQL#Managing_users_and_rights) to manage its own users.
-
-Alternatively, you can install [pgAdmin](https://www.pgadmin.org/) and use the GUI to add the new `ed_user` user and `ithriv` database.
 
 ### Update the Database
 You will need to update your database each time you return to do a pull to make sure all the migrations are run.  Use this:
