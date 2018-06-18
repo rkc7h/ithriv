@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import click
 import os
+import signal
 from flask_marshmallow import Marshmallow
 
 from app.elastic_index import ElasticIndex
@@ -37,6 +38,16 @@ migrate = Migrate(app, db)
 # Search System
 elastic_index = ElasticIndex(app)
 
+@app.cli.command()
+def stop():
+    """Stop the server."""
+    pid = os.getpid()
+    if pid:
+        print("Stopping server...")
+        os.kill(pid, signal.SIGTERM)
+        print("Server stopped.")
+    else:
+        print("Server is not running.")
 
 # Constructing for a problem when building urls when the id is null.
 # there is a fix in the works for this, see
