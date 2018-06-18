@@ -37,20 +37,21 @@ import { ResourceComponent } from './resource/resource.component';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
 import { ResourceListComponent } from './resource-list/resource-list.component';
 import { ResourceSearchComponent } from './resource-search/resource-search.component';
-import {AuthInterceptor} from './AuthInterceptor';
-import {HTTP_INTERCEPTORS} from '@angular/common/http';
-import {InfiniteScrollModule} from 'ngx-infinite-scroll';
-import {RouterModule, Routes} from '@angular/router';
-import {SearchComponent} from './search/search.component';
+import { AuthInterceptor } from './AuthInterceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { RouterModule, Routes } from '@angular/router';
+import { SearchComponent } from './search/search.component';
+import { HeaderComponent } from './header/header.component';
 
 const routes: Routes = [
-  {path: '', redirectTo: 'search', pathMatch: 'full'},
-  {path: 'search/:query', component: SearchComponent, data: {title: 'Search'}},
-  {path: 'search', component: SearchComponent, data: {title: 'Search'}},
-  {path: 'browse', component: BrowseComponent, data: {title: 'Browse'}},
-  {path: 'browse/:category', component: BrowseComponent, data: {title: 'Browse'}},
-  {path: 'category/:category', component: CategoryComponent, data: {title: 'Category'}},
-  {path: 'category_form/:category', component: CategoryFormComponent, data: {title: 'Category Form'}},
+  { path: '', redirectTo: 'search', pathMatch: 'full' },
+  { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
+  { path: 'search', component: SearchComponent, data: { title: 'Search' } },
+  { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
+  { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
+  { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
+  { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
 ];
 
 @NgModule({
@@ -64,7 +65,8 @@ const routes: Routes = [
     BrowseComponent,
     CategoryComponent,
     CategoryFormComponent,
-    ResourceFormComponent
+    ResourceFormComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserAnimationsModule,

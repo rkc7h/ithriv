@@ -1,0 +1,76 @@
+// Import theming functions
+@import '~@angular/material/theming';
+
+// Import your custom theme
+@import '../../ithriv_material';
+
+// Load the UVA Theme
+@include uva-theme($ithriv-theme);
+
+.mat-toolbar {
+  color: white;
+
+  mat-toolbar-row {
+    a {
+      text-decoration: none;
+      color:inherit;
+    }
+
+    a:hover {
+      color: mat-color($ithriv-accent, default, 1.0);
+    }
+
+    .fill-remaining-space {
+      flex: 1 1 auto;
+    }
+
+    .mat-divider-vertical {
+      color: white;
+    }
+  }
+
+  .menubar {
+    height: 30px;
+    font-size: 12px;
+    background-color: mat-color($ithriv-primary, 900, 1.0);
+  }
+
+  .logo {
+    padding-top: 60px;
+    padding-bottom: 50px;
+    background-color: white;
+    border-bottom: 8px solid mat-color($ithriv-primary, 800, 1.0);
+
+    img {
+      &.logomark {
+        height: 48px;
+        max-height: 48px;
+        vertical-align: middle;
+      }
+
+      &.logo-horizontal {
+        height: 104px;
+        max-height: 104px;
+        vertical-align: middle;
+      }
+    }
+
+    h1 {
+      color: mat-color($ithriv-primary, 800, 1.0);
+      font-size: 32px;
+    }
+
+    p {
+      color: white;
+      white-space: pre-wrap;
+    }
+  }
+
+  .featured-categories {
+    color: mat-color($ithriv-primary, 900, 1.0);
+  }
+
+  .search {
+    color: mat-color($ithriv-primary, 900, 1.0);
+  }
+}

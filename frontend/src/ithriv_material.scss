@@ -70,21 +70,61 @@ $mat-orange: (
   )
 );
 
+// Top-bar dark green: #005424
+// Menu-bar medium green: #007A3C (this one is also the generic/default green for resource pages, etc.)
+// Light Tan: #FAF9F8 (this is background on section panels and at the top of home page)
+
+$mat-green: (
+  50: #e8f5e9,
+  100: #c8e6c9,
+  200: #a5d6a7,
+  300: #81c784,
+  400: #66bb6a,
+  500: #4caf50,
+  600: #43a047,
+  700: #388e3c,
+  800: #007A3C, // Modified, was #2e7d32
+  900: #005424, // Modified, was #1b5e20
+  A100: #b9f6ca,
+  A200: #69f0ae,
+  A400: #00e676,
+  A700: #00c853,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $dark-primary-text,
+    400: $dark-primary-text,
+    500: $dark-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $dark-primary-text,
+    A200: $dark-primary-text,
+    A400: $dark-primary-text,
+    A700: $dark-primary-text,
+  )
+);
+
 $uva-primary: mat-palette($mat-blue);
 $uva-accent: mat-palette($mat-orange);
-$my-app-warn:    mat-palette($mat-deep-orange);
+$uva-warn: mat-palette($mat-deep-orange);
+$uva-theme: mat-light-theme($uva-primary, $uva-accent, $uva-warn);
 
-$uva-theme: mat-light-theme($uva-primary, $uva-accent, $my-app-warn);
+$ithriv-primary: mat-palette($mat-green);
+$ithriv-accent: mat-palette($mat-orange);
+$ithriv-warn: mat-palette($mat-deep-orange);
+$ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
 
 @include angular-material-theme($uva-theme);
-
+@include angular-material-theme($ithriv-theme);
 
 // Define a mixin that accepts a theme and outputs the color styles for the component.
 @mixin uva-theme($theme) {
   // Extract whichever individual palettes you need from the theme.
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
-
 
   // Use mat-color to extract individual colors from a palette as necessary.
 
