@@ -9,10 +9,26 @@ import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { HttpClientModule } from '@angular/common/http';
 import {
-  MatButtonModule, MatIconModule, MatMenuModule, MatToolbarModule, MatCardModule,
-  MatInputModule, MatCheckboxModule, MatFormFieldModule, MatTabsModule, MatProgressSpinnerModule,
-  MatExpansionModule, MatSelectModule, MatListModule, MatRadioModule, MatStepperModule, MatSidenavModule,
-  MatDialogModule, MatDatepickerModule, MatNativeDateModule, MatSnackBar, MatSnackBarModule
+  MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatDatepickerModule,
+  MatDialogModule,
+  MatExpansionModule,
+  MatFormFieldModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
+  MatMenuModule,
+  MatNativeDateModule,
+  MatProgressSpinnerModule,
+  MatRadioModule,
+  MatSelectModule,
+  MatSidenavModule,
+  MatSnackBarModule,
+  MatStepperModule,
+  MatTabsModule,
+  MatToolbarModule
 } from '@angular/material';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -73,13 +89,12 @@ const routes: Routes = [
     MatRadioModule,
     MatSelectModule,
     MatSidenavModule,
-    MatSnackBar,
     MatSnackBarModule,
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(routes, {useHash: true})
+    RouterModule.forRoot(routes, { useHash: true })
   ],
   entryComponents: [
     CategoryFormComponent, ResourceFormComponent
