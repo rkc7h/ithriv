@@ -66,11 +66,22 @@
     }
   }
 
-  .featured-categories {
+  .navigation, .secondary-nav {
+    background: white;
+
+    img.logomark {
+      height: 24px;
+      max-height: 24px;
+      vertical-align: middle;
+    }
+
+    h1 {
+      color: mat-color($ithriv-primary, 800, 1.0);
+      font-size: 32px;
+      background: transparent;
+    }
+
     color: mat-color($ithriv-primary, 900, 1.0);
   }
 
-  .search {
-    color: mat-color($ithriv-primary, 900, 1.0);
-  }
 }

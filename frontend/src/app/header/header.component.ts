@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -7,28 +7,23 @@ import { Router } from '@angular/router';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-
   title = 'app';
+  isHome = false;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router) {
+    router.events.subscribe((val) => {
+      if (val instanceof NavigationEnd) {
+        this.isHome = ['/', '/search'].includes(val.url);
+      }
+    });
+  }
 
   ngOnInit() {
   }
 
-
   goHome($event) {
     $event.preventDefault();
     this.router.navigate(['']);
-  }
-
-  goBrowse($event, category) {
-    $event.preventDefault();
-    this.router.navigate(['browse', category]);
-  }
-
-  goSearch($event) {
-    $event.preventDefault();
-    this.router.navigate(['search']);
   }
 
 }

@@ -11,7 +11,8 @@
       Log in
     </button>
   </mat-toolbar-row>
-  <mat-toolbar-row fxLayout="row wrap" fxLayoutAlign="space-around center" class="logo">
+
+  <mat-toolbar-row *ngIf="isHome" fxLayout="row wrap" fxLayoutAlign="space-around center" class="logo">
     <h1>
       <a href="#" (click)="goHome($event)" aria-label="Go Home">
         <img src="/assets/logo/ithriv-logomark.png" alt="iThriv" class="logomark" /> Research Concierge Portal
@@ -22,20 +23,40 @@
       <img src="/assets/logo/ithriv-logo.png" alt="iThriv" class="logo-horizontal" />
     </a>
   </mat-toolbar-row>
-  <mat-toolbar-row class="search">
-    <a href="#" (click)="goSearch($event)">Search</a>
-  </mat-toolbar-row>
-  <mat-toolbar-row fxLayout="row wrap" fxLayoutAlign="space-around center" class="featured-categories">
-    <h1>myThriv Workspace</h1>
-    <div class="browse">
-      <a href="#" (click)="goBrowse($event, 1)">Learn</a>
-      &bull;
-      <a href="#" (click)="goBrowse($event, 2)">Propose</a>
-      &bull;
-      <a href="#" (click)="goBrowse($event, 3)">Conduct</a>
-      &bull;
-      <a href="#" (click)="goBrowse($event, 4)">Connect</a>
-    </div>
 
+  <mat-toolbar-row *ngIf="!isHome" fxLayout="row wrap" fxLayoutAlign="space-around center" class="navigation">
+    <a href="#" (click)="goHome($event)" aria-label="Go Home">
+      <img src="/assets/logo/ithriv-logomark.png" alt="iThriv" class="logomark" /> Research Concierge Portal
+    </a>
+    <span class="fill-remaining-space"></span>
+    <button mat-button>
+      <mat-icon>dashboard</mat-icon>
+      Dashboard
+    </button>
+    <button mat-button>
+      <mat-icon>search</mat-icon>
+      Search
+    </button>
+    <button mat-button>
+      <mat-icon>help</mat-icon>
+      Request a Consult
+    </button>
+  </mat-toolbar-row>
+
+  <mat-toolbar-row *ngIf="!isHome" fxLayout="row wrap" fxLayoutAlign="space-around center" class="secondary-nav">
+    <h1>Find Resources</h1>
+    <span class="fill-remaining-space"></span>
+    <a href="#">
+      Change View
+      <mat-icon>help_outline</mat-icon>
+    </a>
+    <mat-button-toggle-group>
+      <button mat-button>
+        <mat-icon>view_list</mat-icon>
+      </button>
+      <button mat-button>
+        <mat-icon>device_hub</mat-icon>
+      </button>
+    </mat-button-toggle-group>
   </mat-toolbar-row>
 </mat-toolbar>

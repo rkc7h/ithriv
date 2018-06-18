@@ -34,6 +34,24 @@
     </button>
   </form>
 
+  <mat-toolbar-row class="search">
+    <a href="#" (click)="goSearch($event)">Search</a>
+  </mat-toolbar-row>
+  <mat-toolbar-row fxLayout="row wrap" fxLayoutAlign="space-around center" class="featured-categories">
+    <h1>myThriv Workspace</h1>
+    <div class="browse">
+      <a href="#" (click)="goBrowse($event, 1)">Learn</a>
+      &bull;
+      <a href="#" (click)="goBrowse($event, 2)">Propose</a>
+      &bull;
+      <a href="#" (click)="goBrowse($event, 3)">Conduct</a>
+      &bull;
+      <a href="#" (click)="goBrowse($event, 4)">Connect</a>
+    </div>
+
+  </mat-toolbar-row>
+
+
   <ul class="applied-filters">
     <li *ngIf="!sidenav.opened">
       <button mat-icon-button (click)="sidenav.open()"><i class="material-icons">add_circle_outline</i></button>

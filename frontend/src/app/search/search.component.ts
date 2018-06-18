@@ -2,7 +2,7 @@
 import {debounceTime} from 'rxjs/operators';
 import {Component, Input, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {ActivatedRoute} from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import {MatSidenav} from '@angular/material';
 
 import {Filter, ResourceQuery} from '../resource-query';
@@ -28,9 +28,12 @@ export class SearchComponent implements OnInit {
 
   @ViewChild('sidenav') public sideNav: MatSidenav;
 
-  constructor(private resourceService: ResourceApiService,
-              private route: ActivatedRoute,
-              private renderer: Renderer2) {
+  constructor(
+    private resourceService: ResourceApiService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private renderer: Renderer2
+  ) {
     this.resources = [];
     this.route.params.subscribe(params => {
       const query = ('query' in params ? params['query'] : '');
@@ -66,6 +69,16 @@ export class SearchComponent implements OnInit {
         this.doSearch();
     });
 
+  }
+
+  goBrowse($event, category) {
+    $event.preventDefault();
+    this.router.navigate(['browse', category]);
+  }
+
+  goSearch($event) {
+    $event.preventDefault();
+    this.router.navigate(['search']);
   }
 
   updateQuery(query) {
