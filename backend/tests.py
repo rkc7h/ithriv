@@ -501,7 +501,9 @@ class TestCase(unittest.TestCase):
         self.assertEquals(parent.id, response["parent"]["id"])
 
     def test_update_category(self):
-        c = Category(name="Desk Stuffs", description="The many stuffs on my desk")
+        c = Category(name="Desk Stuffs",
+                     description="The many stuffs on my desk",
+                     color="#ABC222")
         db.session.add(c)
         db.session.commit()
         c.description="A new better description of the crap all over my desk right now.  It's a mess."
