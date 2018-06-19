@@ -62,13 +62,11 @@ export class SearchComponent implements OnInit {
     });
 
     this.searchBox.setValue(this.resourceQuery.query);
-
     this.searchBox.valueChanges.pipe(
       debounceTime(300)).subscribe(query => {
         this.resourceQuery.query = query;
         this.doSearch();
     });
-
   }
 
   goBrowse($event, category) {

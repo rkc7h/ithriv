@@ -148,6 +148,16 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
 
   h1 {
     font-size: 24px;
+
+    &.page-title {
+      color: mat-color($ithriv-primary, 800, 1.0);
+      font-size: 32px;
+      font-weight: bolder;
+      margin-top: 1em;
+      padding-left: 1em;
+      padding-right: 1em;
+      @include mat-elevation(2);
+    }
   }
 
   h2 {
@@ -171,6 +181,11 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
 
   .spacer {
     flex: 1 1 auto;
+  }
+
+  a {
+    text-decoration: none;
+    color: mat-color($ithriv-primary, 800, 1.0);
   }
 }
 
