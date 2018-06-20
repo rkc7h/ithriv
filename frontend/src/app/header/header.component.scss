@@ -41,23 +41,44 @@
     background-color: white;
     border-bottom: 8px solid mat-color($ithriv-primary, 800, 1.0);
 
+    @media screen and (max-width: 720px) {
+      height: 48px;
+      max-height: 48px;
+      padding-top: 16px;
+      padding-bottom: 16px;
+    }
+
     img {
       &.logomark {
         height: 48px;
         max-height: 48px;
         vertical-align: middle;
+
+        @media screen and (max-width: 720px) {
+          height: 24px;
+        }
       }
 
       &.logo-horizontal {
         height: 104px;
         max-height: 104px;
         vertical-align: middle;
+
+        @media screen and (max-width: 720px) {
+          height: 40px;
+        }
       }
     }
+
 
     h1 {
       color: mat-color($ithriv-primary, 800, 1.0);
       font-size: 32px;
+
+      @media screen and (max-width: 720px) {
+        font-size: 16px;
+        background: transparent;
+      }
     }
 
     p {
@@ -82,6 +103,10 @@
     }
 
     color: mat-color($ithriv-primary, 900, 1.0);
+  }
+
+  .secondary-nav {
+    @include mat-elevation(1);
   }
 
 }
