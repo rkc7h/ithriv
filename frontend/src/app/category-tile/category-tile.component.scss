@@ -1,0 +1,28 @@
+// Import theming functions
+@import '~@angular/material/theming';
+// Import your custom theme
+@import '../../ithriv_material';
+// Load the UVA Theme
+@include uva-theme($ithriv-theme);
+
+mat-card {
+  cursor: pointer;
+  border: 1px solid #EEE;
+
+  &:hover {
+    outline: 1px solid mat-color($ithriv-primary, 800, 1);
+  }
+
+  &:active {
+    outline: 1px solid mat-color($ithriv-accent, default, 1);
+  }
+}
+
+mat-card-content {
+  h2 {
+    color: mat-color($ithriv-primary, 800, 1);
+    padding: 0px;
+    text-align: center;
+    font-weight: bolder;
+  }
+}

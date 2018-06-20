@@ -1,0 +1,39 @@
+// Import theming functions
+@import '~@angular/material/theming';
+// Import your custom theme
+@import '../../ithriv_material';
+// Load the UVA Theme
+@include uva-theme($uva-theme);
+
+.resource {
+  border-top: 4px solid mat-color($uva-accent, 500);
+  max-width: 356px;
+  min-width: 356px;
+  min-height: 90px;
+}
+
+mat-card-header {
+  cursor: pointer;
+}
+
+mat-card-subtitle, .sub-title, .mat-card-pre-title {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.74);
+  font-weight: 700;
+  padding: 10px 0 20px 0;
+}
+
+mat-card-subtitle {
+  padding: 0 0 10px 0;
+  margin: 0;
+}
+
+mat-card-subtitle div {
+  padding: 0;
+  margin: 0;
+}
+
+mat-card-content {
+  height: 100px;
+  overflow: hidden;
+}

@@ -1,4 +1,4 @@
-import {Resource} from './resource';
+import { Resource } from './resource';
 
 export interface ResourceQuery {
   query: string;
@@ -24,5 +24,4 @@ export interface FacetCount {
   category: string;
   hit_count: number;
   is_selected: boolean;
-
 }

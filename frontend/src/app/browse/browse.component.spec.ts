@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { BrowseComponent } from './browse.component';
 
 describe('BrowseComponent', () => {
@@ -7,10 +6,11 @@ describe('BrowseComponent', () => {
   let fixture: ComponentFixture<BrowseComponent>;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ BrowseComponent ]
-    })
-    .compileComponents();
+    TestBed
+      .configureTestingModule({
+        declarations: [BrowseComponent]
+      })
+      .compileComponents();
   }));
 
   beforeEach(() => {

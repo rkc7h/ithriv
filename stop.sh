@@ -31,9 +31,9 @@ FLASK_PID=$! # Save the process ID
 echo -e '\n\n*** Stopping frontend app... ***\n\n'
 lsof -t -i tcp:4200 -s tcp:listen | xargs kill
 
-wait $POSTGRES_PID $ELASTIC_PID $FLASK_PID
-
 # Kill any remaining server processes
 lsof -t -i tcp:5000 -s tcp:listen | xargs kill
 lsof -t -i tcp:9200 -s tcp:listen | xargs kill
 lsof -t -i tcp:5432 -s tcp:listen | xargs kill
+
+wait $POSTGRES_PID $ELASTIC_PID $FLASK_PID

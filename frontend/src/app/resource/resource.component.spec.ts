@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ResourceComponent } from './resource.component';
 
 describe('ResourceComponent', () => {
@@ -7,10 +6,11 @@ describe('ResourceComponent', () => {
   let fixture: ComponentFixture<ResourceComponent>;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ResourceComponent ]
-    })
-    .compileComponents();
+    TestBed
+      .configureTestingModule({
+        declarations: [ResourceComponent]
+      })
+      .compileComponents();
   }));
 
   beforeEach(() => {
