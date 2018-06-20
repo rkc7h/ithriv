@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {Input} from '@angular/core';
-import {Resource} from "../resource";
+import { Input } from '@angular/core';
+import { Resource } from '../resource';
 
 @Component({
   selector: 'app-resource-list',
@@ -9,7 +9,7 @@ import {Resource} from "../resource";
 })
 export class ResourceListComponent implements OnInit {
 
-  @Input('resources') resources: Resource[];
+  @Input() resources: Resource[];
 
   constructor() { }
 

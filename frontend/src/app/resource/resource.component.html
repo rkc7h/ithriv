@@ -1,19 +1,34 @@
-<mat-card class="resource">
-  <mat-card-header>
-    <mat-card-title>
-      <div class="mat-card-pre-title">{{resource.name}}</div>
-    </mat-card-title>
-    <mat-card-subtitle>
-      <div *ngIf="resource.owner">Owner: {{resource.owner}}</div>
-      <div *ngIf="resource.website">{{resource.website}}</div>
-    </mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
-      {{resource.description}}
-  </mat-card-content>
-  <mat-card-actions>
-    <!--
-    <app-availability [resource]="resource"></app-availability>
-    -->
-  </mat-card-actions>
-</mat-card>
+<div class="mat-typography resource">
+  <div *ngIf="resource" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em" fxLayoutAlign="center">
+    <div fxFlex="75%">
+      <h1>{{resource.name}}</h1>
+      <p>{{resource.description}}</p>
+      <app-availability [resource]="resource"></app-availability>
+    </div>
+    <mat-card fxFlex="25%">
+      <mat-card-title>Information</mat-card-title>
+      <mat-card-content>
+        <mat-list dense>
+          <mat-list-item *ngIf="resource.type">
+            <h4 mat-line>Type</h4>
+            <a mat-line href="#" (click)="goResourceType($event)">{{resource.type.name}}</a>
+          </mat-list-item>
+          <mat-list-item *ngIf="resource.institution">
+            <h4 mat-line>Institution</h4>
+            <a mat-line href="#" (click)="goInstitution($event)">{{resource.institution.name}}</a>
+          </mat-list-item>
+          <mat-list-item *ngIf="resource.owner">
+            <h4 mat-line>Contact</h4>
+            <a mat-line href="#" (click)="goOwner($event)">{{resource.owner}}</a>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+      <mat-card-actions *ngIf="resource.website">
+        <button mat-button (click)="goWebsite($event)">VISIT WEBSITE</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+  <div *ngIf="!resource">
+    <mat-progress-spinner></mat-progress-spinner>
+  </div>
+</div>

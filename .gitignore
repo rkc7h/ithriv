@@ -1,1 +1,4 @@
 backend/app/TEST_DB
+
+# IDE - VSCode
+.vscode/*

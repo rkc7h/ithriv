@@ -1,45 +1,63 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
-import { AppComponent } from './app.component';
-import { ResourceSearchComponent } from './resource-search/resource-search.component';
-import {HTTP_INTERCEPTORS} from '@angular/common/http';
-import {AuthInterceptor} from './AuthInterceptor';
-import { ResourceComponent } from './resource/resource.component';
-import { ResourceListComponent } from './resource-list/resource-list.component';
-import {RouterModule, Routes} from '@angular/router';
-import {SearchComponent} from './search/search.component';
-import {InfiniteScrollModule} from 'ngx-infinite-scroll';
-import {
-  MatButtonModule, MatIconModule, MatMenuModule, MatToolbarModule, MatCardModule,
-  MatInputModule, MatCheckboxModule, MatFormFieldModule, MatTabsModule, MatProgressSpinnerModule,
-  MatExpansionModule, MatSelectModule, MatListModule, MatRadioModule, MatStepperModule, MatSidenavModule,
-  MatDialogModule, MatDatepickerModule, MatNativeDateModule, MatSnackBar, MatSnackBarModule
-} from '@angular/material';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import {ReactiveFormsModule} from '@angular/forms';
-import {ResourceApiService} from './resource-api.service';
-import {HttpClientModule} from '@angular/common/http';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { ReactiveFormsModule } from '@angular/forms';
+import {
+  MatButtonModule,
+  MatButtonToggleModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatDatepickerModule,
+  MatDialogModule,
+  MatExpansionModule,
+  MatFormFieldModule,
+  MatGridListModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
+  MatMenuModule,
+  MatNativeDateModule,
+  MatProgressSpinnerModule,
+  MatRadioModule,
+  MatSelectModule,
+  MatSidenavModule,
+  MatSnackBarModule,
+  MatStepperModule,
+  MatTabsModule,
+  MatToolbarModule
+} from '@angular/material';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule, Routes } from '@angular/router';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { AppComponent } from './app.component';
+import { AuthInterceptor } from './AuthInterceptor';
 import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
-import { CategoryComponent } from './category/category.component';
 import { CategoryFormComponent } from './category-form/category-form.component';
+import { CategoryTileComponent } from './category-tile/category-tile.component';
+import { CategoryComponent } from './category/category.component';
+import { HeaderComponent } from './header/header.component';
+import { ResourceApiService } from './resource-api.service';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
-import { HomeComponent } from './home/home.component';
+import { ResourceListComponent } from './resource-list/resource-list.component';
+import { ResourceSearchComponent } from './resource-search/resource-search.component';
+import { ResourceComponent } from './resource/resource.component';
+import { SearchComponent } from './search/search.component';
+import { ResourceTileComponent } from './resource-tile/resource-tile.component';
 
 const routes: Routes = [
-  {path: '', redirectTo: 'home', pathMatch: 'full'},
-  {path: 'home', component: HomeComponent, data: {title: 'Home'}},
-  {path: 'search/:query', component: SearchComponent, data: {title: 'Search'}},
-  {path: 'search', component: SearchComponent, data: {title: 'Search'}},
-  {path: 'browse', component: BrowseComponent, data: {title: 'Browse'}},
-  {path: 'browse/:category', component: BrowseComponent, data: {title: 'Browse'}},
-  {path: 'category/:category', component: CategoryComponent, data: {title: 'Category'}},
-  {path: 'category_form/:category', component: CategoryFormComponent, data: {title: 'Category Form'}},
-
-  ];
+  { path: '', redirectTo: 'search', pathMatch: 'full' },
+  { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
+  { path: 'search', component: SearchComponent, data: { title: 'Search' } },
+  { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
+  { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
+  { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
+  { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
+  { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
+];
 
 @NgModule({
   declarations: [
@@ -53,34 +71,41 @@ const routes: Routes = [
     CategoryComponent,
     CategoryFormComponent,
     ResourceFormComponent,
-    HomeComponent
+    HeaderComponent,
+    CategoryTileComponent,
+    ResourceTileComponent
   ],
   imports: [
-    CommonModule,
-    BrowserModule,
     BrowserAnimationsModule,
-    RouterModule.forRoot(routes, {useHash: true}),
-    HttpClientModule,
-    ReactiveFormsModule,
-    InfiniteScrollModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule,
+    BrowserModule,
+    CommonModule,
     FlexLayoutModule,
-    MatInputModule,
+    HttpClientModule,
+    InfiniteScrollModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatCardModule,
     MatCheckboxModule,
-    MatFormFieldModule,
-    MatTabsModule,
-    MatProgressSpinnerModule,
-    MatSelectModule,
-    MatExpansionModule,
-    MatListModule,
-    MatRadioModule,
-    MatStepperModule,
-    MatSidenavModule,
+    MatDatepickerModule,
     MatDialogModule,
-    MatDatepickerModule
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatGridListModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatNativeDateModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSnackBarModule,
+    MatStepperModule,
+    MatTabsModule,
+    MatToolbarModule,
+    ReactiveFormsModule,
+    RouterModule.forRoot(routes, { useHash: true })
   ],
   entryComponents: [
     CategoryFormComponent, ResourceFormComponent

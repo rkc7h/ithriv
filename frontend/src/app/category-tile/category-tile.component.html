@@ -1,0 +1,6 @@
+<mat-card (click)="goBrowse($event, category)">
+  <img mat-card-image src="/assets/browse/{{ category.name.toLowerCase() }}-tile.jpg" alt="{{ category.name }}">
+  <mat-card-content>
+    <h2>{{ category.name }}</h2>
+  </mat-card-content>
+</mat-card>

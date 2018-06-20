@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AvailabilityComponent } from './availability.component';
 
 describe('AvailabilityComponent', () => {
@@ -7,10 +6,11 @@ describe('AvailabilityComponent', () => {
   let fixture: ComponentFixture<AvailabilityComponent>;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AvailabilityComponent ]
-    })
-    .compileComponents();
+    TestBed
+      .configureTestingModule({
+        declarations: [AvailabilityComponent]
+      })
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -22,4 +22,5 @@ describe('AvailabilityComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
 });

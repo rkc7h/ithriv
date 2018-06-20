@@ -1,10 +1,10 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {ResourceApiService} from '../resource-api.service';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {CategoryFormComponent} from '../category-form/category-form.component';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {Resource} from '../resource';
-import {Category} from '../category';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { Category } from '../category';
+import { CategoryFormComponent } from '../category-form/category-form.component';
+import { Resource } from '../resource';
+import { ResourceApiService } from '../resource-api.service';
 
 @Component({
   selector: 'app-resource-form',
@@ -12,7 +12,6 @@ import {Category} from '../category';
   styleUrls: ['./resource-form.component.css']
 })
 export class ResourceFormComponent implements OnInit {
-
   isDataLoaded = false;
   createNew = false;
   resourceForm: FormGroup;
@@ -25,19 +24,21 @@ export class ResourceFormComponent implements OnInit {
   error: string;
   category: Category;
 
-  constructor(private api: ResourceApiService,
-              public dialogRef: MatDialogRef<CategoryFormComponent>,
-              @Inject(MAT_DIALOG_DATA) private data: any) {
+  constructor(
+    private api: ResourceApiService,
+    public dialogRef: MatDialogRef<CategoryFormComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: any
+  ) {
     if (this.data.edit) {
       this.createNew = false;
       this.resource = this.data.edit;
     } else {
       this.createNew = true;
-      this.resource = {id: null, name: '', description: ''};
+      this.resource = { id: null, name: '', description: '' };
     }
 
     if (this.data.parent_category) {
-        this.category = this.data.parent_category;
+      this.category = this.data.parent_category;
     }
     this.loadForm();
   }
@@ -51,7 +52,7 @@ export class ResourceFormComponent implements OnInit {
     this.owner = new FormControl([Validators.required, Validators.minLength(20)]);
     this.website = new FormControl([Validators.required, Validators.minLength(20)]);
 
-    this.resourceForm = new FormGroup( {
+    this.resourceForm = new FormGroup({
       name: this.name,
       description: this.description,
       owner: this.owner,
@@ -98,8 +99,8 @@ export class ResourceFormComponent implements OnInit {
 
   onDelete() {
     this.api.deleteResource(this.resource).subscribe(c => {
-       this.dialogRef.close();
-      },
+      this.dialogRef.close();
+    },
       error => this.error = error
     );
   }

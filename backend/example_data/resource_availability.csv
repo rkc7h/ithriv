@@ -1,5 +1,4 @@
-#,RESOURCE,"Primary
-Institution",UVA,Virginia Tech,Carilion,Inova,Public,Viewable,REQUIRES PRIVILEGES,Cost to Researcher,,,,,KEY:
+#,RESOURCE,"Primary Institution",UVA,Virginia Tech,Carilion,Inova,Public,Viewable,REQUIRES PRIVILEGES,Cost to Researcher,,,,,KEY:
 1,Medical Labs,UVA,YES,NO,NO,NO,NO ,YES,NO ,Cost Recovery,,,,,"Available = Logged in user can both SEE and USE the resource (display additional actions like ""contact"", ""add to favorites"", ""suggest edits"" and ""request service"")"
 2,Pathology,UVA,YES,NO,NO,NO,NO ,YES,NO ,Cost Recovery,,,,,"Viewable = Requires extra click for user to see list of resources that are viewable in the category, but not ""available"" to them - can't contact/edit/favorite."
 3,Battle Building Clinical Research Unit,UVA,YES,NO,NO,NO,NO ,YES,NO ,Free to Home Institution,,,,,Requires Privileges = Resource only Available and Viewable to specific subset of users (plus any with PORTAL ADMIN rights?)
