@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Resource} from '../resource';
+import { Component, Input, OnInit } from '@angular/core';
+import { Resource } from '../resource';
 
 @Component({
   selector: 'app-resource-search',
@@ -8,7 +8,7 @@ import {Resource} from '../resource';
 })
 export class ResourceSearchComponent implements OnInit {
 
-  @Input('resource') resource: Resource;
+  @Input() resource: Resource;
 
   constructor() { }
 
