@@ -1,15 +1,4 @@
 <div id="browse" >
-
-  <div class="browse">
-    <a href="#" (click)="goBrowse($event, 1)">Learn</a>
-    &bull;
-    <a href="#" (click)="goBrowse($event, 2)">Propose</a>
-    &bull;
-    <a href="#" (click)="goBrowse($event, 3)">Conduct</a>
-    &bull;
-    <a href="#" (click)="goBrowse($event, 4)">Connect</a>
-  </div>
-
   <div class="header" *ngIf="isDataLoaded"
        [ngStyle]="{'background-image': 'url(' + header_image() + ')'}">
     <h1>{{category.name}}

@@ -2,7 +2,7 @@
 @import '~@angular/material/theming';
 @import '../../ithriv_material';
 // Load the UVA Theme
-@include uva-theme($ithriv-theme);
+@include ithriv-theme($ithriv-theme);
 
 form.search-box {
   background: transparent;

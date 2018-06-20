@@ -5,7 +5,7 @@
 @import '../ithriv_material';
 
 // Load the UVA Theme
-@include uva-theme($ithriv-theme);
+@include ithriv-theme($ithriv-theme);
 
 .main {
   max-width: 982px;

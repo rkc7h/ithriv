@@ -1,11 +1,7 @@
 // Import theming functions
 @import '~@angular/material/theming';
-
-// Import your custom theme
 @import '../../ithriv_material';
-
-// Load the UVA Theme
-@include uva-theme($ithriv-theme);
+@include ithriv-theme($ithriv-theme);
 
 .mat-toolbar {
   color: white;
