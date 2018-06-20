@@ -7,10 +7,11 @@ describe('CategoryComponent', () => {
   let fixture: ComponentFixture<CategoryComponent>;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CategoryComponent ]
-    })
-    .compileComponents();
+    TestBed
+      .configureTestingModule({
+        declarations: [CategoryComponent]
+      })
+      .compileComponents();
   }));
 
   beforeEach(() => {

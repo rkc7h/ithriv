@@ -1,13 +1,9 @@
-import { AppComponent } from './app.component';
-import { AvailabilityComponent } from './availability/availability.component';
-import { BrowseComponent } from './browse/browse.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BrowserModule } from '@angular/platform-browser';
-import { CategoryComponent } from './category/category.component';
-import { CategoryFormComponent } from './category-form/category-form.component';
 import { CommonModule } from '@angular/common';
-import { FlexLayoutModule } from '@angular/flex-layout';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { ReactiveFormsModule } from '@angular/forms';
 import {
   MatButtonModule,
   MatButtonToggleModule,
@@ -32,19 +28,25 @@ import {
   MatTabsModule,
   MatToolbarModule
 } from '@angular/material';
-import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule, Routes } from '@angular/router';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { AppComponent } from './app.component';
+import { AuthInterceptor } from './AuthInterceptor';
+import { AvailabilityComponent } from './availability/availability.component';
+import { BrowseComponent } from './browse/browse.component';
+import { CategoryFormComponent } from './category-form/category-form.component';
+import { CategoryTileComponent } from './category-tile/category-tile.component';
+import { CategoryComponent } from './category/category.component';
+import { HeaderComponent } from './header/header.component';
 import { ResourceApiService } from './resource-api.service';
-import { ResourceComponent } from './resource/resource.component';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
 import { ResourceListComponent } from './resource-list/resource-list.component';
 import { ResourceSearchComponent } from './resource-search/resource-search.component';
-import { AuthInterceptor } from './AuthInterceptor';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { RouterModule, Routes } from '@angular/router';
+import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
-import { HeaderComponent } from './header/header.component';
+import { ResourceTileComponent } from './resource-tile/resource-tile.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
@@ -54,6 +56,7 @@ const routes: Routes = [
   { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
   { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
+  { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
 ];
 
 @NgModule({
@@ -68,7 +71,9 @@ const routes: Routes = [
     CategoryComponent,
     CategoryFormComponent,
     ResourceFormComponent,
-    HeaderComponent
+    HeaderComponent,
+    CategoryTileComponent,
+    ResourceTileComponent
   ],
   imports: [
     BrowserAnimationsModule,

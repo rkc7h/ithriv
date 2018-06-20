@@ -1,12 +1,12 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
-import {Observable, throwError} from 'rxjs';
-import {environment} from '../environments/environment';
-import {ResourceQuery} from './resource-query';
-import {Category} from './category';
-import {Resource} from './resource';
-import {ResourceCategory} from './resource-category';
+import { environment } from '../environments/environment';
+import { Category } from './category';
+import { Resource } from './resource';
+import { ResourceCategory } from './resource-category';
+import { ResourceQuery } from './resource-query';
 
 @Injectable()
 export class ResourceApiService {
@@ -52,7 +52,7 @@ export class ResourceApiService {
   }
 
   getCategory(id: Number): Observable<Category> {
-    return this.httpClient.get<Category>(this.category_url + '/' + id)
+    return this.httpClient.get<Category>(`${this.category_url}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
@@ -92,7 +92,7 @@ export class ResourceApiService {
   }
 
   linkResourceAndCategory(resource: Resource, category: Category): Observable<any> {
-    const rc: ResourceCategory = {resource_id: resource.id, category_id: category.id};
+    const rc: ResourceCategory = { resource_id: resource.id, category_id: category.id };
     return this.httpClient.post<ResourceCategory>(this.resource_category_url, rc)
       .pipe(catchError(this.handleError));
   }
