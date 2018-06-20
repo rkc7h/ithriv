@@ -16,38 +16,7 @@
 <h1 class="mat-h1 page-title">myThriv Workspace</h1>
 
 <div id="tiles" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em" fxLayoutAlign="center">
-  <div fxFlex="25%">
-    <mat-card (click)="goBrowse($event, 1)">
-      <img mat-card-image src="/assets/browse/learn-tile.jpg" alt="Learn">
-      <mat-card-content>
-        <h2>Learn</h2>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  <div fxFlex="25%">
-    <mat-card (click)="goBrowse($event, 2)">
-      <img mat-card-image src="/assets/browse/propose-tile.jpg" alt="Propose">
-      <mat-card-content>
-        <h2>Propose</h2>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  <div fxFlex="25%">
-    <mat-card (click)="goBrowse($event, 3)">
-      <img mat-card-image src="/assets/browse/conduct-tile.jpg" alt="Conduct">
-      <mat-card-content>
-        <h2>Conduct</h2>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  <div fxFlex="25%">
-    <mat-card (click)="goBrowse($event, 4)">
-      <img mat-card-image src="/assets/browse/connect-tile.jpg" alt="Connect">
-      <mat-card-content>
-        <h2>Connect</h2>
-      </mat-card-content>
-    </mat-card>
-  </div>
+  <app-category-tile *ngFor="let category of categories" [category]="category" fxFlex="25%"></app-category-tile>
 </div>
 
 <mat-sidenav-container fxLayout="row" fxLayout.xs="column">
@@ -103,4 +72,3 @@
   <app-resource-list [resources]="resources" infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="300" (scrolled)="onScroll()"></app-resource-list>
 
 </mat-sidenav-container>
-
