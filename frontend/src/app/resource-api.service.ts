@@ -46,6 +46,11 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  getCategories(): Observable<Category[]> {
+    return this.httpClient.get<Category[]>(this.category_url)
+      .pipe(catchError(this.handleError));
+  }
+
   getCategory(id: Number): Observable<Category> {
     return this.httpClient.get<Category>(this.category_url + '/' + id)
       .pipe(catchError(this.handleError));
@@ -68,6 +73,11 @@ export class ResourceApiService {
 
   deleteCategory(category: Category): Observable<any> {
     return this.httpClient.delete<Category>(this.apiRoot + category._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  getResource(id: Number): Observable<Resource> {
+    return this.httpClient.get<Resource>(`${this.resource_url}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
