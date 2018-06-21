@@ -44,9 +44,9 @@ import { ResourceApiService } from './resource-api.service';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
 import { ResourceListComponent } from './resource-list/resource-list.component';
 import { ResourceSearchComponent } from './resource-search/resource-search.component';
+import { ResourceTileComponent } from './resource-tile/resource-tile.component';
 import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
-import { ResourceTileComponent } from './resource-tile/resource-tile.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
