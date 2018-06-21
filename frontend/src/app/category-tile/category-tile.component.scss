@@ -20,7 +20,8 @@ mat-card {
 
 mat-card-content {
   h2 {
-    color: mat-color($ithriv-primary, 800, 1);
+    background: transparent;
+    color: white;
     padding: 0px;
     text-align: center;
     font-weight: bolder;
