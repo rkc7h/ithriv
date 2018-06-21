@@ -64,7 +64,11 @@ export class BrowseComponent implements OnInit {
 
 
   header_image() {
-    return 'assets/browse/header-' + this.category.name.toLowerCase() + '.png';
+    return `url('assets/browse/${this.category.name.toLowerCase()}.jpg')`;
+  }
+
+  header_gradient() {
+    return `linear-gradient(to right, ${this.category.color}FF, ${this.category.color}FF 50%, ${this.category.color}00 75%)`;
   }
 
 
