@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
-import { CategoryFormComponent } from '../category-form/category-form.component';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../resource-api.service';
 import { ResourceFormComponent } from '../resource-form/resource-form.component';
@@ -48,12 +47,23 @@ export class CategoryComponent implements OnInit {
     );
   }
 
-  openAddResource() {
-    // Add a new resource to the given category
+  openEdit(resource: Resource, parent: Category = null) {
     const dialogRef = this.dialog.open(ResourceFormComponent, {
-      width: '300px',
-      data: { 'parent_category': this.category }
+      width: '30%',
+      data: { 'edit': resource, 'parent_category': parent }
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadResources();
+    });
+  }
+
+  openAdd(parent: Category) {
+    const dialogRef = this.dialog.open(ResourceFormComponent, {
+      width: '30%',
+      data: { 'parent_category': parent }
+    });
+
     dialogRef.afterClosed().subscribe(result => {
       this.loadResources();
     });

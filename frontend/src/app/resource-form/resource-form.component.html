@@ -1,29 +1,12 @@
-<form *ngIf="isDataLoaded" [formGroup]="resourceForm" novalidate (ngSubmit)="onSubmit()" class="container" fxLayout="column"
-  fxLayoutWrap fxLayout.xs="column" fxLayoutAlign="start" fxLayoutGap="10px" fxLayoutGap.xs="0">
+<form *ngIf="isDataLoaded" [formGroup]="resourceForm" novalidate (ngSubmit)="onSubmit()">
+  <h2>Resource Details</h2>
 
-  <div fxFlex="100%">
-    <h2>Resource Details</h2>
-    <mat-form-field>
-      <input matInput [formControl]="name" placeholder="Name" class="form-control">
-      <mat-error>
-        Name is
-        <strong>required</strong>
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field>
-      <textarea rows="4" matInput [formControl]="description" placeholder="Description" class="form-control"></textarea>
-      <mat-error>
-        This description is too short.
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field>
-      <input matInput [formControl]="owner" placeholder="Owner" class="form-control">
-    </mat-form-field>
-    <mat-form-field>
-      <input matInput [formControl]="website" placeholder="Website" class="form-control">
-    </mat-form-field>
-    <!-- TODO:  Add Type, Institution, and Availability -->
-  </div>
+  <app-form-field [field]="fields.name" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.description" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.owner" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.website" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+
+  <!-- TODO:  Add Type, Institution, and Availability -->
 
   <div class="display">
     <div class="button">
@@ -33,7 +16,6 @@
     </div>
   </div>
 
-
   <div id="confirm_delete" class="display" *ngIf="showConfirmDelete">
     <div class="button">
       <button type="button" mat-raised-button (click)="onDelete()">Permanently Delete This Resource!!!</button>
@@ -41,5 +23,4 @@
   </div>
 
   <div id="error_message" class="display mat-error" *ngIf="error">{{error}}</div>
-
 </form>

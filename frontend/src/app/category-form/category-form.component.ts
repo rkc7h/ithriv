@@ -1,17 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, FormGroupDirective, NgForm, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { ErrorStateMatcher } from '@angular/material/core';
 import { Category } from '../category';
+import { ErrorMatcher } from '../error-matcher';
+import { FormField } from '../form-field';
 import { ResourceApiService } from '../resource-api.service';
-
-/** Error when invalid control is dirty, touched, or submitted. */
-export class ErrorMatcher implements ErrorStateMatcher {
-  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-    const isSubmitted = form && form.submitted;
-    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
-  }
-}
 
 @Component({
   selector: 'app-category-form',
@@ -19,58 +12,57 @@ export class ErrorMatcher implements ErrorStateMatcher {
   styleUrls: ['./category-form.component.scss']
 })
 export class CategoryFormComponent implements OnInit {
-  isDataLoaded = false;
-  createNew = false;
-  categoryForm: FormGroup;
   category: Category;
+  categoryForm: FormGroup;
+  createNew = false;
+  error: string;
+  errorMatcher = new ErrorMatcher();
+  isDataLoaded = false;
+  showConfirmDelete = false;
 
   // Form Fields
   fields = {
-    name: {
+    name: new FormField({
       formControl: new FormControl(),
       required: true,
       maxLength: 100,
       minLength: 1,
       placeholder: 'Name',
       type: 'text'
-    },
-    description: {
+    }),
+    description: new FormField({
       formControl: new FormControl(),
       required: true,
       maxLength: 500,
       minLength: 20,
       placeholder: 'Description',
       type: 'text'
-    },
-    brief_description: {
+    }),
+    brief_description: new FormField({
       formControl: new FormControl(),
       required: true,
       maxLength: 140,
       minLength: 20,
       placeholder: 'Brief Description',
       type: 'textarea'
-    },
-    image: {
+    }),
+    image: new FormField({
       formControl: new FormControl(),
       placeholder: 'Image',
       type: 'text'
-    },
-    icon: {
+    }),
+    icon: new FormField({
       formControl: new FormControl(),
       placeholder: 'Icon',
       type: 'selectIcon',
-      icons: this.allIcons(),
-    },
-    color: {
+      icons: this.allIcons()
+    }),
+    color: new FormField({
       formControl: new FormControl(),
       placeholder: 'Color',
       type: 'text'
-    },
+    }),
   };
-
-  showConfirmDelete = false;
-  error: string;
-  errorMatcher = new ErrorMatcher();
 
   constructor(
     private api: ResourceApiService,
@@ -98,8 +90,6 @@ export class CategoryFormComponent implements OnInit {
   }
 
   loadForm() {
-    console.log('this.category', this.category);
-
     const formGroup = {};
     for (const fieldName in this.fields) {
       if (this.fields.hasOwnProperty(fieldName)) {

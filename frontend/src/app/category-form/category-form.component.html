@@ -1,5 +1,4 @@
 <form *ngIf="isDataLoaded" [formGroup]="categoryForm" novalidate (ngSubmit)="onSubmit()">
-
   <h2 class="mat-h2">Category Details</h2>
 
   <app-form-field [field]="fields.name" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
@@ -11,12 +10,11 @@
 
   <div class="display">
     <div class="button">
-      <button type="submit" mat-raised-button (click)="onSubmit()">Save</button>
+      <button type="submit" [disabled]="categoryForm.invalid" mat-raised-button (click)="onSubmit()">Save</button>
       <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
       <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
     </div>
   </div>
-
 
   <div id="confirm_delete" class="display" *ngIf="showConfirmDelete">
     <div class="button">
@@ -25,5 +23,4 @@
   </div>
 
   <div id="error_message" class="display mat" *ngIf="error">{{error}}</div>
-
 </form>
