@@ -14,6 +14,8 @@ export class AppComponent {
   ) {
     const trustUrl = this.sanitizer.bypassSecurityTrustResourceUrl;
 
+    // !!! TO DO: RETRIEVE LIST OF ICON FILES FROM SERVICE VIA HTTP
+
     iconRegistry
       .addSvgIcon(
         'ithriv_admin_tools',

@@ -2,37 +2,16 @@
 
   <h2 class="mat-h2">Category Details</h2>
 
-  <mat-form-field [hideRequiredMarker]="categoryForm.value.hideRequired" [floatLabel]="categoryForm.value.floatLabel">
-    <input matInput formControlName="name" placeholder="Name" required>
-    <mat-error>
-      Name is
-      <strong>required</strong>
-    </mat-error>
-  </mat-form-field>
-
-  <mat-form-field>
-    <textarea rows="4" matInput formControlName="description" placeholder="Description"></textarea>
-    <mat-error>
-      This description is too short.
-    </mat-error>
-  </mat-form-field>
-
-  <mat-form-field [hideRequiredMarker]="categoryForm.value.hideRequired" [floatLabel]="categoryForm.value.floatLabel">
-    <mat-select required>
-      <mat-option>-- None --</mat-option>
-      <mat-option *ngFor="let icon of allIcons()" value="{{icon}}">
-        <mat-icon svgIcon="ithriv_{{icon}}"></mat-icon>
-        {{getLabel(icon)}}
-      </mat-option>
-    </mat-select>
-    <mat-label>
-      Select icon
-    </mat-label>
-  </mat-form-field>
+  <app-form-field [field]="fields.name" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.description" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.brief_description" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.image" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.color" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.icon" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
 
   <div class="display">
     <div class="button">
-      <button type="submit" mat-raised-button>Save</button>
+      <button type="submit" mat-raised-button (click)="onSubmit()">Save</button>
       <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
       <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
     </div>
@@ -45,6 +24,6 @@
     </div>
   </div>
 
-  <div id="error_message" class="display mat-error" *ngIf="error">{{error}}</div>
+  <div id="error_message" class="display mat" *ngIf="error">{{error}}</div>
 
 </form>

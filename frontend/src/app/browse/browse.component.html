@@ -20,9 +20,9 @@
   </div>
 
   <div *ngIf="isDataLoaded">
-    <mat-card *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top': '5px solid ' + c.color}">
+    <mat-card *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top-color': c.color}">
       <mat-card-title>
-        <mat-icon *ngIf="c.icon" svgIcon="{{categoryIcon(c)}}" [ngStyle]="{'color': c.color}"></mat-icon>
+        <mat-icon *ngIf="c.icon" svgIcon="{{categoryIcon(c)}}" [ngStyle]="{'color': c.color, 'border-color': c.color}"></mat-icon>
         {{c.name}}
         <button mat-mini-fab (click)="openEdit(c, category)" aria-label="Edit Category">
           <mat-icon>edit</mat-icon>

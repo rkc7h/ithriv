@@ -1,32 +1,26 @@
-<form *ngIf="isDataLoaded" [formGroup]="resourceForm" novalidate (ngSubmit)="onSubmit()"
-      class="container"
-      fxLayout="column"
-      fxLayoutWrap
-      fxLayout.xs="column"
-      fxLayoutAlign="start"
-      fxLayoutGap="10px"
-      fxLayoutGap.xs="0">
+<form *ngIf="isDataLoaded" [formGroup]="resourceForm" novalidate (ngSubmit)="onSubmit()" class="container" fxLayout="column"
+  fxLayoutWrap fxLayout.xs="column" fxLayoutAlign="start" fxLayoutGap="10px" fxLayoutGap.xs="0">
 
   <div fxFlex="100%">
     <h2>Resource Details</h2>
     <mat-form-field>
-      <input matInput formControlName="name" placeholder="Name" class="form-control">
+      <input matInput [formControl]="name" placeholder="Name" class="form-control">
       <mat-error>
-        Name is <strong>required</strong>
+        Name is
+        <strong>required</strong>
       </mat-error>
     </mat-form-field>
     <mat-form-field>
-          <textarea rows="4" matInput formControlName="description" placeholder="Description"
-                    class="form-control"></textarea>
+      <textarea rows="4" matInput [formControl]="description" placeholder="Description" class="form-control"></textarea>
       <mat-error>
         This description is too short.
       </mat-error>
     </mat-form-field>
     <mat-form-field>
-      <input matInput formControlName="owner" placeholder="Owner" class="form-control">
+      <input matInput [formControl]="owner" placeholder="Owner" class="form-control">
     </mat-form-field>
     <mat-form-field>
-      <input matInput formControlName="website" placeholder="Website" class="form-control">
+      <input matInput [formControl]="website" placeholder="Website" class="form-control">
     </mat-form-field>
     <!-- TODO:  Add Type, Institution, and Availability -->
   </div>

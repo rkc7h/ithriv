@@ -64,7 +64,7 @@ export class BrowseComponent implements OnInit {
   }
 
   headerImage() {
-    return `url('assets/browse/${this.category.name.toLowerCase()}.jpg')`;
+    return `url('assets/browse/${this.category.image}')`;
   }
 
   headerGradient() {
