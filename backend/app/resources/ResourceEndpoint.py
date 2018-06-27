@@ -1,10 +1,13 @@
-import datetime
 
+import datetime
+from uuid import uuid4
+
+import boto3
 import flask_restful
-from flask import request
+from flask import jsonify, request
 from marshmallow import ValidationError
 
-from app import RestException, db, elastic_index
+from app import app, RestException, db, elastic_index
 from app.model.resource_category import ResourceCategory
 from app.model.resource import ThrivResource
 from app.resources.schema import ThrivResourceSchema
@@ -52,6 +55,3 @@ class ResourceListEndpoint(flask_restful.Resource):
         db.session.commit()
         elastic_index.add_resource(resource)
         return schema.dump(resource)
-
-
-

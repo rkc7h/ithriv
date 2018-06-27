@@ -11,10 +11,11 @@ class Category(db.Model):
     description = db.Column(db.String)  # Complete description of the category
     parent_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
     color = db.Column(db.String)  # Should be a CSS color specification
-    icon = db.Column(db.String) # Should be the url for an SVG icon image that contains little styling
     image = db.Column(db.String)  # Should be the url for a large background image
     children = db.relationship("Category",
                                backref=db.backref('parent', remote_side=[id]))
+    icon_id = db.Column(db.Integer, db.ForeignKey('icon.id'))
+    icon = db.relationship("Icon")
 
     def calculate_color(self):
         '''Color is inherited from the parent category if not set explicitly.'''

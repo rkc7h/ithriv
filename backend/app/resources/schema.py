@@ -1,7 +1,8 @@
 from flask_marshmallow.sqla import ModelSchema
 from marshmallow import fields, post_load
-from app import  ma
+from app import ma
 from app.model.category import Category
+from app.model.icon import Icon
 from app.model.institution import ThrivInstitution
 from app.model.resource import ThrivResource
 from app.model.resource_category import ResourceCategory
@@ -31,7 +32,7 @@ class AvailabilitySchema(ModelSchema):
 class ThrivResourceSchema(ModelSchema):
     class Meta:
         model = ThrivResource
-        fields = ('id', 'name', 'description', 'last_updated','owner',
+        fields = ('id', 'name', 'description', 'last_updated', 'owner',
                   'website', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', '_links')
     id = fields.Integer(required=False, allow_none=True)
@@ -48,8 +49,9 @@ class ThrivResourceSchema(ModelSchema):
         'self': ma.URLFor('resourceendpoint', id='<id>'),
         'collection': ma.URLFor('resourcelistendpoint'),
         'institution': ma.UrlFor('institutionendpoint', id='<institution_id>'),
-        'type': ma.UrlFor('typeendpoint', id='<type_id>')
-        },
+        'type': ma.UrlFor('typeendpoint', id='<type_id>'),
+        'categories': ma.UrlFor('categorybyresourceendpoint', resource_id='<id>'),
+    },
         dump_only=True)
 
 
@@ -66,15 +68,20 @@ class ParentCategorySchema(ModelSchema):
     })
 
 
+class IconSchema(ModelSchema):
+    class Meta:
+        model = Icon
+        fields = ('id', 'name', 'url')
+
 class CategorySchema(ModelSchema):
     """Provides detailed information about a category, including all the children"""
     class Meta:
         model = Category
         fields = ('id', 'name', 'brief_description', 'description',
-                  'icon', 'color', 'image',
+                  'color', 'image', 'icon_id', 'icon',
                   'children', 'parent_id', 'parent', '_links')
     id = fields.Integer(required=False, allow_none=True)
-    icon = fields.String(required=False, allow_none=True)
+    icon = fields.Nested(IconSchema, dump_only=True)
     image = fields.String(required=False, allow_none=True)
     parent_id = fields.Integer(required=False, allow_none=True)
     children = fields.Nested('self', many=True, dump_only=True)
@@ -96,6 +103,7 @@ class ResourceCategorySchema(ModelSchema):
         'category': ma.URLFor('categoryendpoint', id='<category_id>')
     })
 
+
 class SearchSchema(ma.Schema):
 
     class FilterSchema(ma.Schema):
@@ -116,7 +124,6 @@ class SearchSchema(ma.Schema):
         field = fields.Str()
         facetCounts = ma.List(ma.Nested(FacetCountSchema))
 
-
     query = fields.Str()
     start = fields.Integer()
     size = fields.Integer()
@@ -130,3 +137,6 @@ class SearchSchema(ma.Schema):
     @post_load
     def make_search(self, data):
         return Search(**data)
+
+
+

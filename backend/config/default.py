@@ -5,6 +5,12 @@ CORS_ENABLED = False
 DEVELOPMENT = True
 TESTING = True
 SQLALCHEMY_DATABASE_URI = "postgresql://ed_user:ed_pass@localhost/ithriv"
+PHOTO_SERVE_URL = "https://ithriv.s3.aws.com"
+
+S3 = {
+    "bucket": "edplatform-ithriv-test-bucket",
+    "base_url": "https://s3.amazonaws.com"
+}
 
 # Elastic Search
 ELASTIC_SEARCH = {
