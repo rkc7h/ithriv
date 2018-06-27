@@ -3,6 +3,7 @@ from app import app
 import flask_restful
 from flask_restful import reqparse
 
+from app.resources.IconEndpoint import IconListEndpoint, IconEndpoint
 from app.resources.ResourceAndCategoryEndoint import ResourceByCategoryEndpoint, CategoryByResourceEndpoint, \
     ResourceCategoryEndpoint, ResourceCategoryListEndpoint
 from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint
@@ -41,3 +42,5 @@ api.add_resource(TypeListEndpoint, '/api/type')
 api.add_resource(SearchEndpoint, '/api/search')
 api.add_resource(ResourceCategoryListEndpoint, '/api/resource_category')
 api.add_resource(ResourceCategoryEndpoint, '/api/resource_category/<id>')
+api.add_resource(IconListEndpoint, '/api/icon')
+api.add_resource(IconEndpoint, '/api/icon/<id>')

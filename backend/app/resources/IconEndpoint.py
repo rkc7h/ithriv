@@ -2,51 +2,61 @@ import flask_restful
 from flask import request
 from marshmallow import ValidationError
 
-from app import RestException, db
-from app.model.type import ThrivType
-from app.resources.schema import ThrivTypeSchema
+from app import RestException, db, file_server
+from app.model.icon import Icon
+from app.resources.schema import IconSchema
 
 
-class TypeEndpoint(flask_restful.Resource):
+class IconEndpoint(flask_restful.Resource):
 
-    schema = ThrivTypeSchema()
+    schema = IconSchema()
 
     def get(self, id):
-        model = db.session.query(ThrivType).filter_by(id=id).first()
-        if model is None: raise RestException(RestException.NOT_FOUND)
+        model = db.session.query(Icon).filter_by(id=id).first()
+        if model is None:
+            raise RestException(RestException.NOT_FOUND)
         return self.schema.dump(model)
 
     def delete(self, id):
-        db.session.query(ThrivType).filter_by(id=id).delete()
+        db.session.query(Icon).filter_by(id=id).delete()
         db.session.commit()
         return None
 
     def put(self, id):
-        request_data = request.get_json()
-        instance = db.session.query(ThrivType).filter_by(id=id).first()
-        updated, errors = self.schema.load(request_data, instance=instance)
-        if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
+        icon = db.session.query(Icon).filter_by(id=id).first()
+        if icon is None:
+            raise RestException(RestException.NOT_FOUND)
+        updated = icon
+        if 'image' in request.files:
+            file = request.files.get('image')
+            extension = file.filename.rsplit('.', 1)[1].lower()
+            updated.url = file_server.save_icon(file, icon, extension, file.content_type)
+        else:
+            json_data = request.get_json()
+            updated, errors = self.schema.load(json_data, instance=icon)
+            if errors:
+                raise RestException(RestException.INVALID_OBJECT, details=errors)
         db.session.add(updated)
         db.session.commit()
         return self.schema.dump(updated)
 
 
-class TypeListEndpoint(flask_restful.Resource):
+class IconListEndpoint(flask_restful.Resource):
 
-    typesSchema = ThrivTypeSchema(many=True)
-    typeSchema = ThrivTypeSchema()
+    iconsSchema = IconSchema(many=True)
+    iconSchema = IconSchema()
 
     def get(self):
-        types = db.session.query(ThrivType).all()
-        return self.typesSchema.dump(types)
+        icons = db.session.query(Icon).all()
+        return self.iconSchema.dump(icons, many=True)
 
     def post(self):
         request_data = request.get_json()
         try:
-            load_result = self.typeSchema.load(request_data).data
+            load_result = self.iconSchema.load(request_data).data
             db.session.add(load_result)
             db.session.commit()
-            return self.typeSchema.dump(load_result)
-        except ValidationError as err:
+            return self.iconSchema.dump(load_result)
+        except ValidationError:
             raise RestException(RestException.INVALID_OBJECT,
                                 details=load_result.errors)

@@ -17,8 +17,6 @@ class ThrivResource(db.Model):
     institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
     availabilities = db.relationship(lambda: Availability,  cascade="all, delete-orphan",
                                      backref=db.backref('resource', lazy=True))
-    icon_id = db.Column(db.String)
-    header_id = db.Column(db.String)
 
 
 

@@ -8,6 +8,7 @@ import signal
 from flask_marshmallow import Marshmallow
 
 from app.elastic_index import ElasticIndex
+from app.model.file_server import FileServer
 from app.rest_exception import RestException
 
 app = Flask(__name__, instance_relative_config=True)
@@ -37,6 +38,9 @@ migrate = Migrate(app, db)
 
 # Search System
 elastic_index = ElasticIndex(app)
+
+# file Server
+file_server = FileServer(app)
 
 @app.cli.command()
 def stop():
