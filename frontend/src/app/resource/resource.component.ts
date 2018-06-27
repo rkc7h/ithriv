@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Category } from '../category';
+import { Component, Input, OnInit } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../resource-api.service';
 
@@ -11,6 +12,7 @@ import { ResourceApiService } from '../resource-api.service';
 export class ResourceComponent implements OnInit {
   resourceId: number;
   @Input() resource: Resource;
+  @Input() categories: Category[];
 
   isDataLoaded = false;
 
@@ -31,6 +33,15 @@ export class ResourceComponent implements OnInit {
     this.api.getResource(this.resourceId).subscribe(
       (resource) => {
         this.resource = resource;
+        this.isDataLoaded = true;
+      }
+    );
+  }
+
+  loadCategory() {
+    this.api.getCategories().subscribe(
+      (categories) => {
+        this.categories = categories;
         this.isDataLoaded = true;
       }
     );

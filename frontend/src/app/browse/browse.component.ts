@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
-import { CategoryFormComponent } from '../category-form/category-form.component';
 import { ResourceApiService } from '../resource-api.service';
 
 @Component({
@@ -17,8 +15,9 @@ export class BrowseComponent implements OnInit {
 
   constructor(private router: Router,
     private route: ActivatedRoute,
-    private api: ResourceApiService,
-    private dialog: MatDialog) {
+    private api: ResourceApiService
+  ) {
+
     this.route.params.subscribe(params => {
       this.categoryId = params['category'];
       this.loadCategory(this.categoryId);
@@ -33,26 +32,10 @@ export class BrowseComponent implements OnInit {
   loadCategory(categoryId: Number) {
     this.api.getCategory(categoryId).subscribe(
       (category) => {
-        console.log('category', category);
-
         this.category = category;
         this.isDataLoaded = true;
       }
     );
-  }
-
-  openEdit(category: Category, parent: Category = null) {
-    this.dialog.open(CategoryFormComponent, {
-      width: '30%',
-      data: { 'edit': category, 'parent_category': parent }
-    });
-  }
-
-  openAdd(category: Category) {
-    this.dialog.open(CategoryFormComponent, {
-      width: '30%',
-      data: { 'parent_category': category }
-    });
   }
 
   goCategory($event, category) {
@@ -76,6 +59,5 @@ export class BrowseComponent implements OnInit {
       return `ithriv_${c.icon.replace('.svg', '')}`;
     }
   }
-
 
 }

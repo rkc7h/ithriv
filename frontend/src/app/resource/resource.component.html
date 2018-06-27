@@ -25,6 +25,8 @@
       </mat-card-content>
       <mat-card-actions *ngIf="resource.website">
         <button mat-button (click)="goWebsite($event)">VISIT WEBSITE</button>
+        <div fxFlex></div>
+        <app-edit-resource-button [resource]="resource"></app-edit-resource-button>
       </mat-card-actions>
     </mat-card>
   </div>

@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
-import { Resource } from '../resource';
 import { ResourceApiService } from '../resource-api.service';
-import { ResourceFormComponent } from '../resource-form/resource-form.component';
+import { Resource } from '../resource';
 
 @Component({
   selector: 'app-category',
@@ -20,8 +18,7 @@ export class CategoryComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private api: ResourceApiService,
-    private dialog: MatDialog) {
+    private api: ResourceApiService) {
 
     this.route.params.subscribe(params => {
       this.categoryId = params['category'];
@@ -45,28 +42,6 @@ export class CategoryComponent implements OnInit {
         this.isDataLoaded = true;
       }
     );
-  }
-
-  openEdit(resource: Resource, parent: Category = null) {
-    const dialogRef = this.dialog.open(ResourceFormComponent, {
-      width: '30%',
-      data: { 'edit': resource, 'parent_category': parent }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      this.loadResources();
-    });
-  }
-
-  openAdd(parent: Category) {
-    const dialogRef = this.dialog.open(ResourceFormComponent, {
-      width: '30%',
-      data: { 'parent_category': parent }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      this.loadResources();
-    });
   }
 
   ngOnInit() {

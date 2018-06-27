@@ -10,11 +10,13 @@ mat-card {
   border: 1px solid #EEE;
 
   &:hover {
-    outline: 1px solid mat-color($ithriv-primary, 800, 1);
+    outline: 1px solid mat-color($ithriv-primary, default, 1);
+    background-color: mat-color($ithriv-primary, 100, 1);
   }
 
   &:active {
     outline: 1px solid mat-color($ithriv-accent, default, 1);
+    background-color: mat-color($ithriv-accent, 100, 1);
   }
 }
 

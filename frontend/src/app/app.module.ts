@@ -48,6 +48,10 @@ import { ResourceTileComponent } from './resource-tile/resource-tile.component';
 import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
 import { FormFieldComponent } from './form-field/form-field.component';
+import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
+import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
+import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
+import { AddResourceButtonComponent } from './add-resource-button/add-resource-button.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
@@ -75,7 +79,11 @@ const routes: Routes = [
     HeaderComponent,
     CategoryTileComponent,
     ResourceTileComponent,
-    FormFieldComponent
+    FormFieldComponent,
+    EditCategoryButtonComponent,
+    AddCategoryButtonComponent,
+    EditResourceButtonComponent,
+    AddResourceButtonComponent
   ],
   imports: [
     BrowserAnimationsModule,
