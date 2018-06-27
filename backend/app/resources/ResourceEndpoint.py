@@ -4,7 +4,7 @@ import flask_restful
 from flask import request
 from marshmallow import ValidationError
 
-from app import RestException, db
+from app import RestException, db, elastic_index
 from app.model.resource_category import ResourceCategory
 from app.model.resource import ThrivResource
 from app.resources.schema import ThrivResourceSchema
@@ -18,6 +18,8 @@ class ResourceEndpoint(flask_restful.Resource):
         return ThrivResourceSchema().dump(resource)
 
     def delete(self, id):
+        resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
+        elastic_index.remove_resource(resource)
         db.session.query(ThrivResource).filter_by(id=id).delete()
         db.session.commit()
         return None
@@ -30,6 +32,7 @@ class ResourceEndpoint(flask_restful.Resource):
         if errors: raise RestException(RestException.INVALID_RESOURCE, details=errors)
         db.session.add(updated)
         db.session.commit()
+        elastic_index.update_resource(updated)
         return ThrivResourceSchema().dump(updated)
 
 
@@ -47,6 +50,7 @@ class ResourceListEndpoint(flask_restful.Resource):
         if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
         db.session.add(resource)
         db.session.commit()
+        elastic_index.add_resource(resource)
         return schema.dump(resource)
 
 

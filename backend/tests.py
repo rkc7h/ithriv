@@ -66,6 +66,7 @@ class TestCase(unittest.TestCase):
                                         available=True)
             db.session.add(availability)
         db.session.commit()
+        elastic_index.add_resource(resource)
         return resource
 
     def construct_category(self, name="Test Category", description="A category to test with!", parent=None):
@@ -298,6 +299,40 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
 
+    def test_search_crud(self):
+        rainbow_query = {'query': 'rainbows', 'filters': []}
+        world_query = {'query': 'world', 'filters': []}
+        search_results = self.search(rainbow_query)
+        self.assertEqual(len(search_results["resources"]), 0)
+        search_results = self.search(world_query)
+        self.assertEqual(len(search_results["resources"]), 0)
+
+        resource = self.construct_resource(name='space unicorn',
+                                           description="delivering rainbows")
+        elastic_index.add_resource(resource)
+        search_results = self.search(rainbow_query)
+        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(search_results['resources'][0]['id'],
+                         resource.id)
+        search_results = self.search(world_query)
+        self.assertEqual(len(search_results["resources"]), 0)
+
+        resource.description = 'all around the world'
+        elastic_index.update_resource(resource)
+
+        search_results = self.search(rainbow_query)
+        self.assertEqual(len(search_results["resources"]), 0)
+        search_results = self.search(world_query)
+        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(search_results['resources'][0]['id'],
+                         resource.id)
+
+        elastic_index.remove_resource(resource)
+        search_results = self.search(rainbow_query)
+        self.assertEqual(len(search_results["resources"]), 0)
+        search_results = self.search(world_query)
+        self.assertEqual(len(search_results["resources"]), 0)
+
     def test_search_resource_by_name(self):
         resource = self.construct_resource(name="space kittens")
         self.index_resource(resource)
@@ -347,6 +382,70 @@ class TestCase(unittest.TestCase):
         self.assertTrue("category" in search_results["facets"][0]["facetCounts"][0])
         self.assertTrue("hit_count" in search_results["facets"][0]["facetCounts"][0])
         self.assertTrue("is_selected" in search_results["facets"][0]["facetCounts"][0])
+
+    def test_resource_add_search(self):
+        data = {'query': "Flash Gordon", 'filters': []}
+        search_results = self.search(data)
+        self.assertEqual(len(search_results["resources"]), 0)
+
+        resource = {'name' : "Flash Gordon's zippy ship",
+                    'description' : "Another thing. In a movie, or something."}
+        rv = self.app.post('/api/resource',
+                           data=json.dumps(resource),
+                           content_type="application/json")
+        self.assertSuccess(rv)
+
+        search_results = self.search(data)
+        self.assertEqual(len(search_results["resources"]), 1)
+
+    def test_resource_delete_search(self):
+        data = {'query': "Flash Gordon", 'filters': []}
+        resource = {'name' : "Flash Gordon's zippy ship",
+                    'description' : "Another thing. In a movie, or something."}
+
+        search_results = self.search(data)
+        self.assertEqual(len(search_results["resources"]), 0)
+
+        rv = self.app.post('/api/resource',
+                           data=json.dumps(resource),
+                           content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        resource_id = response['id']
+
+        search_results = self.search(data)
+        self.assertEqual(len(search_results["resources"]), 1)
+
+        rv = self.app.delete('/api/resource/{}'.format(resource_id),
+                             content_type="application/json")
+        self.assertSuccess(rv)
+
+        search_results = self.search(data)
+        self.assertEqual(len(search_results["resources"]), 0)
+
+    def test_resource_modify_search(self):
+        resource = self.construct_resource(
+            name="Flash Gordon's zappy raygun",
+            description="Yet another thing. In a movie, or something.")
+        self.index_resource(resource)
+        zappy_query = {'query': 'zappy', 'filters': []}
+        zorpy_query = {'query': 'zorpy', 'filters': []}
+        search_results = self.search(zappy_query)
+        self.assertEqual(len(search_results["resources"]), 1)
+        search_results = self.search(zorpy_query)
+        self.assertEqual(len(search_results["resources"]), 0)
+
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response['name'], "Flash Gordon's zappy raygun")
+        response['name'] = "Flash Gordon's zorpy raygun"
+        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json")
+        self.assertSuccess(rv)
+
+        search_results = self.search(zappy_query)
+        self.assertEqual(len(search_results["resources"]), 0)
+        search_results = self.search(zorpy_query)
+        self.assertEqual(len(search_results["resources"]), 1)
 
     def test_create_institution(self):
         institution = {"name":"Ender's Academy for wayward space boys", "description":"A school, in outerspace, with weightless games"}

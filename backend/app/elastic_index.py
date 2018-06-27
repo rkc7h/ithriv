@@ -51,12 +51,26 @@ class ElasticIndex:
         except:
             self.logger.error("Failed to delete the indices.  They night not exist.")
 
-    def remove_resource(self, id):
-        ws = ElasticResource.get(id='resource_' + str(id))
-        ws.delete()
+    def remove_resource(self, resource, flush=True):
+        obj = self.get_resource(resource)
+        obj.delete()
+        if flush:
+            self.resource_index.flush()
 
-    def get_resource(self, id):
-        return ElasticResource.get(id='resource_' + str(id))
+    def get_resource(self, resource):
+        return ElasticResource.get(id='workshop_' + str(resource.id))
+
+    def update_resource(self, resource, flush=True):
+        r = resource
+        obj = self.get_resource(r)
+        obj.name = r.name
+        obj.description = r.description
+        obj.last_updated = r.last_updated
+        obj.website = r.website
+        obj.owner = r.owner
+        ElasticResource.save(obj)
+        if flush:
+            self.resource_index.flush()
 
     def add_resource(self, r, flush=True):
         er = ElasticResource(meta={'id': 'workshop_' + str(r.id)},
