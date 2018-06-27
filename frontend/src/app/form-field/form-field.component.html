@@ -1,0 +1,35 @@
+<mat-form-field [hideRequiredMarker]="formGroup.value.hideRequired" [floatLabel]="formGroup.value.floatLabel">
+  <input *ngIf="field.type === 'text'" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder"
+    [required]="field.required">
+  <textarea *ngIf="field.type === 'textarea'" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher"
+    [placeholder]="field.placeholder" [required]="field.required"></textarea>
+  <mat-select *ngIf="field.type === 'selectIcon'" [formControl]="field.formControl" [placeholder]="field.placeholder" [required]="field.required">
+    <mat-option>-- None --</mat-option>
+    <mat-option *ngFor="let icon of field.icons" value="{{icon}}">
+      <mat-icon svgIcon="ithriv_{{icon}}"></mat-icon>
+      {{getLabel(icon)}}
+    </mat-option>
+  </mat-select>
+  <mat-label *ngIf="field.type === 'selectIcon'">
+    Select icon
+  </mat-label>
+  <mat-hint *ngIf="field.maxLength" align="end">
+    {{currentLength()}} / {{field.maxLength}}
+  </mat-hint>
+  <mat-error *ngIf="field.formControl.errors && (field.formControl.dirty || field.formControl.touched)">
+    <span *ngIf="field.required && field.formControl.hasError('required')">
+      Description is
+      <strong>required</strong>
+    </span>
+    <span *ngIf="field.minLength && field.formControl.hasError('minlength')">
+      Must be at least
+      <strong>{{field.minLength}}</strong> characters long. You only entered
+      <strong>{{currentLength()}}</strong> characters.
+    </span>
+    <span *ngIf="field.maxLength && field.formControl.hasError('maxlength')">
+      Maximum length is
+      <strong>"{{field.maxLength}}"</strong> characters. You entered
+      <strong>{{currentLength()}}</strong> characters.
+    </span>
+  </mat-error>
+</mat-form-field>

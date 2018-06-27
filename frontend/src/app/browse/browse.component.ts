@@ -33,6 +33,8 @@ export class BrowseComponent implements OnInit {
   loadCategory(categoryId: Number) {
     this.api.getCategory(categoryId).subscribe(
       (category) => {
+        console.log('category', category);
+
         this.category = category;
         this.isDataLoaded = true;
       }
@@ -40,19 +42,18 @@ export class BrowseComponent implements OnInit {
   }
 
   openEdit(category: Category, parent: Category = null) {
-    const dialogRef = this.dialog.open(CategoryFormComponent, {
-      width: '300px',
+    this.dialog.open(CategoryFormComponent, {
+      width: '30%',
       data: { 'edit': category, 'parent_category': parent }
     });
   }
 
   openAdd(category: Category) {
-    const dialogRef = this.dialog.open(CategoryFormComponent, {
-      width: '300px',
+    this.dialog.open(CategoryFormComponent, {
+      width: '30%',
       data: { 'parent_category': category }
     });
   }
-
 
   goCategory($event, category) {
     $event.preventDefault();
@@ -62,9 +63,18 @@ export class BrowseComponent implements OnInit {
   ngOnInit() {
   }
 
+  headerImage() {
+    return `url('assets/browse/${this.category.image}')`;
+  }
 
-  header_image() {
-    return 'assets/browse/header-' + this.category.name.toLowerCase() + '.png';
+  headerGradient() {
+    return `linear-gradient(to right, ${this.category.color}FF, ${this.category.color}FF 50%, ${this.category.color}00 75%)`;
+  }
+
+  categoryIcon(c) {
+    if (c.icon) {
+      return `ithriv_${c.icon.replace('.svg', '')}`;
+    }
   }
 
 

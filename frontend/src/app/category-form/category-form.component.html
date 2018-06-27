@@ -1,37 +1,20 @@
-<form *ngIf="isDataLoaded" [formGroup]="categoryForm" novalidate (ngSubmit)="onSubmit()"
-      class="container"
-      fxLayout="column"
-      fxLayoutWrap
-      fxLayout.xs="column"
-      fxLayoutAlign="start"
-      fxLayoutGap="10px"
-      fxLayoutGap.xs="0">
+<form *ngIf="isDataLoaded" [formGroup]="categoryForm" novalidate (ngSubmit)="onSubmit()">
+  <h2 class="mat-h2">Category Details</h2>
 
-  <div fxFlex="100%">
-    <h2>Category Details</h2>
-    <mat-form-field>
-      <input matInput formControlName="name" placeholder="Name" class="form-control">
-      <mat-error>
-        Name is <strong>required</strong>
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field>
-          <textarea rows="4" matInput formControlName="description" placeholder="Description"
-                    class="form-control"></textarea>
-      <mat-error>
-        This description is too short.
-      </mat-error>
-    </mat-form-field>
-  </div>
+  <app-form-field [field]="fields.name" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.description" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.brief_description" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.image" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.color" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <app-form-field [field]="fields.icon" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
 
   <div class="display">
     <div class="button">
-      <button type="submit" mat-raised-button>Save</button>
+      <button type="submit" [disabled]="categoryForm.invalid" mat-raised-button (click)="onSubmit()">Save</button>
       <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
       <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
     </div>
   </div>
-
 
   <div id="confirm_delete" class="display" *ngIf="showConfirmDelete">
     <div class="button">
@@ -39,6 +22,5 @@
     </div>
   </div>
 
-  <div id="error_message" class="display mat-error" *ngIf="error">{{error}}</div>
-
+  <div id="error_message" class="display mat" *ngIf="error">{{error}}</div>
 </form>

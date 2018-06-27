@@ -1,7 +1,8 @@
-<div id="browse" >
-  <div class="header" *ngIf="isDataLoaded"
-       [ngStyle]="{'background-image': 'url(' + header_image() + ')'}">
-    <h1>{{category.name}}
+<div id="browse">
+  <div class="header" *ngIf="isDataLoaded">
+    <h1>
+      <mat-icon *ngIf="category.icon" svgIcon="{{categoryIcon(category)}}"></mat-icon>
+      {{category.name}}
       <button mat-mini-fab (click)="openEdit(category)" aria-label="Edit Category">
         <mat-icon>edit</mat-icon>
       </button>
@@ -10,15 +11,19 @@
       </button>
     </h1>
     <p *ngIf="category.description">{{category.description}}</p>
-    <p *ngIf="!category.description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-      magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    <p *ngIf="!category.description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+      irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
     </p>
+    <div class="bg-img" [ngStyle]="{'background-image': headerImage()}"></div>
+    <div class="gradient-overlay" [ngStyle]="{'background-image': headerGradient()}"></div>
   </div>
 
   <div *ngIf="isDataLoaded">
-    <mat-card *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top': '5px solid ' + c.color}">
-      <mat-card-title>{{c.name}}
+    <mat-card *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top-color': c.color}">
+      <mat-card-title>
+        <mat-icon *ngIf="c.icon" svgIcon="{{categoryIcon(c)}}" [ngStyle]="{'color': c.color, 'border-color': c.color}"></mat-icon>
+        {{c.name}}
         <button mat-mini-fab (click)="openEdit(c, category)" aria-label="Edit Category">
           <mat-icon>edit</mat-icon>
         </button>
@@ -27,26 +32,24 @@
         </button>
       </mat-card-title>
       <mat-card-subtitle *ngIf="c.description">{{c.description}}</mat-card-subtitle>
-      <mat-card-subtitle *ngIf="!c.description">This should be a brief statement about the nature of the Writing Assistance section and the
-        resources users can find within it. It should briefly describe the contents of this section and give an overview
-        of the resources that will be within it.
+      <mat-card-subtitle *ngIf="!c.description">This should be a brief statement about the nature of the Writing Assistance section and the resources users can find
+        within it. It should briefly describe the contents of this section and give an overview of the resources that will
+        be within it.
       </mat-card-subtitle>
-      <div
-        class="sub-categories"
-        fxLayout="row wrap"
-        fxLayout.xs="column"
-        fxLayoutAlign="center"
-        fxLayoutGap="10px"
-        fxLayoutGap.xs="0">
+      <div class="sub-categories" fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="center" fxLayoutGap="10px" fxLayoutGap.xs="0">
         <mat-card *ngFor="let sc of c.children" class="sub-sub-category">
-          <mat-card-title><a href="#" (click)="goCategory($event, sc.id)">{{sc.name}}</a>
+          <mat-card-title>
+            <a href="#" (click)="goCategory($event, sc.id)">
+              <mat-icon *ngIf="sc.icon" svgIcon="{{categoryIcon(sc)}}" [ngStyle]="{'color': sc.color}"></mat-icon>
+              {{sc.name}}
+            </a>
             <button mat-mini-fab (click)="openEdit(sc, c)" aria-label="Edit Category">
               <mat-icon>edit</mat-icon>
             </button>
           </mat-card-title>
           <mat-card-subtitle *ngIf="sc.description">{{sc.description}}</mat-card-subtitle>
-          <mat-card-subtitle *ngIf="!sc.description">The dummy text is a page description on the next page that establishes the content of the
-            definitions and glossary category.
+          <mat-card-subtitle *ngIf="!sc.description">The dummy text is a page description on the next page that establishes the content of the definitions and glossary
+            category.
           </mat-card-subtitle>
         </mat-card>
       </div>
