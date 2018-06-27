@@ -32,14 +32,16 @@ class ThrivResourceSchema(ModelSchema):
     class Meta:
         model = ThrivResource
         fields = ('id', 'name', 'description', 'last_updated','owner',
-                  'website', 'institution_id', 'type_id', 'type',
-                  'institution', 'availabilities', '_links')
+                  'website', 'institution_id', 'type_id', 'type', 'icon_id',
+                  'header_id', 'institution', 'availabilities', '_links')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
     website = fields.String(required=False, allow_none=True)
     institution_id = fields.Integer(required=False, allow_none=True)
     type_id = fields.Integer(required=False, allow_none=True)
+    icon_id = fields.String(required=False, allow_none=True)
+    header_id = fields.String(required=False, allow_none=True)
 
     type = fields.Nested(ThrivTypeSchema(), dump_only=True)
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
