@@ -49,8 +49,9 @@ class ThrivResourceSchema(ModelSchema):
         'self': ma.URLFor('resourceendpoint', id='<id>'),
         'collection': ma.URLFor('resourcelistendpoint'),
         'institution': ma.UrlFor('institutionendpoint', id='<institution_id>'),
-        'type': ma.UrlFor('typeendpoint', id='<type_id>')
-        },
+        'type': ma.UrlFor('typeendpoint', id='<type_id>'),
+        'categories': ma.UrlFor('categorybyresourceendpoint', resource_id='<id>'),
+    },
         dump_only=True)
 
 
