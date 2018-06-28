@@ -594,6 +594,9 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(parent.id, response["parent"]["id"])
+        self.assertEquals(0, response["parent"]["level"])
+        self.assertEquals(1, response["level"])
+
 
     def test_update_category(self):
         c = Category(name="Desk Stuffs",

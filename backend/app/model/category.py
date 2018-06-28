@@ -19,10 +19,19 @@ class Category(db.Model):
     icon = db.relationship("Icon")
 
     def calculate_color(self):
-        '''Color is inherited from the parent category if not set explicitly.'''
+        """Color is inherited from the parent category if not set explicitly."""
         color = self.color
         cat = self.parent
         while not self.color and cat:
             color = cat.color
             cat = cat.parent
         return color
+
+    def calculate_level(self):
+        """Provide the depth of the category """
+        level = 0
+        cat = self
+        while cat.parent:
+            level = level + 1
+            cat = cat.parent
+        return level
