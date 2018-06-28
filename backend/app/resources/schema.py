@@ -28,7 +28,6 @@ class AvailabilitySchema(ModelSchema):
         fields = ('id', 'institution_id', 'resource_id', 'viewable', 'available', 'institution')
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
 
-
 class ThrivResourceSchema(ModelSchema):
     class Meta:
         model = ThrivResource
@@ -73,6 +72,7 @@ class IconSchema(ModelSchema):
         model = Icon
         fields = ('id', 'name', 'url')
 
+
 class CategorySchema(ModelSchema):
     """Provides detailed information about a category, including all the children"""
     class Meta:
@@ -81,7 +81,8 @@ class CategorySchema(ModelSchema):
                   'color', 'image', 'icon_id', 'icon',
                   'children', 'parent_id', 'parent', '_links')
     id = fields.Integer(required=False, allow_none=True)
-    icon = fields.Nested(IconSchema, dump_only=True)
+    icon_id = fields.Integer(required=False, allow_none=True)
+    icon = fields.Nested(IconSchema,  allow_none=True, dump_only=True)
     image = fields.String(required=False, allow_none=True)
     parent_id = fields.Integer(required=False, allow_none=True)
     children = fields.Nested('self', many=True, dump_only=True)
@@ -94,13 +95,38 @@ class CategorySchema(ModelSchema):
     })
 
 
+class ResourceCategoriesSchema(ModelSchema):
+    class Meta:
+        model = ResourceCategory
+        fields = ('id', '_links', 'category')
+    category = fields.Nested(CategorySchema, dump_only=True)
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('resourcecategoryendpoint', id='<id>'),
+        'category': ma.URLFor('categoryendpoint', id='<category_id>'),
+        'resource': ma.URLFor('resourceendpoint', id='<resource_id>')
+    })
+
+
+class CategoryResourcesSchema(ModelSchema):
+    class Meta:
+        model = ResourceCategory
+        fields = ('id', '_links', 'resource')
+    resource = fields.Nested(ThrivResourceSchema, dump_only=True)
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('resourcecategoryendpoint', id='<id>'),
+        'category': ma.URLFor('categoryendpoint', id='<category_id>'),
+        'resource': ma.URLFor('resourceendpoint', id='<resource_id>')
+    })
+
+
 class ResourceCategorySchema(ModelSchema):
     class Meta:
         model = ResourceCategory
-        fields = ('id', 'resource_id', 'category_id', '_links')
+        fields = ('id', '_links', 'resource_id', 'category_id')
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourcecategoryendpoint', id='<id>'),
-        'category': ma.URLFor('categoryendpoint', id='<category_id>')
+        'category': ma.URLFor('categoryendpoint', id='<category_id>'),
+        'resource': ma.URLFor('resourceendpoint', id='<resource_id>')
     })
 
 
