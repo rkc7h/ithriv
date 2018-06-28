@@ -21,6 +21,7 @@ class DataLoader:
         self.availability_file = directory + "/resource_availability.csv"
         self.category_file = directory + "/categories.csv"
         self.resource_category_file = directory + "/resource_categories.csv"
+        self.icon_file = directory + "/icons.csv"
         print("Data loader initialized")
 
     def load_resources(self):
@@ -58,6 +59,9 @@ class DataLoader:
                     db.session.add(availability)
             db.session.commit()
             print("Availability loaded.  There are now %i availability records in the database." % db.session.query(Availability).count())
+
+    def load_icons(self):
+
 
     def load_categories(self):
         with open(self.category_file, newline='') as csvfile:
