@@ -3,11 +3,12 @@ from flask import json
 
 from app.model.availability import Availability
 from app.model.category import Category
+from app.model.icon import Icon
 from app.model.resource import ThrivResource
 from app.model.institution import ThrivInstitution
 from app.model.resource_category import ResourceCategory
 from app.model.type import ThrivType
-from app import db, elastic_index
+from app import db, elastic_index, file_server
 import csv
 
 from app.resources.schema import CategorySchema
@@ -19,7 +20,7 @@ class DataLoader:
     def __init__(self, directory="./example_data"):
         self.resource_file = directory + "/resources.csv"
         self.availability_file = directory + "/resource_availability.csv"
-        self.category_file = directory + "/categories.csv"
+        self.category_file = directory + "/icons.csv"
         self.resource_category_file = directory + "/resource_categories.csv"
         self.icon_file = directory + "/icons.csv"
         print("Data loader initialized")
@@ -61,6 +62,14 @@ class DataLoader:
             print("Availability loaded.  There are now %i availability records in the database." % db.session.query(Availability).count())
 
     def load_icons(self):
+        with open(self.icon_file, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
+            header = next(reader, None)  # use headers to set availability
+            for row in reader:
+                id = eval(row[0])
+
+                url = file_server.save_icon()
+                icon = Icon(id=id, name=row[1])
 
 
     def load_categories(self):
@@ -96,7 +105,7 @@ class DataLoader:
                                                      category_id=category_id)
                 db.session.add(resource_category)
             db.session.commit()
-            print("There are now %i links between resources and categories in the database." %
+            print("There are now %i links between resources and icons in the database." %
                   db.session.query(ResourceCategory).count())
 
     def get_resource_by_id(self, id):
