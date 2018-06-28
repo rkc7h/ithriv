@@ -617,6 +617,28 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals("#A52A2A", response["color"])
 
+    def test_category_has_ordered_children(self):
+        parent = Category(name= "Beer", description = "There are lots of types of beer.", color="#A52A2A")
+        c1 = Category(name= "Zinger", description = "Orange flavoered crap beer, served with shame and an unbrella",
+                      parent=parent)
+        c2 = Category(name= "Ale", description = "Includes the Indian Pale Ale, which comes in 120,000 different "
+                                                 "varieties now.", parent=parent)
+        c3 = Category(name= "Hefeweizen", description = "Smells of bananas, best drunk in a German garden",
+                      parent=parent)
+
+        db.session.add_all([parent, c1, c2, c3])
+        db.session.commit()
+        rv = self.app.get('/api/category/%i' % parent.id, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(3, len(response["children"]))
+        self.assertEqual("Ale", response["children"][0]["name"])
+        self.assertEqual("Hefeweizen", response["children"][1]["name"])
+        self.assertEqual("Zinger", response["children"][2]["name"])
+
+
+
+
     def test_list_category_icons(self):
         i1 = Icon(name="Happy Coconuts")
         i2 = Icon(name="Fly on Strings")
