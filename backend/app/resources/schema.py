@@ -58,8 +58,9 @@ class ParentCategorySchema(ModelSchema):
     """Provides a view of the parent category, all the way to the top, but ignores children"""
     class Meta:
         model = Category
-        fields = ('id', 'name', 'parent', '_links')
+        fields = ('id', 'name', 'parent', 'level', '_links')
     parent = fields.Nested('self', dump_only=True)
+    level = fields.Function(lambda obj: obj.calculate_level())
     _links = ma.Hyperlinks({
         'self': ma.URLFor('categoryendpoint', id='<id>'),
         'collection': ma.URLFor('categorylistendpoint'),
@@ -78,7 +79,7 @@ class CategorySchema(ModelSchema):
     class Meta:
         model = Category
         fields = ('id', 'name', 'brief_description', 'description',
-                  'color', 'image', 'icon_id', 'icon',
+                  'color', 'level', 'image', 'icon_id', 'icon',
                   'children', 'parent_id', 'parent', '_links')
     id = fields.Integer(required=False, allow_none=True)
     icon_id = fields.Integer(required=False, allow_none=True)
@@ -88,6 +89,7 @@ class CategorySchema(ModelSchema):
     children = fields.Nested('self', many=True, dump_only=True)
     parent = fields.Nested(ParentCategorySchema, dump_only=True)
     color = fields.Function(lambda obj: obj.calculate_color())
+    level = fields.Function(lambda obj: obj.calculate_level())
     _links = ma.Hyperlinks({
         'self': ma.URLFor('categoryendpoint', id='<id>'),
         'collection': ma.URLFor('categorylistendpoint'),
