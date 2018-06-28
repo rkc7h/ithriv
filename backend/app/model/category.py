@@ -13,15 +13,25 @@ class Category(db.Model):
     color = db.Column(db.String)  # Should be a CSS color specification
     image = db.Column(db.String)  # Should be the url for a large background image
     children = db.relationship("Category",
-                               backref=db.backref('parent', remote_side=[id]))
+                               backref=db.backref('parent', remote_side=[id]),
+                               order_by = "Category.name")
     icon_id = db.Column(db.Integer, db.ForeignKey('icon.id'))
     icon = db.relationship("Icon")
 
     def calculate_color(self):
-        '''Color is inherited from the parent category if not set explicitly.'''
+        """Color is inherited from the parent category if not set explicitly."""
         color = self.color
         cat = self.parent
         while not self.color and cat:
             color = cat.color
             cat = cat.parent
         return color
+
+    def calculate_level(self):
+        """Provide the depth of the category """
+        level = 0
+        cat = self
+        while cat.parent:
+            level = level + 1
+            cat = cat.parent
+        return level

@@ -7,6 +7,7 @@ import { Category } from './category';
 import { Resource } from './resource';
 import { ResourceCategory } from './resource-category';
 import { ResourceQuery } from './resource-query';
+import {CategoryResource} from './category-resource';
 
 @Injectable()
 export class ResourceApiService {
@@ -56,8 +57,8 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
-  getCategoryResources(category: Category): Observable<Resource[]> {
-    return this.httpClient.get<Resource[]>(this.apiRoot + category._links.resources)
+  getCategoryResources(category: Category): Observable<CategoryResource[]> {
+    return this.httpClient.get<CategoryResource[]>(this.apiRoot + category._links.resources)
       .pipe(catchError(this.handleError));
   }
 

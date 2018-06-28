@@ -233,52 +233,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["_links"]["self"], '/api/resource/1')
         self.assertEqual(response["_links"]["collection"], '/api/resource')
 
-    def test_resource_set_icon(self):
-        self.construct_resource()
-
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertIsNone(response['icon_id'])
-
-        rv = self.app.post('/api/resource/1/icon',
-                           content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertIn('upload_post_args', response)
-
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertIsNotNone(response['icon_id'])
-
-    def test_resource_set_header(self):
-        self.construct_resource()
-
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertIsNone(response['header_id'])
-
-        rv = self.app.post('/api/resource/1/header',
-                           content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertIn('upload_post_args', response)
-
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertIsNotNone(response['header_id'])
-
     def test_category_has_links(self):
         self.construct_category()
         rv = self.app.get('/api/category/1',
@@ -583,7 +537,7 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(1, len(response))
         self.assertEquals(r.id, response[0]["id"])
-        self.assertEquals(r.description, response[0]["description"])
+        self.assertEquals(r.description, response[0]["resource"]["description"])
 
     def test_get_category_by_resource(self):
         c = self.construct_category()
@@ -596,7 +550,7 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(1, len(response))
         self.assertEquals(c.id, response[0]["id"])
-        self.assertEquals(c.description, response[0]["description"])
+        self.assertEquals(c.description, response[0]["category"]["description"])
 
     def test_add_category_to_resource(self):
         c = self.construct_category()
@@ -621,15 +575,13 @@ class TestCase(unittest.TestCase):
 
     def test_create_category(self):
         c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!",
-             "color": "#000", "brief_description":"Funky Bowls!", "image":"image.png",
-             "icon":"icon.png"}
+             "color": "#000", "brief_description":"Funky Bowls!", "image":"image.png"}
         rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(c["name"], response["name"])
         self.assertEquals(c["description"], response["description"])
         self.assertEquals(c["brief_description"], response["brief_description"])
-        self.assertEquals(c["icon"], response["icon"])
         self.assertEquals(c["color"], response["color"])
         self.assertEquals(c["image"], response["image"])
 
@@ -642,6 +594,9 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(parent.id, response["parent"]["id"])
+        self.assertEquals(0, response["parent"]["level"])
+        self.assertEquals(1, response["level"])
+
 
     def test_update_category(self):
         c = Category(name="Desk Stuffs",
@@ -664,6 +619,28 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals("#A52A2A", response["color"])
+
+    def test_category_has_ordered_children(self):
+        parent = Category(name= "Beer", description = "There are lots of types of beer.", color="#A52A2A")
+        c1 = Category(name= "Zinger", description = "Orange flavoered crap beer, served with shame and an unbrella",
+                      parent=parent)
+        c2 = Category(name= "Ale", description = "Includes the Indian Pale Ale, which comes in 120,000 different "
+                                                 "varieties now.", parent=parent)
+        c3 = Category(name= "Hefeweizen", description = "Smells of bananas, best drunk in a German garden",
+                      parent=parent)
+
+        db.session.add_all([parent, c1, c2, c3])
+        db.session.commit()
+        rv = self.app.get('/api/category/%i' % parent.id, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(3, len(response["children"]))
+        self.assertEqual("Ale", response["children"][0]["name"])
+        self.assertEqual("Hefeweizen", response["children"][1]["name"])
+        self.assertEqual("Zinger", response["children"][2]["name"])
+
+
+
 
     def test_list_category_icons(self):
         i1 = Icon(name="Happy Coconuts")
@@ -701,21 +678,6 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         data = json.loads(rv.get_data(as_text=True))
         self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/icon/%i.svg" % icon_id, data["url"])
-
-
-    def test_upload_category_image(self):
-        category = Category(name= "Bird Babies", description = "A sub category of nonsense that happens on my patio", color="#A52A2A")
-        db.session.add(category)
-        db.session.commit()
-
-        rv = self.app.post('/api/category/%s/image' % category.id,
-            data=dict(
-                image=(BytesIO(b"hi everyone"), 'test.png'),
-            ))
-        self.assertSuccess(rv)
-        data = rv.get_data(as_text=True)
-        self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/category/image/%i.png" % category.id,
-                          data)
 
     def test_set_category_icon(self):
         category = Category(name="City Museum", description="A wickly cool amazing place in St Louis",

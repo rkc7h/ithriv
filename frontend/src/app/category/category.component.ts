@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ResourceApiService } from '../resource-api.service';
-import { Resource } from '../resource';
+import { CategoryResource } from '../category-resource';
 
 @Component({
   selector: 'app-category',
@@ -12,7 +12,7 @@ import { Resource } from '../resource';
 export class CategoryComponent implements OnInit {
   categoryId: number;
   category: Category;
-  resources: Resource[];
+  categoryResources: CategoryResource[];
   isDataLoaded = false;
 
   constructor(
@@ -37,11 +37,19 @@ export class CategoryComponent implements OnInit {
 
   loadResources() {
     this.api.getCategoryResources(this.category).subscribe(
-      (resources) => {
-        this.resources = resources;
+      (categoryResources) => {
+        this.categoryResources = categoryResources;
         this.isDataLoaded = true;
       }
     );
+  }
+
+  resources() {
+    const resources = [];
+    for (const categoryResource of this.categoryResources) {
+      resources.push(categoryResource.resource);
+    }
+    return resources;
   }
 
   ngOnInit() {
