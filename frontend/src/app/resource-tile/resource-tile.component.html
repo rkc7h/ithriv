@@ -4,7 +4,9 @@
       <div class="mat-card-pre-title">{{resource.name}}</div>
     </mat-card-title>
     <mat-card-subtitle>
-      <div *ngIf="resource.owner">Owner: {{resource.owner}}</div>
+      <!--  DHF:   Johanna asked us to strip this out, will be details eventually, actual owner will not be shown
+  <div *ngIf="resource.owner">Owner: {{resource.owner}}</div>
+      -->
       <div *ngIf="resource.website">{{resource.website}}</div>
     </mat-card-subtitle>
   </mat-card-header>
