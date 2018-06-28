@@ -5,6 +5,7 @@ import { Category } from '../category';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../resource-api.service';
 import { ResourceFormComponent } from '../resource-form/resource-form.component';
+import {CategoryResource} from '../category-resource';
 
 @Component({
   selector: 'app-category',
@@ -14,7 +15,7 @@ import { ResourceFormComponent } from '../resource-form/resource-form.component'
 export class CategoryComponent implements OnInit {
   categoryId: number;
   category: Category;
-  resources: Resource[];
+  categoryResources: CategoryResource[];
   isDataLoaded = false;
 
   constructor(
@@ -40,11 +41,19 @@ export class CategoryComponent implements OnInit {
 
   loadResources() {
     this.api.getCategoryResources(this.category).subscribe(
-      (resources) => {
-        this.resources = resources;
+      (categoryResources) => {
+        this.categoryResources = categoryResources;
         this.isDataLoaded = true;
       }
     );
+  }
+
+  resources() {
+    const resources = [];
+    for (const categoryResource of this.categoryResources) {
+      resources.push(categoryResource.resource);
+    }
+    return resources
   }
 
   openEdit(resource: Resource, parent: Category = null) {
