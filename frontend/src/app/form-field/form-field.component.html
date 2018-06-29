@@ -5,9 +5,9 @@
     [placeholder]="field.placeholder" [required]="field.required"></textarea>
   <mat-select *ngIf="field.type === 'selectIcon'" [formControl]="field.formControl" [placeholder]="field.placeholder" [required]="field.required">
     <mat-option>-- None --</mat-option>
-    <mat-option *ngFor="let icon of field.icons" value="{{icon}}">
-      <mat-icon svgIcon="ithriv_{{icon}}"></mat-icon>
-      {{getLabel(icon)}}
+    <mat-option *ngFor="let icon of icons" value="{{icon.id}}">
+      <mat-icon svgIcon="ithriv_{{icon.id}}"></mat-icon>
+      {{icon.name}}
     </mat-option>
   </mat-select>
   <mat-label *ngIf="field.type === 'selectIcon'">

@@ -7,15 +7,17 @@ import { Category } from './category';
 import { Resource } from './resource';
 import { ResourceCategory } from './resource-category';
 import { ResourceQuery } from './resource-query';
-import {CategoryResource} from './category-resource';
+import { CategoryResource } from './category-resource';
+import { Icon } from './icon';
 
 @Injectable()
 export class ResourceApiService {
 
   apiRoot = environment.api;
-  resource_url = `${this.apiRoot}/api/resource`;
   category_url = `${this.apiRoot}/api/category`;
+  icon_url = `${this.apiRoot}/api/icon`;
   resource_category_url = `${this.apiRoot}/api/resource_category`;
+  resource_url = `${this.apiRoot}/api/resource`;
   search_resource_url = `${this.apiRoot}/api/search`;
   token: string;
 
@@ -74,6 +76,11 @@ export class ResourceApiService {
 
   deleteCategory(category: Category): Observable<any> {
     return this.httpClient.delete<Category>(this.apiRoot + category._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  getIcons(): Observable<Icon[]> {
+    return this.httpClient.get<Icon[]>(this.icon_url)
       .pipe(catchError(this.handleError));
   }
 

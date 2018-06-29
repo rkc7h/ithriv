@@ -54,8 +54,7 @@ export class CategoryFormComponent implements OnInit {
     icon: new FormField({
       formControl: new FormControl(),
       placeholder: 'Icon',
-      type: 'selectIcon',
-      icons: this.allIcons()
+      type: 'selectIcon'
     }),
     color: new FormField({
       formControl: new FormControl(),
@@ -167,35 +166,5 @@ export class CategoryFormComponent implements OnInit {
     },
       error => this.error = error
     );
-  }
-
-  allIcons() {
-
-    // !!! TO DO
-    // Get list of icons from icon service URL
-    return [
-      'admin_tools',
-      'ancillary_service',
-      'center',
-      'certificate',
-      'clinical_translational',
-      'communicate',
-      'community',
-      'data_management',
-      'data_science',
-      'design',
-      'facility',
-      'funding',
-      'grant',
-      'grants',
-      'logistics',
-      'management',
-      'participate',
-      'regulations',
-      'research_reg',
-      'special_topic',
-      'training',
-      'writing'
-    ];
   }
 }

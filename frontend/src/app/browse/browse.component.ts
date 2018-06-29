@@ -56,7 +56,7 @@ export class BrowseComponent implements OnInit {
 
   categoryIcon(c) {
     if (c.icon) {
-      return `ithriv_${c.icon.replace('.svg', '')}`;
+      return `ithriv_${c.icon.id}`;
     }
   }
 
