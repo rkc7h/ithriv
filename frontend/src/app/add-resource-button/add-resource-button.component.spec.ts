@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddResourceButtonComponent } from './add-resource-button.component';
+import { MatIconModule, MatDialogModule } from '@angular/material';
 
 describe('AddResourceButtonComponent', () => {
   let component: AddResourceButtonComponent;
@@ -8,9 +9,13 @@ describe('AddResourceButtonComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddResourceButtonComponent ]
+      declarations: [AddResourceButtonComponent],
+      imports: [
+        MatDialogModule,
+        MatIconModule
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

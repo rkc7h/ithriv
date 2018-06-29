@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Icon } from './icon';
 import { MatIconRegistry } from '@angular/material';
-import { ResourceApiService } from './resource-api.service';
+import { ResourceApiService } from './shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +11,8 @@ import { ResourceApiService } from './resource-api.service';
 })
 export class AppComponent {
   trustUrl;
+  title = 'iThriv';
+  icons: Icon[];
 
   public constructor(
     public iconRegistry: MatIconRegistry,
@@ -18,17 +20,22 @@ export class AppComponent {
     private api: ResourceApiService
   ) {
     this.trustUrl = this.sanitizer.bypassSecurityTrustResourceUrl;
-    this.loadIconRegistry();
+    this.loadIcons();
+  }
+
+  loadIcons() {
+    this.api.getIcons().subscribe(icons => {
+      this.icons = icons;
+      this.loadIconRegistry();
+    });
   }
 
   loadIconRegistry() {
-    this.api.getIcons().subscribe(icons => {
-      for (const key in icons) {
-        if (icons.hasOwnProperty(key)) {
-          this.registerIcon(icons[key]);
-        }
+    for (const key in this.icons) {
+      if (this.icons.hasOwnProperty(key)) {
+        this.registerIcon(this.icons[key]);
       }
-    });
+    }
   }
 
   registerIcon(icon: Icon) {

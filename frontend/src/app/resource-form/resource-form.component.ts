@@ -5,7 +5,7 @@ import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { Resource } from '../resource';
-import { ResourceApiService } from '../resource-api.service';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-resource-form',

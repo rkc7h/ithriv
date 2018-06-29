@@ -40,7 +40,7 @@ import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
 import { HeaderComponent } from './header/header.component';
-import { ResourceApiService } from './resource-api.service';
+import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
 import { ResourceListComponent } from './resource-list/resource-list.component';
 import { ResourceSearchComponent } from './resource-search/resource-search.component';

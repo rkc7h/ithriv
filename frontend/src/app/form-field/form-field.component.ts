@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { FormGroup } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
 import { Icon } from '../icon';
-import { ResourceApiService } from '../resource-api.service';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

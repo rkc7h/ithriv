@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { Category } from '../category';
 import { Resource } from '../resource';
-import { ResourceApiService } from '../resource-api.service';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { Filter, ResourceQuery } from '../resource-query';
 
 @Component({

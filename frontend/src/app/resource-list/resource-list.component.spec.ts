@@ -1,5 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ResourceListComponent } from './resource-list.component';
+import { ResourceTileComponent } from '../resource-tile/resource-tile.component';
+import { FormsModule } from '@angular/forms';
 
 describe('ResourceListComponent', () => {
   let component: ResourceListComponent;
@@ -8,7 +10,13 @@ describe('ResourceListComponent', () => {
   beforeEach(async(() => {
     TestBed
       .configureTestingModule({
-        declarations: [ResourceListComponent]
+        declarations: [
+          ResourceListComponent,
+          ResourceTileComponent
+        ],
+        imports: [
+          FormsModule
+        ]
       })
       .compileComponents();
   }));
