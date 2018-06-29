@@ -1,4 +1,6 @@
 import sys
+
+import magic
 from flask import json
 
 from app.model.availability import Availability
@@ -20,9 +22,10 @@ class DataLoader:
     def __init__(self, directory="./example_data"):
         self.resource_file = directory + "/resources.csv"
         self.availability_file = directory + "/resource_availability.csv"
-        self.category_file = directory + "/icons.csv"
+        self.category_file = directory + "/categories.csv"
         self.resource_category_file = directory + "/resource_categories.csv"
         self.icon_file = directory + "/icons.csv"
+        self.mime = magic.Magic(mime=True)
         print("Data loader initialized")
 
     def load_resources(self):
@@ -67,10 +70,14 @@ class DataLoader:
             header = next(reader, None)  # use headers to set availability
             for row in reader:
                 id = eval(row[0])
-
-                url = file_server.save_icon()
+                path = "./example_data/icons/%s" % row[2]
+                extension = path.rsplit('.', 1)[1].lower()
+                mime_type = self.mime.from_file(path)
+                data = open(path, 'rb')
                 icon = Icon(id=id, name=row[1])
-
+                icon.url = file_server.save_icon(data, icon, extension, mime_type)
+                db.session.add(icon)
+        db.session.commit()
 
     def load_categories(self):
         with open(self.category_file, newline='') as csvfile:
@@ -78,11 +85,15 @@ class DataLoader:
             header = next(reader, None)  # use headers to set availability
 
             for row in reader:
+                print(row)
                 id = eval(row[0])
                 category = Category(id=id, brief_description=row[2], name=row[3], description=row[4], color=row[6], image=row[7])
                 if row[1] != '':
                     parent_id = eval(row[1])
                     category.parent_id = parent_id
+                if row[5] != '':
+                    icon_id = eval(row[5])
+                    category.icon_id = icon_id
                 db.session.add(category)
             # As we manually set the ids, we need to update the sequence manually as well.
             db.session.commit()
@@ -105,7 +116,7 @@ class DataLoader:
                                                      category_id=category_id)
                 db.session.add(resource_category)
             db.session.commit()
-            print("There are now %i links between resources and icons in the database." %
+            print("There are now %i links between resources and categories in the database." %
                   db.session.query(ResourceCategory).count())
 
     def get_resource_by_id(self, id):
