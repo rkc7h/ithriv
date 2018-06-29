@@ -4,7 +4,7 @@ import { HeaderComponent } from './header/header.component';
 import { RouterOutlet } from '@angular/router';
 import { MatButtonModule, MatIconModule, MatDividerModule, MatToolbarModule, MatButtonToggleModule } from '@angular/material';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
-import { MockResourceApiService } from './shared/resource-api/mocks/resource-api.service';
+import { MockResourceApiService } from './shared/resource-api/mocks/resource-api.service.mock';
 
 describe('AppComponent', () => {
   let component: AppComponent;
