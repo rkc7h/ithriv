@@ -121,5 +121,13 @@ def reset():
     data_loader.clear()
     _load_data(data_loader)
 
+@app.cli.command()
+def loadicons():
+    """Load the SVG icon images onto the S3 bucket and create records in the database"""
+    click.echo('Loading SVG Images to S3, creating Icon Records')
+    from app import data_loader
+    data_loader = data_loader.DataLoader()
+    data_loader.load_icons()
+
 
 from app import views

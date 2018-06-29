@@ -8,7 +8,7 @@ This is a Python3 / Flask based api. It relies on a Relational Database for stor
 #### Python 3 and python3-dev, and some cryptography libraries
 MacOS:
 ```BASH
-$ brew install python
+brew install python
 ```
 
 Debian:
@@ -23,13 +23,13 @@ sudo apt-get install -y libssl-dev libffi-dev
 
 * Debian:
 ```BASH
-$ apt-get install postgresql postgresql-client
+apt-get install postgresql postgresql-client
 ```
 
 #### ElasticSearch
 MacOS
 ```BASH
-$ brew install elasticsearch
+brew install elasticsearch
 ```
 
 Debian:
@@ -37,7 +37,7 @@ Debian:
 
 #### Angular
 ```BASH
-$ npm install -g @angular/cli
+npm install -g @angular/cli
 ```
 
 ### Project Setup
@@ -60,101 +60,97 @@ export FLASK_APP=./app/__init__.py
 *NOTE:* The configuration is currently set up to use "ed_pass" as a password.  You will be promoted to enter a password when you connect.
 * MacOS:
 ```BASH
-$ postgres -D /usr/local/var/postgres
-$ createuser --no-createdb --no-superuser --pwprompt ed_user
-$ createdb ithriv -O ed_user ed_platform
+postgres -D /usr/local/var/postgres
+createuser --no-createdb --no-superuser --pwprompt ed_user
+createdb ithriv -O ed_user ed_platform
 ```
 
 * Debian
 ```BASH
-$ sudo su postgres
-$ createuser --no-createdb --no-superuser --pwprompt ed_user
-$ createdb ithriv -O ed_user ed_platform
-$ exit
+sudo su postgres
+createuser --no-createdb --no-superuser --pwprompt ed_user
+createdb ithriv -O ed_user ed_platform
+exit
 ```
 If you are using Ubuntu you will likely need to [enable PSQL](https://help.ubuntu.com/community/PostgreSQL#Managing_users_and_rights) to manage its own users.
 
 ### Update the Database
-You will need to update your database each time you return to do a pull to make sure all the migrations are run.  Use this:
+You will need to update your database each time you return to do a pull to make sure all the migrations are run. In the `backend` directory, execute the following command:
 ```BASH
-$ flask db upgrade
+flask db upgrade
 ```
 
 ### Update Data Models
 Each time you modify your data models you will need to create new migrations. The following command will compare the database to the code and create new migrations as needed.  You can edit this newly generated file - it will show up under migrations/versions
 ```BASH
-$ flask db migrate
+flask db migrate
 ```
 
 ### Load in the seed data
 This will pull in initial values into the database.
 ```BASH
-$ flask initdb
-$ flask initindex
+flask loadicons
+flask initdb
+flask initindex
 ```
 
 ## Add a config file
 In the `backend` directory, execute the following command:
 ```BASH
-$ mkdir instance && cp -r config instance/config && cp instance/config/default.py instance/config.py
+mkdir instance && cp -r config instance/config && cp instance/config/default.py instance/config.py
 ```
 
 ## Run the app
 Execute the following at the top level of the repository to start PostgreSQL, ElasticSearch, flask, and Angular all in one command:
 ```BASH
-$ ./start.sh
+./start.sh
 ```
 
 Alternatively, you could start each of the services individually, using the commands below.
 
 ### Start PostgreSQL
 ```BASH
-$ pg_ctl -D /usr/local/var/postgres start
+pg_ctl -D /usr/local/var/postgres start
 ```
 
 ### Start ElasticSearch
 ```BASH
-$ elasticsearch
+elasticsearch
 ```
 
 ### Start the backend app
 In the `backend` directory, execute the following command:
 ```BASH
-$ flask run
+flask run
 ```
 
 ### Start the frontend app
 In the `frontend` directory, execute the following commands:
 ```BASH
-$ npm install
-$ ng serve
+npm install
+ng serve
 ```
 
 ## Stopping the app
 Execute the following at the top level of the repository to stop all running services:
 ```BASH
-$ ./stop.sh
+./stop.sh
 ```
 
 
 ## Maintenance
 
-### Clear out the database
-This will remove all data from the database.
+### Clear out the database, indexes, and reseed the database
+This will remove all data from the database, delete all information from the ElasticSearch Index, and remove all data and recreate it from the example data files. In the `backend` directory, execute the following command:
 ```BASH
-$ flask cleardb
-```
-
-### Clear indexes
-Delete all information from the ElasticSearch Index.
-```BASH
-$ flask clearindex
-```
-
-### Reseed database
-Remove all data and recreate it from the example data files.
-```BASH
-$ flask reset
+source python-env/bin/activate
+export FLASK_APP=./app/__init__.py
+flask cleardb
+flask clearindex
+flask db upgrade
+flask db migrate
+flask initdb
+flask initindex
 ```
 
 ## Best Practices
