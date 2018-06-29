@@ -122,7 +122,7 @@ def reset():
     _load_data(data_loader)
 
 @app.cli.command()
-def loadIcons():
+def loadicons():
     """Load the SVG icon images onto the S3 bucket and create records in the database"""
     click.echo('Loading SVG Images to S3, creating Icon Records')
     from app import data_loader
