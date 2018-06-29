@@ -1,6 +1,6 @@
 import { Links } from './links';
 
 export interface Institution {
-  name: '';
+  name: string;
   links: Links;
 }

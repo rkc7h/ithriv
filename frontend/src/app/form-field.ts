@@ -2,12 +2,12 @@ import { FormControl } from '@angular/forms';
 
 export class FormField {
   formControl: FormControl;
-  required: Boolean;
-  maxLength: Number;
-  minLength: Number;
-  placeholder: String;
-  type: String;
-  icons: [String];
+  required: boolean;
+  maxLength: number;
+  minLength: number;
+  placeholder: string;
+  type: string;
+  icons: [string];
 
   constructor(private _props) {
     for (const propName in this._props) {

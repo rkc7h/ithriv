@@ -1,4 +1,3 @@
-
 export interface Links {
   collection: string;
   image: string;
