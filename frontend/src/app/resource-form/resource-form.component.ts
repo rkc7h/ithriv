@@ -16,7 +16,7 @@ import { ValidateUrl } from '../shared/validators/url.validator';
 export class ResourceFormComponent implements OnInit {
   category: Category;
   createNew = false;
-  errors: string[];
+  error: string;
   errorMatcher = new ErrorMatcher();
   isDataLoaded = false;
   resource: Resource;
@@ -129,7 +129,6 @@ export class ResourceFormComponent implements OnInit {
 
   onSubmit() {
     this.validate();
-    this.errors = [];
 
     if (this.resourceForm.valid) {
       this.isDataLoaded = false;
@@ -154,13 +153,6 @@ export class ResourceFormComponent implements OnInit {
           this.dialogRef.close();
         });
       }
-    } else {
-      console.log('this.resourceForm.errors', this.resourceForm.errors);
-      for (const key in this.resourceForm.errors) {
-        if (this.resourceForm.errors.hasOwnProperty(key)) {
-          this.errors.push = this.resourceForm.errors[key];
-        }
-      }
     }
   }
 
@@ -182,12 +174,10 @@ export class ResourceFormComponent implements OnInit {
   }
 
   onDelete() {
-    this.errors = [];
-
     this.api.deleteResource(this.resource).subscribe(r => {
       this.dialogRef.close();
     },
-      error => this.errors.push(error)
+      error => this.error = error
     );
   }
 }
