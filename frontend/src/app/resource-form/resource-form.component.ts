@@ -36,7 +36,7 @@ export class ResourceFormComponent implements OnInit {
     description: new FormField({
       formControl: new FormControl(),
       required: true,
-      maxLength: 500,
+      maxLength: 600,
       minLength: 20,
       placeholder: 'Description',
       type: 'textarea'
@@ -53,7 +53,7 @@ export class ResourceFormComponent implements OnInit {
       formControl: new FormControl(),
       required: true,
       maxLength: 100,
-      minLength: 1,
+      minLength: 7,
       placeholder: 'Website',
       type: 'url'
     }),
