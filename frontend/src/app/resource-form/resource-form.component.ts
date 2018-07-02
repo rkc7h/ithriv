@@ -6,6 +6,7 @@ import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { ValidateUrl } from '../shared/validators/url.validator';
 
 @Component({
   selector: 'app-resource-form',
@@ -15,7 +16,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 export class ResourceFormComponent implements OnInit {
   category: Category;
   createNew = false;
-  error: string;
+  errors: string[];
   errorMatcher = new ErrorMatcher();
   isDataLoaded = false;
   resource: Resource;
@@ -54,7 +55,7 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 100,
       minLength: 1,
       placeholder: 'Website',
-      type: 'text'
+      type: 'url'
     }),
   };
 
@@ -82,30 +83,43 @@ export class ResourceFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (!this.createNew) {
+      this.validate();
+    }
   }
 
   loadForm() {
     const formGroup = {};
     for (const fieldName in this.fields) {
       if (this.fields.hasOwnProperty(fieldName)) {
+        const field = this.fields[fieldName];
+
         const validators = [];
 
-        if (this.fields[fieldName].required) {
+        if (field.required) {
           validators.push(Validators.required);
         }
 
-        if (this.fields[fieldName].minLength) {
-          validators.push(Validators.minLength(this.fields[fieldName].minLength));
+        if (field.minLength) {
+          validators.push(Validators.minLength(field.minLength));
         }
 
-        if (this.fields[fieldName].maxLength) {
-          validators.push(Validators.maxLength(this.fields[fieldName].maxLength));
+        if (field.maxLength) {
+          validators.push(Validators.maxLength(field.maxLength));
         }
 
-        this.fields[fieldName].formControl.patchValue(this.resource[fieldName]);
+        if (field.type === 'email') {
+          validators.push(Validators.email);
+        }
+
+        if (field.type === 'url') {
+          validators.push(ValidateUrl);
+        }
+
+        field.formControl.patchValue(this.resource[fieldName]);
         // this[fieldName].valueChanges.subscribe(t => this.resource[fieldName] = t);
-        this.fields[fieldName].formControl.setValidators(validators);
-        formGroup[fieldName] = this.fields[fieldName].formControl;
+        field.formControl.setValidators(validators);
+        formGroup[fieldName] = field.formControl;
       }
     }
 
@@ -114,6 +128,9 @@ export class ResourceFormComponent implements OnInit {
   }
 
   onSubmit() {
+    this.validate();
+    this.errors = [];
+
     if (this.resourceForm.valid) {
       this.isDataLoaded = false;
 
@@ -137,6 +154,13 @@ export class ResourceFormComponent implements OnInit {
           this.dialogRef.close();
         });
       }
+    } else {
+      console.log('this.resourceForm.errors', this.resourceForm.errors);
+      for (const key in this.resourceForm.errors) {
+        if (this.resourceForm.errors.hasOwnProperty(key)) {
+          this.errors.push = this.resourceForm.errors[key];
+        }
+      }
     }
   }
 
@@ -144,15 +168,26 @@ export class ResourceFormComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  validate() {
+    for (const key in this.resourceForm.controls) {
+      if (this.resourceForm.controls.hasOwnProperty(key)) {
+        const control = this.resourceForm.controls[key];
+        control.markAsTouched();
+      }
+    }
+  }
+
   showDelete() {
     this.showConfirmDelete = true;
   }
 
   onDelete() {
+    this.errors = [];
+
     this.api.deleteResource(this.resource).subscribe(r => {
       this.dialogRef.close();
     },
-      error => this.error = error
+      error => this.errors.push(error)
     );
   }
 }

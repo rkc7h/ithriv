@@ -1,6 +1,6 @@
 <mat-form-field [hideRequiredMarker]="formGroup.value.hideRequired" [floatLabel]="formGroup.value.floatLabel">
-  <input *ngIf="field.type === 'text'" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder"
-    [required]="field.required">
+  <input *ngIf="(field.type === 'text') || (field.type === 'url') || (field.type === 'email')" matInput [formControl]="field.formControl"
+    [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder" [required]="field.required" type="{{field.type}}">
   <textarea *ngIf="field.type === 'textarea'" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher"
     [placeholder]="field.placeholder" [required]="field.required"></textarea>
   <mat-select *ngIf="field.type === 'selectIcon'" [formControl]="field.formControl" [placeholder]="field.placeholder" [required]="field.required">
@@ -17,8 +17,14 @@
     {{currentLength()}} / {{field.maxLength}}
   </mat-hint>
   <mat-error *ngIf="field.formControl.errors && (field.formControl.dirty || field.formControl.touched)">
+    <span *ngIf="field.formControl.hasError('email') && !field.formControl.hasError('required')">
+      Please enter a valid email address
+    </span>
+    <span *ngIf="field.formControl.hasError('url') && !field.formControl.hasError('required')">
+      Please enter a valid URL, such as https://website.domain.com
+    </span>
     <span *ngIf="field.required && field.formControl.hasError('required')">
-      Description is
+      {{field.placeholder}} is
       <strong>required</strong>
     </span>
     <span *ngIf="field.minLength && field.formControl.hasError('minlength')">

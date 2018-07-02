@@ -1,4 +1,4 @@
-<form *ngIf="isDataLoaded" [formGroup]="resourceForm" novalidate (ngSubmit)="onSubmit()">
+<form *ngIf="isDataLoaded" [formGroup]="resourceForm" (ngSubmit)="onSubmit()">
   <h2>Resource Details</h2>
 
   <app-form-field [field]="fields.name" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
@@ -10,7 +10,7 @@
 
   <div class="display">
     <div class="button">
-      <button type="submit" mat-raised-button>Save</button>
+      <button type="submit" mat-raised-button (click)="validate()">Save</button>
       <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
       <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
     </div>
@@ -22,5 +22,7 @@
     </div>
   </div>
 
-  <div id="error_message" class="display mat-error" *ngIf="error">{{error}}</div>
+  <div id="error_message" class="display mat-error" *ngIf="resourceForm.invalid || (errors.length > 0)">
+    <p *ngFor="let error of errors">{{error}}</p>
+  </div>
 </form>
