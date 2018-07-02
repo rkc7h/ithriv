@@ -31,7 +31,10 @@ import {
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
+import { ColorPickerModule } from 'ngx-color-picker';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
+import { AddResourceButtonComponent } from './add-resource-button/add-resource-button.component';
 import { AppComponent } from './app.component';
 import { AuthInterceptor } from './AuthInterceptor';
 import { AvailabilityComponent } from './availability/availability.component';
@@ -39,19 +42,17 @@ import { BrowseComponent } from './browse/browse.component';
 import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
+import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
+import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
+import { FormFieldComponent } from './form-field/form-field.component';
 import { HeaderComponent } from './header/header.component';
-import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
 import { ResourceListComponent } from './resource-list/resource-list.component';
 import { ResourceSearchComponent } from './resource-search/resource-search.component';
 import { ResourceTileComponent } from './resource-tile/resource-tile.component';
 import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
-import { FormFieldComponent } from './form-field/form-field.component';
-import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
-import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
-import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
-import { AddResourceButtonComponent } from './add-resource-button/add-resource-button.component';
+import { ResourceApiService } from './shared/resource-api/resource-api.service';
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
@@ -88,6 +89,7 @@ const routes: Routes = [
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
+    ColorPickerModule,
     CommonModule,
     FlexLayoutModule,
     HttpClientModule,

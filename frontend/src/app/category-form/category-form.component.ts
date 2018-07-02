@@ -59,7 +59,7 @@ export class CategoryFormComponent implements OnInit {
     color: new FormField({
       formControl: new FormControl(),
       placeholder: 'Color',
-      type: 'text'
+      type: 'color'
     }),
   };
 

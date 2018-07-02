@@ -27,6 +27,7 @@
     "@angular/router": "^6.0.5",
     "@types/material__top-app-bar": "^0.35.0",
     "core-js": "^2.5.7",
+    "ngx-color-picker": "^6.3.3",
     "ngx-infinite-scroll": "^6.0.1",
     "rxjs": "^6.2.1",
     "zone.js": "^0.8.19"

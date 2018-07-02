@@ -1,4 +1,7 @@
 <mat-form-field [hideRequiredMarker]="formGroup.value.hideRequired" [floatLabel]="formGroup.value.floatLabel">
+  <input *ngIf="(field.type === 'color')" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder"
+    [required]="field.required" [(colorPicker)]="field.formControl.value" [style.background]="field.formControl.value" [value]="field.formControl.value"
+    [cpOKButton]="true" [cpCancelButton]="true" [cpPosition]="'top'" [cpPositionOffset]="'50%'" type="text">
   <input *ngIf="(field.type === 'text') || (field.type === 'url') || (field.type === 'email')" matInput [formControl]="field.formControl"
     [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder" [required]="field.required" type="{{field.type}}">
   <textarea *ngIf="field.type === 'textarea'" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher"
