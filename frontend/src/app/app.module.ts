@@ -53,6 +53,8 @@ import { ResourceTileComponent } from './resource-tile/resource-tile.component';
 import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
+import { GradientBackgroundDirective } from './gradient-background.directive';
+import {DeviceDetectorModule} from 'ngx-device-detector';
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
@@ -84,7 +86,8 @@ const routes: Routes = [
     EditCategoryButtonComponent,
     AddCategoryButtonComponent,
     EditResourceButtonComponent,
-    AddResourceButtonComponent
+    AddResourceButtonComponent,
+    GradientBackgroundDirective
   ],
   imports: [
     BrowserAnimationsModule,
@@ -117,7 +120,8 @@ const routes: Routes = [
     MatTabsModule,
     MatToolbarModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(routes, { useHash: true })
+    RouterModule.forRoot(routes, { useHash: true }),
+    DeviceDetectorModule.forRoot()
   ],
   entryComponents: [
     CategoryFormComponent, ResourceFormComponent
