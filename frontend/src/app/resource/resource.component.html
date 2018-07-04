@@ -17,10 +17,12 @@
             <h4 mat-line>Institution</h4>
             <a mat-line href="#" (click)="goInstitution($event)">{{resource.institution.name}}</a>
           </mat-list-item>
+          <!--  DHF:   Johanna asked us to strip this out, will be details eventually, actual owner will not be shown
           <mat-list-item *ngIf="resource.owner">
             <h4 mat-line>Contact</h4>
             <a mat-line href="#" (click)="goOwner($event)">{{resource.owner}}</a>
           </mat-list-item>
+          -->
         </mat-list>
       </mat-card-content>
       <mat-card-actions *ngIf="resource.website">
