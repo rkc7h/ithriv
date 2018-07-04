@@ -1,14 +1,10 @@
-<div id="browse">
+<div id="browse" class="mat-typography">
   <div class="header" *ngIf="isDataLoaded">
-    <h1>
+    <h1 class="mat-display-1">
       <mat-icon *ngIf="category.icon" svgIcon="{{categoryIcon(category)}}"></mat-icon>
       {{category.name}}
-      <button mat-mini-fab (click)="openEdit(category)" aria-label="Edit Category">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-mini-fab (click)="openAdd(category)" aria-label="Edit Category">
-        <mat-icon>add</mat-icon>
-      </button>
+      <app-edit-category-button [category]="category"></app-edit-category-button>
+      <app-add-category-button [category]="category"></app-add-category-button>
     </h1>
     <p *ngIf="category.description">{{category.description}}</p>
     <p *ngIf="!category.description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -20,40 +16,37 @@
   </div>
 
   <div *ngIf="isDataLoaded">
-    <mat-card *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top-color': c.color}">
-      <mat-card-title>
-        <mat-icon *ngIf="c.icon" svgIcon="{{categoryIcon(c)}}" [ngStyle]="{'color': c.color, 'border-color': c.color}"></mat-icon>
-        {{c.name}}
-        <button mat-mini-fab (click)="openEdit(c, category)" aria-label="Edit Category">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-mini-fab (click)="openAdd(c)" aria-label="Edit Category">
-          <mat-icon>add</mat-icon>
-        </button>
-      </mat-card-title>
-      <mat-card-subtitle *ngIf="c.description">{{c.description}}</mat-card-subtitle>
-      <mat-card-subtitle *ngIf="!c.description">This should be a brief statement about the nature of the Writing Assistance section and the resources users can find
+    <section *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top-color': c.color}">
+      <div (click)="goCategory($event, c.id)">
+        <mat-icon *ngIf="c.icon" class="cat-icon-2" svgIcon="{{categoryIcon(c)}}" [ngStyle]="{'color': c.color, 'border-color': c.color}"></mat-icon>
+        <h2>{{c.name}}</h2>
+        <app-edit-category-button [category]="c" [parent]="category"></app-edit-category-button>
+        <app-add-category-button [category]="c"></app-add-category-button>
+      </div>
+      <p *ngIf="c.description">{{c.description}}</p>
+      <p *ngIf="!c.description">This should be a brief statement about the nature of the Writing Assistance section and the resources users can find
         within it. It should briefly describe the contents of this section and give an overview of the resources that will
         be within it.
-      </mat-card-subtitle>
-      <div class="sub-categories" fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="center" fxLayoutGap="10px" fxLayoutGap.xs="0">
-        <mat-card *ngFor="let sc of c.children" class="sub-sub-category">
-          <mat-card-title>
-            <a href="#" (click)="goCategory($event, sc.id)">
-              <mat-icon *ngIf="sc.icon" svgIcon="{{categoryIcon(sc)}}" [ngStyle]="{'color': sc.color}"></mat-icon>
-              {{sc.name}}
-            </a>
-            <button mat-mini-fab (click)="openEdit(sc, c)" aria-label="Edit Category">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </mat-card-title>
-          <mat-card-subtitle *ngIf="sc.description">{{sc.description}}</mat-card-subtitle>
-          <mat-card-subtitle *ngIf="!sc.description">The dummy text is a page description on the next page that establishes the content of the definitions and glossary
-            category.
-          </mat-card-subtitle>
+      </p>
+
+      <div class="sub-categories container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0px grid" fxLayoutAlign="center">
+        <mat-card *ngFor="let sc of c.children" class="sub-sub-category" fxFlex="30%">
+          <mat-card-header (click)="goCategory($event, sc.id)">
+            <div mat-card-avatar *ngIf="sc.icon">
+              <mat-icon class="cat-icon-3" svgIcon="{{categoryIcon(sc)}}" [ngStyle]="{'background-color': sc.color}"></mat-icon>
+            </div>
+            <mat-card-title>{{sc.name}}</mat-card-title>
+            <mat-card-subtitle *ngIf="sc.description">{{sc.description}}</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="!sc.description">The dummy text is a page description on the next page that establishes the content of the definitions and glossary
+              category.
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-actions>
+            <div fxFlex></div>
+            <app-edit-category-button [category]="sc" [parent]="c"></app-edit-category-button>
+          </mat-card-actions>
         </mat-card>
       </div>
-    </mat-card>
+    </section>
   </div>
-
 </div>

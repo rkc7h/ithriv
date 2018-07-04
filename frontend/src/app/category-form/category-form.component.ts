@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
-import { ResourceApiService } from '../resource-api.service';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-category-form',
@@ -33,7 +33,7 @@ export class CategoryFormComponent implements OnInit {
     description: new FormField({
       formControl: new FormControl(),
       required: true,
-      maxLength: 500,
+      maxLength: 600,
       minLength: 20,
       placeholder: 'Description',
       type: 'text'
@@ -54,13 +54,12 @@ export class CategoryFormComponent implements OnInit {
     icon: new FormField({
       formControl: new FormControl(),
       placeholder: 'Icon',
-      type: 'selectIcon',
-      icons: this.allIcons()
+      type: 'selectIcon'
     }),
     color: new FormField({
       formControl: new FormControl(),
       placeholder: 'Color',
-      type: 'text'
+      type: 'color'
     }),
   };
 
@@ -167,35 +166,5 @@ export class CategoryFormComponent implements OnInit {
     },
       error => this.error = error
     );
-  }
-
-  allIcons() {
-
-    // !!! TO DO
-    // Get list of icons from icon service URL
-    return [
-      'admin_tools',
-      'ancillary_service',
-      'center',
-      'certificate',
-      'clinical_translational',
-      'communicate',
-      'community',
-      'data_management',
-      'data_science',
-      'design',
-      'facility',
-      'funding',
-      'grant',
-      'grants',
-      'logistics',
-      'management',
-      'participate',
-      'regulations',
-      'research_reg',
-      'special_topic',
-      'training',
-      'writing'
-    ];
   }
 }

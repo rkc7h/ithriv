@@ -9,7 +9,7 @@ describe('Anonymous User app', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to app!');
+    expect(page.getParagraphText()).toEqual('Research Concierge Portal');
   });
 
   it('should display resources');

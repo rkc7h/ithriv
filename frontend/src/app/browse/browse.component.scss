@@ -36,13 +36,28 @@
     z-index: -1;
   }
 
-  h1 {
+  h1.mat-display-1 {
     padding: 0;
     margin: 0;
     text-transform: capitalize;
     background-color: transparent;
     color: white;
     z-index: 100;
+    font-weight: bolder;
+    max-width: 400px;
+    position: relative;
+
+    app-edit-category-button {
+      position: absolute;
+      top: -6px;
+      right: 50px;
+    }
+
+    app-add-category-button {
+      position: absolute;
+      top: -6px;
+      right: 0px;
+    }
   }
 
   p {
@@ -57,36 +72,88 @@ html, body {
   height: 100%;
 }
 
-mat-card.sub-category {
-  margin: 3em;
+mat-icon.cat-icon-2 {
+  border-width: 6px;
+  border-style: solid;
+  background: #FFF;
+  width: 60px;
+  height: 60px;
+  font-size: 60px;
+  border-radius: 50%;
+  padding: 10px;
+  position: absolute;
+  top: -30px;
+  right: -30px;
+}
+
+mat-icon.cat-icon-3 {
+  background-color: #FFF;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: #FFF;
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.sub-category {
   border-top-width: 6px;
   border-top-style: solid;
+  margin: 3em;
+  padding-bottom: 1.5em;
+  background-color: #EEEEEE;
+  position: relative;
+  border-radius: 2px;
+  @include mat-elevation(1);
 
-  mat-card-title > mat-icon {
-    border-width: 6px;
-    border-style: solid;
-    background: #FFF;
-    width: 60px;
-    height: 60px;
-    font-size: 60px;
-    border-radius: 50%;
-    padding: 10px;
+  & > h1 {
+    font-weight: bolder;
+  }
+
+  app-edit-category-button {
     position: absolute;
-    top: -30px;
-    right: -30px;
+    top: 6px;
+    right: 120px;
+  }
+
+  app-add-category-button {
+    position: absolute;
+    top: 6px;
+    right: 70px;
   }
 }
 
-.sub-sub-category {
-  flex: 1 1 2em;
-  margin: 1em;
-  min-width: 200px;
-  max-width: 200px;
+mat-card.sub-sub-category {
   min-height: 90px;
+  cursor: pointer;
+  margin: 10px;
 
-  mat-card-title a {
-    font-size: 16px;
-    font-weight: 600;
-    text-decoration: none;
+  &:hover {
+    outline: 1px solid mat-color($ithriv-primary, 200, 1);
+    background-color: mat-color($ithriv-primary, 100, 1);
   }
+
+  &:active {
+    outline: 1px solid mat-color($ithriv-accent, 200, 1);
+    background-color: mat-color($ithriv-accent, 100, 1);
+  }
+
+  mat-card-header {
+    padding: 1em;
+
+    mat-card-title {
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    div.mat-card-avatar {
+      width: 60px;
+      height: 60px;
+      font-size: 60px;
+    }
+  }
+
 }

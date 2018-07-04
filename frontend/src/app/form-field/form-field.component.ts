@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
+import { Icon } from '../icon';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -12,11 +14,19 @@ export class FormFieldComponent implements OnInit {
   @Input() field;
   @Input() errorMatcher: ErrorStateMatcher;
   @Input() formGroup: FormGroup;
+  icons: Icon[];
 
-  constructor() {
+  constructor(
+    private api: ResourceApiService
+  ) {
+    this.loadIcons();
   }
 
   ngOnInit() {
+  }
+
+  loadIcons() {
+    this.api.getIcons().subscribe(icons => this.icons = icons);
   }
 
   currentLength() {

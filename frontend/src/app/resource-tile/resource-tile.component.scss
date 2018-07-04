@@ -7,13 +7,24 @@
 
 .resource {
   border-top: 4px solid mat-color($uva-accent, 500);
-  max-width: 356px;
-  min-width: 356px;
-  min-height: 90px;
+  min-height: 240px;
+  min-width: 320px;
+  max-width: 400px;
+  margin: 10px;
 }
 
-mat-card-header {
+mat-card {
   cursor: pointer;
+
+  &:hover {
+    outline: 1px solid mat-color($ithriv-primary, 200, 1);
+    background-color: mat-color($ithriv-primary, 100, 1);
+  }
+
+  &:active {
+    outline: 1px solid mat-color($ithriv-accent, 200, 1);
+    background-color: mat-color($ithriv-accent, 100, 1);
+  }
 }
 
 mat-card-subtitle, .sub-title, .mat-card-pre-title {

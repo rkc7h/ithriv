@@ -2,16 +2,15 @@ import { Availability } from './availability';
 import { Institution } from './institution';
 import { Links } from './links';
 import { ResourceType } from './resourceType';
-import { Type } from '@angular/compiler/src/output/output_ast';
 
 export interface Resource {
   id: number;
-  name: '';
-  description: '';
+  name: string;
+  description: string;
   type?: ResourceType;
   institution?: Institution;
-  website?: '';
-  owner?: '';
+  website?: string;
+  owner?: string;
   availabilities?: Availability[];
   _links?: Links;
 }
