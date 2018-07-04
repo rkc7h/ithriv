@@ -30,11 +30,12 @@ echo "Running from ${HOME_DIR}"
 # library dependencies.
 source ./backend/python-env/bin/activate
 export FLASK_APP=${HOME_DIR}/backend/app/__init__.py
-eval 'cd ${HOME_DIR}/backend && pip install -r requirements.txt'
+eval 'cd ${HOME_DIR}/backend && pip3 install -r requirements.txt'
 
 # Load up the staging environment
 if [ "$ENV" == "staging" ]; then 
    eval 'cd ${HOME_DIR}/backend && flask cleardb'
+   eval 'cd ${HOME_DIR}/backend && flask loadicons'
 fi
 eval 'cd ${HOME_DIR}/backend && flask db upgrade'
 if [ "$ENV" == "staging" ]; then
