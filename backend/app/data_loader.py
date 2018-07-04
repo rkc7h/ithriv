@@ -1,13 +1,16 @@
 import sys
+
+import magic
 from flask import json
 
 from app.model.availability import Availability
 from app.model.category import Category
+from app.model.icon import Icon
 from app.model.resource import ThrivResource
 from app.model.institution import ThrivInstitution
 from app.model.resource_category import ResourceCategory
 from app.model.type import ThrivType
-from app import db, elastic_index
+from app import db, elastic_index, file_server
 import csv
 
 from app.resources.schema import CategorySchema
@@ -21,6 +24,8 @@ class DataLoader:
         self.availability_file = directory + "/resource_availability.csv"
         self.category_file = directory + "/categories.csv"
         self.resource_category_file = directory + "/resource_categories.csv"
+        self.icon_file = directory + "/icons.csv"
+        self.mime = magic.Magic(mime=True)
         print("Data loader initialized")
 
     def load_resources(self):
@@ -59,17 +64,36 @@ class DataLoader:
             db.session.commit()
             print("Availability loaded.  There are now %i availability records in the database." % db.session.query(Availability).count())
 
+    def load_icons(self):
+        with open(self.icon_file, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
+            header = next(reader, None)  # use headers to set availability
+            for row in reader:
+                id = eval(row[0])
+                path = "./example_data/icons/%s" % row[2]
+                extension = path.rsplit('.', 1)[1].lower()
+                mime_type = self.mime.from_file(path)
+                data = open(path, 'rb')
+                icon = Icon(id=id, name=row[1])
+                icon.url = file_server.save_icon(data, icon, extension, mime_type)
+                db.session.add(icon)
+        db.session.commit()
+
     def load_categories(self):
         with open(self.category_file, newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
             header = next(reader, None)  # use headers to set availability
 
             for row in reader:
+                print(row)
                 id = eval(row[0])
                 category = Category(id=id, brief_description=row[2], name=row[3], description=row[4], color=row[6], image=row[7])
                 if row[1] != '':
                     parent_id = eval(row[1])
                     category.parent_id = parent_id
+                if row[5] != '':
+                    icon_id = eval(row[5])
+                    category.icon_id = icon_id
                 db.session.add(category)
             # As we manually set the ids, we need to update the sequence manually as well.
             db.session.commit()
