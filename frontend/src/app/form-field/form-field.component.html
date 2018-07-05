@@ -1,11 +1,13 @@
-<mat-form-field [hideRequiredMarker]="formGroup.value.hideRequired" [floatLabel]="formGroup.value.floatLabel">
+<mat-form-field *ngIf="field.type !== 'textarea'" [hideRequiredMarker]="formGroup.value.hideRequired" [floatLabel]="formGroup.value.floatLabel">
   <input *ngIf="(field.type === 'color')" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder"
     [required]="field.required" [(colorPicker)]="field.formControl.value" [style.background]="field.formControl.value" [value]="field.formControl.value"
     [cpOKButton]="true" [cpCancelButton]="true" [cpPosition]="'top'" [cpPositionOffset]="'50%'" type="text">
   <input *ngIf="(field.type === 'text') || (field.type === 'url') || (field.type === 'email')" matInput [formControl]="field.formControl"
     [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder" [required]="field.required" type="{{field.type}}">
-  <textarea *ngIf="field.type === 'textarea'" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher"
-    [placeholder]="field.placeholder" [required]="field.required"></textarea>
+
+  <!-- <textarea *ngIf="field.type === 'textarea'" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher"
+    [placeholder]="field.placeholder" [required]="field.required"></textarea> -->
+
   <mat-select *ngIf="field.type === 'selectIcon'" [formControl]="field.formControl" [placeholder]="field.placeholder" [required]="field.required">
     <mat-option>-- None --</mat-option>
     <mat-option *ngFor="let icon of icons" value="{{icon.id}}">
@@ -16,9 +18,11 @@
   <mat-label *ngIf="field.type === 'selectIcon'">
     Select icon
   </mat-label>
+
   <mat-hint *ngIf="field.maxLength" align="end">
     {{currentLength()}} / {{field.maxLength}}
   </mat-hint>
+
   <mat-error *ngIf="field.formControl.errors && (field.formControl.dirty || field.formControl.touched)">
     <span *ngIf="field.formControl.hasError('email') && !field.formControl.hasError('required')">
       Please enter a valid email address
@@ -42,3 +46,10 @@
     </span>
   </mat-error>
 </mat-form-field>
+
+<div class="mat-typography">
+  <mat-label *ngIf="field.type === 'textarea'">
+    {{field.placeholder}}
+  </mat-label>
+  <td-text-editor *ngIf="(field.type === 'textarea')" [formControl]="field.formControl" [value]="field.formControl.value" [options]="field.options"></td-text-editor>
+</div>

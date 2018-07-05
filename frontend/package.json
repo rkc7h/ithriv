@@ -25,6 +25,7 @@
     "@angular/platform-browser": "^6.0.5",
     "@angular/platform-browser-dynamic": "^6.0.5",
     "@angular/router": "^6.0.5",
+    "@covalent/text-editor": "^1.0.0",
     "@types/material__top-app-bar": "^0.35.0",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.5.7",

@@ -36,7 +36,11 @@ export class CategoryFormComponent implements OnInit {
       maxLength: 600,
       minLength: 20,
       placeholder: 'Description',
-      type: 'text'
+      type: 'textarea',
+      options: {
+        hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
+        status: ['words'],
+      }
     }),
     brief_description: new FormField({
       formControl: new FormControl(),
@@ -44,7 +48,7 @@ export class CategoryFormComponent implements OnInit {
       maxLength: 140,
       minLength: 20,
       placeholder: 'Brief Description',
-      type: 'textarea'
+      type: 'text'
     }),
     image: new FormField({
       formControl: new FormControl(),
@@ -68,9 +72,8 @@ export class CategoryFormComponent implements OnInit {
     public dialogRef: MatDialogRef<CategoryFormComponent>,
     @Inject(MAT_DIALOG_DATA) private data: any,
   ) {
-    this.dialogRef.updatePosition({
-      top: '100px',
-    });
+    const colWidth = 100 - (1 / 6);
+    this.dialogRef.updateSize(`${colWidth}vw`);
 
     if (this.data.edit) {
       this.createNew = false;

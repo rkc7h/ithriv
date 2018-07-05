@@ -31,6 +31,7 @@ import {
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
+import { CovalentTextEditorModule } from '@covalent/text-editor';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
@@ -54,7 +55,7 @@ import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { GradientBackgroundDirective } from './gradient-background.directive';
-import {DeviceDetectorModule} from 'ngx-device-detector';
+import { DeviceDetectorModule } from 'ngx-device-detector';
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
@@ -94,6 +95,8 @@ const routes: Routes = [
     BrowserModule,
     ColorPickerModule,
     CommonModule,
+    CovalentTextEditorModule,
+    DeviceDetectorModule.forRoot(),
     FlexLayoutModule,
     HttpClientModule,
     InfiniteScrollModule,
@@ -120,8 +123,7 @@ const routes: Routes = [
     MatTabsModule,
     MatToolbarModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(routes, { useHash: true }),
-    DeviceDetectorModule.forRoot()
+    RouterModule.forRoot(routes, { useHash: true })
   ],
   entryComponents: [
     CategoryFormComponent, ResourceFormComponent

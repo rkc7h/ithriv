@@ -49,13 +49,13 @@
 
     app-edit-category-button {
       position: absolute;
-      top: -6px;
+      top: -12px;
       right: 50px;
     }
 
     app-add-category-button {
       position: absolute;
-      top: -6px;
+      top: -12px;
       right: 0px;
     }
   }
@@ -154,6 +154,12 @@ mat-card.sub-sub-category {
       height: 60px;
       font-size: 60px;
     }
+  }
+
+  app-edit-category-button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
   }
 
 }

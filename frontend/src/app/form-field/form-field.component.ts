@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
 import { Icon } from '../icon';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { FormField } from '../form-field';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -11,7 +12,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
   styleUrls: ['./form-field.component.scss']
 })
 export class FormFieldComponent implements OnInit {
-  @Input() field;
+  @Input() field: FormField;
   @Input() errorMatcher: ErrorStateMatcher;
   @Input() formGroup: FormGroup;
   icons: Icon[];

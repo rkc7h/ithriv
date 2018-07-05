@@ -8,6 +8,7 @@ export class FormField {
   placeholder: string;
   type: string;
   icons: [string];
+  options: object;
 
   constructor(private _props) {
     for (const propName in this._props) {

@@ -39,7 +39,11 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 600,
       minLength: 20,
       placeholder: 'Description',
-      type: 'textarea'
+      type: 'textarea',
+      options: {
+        hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
+        status: ['words'],
+      }
     }),
     owner: new FormField({
       formControl: new FormControl(),
@@ -64,9 +68,8 @@ export class ResourceFormComponent implements OnInit {
     public dialogRef: MatDialogRef<ResourceFormComponent>,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {
-    this.dialogRef.updatePosition({
-      top: '100px',
-    });
+    const colWidth = 100 - (1 / 6);
+    this.dialogRef.updateSize(`${colWidth}vw`);
 
     if (this.data.edit) {
       this.createNew = false;

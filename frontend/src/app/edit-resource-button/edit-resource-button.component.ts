@@ -20,7 +20,6 @@ export class EditResourceButtonComponent implements OnInit {
 
   openEdit() {
     this.dialog.open(ResourceFormComponent, {
-      width: '30%',
       data: { 'edit': this.resource, 'parent_category': this.category }
     });
   }

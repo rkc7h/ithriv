@@ -20,7 +20,6 @@ export class AddResourceButtonComponent implements OnInit {
 
   openAdd() {
     this.dialog.open(ResourceFormComponent, {
-      width: '30%',
       data: { 'parent_category': this.category }
     });
   }
