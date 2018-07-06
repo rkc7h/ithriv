@@ -1,7 +1,7 @@
 from flask import logging
 
 from elasticsearch_dsl import DocType, Date, Float, Keyword, Text, \
-    Index, Search, analyzer, Nested, Integer, analysis, Q, tokenizer
+    Index, Search, analyzer, Nested, Integer, analysis, Q, tokenizer, Boolean
 import elasticsearch_dsl
 from elasticsearch_dsl.connections import connections
 import logging
@@ -68,6 +68,7 @@ class ElasticIndex:
         obj.last_updated = r.last_updated
         obj.website = r.website
         obj.owner = r.owner
+        obj.approved = r.approved
         ElasticResource.save(obj)
         if flush:
             self.resource_index.flush()
@@ -79,7 +80,8 @@ class ElasticIndex:
                              description=r.description,
                              last_updated = r.last_updated,
                              website=r.website,
-                             owner=r.owner
+                             owner=r.owner,
+                             approved=r.approved
                              )
 
         if (r.institution != None):
@@ -110,6 +112,7 @@ autocomplete_search = analyzer('autocomplete_search',
     tokenizer=tokenizer('lowercase')
 )
 
+
 class ElasticResource(DocType):
     id = Integer()
     name = Text(analyzer=autocomplete, search_analyzer=autocomplete_search)
@@ -120,6 +123,8 @@ class ElasticResource(DocType):
     website = Keyword()
     owner = Text()
     viewable_institution = Keyword(multi=True)
+    approved = Boolean()
+
 
 class ResourceSearch(elasticsearch_dsl.FacetedSearch):
     def __init__(self, *args, **kwargs):
@@ -134,7 +139,8 @@ class ResourceSearch(elasticsearch_dsl.FacetedSearch):
 
     facets = {
         'type': elasticsearch_dsl.TermsFacet(field='type'),
-        'institution': elasticsearch_dsl.TermsFacet(field='institution')
+        'institution': elasticsearch_dsl.TermsFacet(field='institution'),
+        'approved': elasticsearch_dsl.TermsFacet(field='approved')
     }
 
     def search(self):

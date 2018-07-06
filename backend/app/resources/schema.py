@@ -33,7 +33,7 @@ class ThrivResourceSchema(ModelSchema):
         model = ThrivResource
         fields = ('id', 'name', 'description', 'last_updated', 'owner',
                   'website', 'institution_id', 'type_id', 'type',
-                  'institution', 'availabilities',
+                  'institution', 'availabilities', 'approved',
                   'contact_email', 'contact_phone', 'contact_notes',
                   '_links')
     id = fields.Integer(required=False, allow_none=True)
@@ -141,7 +141,7 @@ class SearchSchema(ma.Schema):
 
     class FilterSchema(ma.Schema):
         field = fields.Str()
-        value = fields.Str()
+        value = fields.Raw()
 
         @post_load
         def make_filter(self, data):
