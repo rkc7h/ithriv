@@ -3,12 +3,14 @@
   <h2 mat-dialog-title>Category Details</h2>
 
   <mat-dialog-content>
-    <app-form-field [field]="fields.name" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-    <app-form-field [field]="fields.description" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-    <app-form-field [field]="fields.brief_description" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-    <app-form-field [field]="fields.image" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-    <app-form-field [field]="fields.color" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-    <app-form-field [field]="fields.icon" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.name.formControl.errors" [field]="fields.name" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.description.formControl.errors" [field]="fields.description" [formGroup]="categoryForm"
+      [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.brief_description.formControl.errors" [field]="fields.brief_description" [formGroup]="categoryForm"
+      [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.image.formControl.errors" [field]="fields.image" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.color.formControl.errors" [field]="fields.color" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.icon.formControl.errors" [field]="fields.icon" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions>

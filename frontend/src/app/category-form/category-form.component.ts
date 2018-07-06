@@ -38,9 +38,8 @@ export class CategoryFormComponent implements OnInit {
       placeholder: 'Description',
       type: 'textarea',
       options: {
-        hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
-        status: ['words'],
-        forceSync: true,
+        // hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
+        status: ['words']
       }
     }),
     brief_description: new FormField({

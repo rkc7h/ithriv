@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, ValidationErrors } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
 import { Icon } from '../icon';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
@@ -13,6 +13,7 @@ import { FormField } from '../form-field';
 })
 export class FormFieldComponent implements OnInit {
   @Input() field: FormField;
+  @Input() errors: ValidationErrors;
   @Input() errorMatcher: ErrorStateMatcher;
   @Input() formGroup: FormGroup;
   icons: Icon[];

@@ -45,7 +45,7 @@
 </mat-form-field>
 
 <div *ngIf="field.type === 'textarea'" class="mat-typography">
-  <app-form-field-label [field]="field" [valid]="field.formControl.valid"></app-form-field-label>
+  <app-form-field-label [field]="field" [errors]="errors"></app-form-field-label>
   <mat-error *ngIf="field.formControl.errors && (field.formControl.dirty || field.formControl.touched)">
     <span *ngIf="field.required && field.formControl.hasError('required')">
       {{field.placeholder}} is

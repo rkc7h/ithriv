@@ -4,10 +4,11 @@
 
   <mat-dialog-content>
     <!-- TODO:  Add Type, Institution, and Availability -->
-    <app-form-field [field]="fields.name" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
-    <app-form-field [field]="fields.description" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
-    <app-form-field [field]="fields.owner" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
-    <app-form-field [field]="fields.website" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.name.formControl.errors" [field]="fields.name" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.description.formControl.errors" [field]="fields.description" [formGroup]="resourceForm"
+      [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.owner.formControl.errors" [field]="fields.owner" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.website.formControl.valid" [field]="fields.website" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions>
