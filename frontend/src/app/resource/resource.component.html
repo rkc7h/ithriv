@@ -2,7 +2,7 @@
   <div *ngIf="resource" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em" fxLayoutAlign="center">
     <div fxFlex="75%">
       <h1>{{resource.name}}</h1>
-      <p>{{resource.description}}</p>
+      <markdown>{{resource.description}}</markdown>
       <app-availability [resource]="resource"></app-availability>
     </div>
     <mat-card fxFlex="25%">

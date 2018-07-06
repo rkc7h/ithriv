@@ -34,6 +34,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CovalentTextEditorModule } from '@covalent/text-editor';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { MarkdownModule } from 'ngx-markdown';
 import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
 import { AddResourceButtonComponent } from './add-resource-button/add-resource-button.component';
 import { AppComponent } from './app.component';
@@ -67,6 +68,7 @@ const routes: Routes = [
   { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
   { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
+  { path: 'resource/:resource/edit', component: ResourceFormComponent, data: { title: 'Edit Resource' } },
 ];
 
 @NgModule({
@@ -102,6 +104,7 @@ const routes: Routes = [
     FlexLayoutModule,
     HttpClientModule,
     InfiniteScrollModule,
+    MarkdownModule.forRoot(),
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,

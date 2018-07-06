@@ -12,6 +12,24 @@ export class BrowseComponent implements OnInit {
   categoryId = 1;
   isDataLoaded = false;
   category: Category;
+  dummyText = {
+    category: `
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+      incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+      exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+      irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+      pariatur.
+    `,
+    c: `
+      This should be a brief statement about the nature of the section and the resources
+      users can find within it. It should briefly describe the contents of this section
+      and give an overview of the resources that will be within it.
+    `,
+    sc: `
+      The dummy text is a page description on the next page that establishes the content
+      of the definitions and glossary category.
+    `,
+  };
 
   constructor(private router: Router,
     private route: ActivatedRoute,

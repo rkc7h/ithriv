@@ -139,6 +139,20 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
     max-width: 600px;
   }
 
+  #browse {
+    .header {
+      markdown {
+        p, blockquote, li {
+          color: white;
+        }
+      }
+    }
+
+    .sub-category > markdown > p {
+      margin-left: 2em;
+    }
+  }
+
   h1, h2 {
     background-color: #fff;
     color: #000;
