@@ -33,10 +33,15 @@ class ThrivResourceSchema(ModelSchema):
         model = ThrivResource
         fields = ('id', 'name', 'description', 'last_updated', 'owner',
                   'website', 'institution_id', 'type_id', 'type',
-                  'institution', 'availabilities', '_links')
+                  'institution', 'availabilities',
+                  'contact_email', 'contact_phone', 'contact_notes',
+                  '_links')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
+    contact_email = fields.String(required=False, allow_none=True)
+    contact_phone = fields.String(required=False, allow_none=True)
+    contact_notes = fields.String(required=False, allow_none=True)
     website = fields.String(required=False, allow_none=True)
     institution_id = fields.Integer(required=False, allow_none=True)
     type_id = fields.Integer(required=False, allow_none=True)

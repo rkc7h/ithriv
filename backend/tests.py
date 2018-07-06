@@ -51,12 +51,15 @@ class TestCase(unittest.TestCase):
 
     def construct_resource(self, type="TestyType", institution="TestyU",
                            name="Test Resource", description="Some stuff bout it",
-                           owner="Mac Daddy Test", website="testy.edu", available_to=None):
+                           owner="Mac Daddy Test", website="testy.edu", available_to=None,
+                           contact_email='mac@daddy.com', contact_phone='540-457-0024',
+                           contact_notes='No robo-calls if you please.'):
         type_obj = ThrivType(name=type)
         inst_obj = ThrivInstitution(name=institution)
         resource = ThrivResource(name=name, description=description,
                                  type=type_obj, institution=inst_obj,
-                                 owner=owner, website=website)
+                                 owner=owner, website=website, contact_email=contact_email,
+                                 contact_phone=contact_phone, contact_notes=contact_notes)
         db.session.add(resource)
 
         if available_to is not None:
@@ -209,6 +212,19 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["owner"], 'Mac Daddy Test')
+
+    def test_resource_has_contact_information(self):
+        self.construct_resource(contact_email='thor@disney.com', contact_phone='555-123-4321',
+                                contact_notes='Valhala calling!')
+        rv = self.app.get('/api/resource/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response["contact_email"], 'thor@disney.com')
+        self.assertEqual(response["contact_phone"], '555-123-4321')
+        self.assertEqual(response["contact_notes"], 'Valhala calling!')
+
 
     def test_resource_has_availability(self):
         self.construct_resource(owner="Mac Daddy Test", available_to="UVA")
