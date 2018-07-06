@@ -5,9 +5,6 @@
   <input *ngIf="(field.type === 'text') || (field.type === 'url') || (field.type === 'email')" matInput [formControl]="field.formControl"
     [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder" [required]="field.required" type="{{field.type}}">
 
-  <!-- <textarea *ngIf="field.type === 'textarea'" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher"
-    [placeholder]="field.placeholder" [required]="field.required"></textarea> -->
-
   <mat-select *ngIf="field.type === 'selectIcon'" [formControl]="field.formControl" [placeholder]="field.placeholder" [required]="field.required">
     <mat-option>-- None --</mat-option>
     <mat-option *ngFor="let icon of icons" value="{{icon.id}}">
@@ -47,9 +44,23 @@
   </mat-error>
 </mat-form-field>
 
-<div class="mat-typography">
-  <mat-label *ngIf="field.type === 'textarea'">
-    {{field.placeholder}}
-  </mat-label>
-  <td-text-editor *ngIf="(field.type === 'textarea')" [formControl]="field.formControl" [value]="field.formControl.value" [options]="field.options"></td-text-editor>
+<div *ngIf="field.type === 'textarea'" class="mat-typography">
+  <app-form-field-label [field]="field" [valid]="field.formControl.valid"></app-form-field-label>
+  <mat-error *ngIf="field.formControl.errors && (field.formControl.dirty || field.formControl.touched)">
+    <span *ngIf="field.required && field.formControl.hasError('required')">
+      {{field.placeholder}} is
+      <strong>required</strong>
+    </span>
+    <span *ngIf="field.minLength && field.formControl.hasError('minlength')">
+      Must be at least
+      <strong>{{field.minLength}}</strong> characters long. You only entered
+      <strong>{{currentLength()}}</strong> characters.
+    </span>
+    <span *ngIf="field.maxLength && field.formControl.hasError('maxlength')">
+      Maximum length is
+      <strong>"{{field.maxLength}}"</strong> characters. You entered
+      <strong>{{currentLength()}}</strong> characters.
+    </span>
+  </mat-error>
+  <td-text-editor [formControl]="field.formControl" [value]="field.formControl.value" [options]="field.options"></td-text-editor>
 </div>

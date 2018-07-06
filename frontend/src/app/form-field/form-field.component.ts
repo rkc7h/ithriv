@@ -20,10 +20,12 @@ export class FormFieldComponent implements OnInit {
   constructor(
     private api: ResourceApiService
   ) {
-    this.loadIcons();
   }
 
   ngOnInit() {
+    if (this.field.type === 'selectIcon') {
+      this.loadIcons();
+    }
   }
 
   loadIcons() {

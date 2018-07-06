@@ -1,0 +1,16 @@
+<h1>Valid: {{valid}}</h1>
+
+<span class="mat-label-override">
+  <span *ngIf="!valid" class="mat-form-field mat-form-field-invalid">
+    <label class="mat-form-field-label">
+      {{field.placeholder}} {{field.formControl.status}}. :(
+      <span *ngIf="field.required" class="mat-placeholder-required mat-form-field-required-marker ng-star-inserted">*</span>
+    </label>
+  </span>
+  <span *ngIf="valid" class="mat-form-field mat-form-field-valid">
+    <label class="mat-form-field-label">
+      {{field.placeholder}} {{field.formControl.status}}! :D
+      <span *ngIf="field.required" class="mat-placeholder-required mat-form-field-required-marker ng-star-inserted">*</span>
+    </label>
+  </span>
+</span>

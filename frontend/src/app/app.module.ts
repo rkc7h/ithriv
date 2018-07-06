@@ -56,6 +56,7 @@ import { SearchComponent } from './search/search.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { GradientBackgroundDirective } from './gradient-background.directive';
 import { DeviceDetectorModule } from 'ngx-device-detector';
+import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
@@ -88,7 +89,8 @@ const routes: Routes = [
     AddCategoryButtonComponent,
     EditResourceButtonComponent,
     AddResourceButtonComponent,
-    GradientBackgroundDirective
+    GradientBackgroundDirective,
+    FormFieldLabelComponent
   ],
   imports: [
     BrowserAnimationsModule,

@@ -40,6 +40,7 @@ export class CategoryFormComponent implements OnInit {
       options: {
         hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
         status: ['words'],
+        forceSync: true,
       }
     }),
     brief_description: new FormField({
@@ -89,6 +90,9 @@ export class CategoryFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (!this.createNew) {
+      this.validate();
+    }
   }
 
   loadForm() {
@@ -121,6 +125,7 @@ export class CategoryFormComponent implements OnInit {
   }
 
   onSubmit() {
+    this.validate();
     this.isDataLoaded = false;
 
     if (this.categoryForm.valid) {
@@ -145,6 +150,15 @@ export class CategoryFormComponent implements OnInit {
           this.dialogRef.close();
           this.isDataLoaded = true;
         });
+      }
+    }
+  }
+
+  validate() {
+    for (const key in this.categoryForm.controls) {
+      if (this.categoryForm.controls.hasOwnProperty(key)) {
+        const control = this.categoryForm.controls[key];
+        control.markAsTouched();
       }
     }
   }
