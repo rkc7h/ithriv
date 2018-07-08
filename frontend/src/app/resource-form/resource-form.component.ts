@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
@@ -66,22 +67,16 @@ export class ResourceFormComponent implements OnInit {
   constructor(
     private api: ResourceApiService,
     public dialogRef: MatDialogRef<ResourceFormComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: any
+    private route: ActivatedRoute,
+    @Inject(MAT_DIALOG_DATA) private dialogData: any
   ) {
-    const colWidth = 100 - (1 / 6);
-    this.dialogRef.updateSize(`${colWidth}vw`);
+    this.loadData();
 
-    if (this.data.edit) {
-      this.createNew = false;
-      this.resource = this.data.edit;
-    } else {
-      this.createNew = true;
-      this.resource = { id: null, name: '', description: '' };
+    if (this.dialogRef) {
+      const colWidth = 100 - (1 / 6);
+      this.dialogRef.updateSize(`${colWidth}vw`);
     }
 
-    if (this.data.parent_category) {
-      this.category = this.data.parent_category;
-    }
     this.loadForm();
   }
 
@@ -89,6 +84,58 @@ export class ResourceFormComponent implements OnInit {
     if (!this.createNew) {
       this.validate();
     }
+  }
+
+  loadData() {
+    // If editing resource in a dialog, load data from dialogData
+    if (this.dialogData) {
+      this.loadDataFromDialog();
+    } else {
+      this.loadDataFromAPI();
+    }
+  }
+
+  loadDataFromDialog() {
+    if (this.dialogData.edit) {
+      this.createNew = false;
+      this.resource = this.dialogData.edit;
+      this.isDataLoaded = true;
+    } else {
+      this.createNew = true;
+      this.resource = { id: null, name: '', description: '' };
+      this.isDataLoaded = true;
+    }
+
+    if (this.dialogData.parent_category) {
+      this.category = this.dialogData.parent_category;
+    }
+  }
+
+  loadDataFromAPI() {
+    this.route.params.subscribe(params => {
+      const resourceId = params['resource'];
+      const categoryId = params['category'];
+
+      if (resourceId) {
+        this.api
+          .getResource(resourceId)
+          .subscribe((r) => {
+            this.createNew = false;
+            this.resource = r;
+            this.isDataLoaded = true;
+          });
+      } else {
+        this.createNew = true;
+        this.resource = { id: null, name: '', description: '' };
+        this.isDataLoaded = true;
+      }
+
+      if (categoryId) {
+        this.api
+          .getCategory(categoryId)
+          .subscribe((c) => this.category = c);
+      }
+    });
   }
 
   loadForm() {
@@ -145,22 +192,23 @@ export class ResourceFormComponent implements OnInit {
       if (this.createNew) {
         this.api.addResource(this.resource).subscribe(r => {
           this.resource = r;
-          if (this.data.parent_category) {
+          if (this.dialogData.parent_category) {
             this.api.linkResourceAndCategory(this.resource, this.category).subscribe();
           }
-          this.dialogRef.close();
+
+          this.close();
         });
       } else {
         this.api.updateResource(this.resource).subscribe(r => {
           this.resource = r;
-          this.dialogRef.close();
+          this.close();
         });
       }
     }
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.close();
   }
 
   validate() {
@@ -178,9 +226,13 @@ export class ResourceFormComponent implements OnInit {
 
   onDelete() {
     this.api.deleteResource(this.resource).subscribe(r => {
-      this.dialogRef.close();
+      this.close();
     },
       error => this.error = error
     );
+  }
+
+  close() {
+    if (this.dialogRef) { this.dialogRef.close(); }
   }
 }
