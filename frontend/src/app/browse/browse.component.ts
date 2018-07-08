@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { routerTransition } from '../shared/router.animations';
 
 @Component({
   selector: 'app-browse',
   templateUrl: './browse.component.html',
-  styleUrls: ['./browse.component.scss']
+  styleUrls: ['./browse.component.scss'],
+  animations: [routerTransition],
 })
 export class BrowseComponent implements OnInit {
+  @HostBinding('@routerTransition')
+  category: Category;
   categoryId = 1;
   isDataLoaded = false;
-  category: Category;
   dummyText = {
     category: `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor

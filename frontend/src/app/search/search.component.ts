@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Renderer2, ViewChild, HostBinding } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSidenav } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,16 +7,17 @@ import { Category } from '../category';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { Filter, ResourceQuery } from '../resource-query';
+import { routerTransition } from '../shared/router.animations';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss']
+  styleUrls: ['./search.component.scss'],
+  animations: [routerTransition],
 })
 export class SearchComponent implements OnInit {
-
-  @Input()
-  resourceQuery: ResourceQuery;
+  @HostBinding('@routerTransition')
+  @Input() resourceQuery: ResourceQuery;
 
   showFilters = false;
 

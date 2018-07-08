@@ -30,7 +30,6 @@ import {
 } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, Routes } from '@angular/router';
 import { CovalentTextEditorModule } from '@covalent/text-editor';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
