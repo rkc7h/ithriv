@@ -18,6 +18,7 @@ const routes: Routes = [
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
   { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
   { path: 'resource/:resource/edit', component: ResourceFormComponent, data: { title: 'Edit Resource' } },
+  { path: 'resource/add/:category', component: ResourceFormComponent, data: { title: 'Add Resource' } },
   { path: '**', component: NotFoundComponent }
 ];
 
