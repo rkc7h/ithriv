@@ -9,6 +9,9 @@ BACKEND_PATH="${HOME_DIR}/backend"
 FRONTEND_PATH="${HOME_DIR}/frontend"
 DATABASE_PATH="/usr/local/var/postgres"
 
+echo -e '\n\n*** Stopping currently-running services... ***\n\n'
+./stop.sh
+
 echo "Running from ${HOME_DIR}"
 pg_ctl start -D $DATABASE_PATH &
 POSTGRES_PID=$! # Save the process ID
