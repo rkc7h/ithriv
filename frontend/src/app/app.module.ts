@@ -58,18 +58,8 @@ import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { GradientBackgroundDirective } from './gradient-background.directive';
 import { DeviceDetectorModule } from 'ngx-device-detector';
 import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
-
-const routes: Routes = [
-  { path: '', redirectTo: 'search', pathMatch: 'full' },
-  { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
-  { path: 'search', component: SearchComponent, data: { title: 'Search' } },
-  { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
-  { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
-  { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
-  { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
-  { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
-  { path: 'resource/:resource/edit', component: ResourceFormComponent, data: { title: 'Edit Resource' } },
-];
+import { NotFoundComponent } from './not-found/not-found.component';
+import { AppRoutingModule } from './app-routing/app-routing.module';
 
 @NgModule({
   declarations: [
@@ -92,9 +82,11 @@ const routes: Routes = [
     EditResourceButtonComponent,
     AddResourceButtonComponent,
     GradientBackgroundDirective,
-    FormFieldLabelComponent
+    FormFieldLabelComponent,
+    NotFoundComponent
   ],
   imports: [
+    AppRoutingModule,
     BrowserAnimationsModule,
     BrowserModule,
     ColorPickerModule,
@@ -127,8 +119,7 @@ const routes: Routes = [
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,
-    ReactiveFormsModule,
-    RouterModule.forRoot(routes, { useHash: true })
+    ReactiveFormsModule
   ],
   entryComponents: [
     CategoryFormComponent, ResourceFormComponent

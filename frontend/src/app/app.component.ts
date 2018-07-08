@@ -44,5 +44,10 @@ export class AppComponent {
       this.trustUrl(icon.url)
     );
   }
+
+  getState(outlet) {
+    return outlet.activatedRouteData.state;
+  }
+
 }
 
