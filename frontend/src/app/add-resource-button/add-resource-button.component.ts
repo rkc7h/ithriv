@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { MatDialog } from '@angular/material';
 import { Category } from '../category';
-import { ResourceFormComponent } from '../resource-form/resource-form.component';
+import { Router } from '../../../node_modules/@angular/router';
 
 @Component({
   selector: 'app-add-resource-button',
@@ -11,16 +10,12 @@ import { ResourceFormComponent } from '../resource-form/resource-form.component'
 export class AddResourceButtonComponent implements OnInit {
   @Input() category: Category;
 
-  constructor(
-    private dialog: MatDialog
-  ) { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
   openAdd() {
-    this.dialog.open(ResourceFormComponent, {
-      data: { 'parent_category': this.category }
-    });
+    this.router.navigateByUrl(`resource/add/${this.category.id}`);
   }
 }

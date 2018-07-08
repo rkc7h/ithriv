@@ -1,8 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { MatDialog } from '@angular/material';
 import { Category } from '../category';
 import { Resource } from '../resource';
-import { ResourceFormComponent } from '../resource-form/resource-form.component';
+import { Router } from '../../../node_modules/@angular/router';
 
 @Component({
   selector: 'app-edit-resource-button',
@@ -13,15 +12,13 @@ export class EditResourceButtonComponent implements OnInit {
   @Input() resource: Resource;
   @Input() category: Category;
 
-  constructor(private dialog: MatDialog) { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
   openEdit() {
-    this.dialog.open(ResourceFormComponent, {
-      data: { 'edit': this.resource, 'parent_category': this.category }
-    });
+    this.router.navigateByUrl(`resource/${this.resource.id}/edit`);
   }
 
 }

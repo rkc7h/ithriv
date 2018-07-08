@@ -1,7 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
@@ -37,7 +36,7 @@ export class ResourceFormComponent implements OnInit {
     description: new FormField({
       formControl: new FormControl(),
       required: true,
-      maxLength: 600,
+      maxLength: 2000,
       minLength: 20,
       placeholder: 'Description',
       type: 'textarea',
@@ -66,74 +65,43 @@ export class ResourceFormComponent implements OnInit {
 
   constructor(
     private api: ResourceApiService,
-    public dialogRef: MatDialogRef<ResourceFormComponent>,
     private route: ActivatedRoute,
-    @Inject(MAT_DIALOG_DATA) private dialogData: any
+    private router: Router
   ) {
     this.loadData();
-
-    if (this.dialogRef) {
-      const colWidth = 100 - (1 / 6);
-      this.dialogRef.updateSize(`${colWidth}vw`);
-    }
-
-    this.loadForm();
   }
 
   ngOnInit() {
-    if (!this.createNew) {
-      this.validate();
-    }
   }
 
   loadData() {
-    // If editing resource in a dialog, load data from dialogData
-    if (this.dialogData) {
-      this.loadDataFromDialog();
-    } else {
-      this.loadDataFromAPI();
-    }
-  }
-
-  loadDataFromDialog() {
-    if (this.dialogData.edit) {
-      this.createNew = false;
-      this.resource = this.dialogData.edit;
-      this.isDataLoaded = true;
-    } else {
-      this.createNew = true;
-      this.resource = { id: null, name: '', description: '' };
-      this.isDataLoaded = true;
-    }
-
-    if (this.dialogData.parent_category) {
-      this.category = this.dialogData.parent_category;
-    }
-  }
-
-  loadDataFromAPI() {
     this.route.params.subscribe(params => {
       const resourceId = params['resource'];
-      const categoryId = params['category'];
 
       if (resourceId) {
+        this.createNew = false;
         this.api
           .getResource(resourceId)
           .subscribe((r) => {
-            this.createNew = false;
             this.resource = r;
             this.isDataLoaded = true;
+            this.loadForm();
           });
       } else {
         this.createNew = true;
         this.resource = { id: null, name: '', description: '' };
-        this.isDataLoaded = true;
-      }
+        const categoryId = params['category'];
 
-      if (categoryId) {
-        this.api
-          .getCategory(categoryId)
-          .subscribe((c) => this.category = c);
+        if (categoryId) {
+          this.api
+            .getCategory(categoryId)
+            .subscribe((c) => {
+              this.category = c;
+              this.isDataLoaded = true;
+              this.loadForm();
+              this.isDataLoaded = true;
+            });
+        }
       }
     });
   }
@@ -175,10 +143,17 @@ export class ResourceFormComponent implements OnInit {
 
     this.resourceForm = new FormGroup(formGroup);
     this.isDataLoaded = true;
+
+    if (!this.createNew) {
+      this.validate();
+    }
   }
 
   onSubmit() {
     this.validate();
+
+    console.log(this.resourceForm.valid);
+
 
     if (this.resourceForm.valid) {
       this.isDataLoaded = false;
@@ -192,7 +167,7 @@ export class ResourceFormComponent implements OnInit {
       if (this.createNew) {
         this.api.addResource(this.resource).subscribe(r => {
           this.resource = r;
-          if (this.dialogData.parent_category) {
+          if (this.category) {
             this.api.linkResourceAndCategory(this.resource, this.category).subscribe();
           }
 
@@ -233,6 +208,13 @@ export class ResourceFormComponent implements OnInit {
   }
 
   close() {
-    if (this.dialogRef) { this.dialogRef.close(); }
+    console.log('this.resource.id:', this.resource && this.resource.id);
+
+    // Go to resource screen
+    if (this.resource && this.resource.id) {
+      this.router.navigate(['resource', this.resource.id]);
+    } else if (this.category && this.category.id) {
+      this.router.navigate(['category', this.category.id]);
+    }
   }
 }
