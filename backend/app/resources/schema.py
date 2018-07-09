@@ -1,6 +1,7 @@
 from flask_marshmallow.sqla import ModelSchema
 from marshmallow import fields, post_load
 from app import ma
+from app.model.availability import Availability
 from app.model.category import Category
 from app.model.icon import Icon
 from app.model.institution import ThrivInstitution
@@ -24,7 +25,7 @@ class ThrivTypeSchema(ModelSchema):
 
 class AvailabilitySchema(ModelSchema):
     class Meta:
-        model = ThrivType
+        model = Availability
         fields = ('id', 'institution_id', 'resource_id', 'viewable', 'available', 'institution')
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
 
