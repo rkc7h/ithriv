@@ -8,6 +8,7 @@ from app.model.resource import ThrivResource
 from app.model.resource_category import ResourceCategory
 from app.model.search import Filter, Search
 from app.model.type import ThrivType
+from app.model.user import User
 
 
 class ThrivInstitutionSchema(ModelSchema):
@@ -172,4 +173,8 @@ class SearchSchema(ma.Schema):
         return Search(**data)
 
 
+class UserSchema(ModelSchema):
+    class Meta:
+        model = User
+        fields = ('id', 'uid', 'display_name', 'email_address')
 

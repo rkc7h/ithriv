@@ -13,6 +13,7 @@ from app.model.type import ThrivType
 from app import db, elastic_index, file_server
 import csv
 
+from app.model.user import User
 from app.resources.schema import CategorySchema
 
 
@@ -25,6 +26,7 @@ class DataLoader:
         self.category_file = directory + "/categories.csv"
         self.resource_category_file = directory + "/resource_categories.csv"
         self.icon_file = directory + "/icons.csv"
+        self.user_file = directory + "/users.csv"
         self.mime = magic.Magic(mime=True)
         print("Data loader initialized")
 
@@ -119,6 +121,18 @@ class DataLoader:
             print("There are now %i links between resources and categories in the database." %
                   db.session.query(ResourceCategory).count())
 
+    def load_users(self):
+        with open(self.user_file, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
+            next(reader, None)  # use headers to set availability
+
+            for row in reader:
+                user = User(id=row[0], uid=row[1], email_address=row[2], display_name=row[3])
+                db.session.add(user)
+            db.session.commit()
+            print("There are now %i users in the database." %
+                  db.session.query(User).count())
+
     def get_resource_by_id(self, id):
         resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
         if resource is None:
@@ -154,4 +168,5 @@ class DataLoader:
         db.session.query(ThrivInstitution).delete()
         db.session.query(ThrivType).delete()
         db.session.query(Category).delete()
+        db.session.query(User).delete()
         db.session.commit()
