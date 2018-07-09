@@ -44,15 +44,9 @@ npm install -g @angular/cli
 * Please use Python 3's virtual environment setup, and install the dependencies in requirements.txt
 ```bash
 cd backend
-pip3 install -r requirements.txt
 python3 -m venv python-env
 source python-env/bin/activate
-```
-
-* Consider using an auto-environment like pythons autoenv, and creating a shell script that gets executed whenever you enter the backend directory. My .env file looks like this (but isn't committed as you might have different needs)
-```
-source python-env/bin/activate
-export FLASK_APP=./app/__init__.py
+pip3 install -r requirements.txt
 ```
 
 ## Database Setup
@@ -79,6 +73,15 @@ You will need to update your database each time you return to do a pull to make 
 ```BASH
 flask db upgrade
 ```
+### Database Reset
+If you encounter errors with the database, you can blow it away completely and reset with the following commands in PSQL:
+```SQL
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+COMMENT ON SCHEMA public IS 'standard public schema';
+```
 
 ### Update Data Models
 Each time you modify your data models you will need to create new migrations. The following command will compare the database to the code and create new migrations as needed.  You can edit this newly generated file - it will show up under migrations/versions
@@ -86,12 +89,26 @@ Each time you modify your data models you will need to create new migrations. Th
 flask db migrate
 ```
 
+### Set up your connection to S3
+Create a .aws directory in your home direction
+create a file called "credentials"
+Place your s3 credentials in this file (will need to get a copy from someone else)
+
+
+
 ### Load in the seed data
 This will pull in initial values into the database.
 ```BASH
 flask loadicons
 flask initdb
 flask initindex
+```
+
+### Starting Elastic Search
+Elastic Search (on Debian at least) may not start up automatically.  In these cases, you can start it 
+when you need it by running:
+```BASH
+sudo service elasticsearch start
 ```
 
 ## Add a config file
