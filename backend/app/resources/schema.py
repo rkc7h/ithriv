@@ -26,7 +26,7 @@ class ThrivTypeSchema(ModelSchema):
 class AvailabilitySchema(ModelSchema):
     class Meta:
         model = Availability
-        fields = ('id', 'institution_id', 'resource_id', 'viewable', 'available', 'institution')
+        fields = ('id', 'institution_id', 'resource_id', 'available', 'institution')
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
 
 class ThrivResourceSchema(ModelSchema):
