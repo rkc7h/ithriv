@@ -12,7 +12,8 @@ class SearchEndpoint(flask_restful.Resource):
 
     def post(self):
         request_data = request.get_json()
-        search = SearchSchema().load(request_data).data
+        search, errors = SearchSchema().load(request_data)
+        if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
         try:
             results = elastic_index.search_resources(search)
         except elasticsearch.ElasticsearchException as e:
