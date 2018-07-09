@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
@@ -7,13 +7,16 @@ import { FormField } from '../form-field';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ValidateUrl } from '../shared/validators/url.validator';
+import { routerTransition } from '../shared/router.animations';
 
 @Component({
   selector: 'app-resource-form',
   templateUrl: './resource-form.component.html',
-  styleUrls: ['./resource-form.component.scss']
+  styleUrls: ['./resource-form.component.scss'],
+  animations: [routerTransition]
 })
 export class ResourceFormComponent implements OnInit {
+  @HostBinding('@routerTransition')
   category: Category;
   createNew = false;
   error: string;
@@ -31,7 +34,7 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 140,
       minLength: 1,
       placeholder: 'Name',
-      type: 'text'
+      type: 'text',
     }),
     description: new FormField({
       formControl: new FormControl(),
@@ -53,6 +56,13 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Owner',
       type: 'text'
     }),
+    institution: new FormField({
+      formControl: new FormControl(),
+      required: true,
+      placeholder: 'Select Institution',
+      type: 'select',
+      apiSource: 'getInstitutions'
+    }),
     website: new FormField({
       formControl: new FormControl(),
       required: true,
@@ -60,6 +70,14 @@ export class ResourceFormComponent implements OnInit {
       minLength: 7,
       placeholder: 'Website',
       type: 'url'
+    }),
+    categories: new FormField({
+      formControl: new FormControl(),
+      required: true,
+      placeholder: 'Select Categories',
+      type: 'tree',
+      apiSource: 'getCategories',
+      multiSelect: true
     }),
   };
 
@@ -147,6 +165,18 @@ export class ResourceFormComponent implements OnInit {
     if (!this.createNew) {
       this.validate();
     }
+  }
+
+  getFields(): FormField[] {
+    const fields = [];
+
+    for (const fieldName in this.fields) {
+      if (this.fields.hasOwnProperty(fieldName)) {
+        fields.push(this.fields[fieldName]);
+      }
+    }
+
+    return fields;
   }
 
   onSubmit() {

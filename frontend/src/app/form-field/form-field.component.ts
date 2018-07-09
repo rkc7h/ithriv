@@ -16,21 +16,27 @@ export class FormFieldComponent implements OnInit {
   @Input() errors: ValidationErrors;
   @Input() errorMatcher: ErrorStateMatcher;
   @Input() formGroup: FormGroup;
-  icons: Icon[];
+  options = [];
 
-  constructor(
-    private api: ResourceApiService
-  ) {
+  constructor(private api: ResourceApiService) {
   }
 
   ngOnInit() {
-    if (this.field.type === 'selectIcon') {
-      this.loadIcons();
-    }
+    this.loadOptions();
   }
 
-  loadIcons() {
-    this.api.getIcons().subscribe(icons => this.icons = icons);
+  loadOptions() {
+    if (this.field.type === 'select') {
+      const source = this.field.apiSource;
+
+      if (this.api[source] && (typeof this.api[source] === 'function')) {
+        this.api[source]().subscribe(results => {
+          console.log(`${source} results:`, results);
+
+          this.options = results;
+        });
+      }
+    }
   }
 
   currentLength() {

@@ -5,15 +5,23 @@
   <input *ngIf="(field.type === 'text') || (field.type === 'url') || (field.type === 'email')" matInput [formControl]="field.formControl"
     [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder" [required]="field.required" type="{{field.type}}">
 
-  <mat-select *ngIf="field.type === 'selectIcon'" [formControl]="field.formControl" [placeholder]="field.placeholder" [required]="field.required">
+
+  <app-tree-select *ngIf="field.type === 'tree'" [field]="field"></app-tree-select>
+  <mat-label *ngIf="field.type === 'tree'">
+    {{field.placeholder}}
+  </mat-label>
+
+  <mat-select *ngIf="field.type === 'select'" [multiple]="field.multiSelect" [formControl]="field.formControl" [placeholder]="field.placeholder"
+    [required]="field.required">
     <mat-option>-- None --</mat-option>
-    <mat-option *ngFor="let icon of icons" value="{{icon.id}}">
-      <mat-icon svgIcon="ithriv_{{icon.id}}"></mat-icon>
-      {{icon.name}}
+    <mat-option *ngFor="let option of options" value="{{option.id}}">
+      <mat-icon *ngIf="field.showIcons" svgIcon="ithriv_{{option.id}}"></mat-icon>
+      {{option.name}}
     </mat-option>
+
   </mat-select>
-  <mat-label *ngIf="field.type === 'selectIcon'">
-    Select icon
+  <mat-label *ngIf="field.type === 'select'">
+    {{field.placeholder}}
   </mat-label>
 
   <mat-hint *ngIf="field.maxLength" align="end">

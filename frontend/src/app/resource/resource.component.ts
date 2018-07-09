@@ -1,15 +1,18 @@
 import { ActivatedRoute } from '@angular/router';
 import { Category } from '../category';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { routerTransition } from '../shared/router.animations';
 
 @Component({
   selector: 'app-resource',
   templateUrl: './resource.component.html',
-  styleUrls: ['./resource.component.scss']
+  styleUrls: ['./resource.component.scss'],
+  animations: [routerTransition]
 })
 export class ResourceComponent implements OnInit {
+  @HostBinding('@routerTransition')
   resourceId: number;
   @Input() resource: Resource;
   @Input() categories: Category[];

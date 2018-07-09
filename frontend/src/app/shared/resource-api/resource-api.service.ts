@@ -9,6 +9,7 @@ import { ResourceCategory } from '../../resource-category';
 import { ResourceQuery } from '../../resource-query';
 import { CategoryResource } from '../../category-resource';
 import { Icon } from '../../icon';
+import { Institution } from '../../institution';
 
 @Injectable()
 export class ResourceApiService {
@@ -16,6 +17,7 @@ export class ResourceApiService {
   apiRoot = environment.api;
   category_url = `${this.apiRoot}/api/category`;
   icon_url = `${this.apiRoot}/api/icon`;
+  institution_url = `${this.apiRoot}/api/institution`;
   resource_category_url = `${this.apiRoot}/api/resource_category`;
   resource_url = `${this.apiRoot}/api/resource`;
   search_resource_url = `${this.apiRoot}/api/search`;
@@ -88,6 +90,12 @@ export class ResourceApiService {
   /** getIcons */
   getIcons(): Observable<Icon[]> {
     return this.httpClient.get<Icon[]>(this.icon_url)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getInstitutions */
+  getInstitutions(): Observable<Institution[]> {
+    return this.httpClient.get<Institution[]>(this.institution_url)
       .pipe(catchError(this.handleError));
   }
 

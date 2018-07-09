@@ -26,7 +26,8 @@ import {
   MatSnackBarModule,
   MatStepperModule,
   MatTabsModule,
-  MatToolbarModule
+  MatToolbarModule,
+  MatTreeModule
 } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -59,6 +60,7 @@ import { DeviceDetectorModule } from 'ngx-device-detector';
 import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { AppRoutingModule } from './app-routing/app-routing.module';
+import { TreeSelectComponent } from './tree-select/tree-select.component';
 
 @NgModule({
   declarations: [
@@ -82,7 +84,8 @@ import { AppRoutingModule } from './app-routing/app-routing.module';
     AddResourceButtonComponent,
     GradientBackgroundDirective,
     FormFieldLabelComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    TreeSelectComponent
   ],
   imports: [
     AppRoutingModule,
@@ -118,6 +121,7 @@ import { AppRoutingModule } from './app-routing/app-routing.module';
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,
+    MatTreeModule,
     ReactiveFormsModule
   ],
   entryComponents: [
