@@ -1,33 +1,42 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, OnInit, Input } from '@angular/core';
-import { MatTreeNestedDataSource } from '@angular/material/tree';
+import { Component, OnInit, Input, HostBinding } from '@angular/core';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FormField } from '../form-field';
 import { Category } from '../category';
+import { of as observableOf } from '../../../node_modules/rxjs';
+import { routerTransition } from '../shared/router.animations';
+import { MatTreeNestedDataSource } from '../../../node_modules/@angular/material';
 
 @Component({
   selector: 'app-tree-select',
   templateUrl: './tree-select.component.html',
-  styleUrls: ['./tree-select.component.scss']
+  styleUrls: ['./tree-select.component.scss'],
+  animations: [routerTransition]
 })
 export class TreeSelectComponent implements OnInit {
   @Input() field: FormField;
+  @HostBinding('@routerTransition')
+  categories: Category[];
   treeControl: NestedTreeControl<Category>;
   dataSource: MatTreeNestedDataSource<Category>;
-  categories: Category[];
 
   /** The selection for checklist */
   checklistSelection = new SelectionModel<Category>(true /* multiple */);
 
   constructor(private api: ResourceApiService) {
-    this.treeControl = new NestedTreeControl<Category>(this.api.getCategories);
-    this.dataSource = new MatTreeNestedDataSource<Category>();
+    this.treeControl = new NestedTreeControl<Category>(node => observableOf(node.children));
+    this.dataSource = new MatTreeNestedDataSource();
+    this.api.getCategories().subscribe(r => {
+      this.dataSource.data = r;
+      this.categories = r;
+    });
   }
 
   ngOnInit() {
-    this.api.getCategories().subscribe(r => console.log(r));
   }
+
+  hasNestedChild = (_: number, node: Category) => (node.children && (node.children.length > 0));
 
   getChildren = (node: Category): Category[] => node.children;
 
@@ -44,8 +53,13 @@ export class TreeSelectComponent implements OnInit {
     return result && !this.descendantsAllSelected(node);
   }
 
+  numSelectedDescendants(node: Category): number {
+    const descendants: Category[] = this.treeControl.getDescendants(node);
+    return descendants.filter(d => this.checklistSelection.isSelected(d)).length;
+  }
+
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
-  todoItemSelectionToggle(node: Category): void {
+  toggleNode(node: Category): void {
     this.checklistSelection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.isSelected(node)

@@ -30,11 +30,7 @@ export class FormFieldComponent implements OnInit {
       const source = this.field.apiSource;
 
       if (this.api[source] && (typeof this.api[source] === 'function')) {
-        this.api[source]().subscribe(results => {
-          console.log(`${source} results:`, results);
-
-          this.options = results;
-        });
+        this.api[source]().subscribe(results => this.options = results);
       }
     }
   }

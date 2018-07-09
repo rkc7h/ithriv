@@ -1,3 +1,19 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
 form {
   width: 100%;
+  min-height: 100%;
+  position: relative;
+  padding-top: 2em;
+  padding-bottom: 8em;
+}
+
+footer {
+  position: fixed;
+  bottom: 2em;
+  height: 64px;
+  @include mat-elevation(1);
 }

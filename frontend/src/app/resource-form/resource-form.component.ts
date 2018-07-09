@@ -182,9 +182,6 @@ export class ResourceFormComponent implements OnInit {
   onSubmit() {
     this.validate();
 
-    console.log(this.resourceForm.valid);
-
-
     if (this.resourceForm.valid) {
       this.isDataLoaded = false;
 

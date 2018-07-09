@@ -27,7 +27,8 @@ import {
   MatStepperModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTreeModule
+  MatTreeModule,
+  MatBadgeModule
 } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -99,6 +100,7 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     HttpClientModule,
     InfiniteScrollModule,
     MarkdownModule.forRoot(),
+    MatBadgeModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
