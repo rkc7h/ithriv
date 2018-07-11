@@ -30,7 +30,7 @@ SECRET_KEY = 'thiv_impossibly_bad_key_stored_in_public_repo_dont_use_this_ouside
 SSO_DEVELOPMENT_UID = 'dhf8r'
 SSO_ATTRIBUTE_MAP = {
     'eppn': (False, 'eppn'),  # dhf8r@virginia.edu
-    'uid': (True, 'uid'),  # dhf8r
+    'uid': (False, 'uid'),  # dhf8r
     'givenName': (False, 'givenName'), # Daniel
     'mail': (False, 'email'), # dhf8r@Virginia.EDU
     'sn': (False, 'surName'), # Funk
@@ -39,5 +39,5 @@ SSO_ATTRIBUTE_MAP = {
     'title': (False, 'title')  # SOFTWARE ENGINEER V
 }
 
-FRONTEND_AUTH_CALLBACK = "http://localhost:4200/#/account"
+FRONTEND_AUTH_CALLBACK = "http://localhost:4200/#/session"
 SSO_LOGIN_URL = '/api/login'

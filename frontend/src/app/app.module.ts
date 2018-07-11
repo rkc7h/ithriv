@@ -55,6 +55,7 @@ import { SearchComponent } from './search/search.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { GradientBackgroundDirective } from './gradient-background.directive';
 import {DeviceDetectorModule} from 'ngx-device-detector';
+import {SessionRedirectComponent} from './session-redirect/session-redirect.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
@@ -65,6 +66,7 @@ const routes: Routes = [
   { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
   { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
+  { path: 'session/:token', component: SessionRedirectComponent, data: { title: 'Session' } },
 ];
 
 @NgModule({
@@ -87,7 +89,8 @@ const routes: Routes = [
     AddCategoryButtonComponent,
     EditResourceButtonComponent,
     AddResourceButtonComponent,
-    GradientBackgroundDirective
+    GradientBackgroundDirective,
+    SessionRedirectComponent
   ],
   imports: [
     BrowserAnimationsModule,

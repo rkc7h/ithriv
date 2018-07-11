@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -9,6 +9,7 @@ import { ResourceCategory } from '../../resource-category';
 import { ResourceQuery } from '../../resource-query';
 import { CategoryResource } from '../../category-resource';
 import { Icon } from '../../icon';
+import {User} from '../../user';
 
 @Injectable()
 export class ResourceApiService {
@@ -19,10 +20,45 @@ export class ResourceApiService {
   resource_category_url = `${this.apiRoot}/api/resource_category`;
   resource_url = `${this.apiRoot}/api/resource`;
   search_resource_url = `${this.apiRoot}/api/search`;
-  token: string;
+  session_url = `${this.apiRoot}/api/session`;
 
-  constructor(private httpClient: HttpClient) { }
+  session: User;  // The current user is always directly accessible via this variable.
 
+  constructor(private httpClient: HttpClient) {
+    if (localStorage.getItem('token')) {
+      // todo:  Notify user if their token expired.
+      this._getSession().subscribe(s => {
+        this.session = s;
+      });
+    }
+  }
+
+  openSession(token) {
+    localStorage.setItem('token', token);
+    this._getSession().subscribe(s => {
+      this.session = s;
+    });
+  }
+
+  closeSession() {
+    localStorage.removeItem('token');
+    this._deleteSession().subscribe(s => {
+      this.session = null;
+    });
+
+  }
+
+  /** Get current users information, if logged in */
+  _getSession(): Observable<User> {
+    return this.httpClient.get<User>(this.session_url)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** Logging out */
+  _deleteSession(): Observable<any> {
+    return this.httpClient.delete<User>(this.session_url)
+      .pipe(catchError(this.handleError));
+  }
 
   private handleError(error: HttpErrorResponse) {
     let message = 'Something bad happened; please try again later.';
@@ -121,5 +157,4 @@ export class ResourceApiService {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
       .pipe(catchError(this.handleError));
   }
-
 }

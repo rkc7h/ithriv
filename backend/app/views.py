@@ -1,5 +1,5 @@
-from flask import jsonify, url_for, redirect
-from app import app, db, sso
+from flask import jsonify, url_for, redirect, g
+from app import app, db, sso, auth
 import flask_restful
 from flask_restful import reqparse
 
@@ -11,6 +11,7 @@ from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoin
 from app.resources.CategoryEndoint import CategoryListEndpoint, CategoryEndpoint
 from app.resources.InstitutionEndpoint import InstitutionEndpoint, InstitutionListEndpoint
 from app.resources.SearchEndpoint import SearchEndpoint
+from app.resources.SessionEndpoint import SessionEndpoint
 from app.resources.TypeEndpoint import TypeEndpoint, TypeListEndpoint
 from app.resources.UserEndpoint import UserEndpoint, UserListEndpoint
 
@@ -60,6 +61,19 @@ def login(user_info):
     return redirect(response_url)
 
 
+@auth.verify_token
+def verify_token(token):
+    try:
+        resp = User.decode_auth_token(token)
+        g.user = User.query.filter_by(uid=resp).first()
+    except:
+        g.user = None
+
+    if g.user:
+        return True
+    else:
+        return False
+
 api.add_resource(ResourceListEndpoint, '/api/resource')
 api.add_resource(ResourceEndpoint, '/api/resource/<id>')
 api.add_resource(CategoryByResourceEndpoint, '/api/resource/<resource_id>/category')
@@ -77,3 +91,5 @@ api.add_resource(IconListEndpoint, '/api/icon')
 api.add_resource(IconEndpoint, '/api/icon/<id>')
 api.add_resource(UserListEndpoint, '/api/user')
 api.add_resource(UserEndpoint, '/api/user/<id>')
+api.add_resource(SessionEndpoint, '/api/session')
+

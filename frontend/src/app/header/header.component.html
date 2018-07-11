@@ -1,15 +1,21 @@
 <mat-toolbar class="mat-toolbar-tools">
   <mat-toolbar-row class="menubar">
     <span class="fill-remaining-space"></span>
-    <button mat-button>
+    <button mat-button *ngIf="!getSession()">
       <mat-icon>person_add</mat-icon>
       Register
     </button>
     <mat-divider [vertical]="true"></mat-divider>
-    <button mat-button>
+
+    <button mat-button (click)="goLogin()" *ngIf="!getSession()">
       <mat-icon>account_circle</mat-icon>
       Log in
     </button>
+    <button mat-button (click)="goLogout()" *ngIf="getSession()">
+      <mat-icon>account_circle</mat-icon>
+      Log Out
+    </button>
+    <span *ngIf="getSession()">{{getSession().display_name}}</span>
   </mat-toolbar-row>
 
   <mat-toolbar-row *ngIf="isHome" fxLayout="row wrap" fxLayoutAlign="space-around center" class="logo">

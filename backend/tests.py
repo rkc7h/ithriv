@@ -773,7 +773,7 @@ class TestCase(unittest.TestCase):
         user = User.query.filter_by(uid=self.test_uid).first()
 
         # Now get the user back.
-        response = self.app.get('/api/user', headers=dict(
+        response = self.app.get('/api/session', headers=dict(
             Authorization='Bearer ' +
                           user.encode_auth_token().decode()
             )

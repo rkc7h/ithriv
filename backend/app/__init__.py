@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask_httpauth import HTTPTokenAuth
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import click
@@ -45,6 +46,9 @@ file_server = FileServer(app)
 
 # Single Signon
 sso = SSO(app=app)
+
+# Token Authentication
+auth = HTTPTokenAuth('Bearer')
 
 @app.cli.command()
 def stop():
