@@ -417,7 +417,7 @@ class TestCase(unittest.TestCase):
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 2)
         self.assertTrue("facets" in search_results)
-        self.assertEqual(2, len(search_results["facets"]))
+        self.assertEqual(3, len(search_results["facets"]))
         self.assertTrue("facetCounts" in search_results["facets"][0])
         self.assertTrue("category" in search_results["facets"][0]["facetCounts"][0])
         self.assertTrue("hit_count" in search_results["facets"][0]["facetCounts"][0])

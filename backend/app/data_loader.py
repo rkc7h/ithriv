@@ -61,7 +61,7 @@ class DataLoader:
                     is_available = row[i].lower().strip() == "yes" or row[i].lower().strip() == "true"
                     institution = self.get_inst_by_name(header[i])
                     availability = Availability(resource=resource, institution_id=institution.id,
-                                                available=is_available, viewable=True)
+                                                available=is_available)
                     db.session.add(availability)
             db.session.commit()
             print("Availability loaded.  There are now %i availability records in the database." % db.session.query(Availability).count())
