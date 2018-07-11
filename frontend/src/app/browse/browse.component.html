@@ -37,8 +37,8 @@
               <mat-icon class="cat-icon-3" svgIcon="{{categoryIcon(sc)}}" [ngStyle]="{'background-color': sc.color}"></mat-icon>
             </div>
             <mat-card-title>{{sc.name}}</mat-card-title>
-            <mat-card-subtitle *ngIf="sc.description">{{sc.description}}</mat-card-subtitle>
-            <mat-card-subtitle *ngIf="!sc.description">The dummy text is a page description on the next page that establishes the content of the definitions and glossary
+            <mat-card-subtitle *ngIf="sc.brief_description">{{sc.brief_description}}</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="!sc.brief_description">The dummy text is a page description on the next page that establishes the content of the definitions and glossary
               category.
             </mat-card-subtitle>
           </mat-card-header>
