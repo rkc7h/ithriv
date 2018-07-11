@@ -188,3 +188,32 @@ models.Resrouce.query( ...
 ```
 
 Testing github/slack integration.
+
+### Security / Authentication
+This will become increasingly complicated, so check back here often.  
+At present the system can handle single sign on (SSO) authentication through Shibboleth via a 
+connector on the apache web server that looks for headers we know are provided by the University
+of Virginia.  This will change in the future as we migrate to using a OnConnect which will allow
+connections with more institutions.  We'll also need to offer direct log-ins for community users.
+
+Once credentials are established, the front end (Angular) and backend (Flask/Python) will use a JWT 
+token.
+
+#### Develoment Mode
+The SSO aspect is bypassed in Development mode.  Clicking the log in button will immediately 
+log you in as the user specified in your instance/config.py.
+```
+SSO_DEVELOPMENT_UID = 'dhf8r'
+```
+I've created users for primary developers in our example_data, and that information is loaded
+into the database automatically with a *flask reset*  Add yourself there if needed.
+
+#### Production Mode
+In production, the redirect on the front end needs to point to the url that will direct us out to
+Shibboleth.  The account we use will send the user back to an API endpoint that will generate a JWT
+token, and then redirect again to the front end, passing that token along as a GET parameter.
+
+
+
+
+
