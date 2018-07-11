@@ -16,6 +16,7 @@ class ThrivResource(db.Model):
     contact_phone = db.Column(db.String)
     contact_notes = db.Column(db.String)
     website = db.Column(db.String)
+    cost = db.Column(db.String)
     type_id = db.Column('type_id', db.Integer(), db.ForeignKey('type.id'))
     institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
     availabilities = db.relationship(lambda: Availability,  cascade="all, delete-orphan",

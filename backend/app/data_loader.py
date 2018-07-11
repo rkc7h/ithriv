@@ -87,12 +87,12 @@ class DataLoader:
             for row in reader:
                 print(row)
                 id = eval(row[0])
-                category = Category(id=id, brief_description=row[2], name=row[3], description=row[4], color=row[6], image=row[7])
-                if row[1] != '':
-                    parent_id = eval(row[1])
+                category = Category(id=id, brief_description=row[4], name=row[3], description=row[5], color=row[7], image=row[8])
+                if row[2] != '':
+                    parent_id = eval(row[2])
                     category.parent_id = parent_id
-                if row[5] != '':
-                    icon_id = eval(row[5])
+                if row[6] != '':
+                    icon_id = eval(row[6])
                     category.icon_id = icon_id
                 db.session.add(category)
             # As we manually set the ids, we need to update the sequence manually as well.
@@ -108,13 +108,14 @@ class DataLoader:
             next(reader, None)  # use headers to set availability
 
             for row in reader:
-                if not row[4]: continue
-                resource_id = eval(row[0])
-                category_id = eval(row[4])
+                for i in range(4, 10):
+                    if not row[i]: continue
+                    resource_id = eval(row[0])
+                    category_id = eval(row[i])
 
-                resource_category = ResourceCategory(resource_id=resource_id,
+                    resource_category = ResourceCategory(resource_id=resource_id,
                                                      category_id=category_id)
-                db.session.add(resource_category)
+                    db.session.add(resource_category)
             db.session.commit()
             print("There are now %i links between resources and categories in the database." %
                   db.session.query(ResourceCategory).count())
