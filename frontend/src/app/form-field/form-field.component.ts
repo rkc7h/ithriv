@@ -16,6 +16,7 @@ export class FormFieldComponent implements OnInit {
   @Input() errorMatcher: ErrorStateMatcher;
   @Input() formGroup: FormGroup;
   options = [];
+  dataLoaded = false;
 
   constructor(private api: ResourceApiService) {
   }
@@ -29,8 +30,13 @@ export class FormFieldComponent implements OnInit {
       const source = this.field.apiSource;
 
       if (this.api[source] && (typeof this.api[source] === 'function')) {
-        this.api[source]().subscribe(results => this.options = results);
+        this.api[source]().subscribe(results => {
+          this.options = results;
+          this.dataLoaded = true;
+        });
       }
+    } else {
+      this.dataLoaded = true;
     }
   }
 

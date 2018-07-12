@@ -7,7 +7,7 @@
 
     <footer>
       <mat-toolbar color="primary">
-        <button type="submit" color="accent" mat-raised-button (click)="validate()">Save</button>
+        <button type="button" color="accent" mat-raised-button (click)="onSubmit($event)">Save</button>
         <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
         <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
         <button *ngIf="showConfirmDelete" id="confirm_delete" type="button" mat-raised-button (click)="onDelete()">Permanently Delete This Resource!!!</button>

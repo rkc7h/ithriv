@@ -9,11 +9,10 @@
   <mat-select *ngIf="field.type === 'select'" [multiple]="field.multiSelect" [formControl]="field.formControl" [placeholder]="field.placeholder"
     [required]="field.required">
     <mat-option>-- None --</mat-option>
-    <mat-option *ngFor="let option of options" value="{{option.id}}">
+    <mat-option *ngFor="let option of options" [value]="option.id">
       <mat-icon *ngIf="field.showIcons" svgIcon="ithriv_{{option.id}}"></mat-icon>
       {{option.name}}
     </mat-option>
-
   </mat-select>
   <mat-label *ngIf="field.type === 'select'">
     {{field.placeholder}}

@@ -246,7 +246,8 @@ export class ResourceFormComponent implements OnInit {
     return fields;
   }
 
-  onSubmit() {
+  onSubmit($event) {
+    $event.preventDefault();
     this.validate();
 
     if (this.resourceForm.valid) {
@@ -262,13 +263,15 @@ export class ResourceFormComponent implements OnInit {
         this.api.addResource(this.resource).subscribe(r => {
           this.resource = r;
           this.updateCategories();
-          this.close();
+          // this.close();
+          this.isDataLoaded = true;
         });
       } else {
         this.api.updateResource(this.resource).subscribe(r => {
           this.resource = r;
           this.updateCategories();
-          this.close();
+          // this.close();
+          this.isDataLoaded = true;
         });
       }
     } else {
