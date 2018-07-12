@@ -9,5 +9,4 @@ class Availability(db.Model):
     resource_id = db.Column('resource_id', db.Integer(), db.ForeignKey('resource.id'))
     institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
     institution = db.relationship(ThrivInstitution)
-    viewable = db.Column(db.Boolean())
     available = db.Column(db.Boolean())

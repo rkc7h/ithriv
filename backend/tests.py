@@ -51,7 +51,7 @@ class TestCase(unittest.TestCase):
 
     def construct_resource(self, type="TestyType", institution="TestyU",
                            name="Test Resource", description="Some stuff bout it",
-                           owner="Mac Daddy Test", website="testy.edu", available_to=None,
+                           owner="Mac Daddy Test", website="testy.edu", cost='$100 or your firstborn', available_to=None,
                            contact_email='mac@daddy.com', contact_phone='540-457-0024',
                            contact_notes='No robo-calls if you please.',
                            approved=False):
@@ -59,7 +59,7 @@ class TestCase(unittest.TestCase):
         inst_obj = ThrivInstitution(name=institution)
         resource = ThrivResource(name=name, description=description,
                                  type=type_obj, institution=inst_obj,
-                                 owner=owner, website=website, contact_email=contact_email,
+                                 owner=owner, website=website, cost=cost, contact_email=contact_email,
                                  contact_phone=contact_phone, contact_notes=contact_notes,
                                  approved=approved)
         db.session.add(resource)
@@ -102,6 +102,7 @@ class TestCase(unittest.TestCase):
         response['name'] = 'Edwarardos Lemonade and Oil Change'
         response['description'] = 'Better fluids for you and your car.'
         response['website'] = 'http://sartography.com'
+        response['cost'] = '$.25 or the going rate'
         response['owner'] = 'Daniel GG Dog Da Funk-a-funka'
         orig_date = response['last_updated']
         rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json")
@@ -112,6 +113,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response['name'], 'Edwarardos Lemonade and Oil Change')
         self.assertEqual(response['description'], 'Better fluids for you and your car.')
         self.assertEqual(response['website'], 'http://sartography.com')
+        self.assertEqual(response['cost'], '$.25 or the going rate')
         self.assertEqual(response['owner'], 'Daniel GG Dog Da Funk-a-funka')
         self.assertNotEqual(orig_date, response['last_updated'])
 
@@ -414,7 +416,7 @@ class TestCase(unittest.TestCase):
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 2)
         self.assertTrue("facets" in search_results)
-        self.assertEqual(2, len(search_results["facets"]))
+        self.assertEqual(3, len(search_results["facets"]))
         self.assertTrue("facetCounts" in search_results["facets"][0])
         self.assertTrue("category" in search_results["facets"][0]["facetCounts"][0])
         self.assertTrue("hit_count" in search_results["facets"][0]["facetCounts"][0])
