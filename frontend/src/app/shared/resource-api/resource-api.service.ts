@@ -10,6 +10,7 @@ import { ResourceQuery } from '../../resource-query';
 import { CategoryResource } from '../../category-resource';
 import { Icon } from '../../icon';
 import { Institution } from '../../institution';
+import { ResourceType } from '../../resourceType';
 
 @Injectable()
 export class ResourceApiService {
@@ -109,6 +110,12 @@ export class ResourceApiService {
   /** getInstitutions */
   getInstitutions(): Observable<Institution[]> {
     return this.httpClient.get<Institution[]>(this.apiRoot + this.endpoints.institutionList)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getTypes */
+  getTypes(): Observable<ResourceType[]> {
+    return this.httpClient.get<ResourceType[]>(this.apiRoot + this.endpoints.typeList)
       .pipe(catchError(this.handleError));
   }
 

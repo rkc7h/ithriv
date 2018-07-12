@@ -58,6 +58,45 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Owner',
       type: 'text'
     }),
+    contact_email: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact email',
+      type: 'email'
+    }),
+    contact_notes: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact notes',
+      type: 'text'
+    }),
+    contact_phone: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact phone',
+      type: 'text'
+    }),
+    cost: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Cost',
+      type: 'text'
+    }),
+    type_id: new FormField({
+      formControl: new FormControl(),
+      required: true,
+      placeholder: 'Select Type',
+      type: 'select',
+      apiSource: 'getTypes'
+    }),
     institution_id: new FormField({
       formControl: new FormControl(),
       required: true,

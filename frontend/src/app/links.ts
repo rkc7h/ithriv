@@ -1,8 +1,9 @@
 export interface Links {
-  category: string;
+  category?: string;
   collection: string;
-  image: string;
-  resource: string;
-  resources: string;
+  image?: string;
+  institution?: string;
+  resource?: string;
+  resources?: string;
   self: string;
 }
