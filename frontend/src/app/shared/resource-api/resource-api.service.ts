@@ -15,16 +15,29 @@ import { Institution } from '../../institution';
 export class ResourceApiService {
 
   apiRoot = environment.api;
-  category_url = `${this.apiRoot}/api/category`;
-  icon_url = `${this.apiRoot}/api/icon`;
-  institution_url = `${this.apiRoot}/api/institution`;
-  resource_category_url = `${this.apiRoot}/api/resource_category`;
-  resource_url = `${this.apiRoot}/api/resource`;
-  search_resource_url = `${this.apiRoot}/api/search`;
   token: string;
 
-  constructor(private httpClient: HttpClient) { }
+  // REST endpoints
+  endpoints = {
+    resourceList: '/api/resource',
+    resource: '/api/resource/<id>',
+    categoryByResource: '/api/resource/<resource_id>/category',
+    categoryList: '/api/category',
+    category: '/api/category/<id>',
+    resourceByCategory: '/api/category/<category_id>/resource',
+    institution: '/api/institution/<id>',
+    institutionList: '/api/institution',
+    type: '/api/type/<id>',
+    typeList: '/api/type',
+    search: '/api/search',
+    resourceCategoryList: '/api/resource_category',
+    resourceCategory: '/api/resource_category/<id>',
+    iconList: '/api/icon',
+    icon: '/api/icon/<id>',
+  };
 
+  constructor(private httpClient: HttpClient) {
+  }
 
   private handleError(error: HttpErrorResponse) {
     let message = 'Something bad happened; please try again later.';
@@ -47,19 +60,19 @@ export class ResourceApiService {
 
   /** searchResources */
   searchResources(query: ResourceQuery): Observable<ResourceQuery> {
-    return this.httpClient.post<ResourceQuery>(this.search_resource_url, query)
+    return this.httpClient.post<ResourceQuery>(this.apiRoot + this.endpoints.search, query)
       .pipe(catchError(this.handleError));
   }
 
   /** getCategories */
   getCategories(): Observable<Category[]> {
-    return this.httpClient.get<Category[]>(this.category_url)
+    return this.httpClient.get<Category[]>(this.apiRoot + this.endpoints.categoryList)
       .pipe(catchError(this.handleError));
   }
 
   /** getCategory */
   getCategory(id: Number): Observable<Category> {
-    return this.httpClient.get<Category>(`${this.category_url}/${id}`)
+    return this.httpClient.get<Category>(`${this.apiRoot + this.endpoints.categoryList}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
@@ -77,7 +90,7 @@ export class ResourceApiService {
 
   /** addCategory */
   addCategory(category: Category): Observable<Category> {
-    return this.httpClient.post<Category>(this.category_url, category)
+    return this.httpClient.post<Category>(this.apiRoot + this.endpoints.categoryList, category)
       .pipe(catchError(this.handleError));
   }
 
@@ -89,19 +102,28 @@ export class ResourceApiService {
 
   /** getIcons */
   getIcons(): Observable<Icon[]> {
-    return this.httpClient.get<Icon[]>(this.icon_url)
+    return this.httpClient.get<Icon[]>(this.apiRoot + this.endpoints.iconList)
       .pipe(catchError(this.handleError));
   }
 
   /** getInstitutions */
   getInstitutions(): Observable<Institution[]> {
-    return this.httpClient.get<Institution[]>(this.institution_url)
+    return this.httpClient.get<Institution[]>(this.apiRoot + this.endpoints.institutionList)
       .pipe(catchError(this.handleError));
   }
 
   /** getResource */
   getResource(id: Number): Observable<Resource> {
-    return this.httpClient.get<Resource>(`${this.resource_url}/${id}`)
+    return this.httpClient.get<Resource>(`${this.apiRoot + this.endpoints.resourceList}/${id}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getResourceCategories */
+  getResourceCategories(resource: Resource): Observable<ResourceCategory[]> {
+    const url = this.endpoints.categoryByResource.replace('<resource_id>', resource.id.toString());
+    console.log('url', url);
+
+    return this.httpClient.get<ResourceCategory[]>(this.apiRoot + url)
       .pipe(catchError(this.handleError));
   }
 
@@ -113,14 +135,20 @@ export class ResourceApiService {
 
   /** addResource */
   addResource(resource: Resource): Observable<Resource> {
-    return this.httpClient.post<Resource>(this.resource_url, resource)
+    return this.httpClient.post<Resource>(this.apiRoot + this.endpoints.resourceList, resource)
       .pipe(catchError(this.handleError));
   }
 
   /** linkResourceAndCategory */
   linkResourceAndCategory(resource: Resource, category: Category): Observable<any> {
-    const rc: ResourceCategory = { resource_id: resource.id, category_id: category.id };
-    return this.httpClient.post<ResourceCategory>(this.resource_category_url, rc)
+    const options = { resource_id: resource.id, category_id: category.id };
+    return this.httpClient.post<ResourceCategory>(this.apiRoot + this.endpoints.resourceCategoryList, options)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** unlinkResourceAndCategory */
+  unlinkResourceAndCategory(rc: ResourceCategory): Observable<any> {
+    return this.httpClient.delete<ResourceCategory>(this.apiRoot + rc._links.self)
       .pipe(catchError(this.handleError));
   }
 

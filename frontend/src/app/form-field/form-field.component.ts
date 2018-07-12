@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormGroup, ValidationErrors } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
-import { Icon } from '../icon';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FormField } from '../form-field';
 

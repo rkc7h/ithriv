@@ -1,8 +1,9 @@
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 export class FormField {
   apiSource: string;
-  formControl: FormControl;
+  formControl?: FormControl;
+  formGroup?: FormGroup;
   required: boolean;
   maxLength: number;
   minLength: number;

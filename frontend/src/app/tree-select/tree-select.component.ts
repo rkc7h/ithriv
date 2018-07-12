@@ -27,13 +27,14 @@ export class TreeSelectComponent implements OnInit {
   constructor(private api: ResourceApiService) {
     this.treeControl = new NestedTreeControl<Category>(node => observableOf(node.children));
     this.dataSource = new MatTreeNestedDataSource();
-    this.api.getCategories().subscribe(r => {
-      this.dataSource.data = r;
-      this.categories = r;
+    this.api.getCategories().subscribe(categories => {
+      this.dataSource.data = categories;
+      this.categories = categories;
     });
   }
 
   ngOnInit() {
+    console.log('this.field.formGroup', this.field.formGroup);
   }
 
   hasNestedChild = (_: number, node: Category) => (node.children && (node.children.length > 0));
@@ -66,5 +67,4 @@ export class TreeSelectComponent implements OnInit {
       ? this.checklistSelection.select(...descendants)
       : this.checklistSelection.deselect(...descendants);
   }
-
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
@@ -17,7 +17,8 @@ import { routerTransition } from '../shared/router.animations';
 })
 export class ResourceFormComponent implements OnInit {
   @HostBinding('@routerTransition')
-  category: Category;
+  allCategories: Category[] = [];
+  categories: Category[] = [];
   createNew = false;
   error: string;
   errorMatcher = new ErrorMatcher();
@@ -56,7 +57,7 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Owner',
       type: 'text'
     }),
-    institution: new FormField({
+    institution_id: new FormField({
       formControl: new FormControl(),
       required: true,
       placeholder: 'Select Institution',
@@ -72,7 +73,7 @@ export class ResourceFormComponent implements OnInit {
       type: 'url'
     }),
     categories: new FormField({
-      formControl: new FormControl(),
+      formGroup: new FormGroup({}),
       required: true,
       placeholder: 'Select Categories',
       type: 'tree',
@@ -93,6 +94,8 @@ export class ResourceFormComponent implements OnInit {
   }
 
   loadData() {
+    this.isDataLoaded = false;
+    this.loadAllCategories();
     this.route.params.subscribe(params => {
       const resourceId = params['resource'];
 
@@ -100,9 +103,10 @@ export class ResourceFormComponent implements OnInit {
         this.createNew = false;
         this.api
           .getResource(resourceId)
-          .subscribe((r) => {
-            this.resource = r;
+          .subscribe(resource => {
+            this.resource = resource;
             this.isDataLoaded = true;
+            this.loadResourceCategories(resource);
             this.loadForm();
           });
       } else {
@@ -113,9 +117,8 @@ export class ResourceFormComponent implements OnInit {
         if (categoryId) {
           this.api
             .getCategory(categoryId)
-            .subscribe((c) => {
-              this.category = c;
-              this.isDataLoaded = true;
+            .subscribe(cat => {
+              this.categories = [cat];
               this.loadForm();
               this.isDataLoaded = true;
             });
@@ -124,12 +127,45 @@ export class ResourceFormComponent implements OnInit {
     });
   }
 
+  loadAllCategories() {
+    const leafCats = function (cats, result = []) {
+      for (const c of cats) {
+        if (Array.isArray(c.children) && (c.children.length > 0)) {
+          result = leafCats(c.children, result);
+        } else {
+          result.push(c);
+        }
+      }
+      return result;
+    };
+
+    this.api.getCategories().subscribe(categories => {
+      this.allCategories = leafCats(categories);
+    });
+  }
+
+  loadResourceCategories(resource: Resource) {
+    this.categories = [];
+    this.api
+      .getResourceCategories(resource)
+      .subscribe(rcs => rcs.forEach(rc => {
+        console.log('rc', rc);
+
+        const strs = rc._links.category.split('/');
+        const categoryId: number = parseInt(strs[strs.length - 1], 10);
+        this.loadCategory(categoryId);
+      }));
+  }
+
+  loadCategory(categoryId: number) {
+    this.api.getCategory(categoryId).subscribe(c => this.categories.push(c));
+  }
+
   loadForm() {
     const formGroup = {};
     for (const fieldName in this.fields) {
       if (this.fields.hasOwnProperty(fieldName)) {
         const field = this.fields[fieldName];
-
         const validators = [];
 
         if (field.required) {
@@ -152,10 +188,23 @@ export class ResourceFormComponent implements OnInit {
           validators.push(ValidateUrl);
         }
 
-        field.formControl.patchValue(this.resource[fieldName]);
-        // this[fieldName].valueChanges.subscribe(t => this.resource[fieldName] = t);
-        field.formControl.setValidators(validators);
-        formGroup[fieldName] = field.formControl;
+        if (fieldName === 'categories') {
+          const selectedCatIds = this.categories.map(c => c.id);
+
+          for (const cat of this.allCategories) {
+            const checked = selectedCatIds.includes(cat.id);
+            const control = new FormControl();
+            control.patchValue(checked);
+            this.fields.categories.formGroup.addControl(cat.id.toString(), control);
+          }
+
+          this.fields.categories.formGroup.setValidators(validators);
+        } else {
+          field.formControl.setValidators(validators);
+          field.formControl.patchValue(this.resource[fieldName]);
+          formGroup[fieldName] = field.formControl;
+        }
+
       }
     }
 
@@ -180,13 +229,14 @@ export class ResourceFormComponent implements OnInit {
   }
 
   onSubmit() {
+    console.log('=== onSubmit ===');
     this.validate();
 
     if (this.resourceForm.valid) {
       this.isDataLoaded = false;
 
       for (const fieldName in this.fields) {
-        if (this.fields.hasOwnProperty(fieldName)) {
+        if (this.resource.hasOwnProperty(fieldName) && this.fields.hasOwnProperty(fieldName)) {
           this.resource[fieldName] = this.fields[fieldName].formControl.value;
         }
       }
@@ -194,17 +244,46 @@ export class ResourceFormComponent implements OnInit {
       if (this.createNew) {
         this.api.addResource(this.resource).subscribe(r => {
           this.resource = r;
-          if (this.category) {
-            this.api.linkResourceAndCategory(this.resource, this.category).subscribe();
-          }
-
+          this.updateCategories();
           this.close();
         });
       } else {
         this.api.updateResource(this.resource).subscribe(r => {
           this.resource = r;
+          this.updateCategories();
           this.close();
         });
+      }
+    } else {
+      console.log('FORM NOT VALID');
+    }
+  }
+
+  updateCategories() {
+    console.log('=== updateCategories ===');
+
+    const selectedCatIds = [];
+    const controls = this.fields.categories.formGroup.controls;
+
+    for (const key in controls) {
+      if (controls.hasOwnProperty(key) && controls[key]) {
+        selectedCatIds.push(parseInt(key, 10));
+      }
+    }
+
+    for (const cat of this.allCategories) {
+      if (selectedCatIds.includes(cat.id)) {
+        this.api.linkResourceAndCategory(this.resource, cat).subscribe();
+      } else {
+        this.api
+          .getResourceCategories(this.resource)
+          .subscribe(rcs => {
+            rcs.forEach(rc => {
+              if (rc.category_id === cat.id) {
+                this.api.unlinkResourceAndCategory(rc).subscribe();
+              }
+            });
+          });
       }
     }
   }
@@ -234,14 +313,21 @@ export class ResourceFormComponent implements OnInit {
     );
   }
 
+  // Go to resource screen
   close() {
-    console.log('this.resource.id:', this.resource && this.resource.id);
-
-    // Go to resource screen
     if (this.resource && this.resource.id) {
       this.router.navigate(['resource', this.resource.id]);
-    } else if (this.category && this.category.id) {
-      this.router.navigate(['category', this.category.id]);
+    } else {
+      this.route.params.subscribe(params => {
+        const resourceId = params['resource'];
+        const categoryId = params['category'];
+
+        if (resourceId) {
+          this.router.navigate(['resource', resourceId]);
+        } else if (categoryId) {
+          this.router.navigate(['category', categoryId]);
+        }
+      });
     }
   }
 }

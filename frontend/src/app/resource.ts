@@ -9,6 +9,7 @@ export interface Resource {
   description: string;
   type?: ResourceType;
   institution?: Institution;
+  institution_id?: number;
   website?: string;
   owner?: string;
   availabilities?: Availability[];
