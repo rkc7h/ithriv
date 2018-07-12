@@ -121,8 +121,6 @@ export class ResourceApiService {
   /** getResourceCategories */
   getResourceCategories(resource: Resource): Observable<ResourceCategory[]> {
     const url = this.endpoints.categoryByResource.replace('<resource_id>', resource.id.toString());
-    console.log('url', url);
-
     return this.httpClient.get<ResourceCategory[]>(this.apiRoot + url)
       .pipe(catchError(this.handleError));
   }

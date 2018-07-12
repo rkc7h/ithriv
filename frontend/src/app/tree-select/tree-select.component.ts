@@ -1,10 +1,10 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, OnInit, Input, HostBinding } from '@angular/core';
+import { Component, OnInit, Input, HostBinding, AfterViewInit } from '@angular/core';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FormField } from '../form-field';
 import { Category } from '../category';
-import { of as observableOf } from '../../../node_modules/rxjs';
+import { of as observableOf, ObjectUnsubscribedError } from '../../../node_modules/rxjs';
 import { routerTransition } from '../shared/router.animations';
 import { MatTreeNestedDataSource } from '../../../node_modules/@angular/material';
 
@@ -17,9 +17,11 @@ import { MatTreeNestedDataSource } from '../../../node_modules/@angular/material
 export class TreeSelectComponent implements OnInit {
   @Input() field: FormField;
   @HostBinding('@routerTransition')
-  categories: Category[];
+  categories: Category[] = [];
   treeControl: NestedTreeControl<Category>;
   dataSource: MatTreeNestedDataSource<Category>;
+  dataLoaded = false;
+  nodes = {};
 
   /** The selection for checklist */
   checklistSelection = new SelectionModel<Category>(true /* multiple */);
@@ -30,14 +32,32 @@ export class TreeSelectComponent implements OnInit {
     this.api.getCategories().subscribe(categories => {
       this.dataSource.data = categories;
       this.categories = categories;
+      this.dataLoaded = true;
+      this.updateSelection();
     });
   }
 
   ngOnInit() {
-    console.log('this.field.formGroup', this.field.formGroup);
   }
 
-  hasNestedChild = (_: number, node: Category) => (node.children && (node.children.length > 0));
+  updateSelection() {
+    const controls = this.field.formGroup.controls;
+
+    for (const key in this.nodes) {
+      if (this.nodes.hasOwnProperty(key) && controls.hasOwnProperty(key)) {
+        if (controls[key].value) {
+          this.checklistSelection.select(this.nodes[key]);
+        } else {
+          this.checklistSelection.deselect(this.nodes[key]);
+        }
+      }
+    }
+  }
+
+  hasNestedChild = (_: number, node: Category) => {
+    this.nodes[node.id.toString()] = node;
+    return (node.children && (node.children.length > 0));
+  }
 
   getChildren = (node: Category): Category[] => node.children;
 
@@ -56,7 +76,8 @@ export class TreeSelectComponent implements OnInit {
 
   numSelectedDescendants(node: Category): number {
     const descendants: Category[] = this.treeControl.getDescendants(node);
-    return descendants.filter(d => this.checklistSelection.isSelected(d)).length;
+    const selectedDescendants = descendants.filter(d => this.checklistSelection.isSelected(d));
+    return selectedDescendants.length;
   }
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
@@ -66,5 +87,9 @@ export class TreeSelectComponent implements OnInit {
     this.checklistSelection.isSelected(node)
       ? this.checklistSelection.select(...descendants)
       : this.checklistSelection.deselect(...descendants);
+  }
+
+  toggleExpand($event, node: Category): void {
+    $event.preventDefault();
   }
 }

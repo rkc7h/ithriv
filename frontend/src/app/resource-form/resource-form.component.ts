@@ -8,6 +8,7 @@ import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { routerTransition } from '../shared/router.animations';
+import { ResourceCategory } from '../resource-category';
 
 @Component({
   selector: 'app-resource-form',
@@ -18,13 +19,13 @@ import { routerTransition } from '../shared/router.animations';
 export class ResourceFormComponent implements OnInit {
   @HostBinding('@routerTransition')
   allCategories: Category[] = [];
-  categories: Category[] = [];
+  resourceCategories: ResourceCategory[] = [];
   createNew = false;
   error: string;
   errorMatcher = new ErrorMatcher();
   isDataLoaded = false;
   resource: Resource;
-  resourceForm: FormGroup;
+  resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
 
   // Form Fields
@@ -105,24 +106,12 @@ export class ResourceFormComponent implements OnInit {
           .getResource(resourceId)
           .subscribe(resource => {
             this.resource = resource;
-            this.isDataLoaded = true;
-            this.loadResourceCategories(resource);
-            this.loadForm();
+            this.loadResourceCategories(resource, () => this.loadForm());
           });
       } else {
         this.createNew = true;
         this.resource = { id: null, name: '', description: '' };
-        const categoryId = params['category'];
-
-        if (categoryId) {
-          this.api
-            .getCategory(categoryId)
-            .subscribe(cat => {
-              this.categories = [cat];
-              this.loadForm();
-              this.isDataLoaded = true;
-            });
-        }
+        this.loadForm();
       }
     });
   }
@@ -144,25 +133,16 @@ export class ResourceFormComponent implements OnInit {
     });
   }
 
-  loadResourceCategories(resource: Resource) {
-    this.categories = [];
+  loadResourceCategories(resource: Resource, callback: Function) {
     this.api
       .getResourceCategories(resource)
-      .subscribe(rcs => rcs.forEach(rc => {
-        console.log('rc', rc);
-
-        const strs = rc._links.category.split('/');
-        const categoryId: number = parseInt(strs[strs.length - 1], 10);
-        this.loadCategory(categoryId);
-      }));
-  }
-
-  loadCategory(categoryId: number) {
-    this.api.getCategory(categoryId).subscribe(c => this.categories.push(c));
+      .subscribe(rcs => {
+        this.resourceCategories = rcs;
+        callback();
+      });
   }
 
   loadForm() {
-    const formGroup = {};
     for (const fieldName in this.fields) {
       if (this.fields.hasOwnProperty(fieldName)) {
         const field = this.fields[fieldName];
@@ -189,26 +169,25 @@ export class ResourceFormComponent implements OnInit {
         }
 
         if (fieldName === 'categories') {
-          const selectedCatIds = this.categories.map(c => c.id);
+          const selectedCatIds = this.resourceCategories.map(rc => rc.category.id);
 
           for (const cat of this.allCategories) {
             const checked = selectedCatIds.includes(cat.id);
             const control = new FormControl();
-            control.patchValue(checked);
+            control.setValue(checked);
             this.fields.categories.formGroup.addControl(cat.id.toString(), control);
           }
 
           this.fields.categories.formGroup.setValidators(validators);
+          this.resourceForm.addControl(fieldName, this.fields.categories.formGroup);
         } else {
           field.formControl.setValidators(validators);
           field.formControl.patchValue(this.resource[fieldName]);
-          formGroup[fieldName] = field.formControl;
+          this.resourceForm.addControl(fieldName, field.formControl);
         }
-
       }
     }
 
-    this.resourceForm = new FormGroup(formGroup);
     this.isDataLoaded = true;
 
     if (!this.createNew) {
@@ -229,7 +208,6 @@ export class ResourceFormComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('=== onSubmit ===');
     this.validate();
 
     if (this.resourceForm.valid) {
@@ -260,13 +238,11 @@ export class ResourceFormComponent implements OnInit {
   }
 
   updateCategories() {
-    console.log('=== updateCategories ===');
-
     const selectedCatIds = [];
     const controls = this.fields.categories.formGroup.controls;
 
     for (const key in controls) {
-      if (controls.hasOwnProperty(key) && controls[key]) {
+      if (controls.hasOwnProperty(key) && controls[key].value) {
         selectedCatIds.push(parseInt(key, 10));
       }
     }
@@ -275,15 +251,11 @@ export class ResourceFormComponent implements OnInit {
       if (selectedCatIds.includes(cat.id)) {
         this.api.linkResourceAndCategory(this.resource, cat).subscribe();
       } else {
-        this.api
-          .getResourceCategories(this.resource)
-          .subscribe(rcs => {
-            rcs.forEach(rc => {
-              if (rc.category_id === cat.id) {
-                this.api.unlinkResourceAndCategory(rc).subscribe();
-              }
-            });
-          });
+        this.resourceCategories.forEach(rc => {
+          if (rc.category.id === cat.id) {
+            this.api.unlinkResourceAndCategory(rc).subscribe();
+          }
+        });
       }
     }
   }
