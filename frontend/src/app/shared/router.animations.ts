@@ -1,25 +1,54 @@
-import { sequence, trigger, stagger, animate, style, group, query as q, transition, keyframes, animateChild } from '@angular/animations';
+import {
+  animate,
+  animateChild,
+  group,
+  query,
+  sequence,
+  style,
+  transition,
+  trigger,
+  AnimationTriggerMetadata
+} from '@angular/animations';
 
-const query = (s, a, o = { optional: true }) => q(s, a, o);
-const easing = '500ms cubic-bezier(.75, -0.48, .26, 1.52)';
+const easing = '0.5s ease-in-out';
 const hide = style({ opacity: 0 });
 const show = style({ opacity: 1 });
 const transitionOut = [show, animate(easing, hide)];
 const transitionIn = [hide, animate(easing, show)];
+const optional = { optional: true };
 
-export const Animations = {
-  routerTransition: trigger('routerTransition', [
-    transition('* => *', [
-      query(':enter,:leave', show),
-      query(':enter', hide),
+export function routerTransition(): AnimationTriggerMetadata {
+  return trigger('routerTransition', [
+    transition('* <=> *', [
+      query(':enter, :leave', show, optional),
+      query(':enter', hide, optional),
       sequence([
-        query(':leave', animateChild()),
+        query(':leave', animateChild(), optional),
         group([
-          query(':leave', transitionOut),
-          query(':enter', transitionIn),
+          query(':leave', transitionOut, optional),
+          query(':enter', transitionIn, optional),
         ]),
-        query(':enter', animateChild()),
+        query(':enter', animateChild(), optional),
       ])
     ])
-  ])
-};
+  ]);
+}
+
+export function slideTransition(): AnimationTriggerMetadata {
+  return trigger('slideTransition', [
+    transition('* <=> *', [
+      query(':enter, :leave',
+        style({ position: 'fixed', width: '100%' }), optional),
+      group([
+        query(':enter', [
+          style({ transform: 'translateX(100%)' }),
+          animate(easing, style({ transform: 'translateX(0%)' }))
+        ], optional),
+        query(':leave', [
+          style({ transform: 'translateX(0%)' }),
+          animate(easing, style({ transform: 'translateX(-100%)' }))
+        ], optional),
+      ])
+    ])
+  ]);
+}

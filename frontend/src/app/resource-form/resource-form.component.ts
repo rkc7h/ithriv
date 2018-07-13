@@ -7,14 +7,14 @@ import { FormField } from '../form-field';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ValidateUrl } from '../shared/validators/url.validator';
-import { Animations } from '../shared/router.animations';
+import { routerTransition } from '../shared/router.animations';
 import { ResourceCategory } from '../resource-category';
 
 @Component({
   selector: 'app-resource-form',
   templateUrl: './resource-form.component.html',
   styleUrls: ['./resource-form.component.scss'],
-  animations: [Animations.routerTransition]
+  animations: [routerTransition()]
 })
 export class ResourceFormComponent implements OnInit {
   @HostBinding('@routerTransition')

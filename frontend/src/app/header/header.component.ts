@@ -1,12 +1,12 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { Animations } from '../shared/router.animations';
+import { routerTransition } from '../shared/router.animations';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  animations: [Animations.routerTransition],
+  animations: [routerTransition()],
 })
 export class HeaderComponent implements OnInit {
   @HostBinding('@routerTransition')
