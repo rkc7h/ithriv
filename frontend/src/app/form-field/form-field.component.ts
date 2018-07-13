@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, ValidationErrors } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
-import { Icon } from '../icon';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { FormField } from '../form-field';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -11,22 +11,33 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
   styleUrls: ['./form-field.component.scss']
 })
 export class FormFieldComponent implements OnInit {
-  @Input() field;
+  @Input() field: FormField;
+  @Input() errors: ValidationErrors;
   @Input() errorMatcher: ErrorStateMatcher;
   @Input() formGroup: FormGroup;
-  icons: Icon[];
+  options = [];
+  dataLoaded = false;
 
-  constructor(
-    private api: ResourceApiService
-  ) {
-    this.loadIcons();
+  constructor(private api: ResourceApiService) {
   }
 
   ngOnInit() {
+    this.loadOptions();
   }
 
-  loadIcons() {
-    this.api.getIcons().subscribe(icons => this.icons = icons);
+  loadOptions() {
+    if (this.field.type === 'select') {
+      const source = this.field.apiSource;
+
+      if (this.api[source] && (typeof this.api[source] === 'function')) {
+        this.api[source]().subscribe(results => {
+          this.options = results;
+          this.dataLoaded = true;
+        });
+      }
+    } else {
+      this.dataLoaded = true;
+    }
   }
 
   currentLength() {

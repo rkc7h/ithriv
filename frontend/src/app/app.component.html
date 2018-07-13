@@ -2,8 +2,8 @@
 
   <app-header></app-header>
 
-  <div class="content">
-    <router-outlet></router-outlet>
+  <div class="content" [@routerTransition]="getState(o)">
+    <router-outlet #o="outlet"></router-outlet>
   </div>
 
 </div>

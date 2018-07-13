@@ -1,4 +1,8 @@
+import { Links } from './links';
+import { Category } from './category';
+
 export interface ResourceCategory {
-  resource_id: number;
-  category_id: number;
+  id: number;
+  category: Category;
+  _links: Links;
 }

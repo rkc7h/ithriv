@@ -19,7 +19,6 @@ export class EditCategoryButtonComponent implements OnInit {
 
   openEdit() {
     this.dialog.open(CategoryFormComponent, {
-      width: '30%',
       data: { 'edit': this.category, 'parent_category': this.parent }
     });
   }

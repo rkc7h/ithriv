@@ -18,7 +18,6 @@ export class AddCategoryButtonComponent implements OnInit {
 
   openAdd() {
     this.dialog.open(CategoryFormComponent, {
-      width: '30%',
       data: { 'parent_category': this.category }
     });
   }

@@ -36,7 +36,11 @@ export class CategoryFormComponent implements OnInit {
       maxLength: 600,
       minLength: 20,
       placeholder: 'Description',
-      type: 'text'
+      type: 'textarea',
+      options: {
+        // hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
+        status: ['words']
+      }
     }),
     brief_description: new FormField({
       formControl: new FormControl(),
@@ -44,7 +48,7 @@ export class CategoryFormComponent implements OnInit {
       maxLength: 140,
       minLength: 20,
       placeholder: 'Brief Description',
-      type: 'textarea'
+      type: 'text'
     }),
     image: new FormField({
       formControl: new FormControl(),
@@ -53,8 +57,10 @@ export class CategoryFormComponent implements OnInit {
     }),
     icon: new FormField({
       formControl: new FormControl(),
-      placeholder: 'Icon',
-      type: 'selectIcon'
+      placeholder: 'Select Icon',
+      type: 'select',
+      apiSource: 'getIcons',
+      showIcons: true
     }),
     color: new FormField({
       formControl: new FormControl(),
@@ -68,16 +74,23 @@ export class CategoryFormComponent implements OnInit {
     public dialogRef: MatDialogRef<CategoryFormComponent>,
     @Inject(MAT_DIALOG_DATA) private data: any,
   ) {
-    this.dialogRef.updatePosition({
-      top: '100px',
-    });
+    const colWidth = 100 - (1 / 6);
+    const parent = this.data.parent_category;
+    const level = parent ? (parent.level + 1) : 0;
+    this.dialogRef.updateSize(`${colWidth}vw`);
 
     if (this.data.edit) {
       this.createNew = false;
       this.category = this.data.edit;
     } else {
       this.createNew = true;
-      this.category = { id: null, name: '', description: '' };
+      this.category = {
+        id: null,
+        name: '',
+        description: '',
+        brief_description: '',
+        level: level
+      };
       if (this.data.parent_category) {
         this.category.parent_id = this.data.parent_category.id;
       }
@@ -86,6 +99,9 @@ export class CategoryFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (!this.createNew) {
+      this.validate();
+    }
   }
 
   loadForm() {
@@ -117,7 +133,20 @@ export class CategoryFormComponent implements OnInit {
     this.isDataLoaded = true;
   }
 
+  getFields(): FormField[] {
+    const fields = [];
+
+    for (const fieldName in this.fields) {
+      if (this.fields.hasOwnProperty(fieldName)) {
+        fields.push(this.fields[fieldName]);
+      }
+    }
+
+    return fields;
+  }
+
   onSubmit() {
+    this.validate();
     this.isDataLoaded = false;
 
     if (this.categoryForm.valid) {
@@ -142,6 +171,15 @@ export class CategoryFormComponent implements OnInit {
           this.dialogRef.close();
           this.isDataLoaded = true;
         });
+      }
+    }
+  }
+
+  validate() {
+    for (const key in this.categoryForm.controls) {
+      if (this.categoryForm.controls.hasOwnProperty(key)) {
+        const control = this.categoryForm.controls[key];
+        control.markAsTouched();
       }
     }
   }

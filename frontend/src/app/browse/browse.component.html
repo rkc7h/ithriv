@@ -6,14 +6,9 @@
       <app-edit-category-button [category]="category"></app-edit-category-button>
       <app-add-category-button [category]="category"></app-add-category-button>
     </h1>
-    <p *ngIf="category.description">{{category.description}}</p>
-    <p *ngIf="!category.description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-      irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-    </p>
+    <markdown>{{category.description || dummyText.category}}</markdown>
     <div class="bg-img" [ngStyle]="{'background-image': headerImage()}"></div>
-    <div class="gradient-overlay"
-         [appGradientBackground]='category.color'></div>
+    <div class="gradient-overlay" [appGradientBackground]='category.color'></div>
   </div>
 
   <div *ngIf="isDataLoaded">
@@ -24,11 +19,7 @@
         <app-edit-category-button [category]="c" [parent]="category"></app-edit-category-button>
         <app-add-category-button [category]="c"></app-add-category-button>
       </div>
-      <p *ngIf="c.description">{{c.description}}</p>
-      <p *ngIf="!c.description">This should be a brief statement about the nature of the Writing Assistance section and the resources users can find
-        within it. It should briefly describe the contents of this section and give an overview of the resources that will
-        be within it.
-      </p>
+      <markdown>{{c.description || dummyText.c}}</markdown>
 
       <div class="sub-categories container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0px grid" fxLayoutAlign="center">
         <mat-card *ngFor="let sc of c.children" class="sub-sub-category" fxFlex="30%">
@@ -37,15 +28,11 @@
               <mat-icon class="cat-icon-3" svgIcon="{{categoryIcon(sc)}}" [ngStyle]="{'background-color': sc.color}"></mat-icon>
             </div>
             <mat-card-title>{{sc.name}}</mat-card-title>
-            <mat-card-subtitle *ngIf="sc.brief_description">{{sc.brief_description}}</mat-card-subtitle>
-            <mat-card-subtitle *ngIf="!sc.brief_description">The dummy text is a page description on the next page that establishes the content of the definitions and glossary
-              category.
+            <mat-card-subtitle>
+              <markdown>{{sc.brief_description || dummyText.sc}}</markdown>
             </mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-actions>
-            <div fxFlex></div>
             <app-edit-category-button [category]="sc" [parent]="c"></app-edit-category-button>
-          </mat-card-actions>
+          </mat-card-header>
         </mat-card>
       </div>
     </section>

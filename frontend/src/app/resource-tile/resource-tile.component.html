@@ -14,6 +14,14 @@
     {{resource.description}}
   </mat-card-content>
   <mat-card-actions>
-    <app-availability [resource]="resource"></app-availability>
+      <div class="container"
+        fxLayout="row wrap"
+        fxLayout.xs="column"
+        fxLayoutAlign="center"
+        fxLayoutGap="10px"
+        fxLayoutGap.xs="0">
+        <img src="/assets/institutions/{{resource.institution.name}}.png"/>
+      </div>
   </mat-card-actions>
+
 </mat-card>

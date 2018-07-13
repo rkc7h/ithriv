@@ -1,26 +1,19 @@
-<form *ngIf="isDataLoaded" [formGroup]="resourceForm" (ngSubmit)="onSubmit()">
-  <h2>Resource Details</h2>
+<div class="container mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em" fxLayoutAlign="center">
+  <form *ngIf="isDataLoaded" [formGroup]="resourceForm" (ngSubmit)="onSubmit()" fxFlex="90%">
+    <h2>Resource Details</h2>
+    <!-- TODO:  Add Type, Institution, and Availability -->
+    <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
+      [field]="field" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
 
-  <app-form-field [field]="fields.name" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
-  <app-form-field [field]="fields.description" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
-  <app-form-field [field]="fields.owner" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
-  <app-form-field [field]="fields.website" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <footer>
+      <mat-toolbar color="primary">
+        <button type="button" color="accent" mat-raised-button (click)="onSubmit($event)">Save</button>
+        <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
+        <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
+        <button *ngIf="showConfirmDelete" id="confirm_delete" type="button" mat-raised-button (click)="onDelete()">Permanently Delete This Resource!!!</button>
 
-  <!-- TODO:  Add Type, Institution, and Availability -->
-
-  <div class="display">
-    <div class="button">
-      <button type="submit" mat-raised-button (click)="validate()">Save</button>
-      <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
-      <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
-    </div>
-  </div>
-
-  <div id="confirm_delete" class="display" *ngIf="showConfirmDelete">
-    <div class="button">
-      <button type="button" mat-raised-button (click)="onDelete()">Permanently Delete This Resource!!!</button>
-    </div>
-  </div>
-
-  <div id="error_message" class="display mat-error" *ngIf="error">{{error}}</div>
-</form>
+        <div id="error_message" class="display mat-error" *ngIf="error">{{error}}</div>
+      </mat-toolbar>
+    </footer>
+  </form>
+</div>

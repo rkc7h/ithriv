@@ -26,13 +26,16 @@ import {
   MatSnackBarModule,
   MatStepperModule,
   MatTabsModule,
-  MatToolbarModule
+  MatToolbarModule,
+  MatTreeModule,
+  MatBadgeModule
 } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, Routes } from '@angular/router';
+import { CovalentTextEditorModule } from '@covalent/text-editor';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { MarkdownModule } from 'ngx-markdown';
 import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
 import { AddResourceButtonComponent } from './add-resource-button/add-resource-button.component';
 import { AppComponent } from './app.component';
@@ -54,18 +57,11 @@ import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { GradientBackgroundDirective } from './gradient-background.directive';
-import {DeviceDetectorModule} from 'ngx-device-detector';
-
-const routes: Routes = [
-  { path: '', redirectTo: 'search', pathMatch: 'full' },
-  { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
-  { path: 'search', component: SearchComponent, data: { title: 'Search' } },
-  { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
-  { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
-  { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
-  { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
-  { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
-];
+import { DeviceDetectorModule } from 'ngx-device-detector';
+import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { AppRoutingModule } from './app-routing/app-routing.module';
+import { TreeSelectComponent } from './tree-select/tree-select.component';
 
 @NgModule({
   declarations: [
@@ -87,16 +83,24 @@ const routes: Routes = [
     AddCategoryButtonComponent,
     EditResourceButtonComponent,
     AddResourceButtonComponent,
-    GradientBackgroundDirective
+    GradientBackgroundDirective,
+    FormFieldLabelComponent,
+    NotFoundComponent,
+    TreeSelectComponent
   ],
   imports: [
+    AppRoutingModule,
     BrowserAnimationsModule,
     BrowserModule,
     ColorPickerModule,
     CommonModule,
+    CovalentTextEditorModule,
+    DeviceDetectorModule.forRoot(),
     FlexLayoutModule,
     HttpClientModule,
     InfiniteScrollModule,
+    MarkdownModule.forRoot(),
+    MatBadgeModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -119,9 +123,8 @@ const routes: Routes = [
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,
-    ReactiveFormsModule,
-    RouterModule.forRoot(routes, { useHash: true }),
-    DeviceDetectorModule.forRoot()
+    MatTreeModule,
+    ReactiveFormsModule
   ],
   entryComponents: [
     CategoryFormComponent, ResourceFormComponent

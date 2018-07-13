@@ -1,13 +1,17 @@
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 export class FormField {
-  formControl: FormControl;
+  apiSource: string;
+  formControl?: FormControl;
+  formGroup?: FormGroup;
   required: boolean;
   maxLength: number;
   minLength: number;
   placeholder: string;
   type: string;
-  icons: [string];
+  options: object;
+  showIcons = false;
+  multiSelect = false;
 
   constructor(private _props) {
     for (const propName in this._props) {

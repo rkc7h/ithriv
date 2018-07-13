@@ -2,8 +2,15 @@
   <div *ngIf="resource" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em" fxLayoutAlign="center">
     <div fxFlex="75%">
       <h1>{{resource.name}}</h1>
-      <p>{{resource.description}}</p>
-      <app-availability [resource]="resource"></app-availability>
+      <markdown>{{resource.description}}</markdown>
+      <div class="container"
+        fxLayout="row wrap"
+        fxLayout.xs="column"
+        fxLayoutAlign="center"
+        fxLayoutGap="10px"
+        fxLayoutGap.xs="0">
+        <img src="/assets/institutions/{{resource.institution.name}}.png"/>
+      </div>
     </div>
     <mat-card fxFlex="25%">
       <mat-card-title>Information</mat-card-title>
@@ -25,8 +32,8 @@
           -->
         </mat-list>
       </mat-card-content>
-      <mat-card-actions *ngIf="resource.website">
-        <button mat-button (click)="goWebsite($event)">VISIT WEBSITE</button>
+      <mat-card-actions>
+        <button *ngIf="resource.website" mat-button (click)="goWebsite($event)">VISIT WEBSITE</button>
         <div fxFlex></div>
         <app-edit-resource-button [resource]="resource"></app-edit-resource-button>
       </mat-card-actions>

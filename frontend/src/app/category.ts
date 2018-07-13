@@ -1,14 +1,17 @@
 import { Links } from './links';
 
 export interface Category {
-  id: number;
-  name: string;
-  description: string;
   brief_description?: string;
-  image?: string;
-  icon?: string;
-  color?: string;
-  parent_id?: number;
   children?: Category[];
+  color?: string;
+  description: string;
+  icon?: string;
+  icon_id?: string;
+  id: number;
+  image?: string;
+  level: number;
+  name: string;
+  parent_id?: number;
+  parent?: Category;
   _links?: Links;
 }

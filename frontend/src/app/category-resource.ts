@@ -6,5 +6,5 @@ export interface CategoryResource {
   id: number;
   resource: Resource;
   category: Category;
-  _links?: Links;
+  _links: Links;
 }

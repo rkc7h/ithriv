@@ -1,26 +1,25 @@
-<form *ngIf="isDataLoaded" [formGroup]="categoryForm" novalidate (ngSubmit)="onSubmit()">
-  <h2 class="mat-h2">Category Details</h2>
+<form mat-dialog-container *ngIf="isDataLoaded" [formGroup]="categoryForm" novalidate (ngSubmit)="onSubmit()">
 
-  <app-form-field [field]="fields.name" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-  <app-form-field [field]="fields.description" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-  <app-form-field [field]="fields.brief_description" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-  <app-form-field [field]="fields.image" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-  <app-form-field [field]="fields.color" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
-  <app-form-field [field]="fields.icon" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  <h2 mat-dialog-title>Category Details</h2>
 
-  <div class="display">
-    <div class="button">
-      <button type="submit" [disabled]="categoryForm.invalid" mat-raised-button (click)="onSubmit()">Save</button>
-      <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
-      <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
-    </div>
-  </div>
+  <mat-dialog-content>
+    <app-form-field [errors]="fields.name.formControl.errors" [field]="fields.name" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.description.formControl.errors" [field]="fields.description" [formGroup]="categoryForm"
+      [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.brief_description.formControl.errors" [field]="fields.brief_description" [formGroup]="categoryForm"
+      [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.image.formControl.errors" [field]="fields.image" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.color.formControl.errors" [field]="fields.color" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <app-form-field [errors]="fields.icon.formControl.errors" [field]="fields.icon" [formGroup]="categoryForm" [errorMatcher]="errorMatcher"></app-form-field>
+  </mat-dialog-content>
 
-  <div id="confirm_delete" class="display" *ngIf="showConfirmDelete">
-    <div class="button">
-      <button type="button" mat-raised-button (click)="onDelete()">Permanently Delete This Category!!!</button>
-    </div>
-  </div>
+  <mat-dialog-actions>
+    <button type="submit" color="primary" [disabled]="categoryForm.invalid" mat-raised-button (click)="onSubmit()">Save</button>
+    <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
+    <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
+    <button *ngIf="showConfirmDelete" id="confirm_delete" type="button" color="warning" mat-raised-button (click)="onDelete()">Permanently Delete This Category!!!</button>
+  </mat-dialog-actions>
 
   <div id="error_message" class="display mat" *ngIf="error">{{error}}</div>
+
 </form>

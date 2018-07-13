@@ -1,26 +1,31 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { Component, OnInit, HostBinding } from '@angular/core';
+import { FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ValidateUrl } from '../shared/validators/url.validator';
+import { routerTransition } from '../shared/router.animations';
+import { ResourceCategory } from '../resource-category';
 
 @Component({
   selector: 'app-resource-form',
   templateUrl: './resource-form.component.html',
-  styleUrls: ['./resource-form.component.scss']
+  styleUrls: ['./resource-form.component.scss'],
+  animations: [routerTransition]
 })
 export class ResourceFormComponent implements OnInit {
-  category: Category;
+  @HostBinding('@routerTransition')
+  allCategories: Category[] = [];
+  resourceCategories: ResourceCategory[] = [];
   createNew = false;
   error: string;
   errorMatcher = new ErrorMatcher();
   isDataLoaded = false;
   resource: Resource;
-  resourceForm: FormGroup;
+  resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
 
   // Form Fields
@@ -31,15 +36,19 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 140,
       minLength: 1,
       placeholder: 'Name',
-      type: 'text'
+      type: 'text',
     }),
     description: new FormField({
       formControl: new FormControl(),
       required: true,
-      maxLength: 600,
+      maxLength: 2000,
       minLength: 20,
       placeholder: 'Description',
-      type: 'textarea'
+      type: 'textarea',
+      options: {
+        hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
+        status: ['words'],
+      }
     }),
     owner: new FormField({
       formControl: new FormControl(),
@@ -49,6 +58,52 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Owner',
       type: 'text'
     }),
+    contact_email: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact email',
+      type: 'email'
+    }),
+    contact_notes: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact notes',
+      type: 'text'
+    }),
+    contact_phone: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact phone',
+      type: 'text'
+    }),
+    cost: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Cost',
+      type: 'text'
+    }),
+    type_id: new FormField({
+      formControl: new FormControl(),
+      required: true,
+      placeholder: 'Select Type',
+      type: 'select',
+      apiSource: 'getTypes'
+    }),
+    institution_id: new FormField({
+      formControl: new FormControl(),
+      required: true,
+      placeholder: 'Select Institution',
+      type: 'select',
+      apiSource: 'getInstitutions'
+    }),
     website: new FormField({
       formControl: new FormControl(),
       required: true,
@@ -57,43 +112,79 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Website',
       type: 'url'
     }),
+    categories: new FormField({
+      formGroup: new FormGroup({}),
+      required: true,
+      placeholder: 'Select Categories',
+      type: 'tree',
+      apiSource: 'getCategories',
+      multiSelect: true
+    }),
   };
 
   constructor(
     private api: ResourceApiService,
-    public dialogRef: MatDialogRef<ResourceFormComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: any
+    private route: ActivatedRoute,
+    private router: Router
   ) {
-    this.dialogRef.updatePosition({
-      top: '100px',
-    });
-
-    if (this.data.edit) {
-      this.createNew = false;
-      this.resource = this.data.edit;
-    } else {
-      this.createNew = true;
-      this.resource = { id: null, name: '', description: '' };
-    }
-
-    if (this.data.parent_category) {
-      this.category = this.data.parent_category;
-    }
-    this.loadForm();
+    this.loadData();
   }
 
   ngOnInit() {
-    if (!this.createNew) {
-      this.validate();
-    }
+  }
+
+  loadData() {
+    this.isDataLoaded = false;
+    this.loadAllCategories();
+    this.route.params.subscribe(params => {
+      const resourceId = params['resource'];
+
+      if (resourceId) {
+        this.createNew = false;
+        this.api
+          .getResource(resourceId)
+          .subscribe(resource => {
+            this.resource = resource;
+            this.loadResourceCategories(resource, () => this.loadForm());
+          });
+      } else {
+        this.createNew = true;
+        this.resource = { id: null, name: '', description: '' };
+        this.loadForm();
+      }
+    });
+  }
+
+  loadAllCategories() {
+    const leafCats = function (cats, result = []) {
+      for (const c of cats) {
+        if (Array.isArray(c.children) && (c.children.length > 0)) {
+          result = leafCats(c.children, result);
+        } else {
+          result.push(c);
+        }
+      }
+      return result;
+    };
+
+    this.api.getCategories().subscribe(categories => {
+      this.allCategories = leafCats(categories);
+    });
+  }
+
+  loadResourceCategories(resource: Resource, callback: Function) {
+    this.api
+      .getResourceCategories(resource)
+      .subscribe(rcs => {
+        this.resourceCategories = rcs;
+        callback();
+      });
   }
 
   loadForm() {
-    const formGroup = {};
     for (const fieldName in this.fields) {
       if (this.fields.hasOwnProperty(fieldName)) {
         const field = this.fields[fieldName];
-
         const validators = [];
 
         if (field.required) {
@@ -116,25 +207,54 @@ export class ResourceFormComponent implements OnInit {
           validators.push(ValidateUrl);
         }
 
-        field.formControl.patchValue(this.resource[fieldName]);
-        // this[fieldName].valueChanges.subscribe(t => this.resource[fieldName] = t);
-        field.formControl.setValidators(validators);
-        formGroup[fieldName] = field.formControl;
+        if (fieldName === 'categories') {
+          const selectedCatIds = this.resourceCategories.map(rc => rc.category.id);
+
+          for (const cat of this.allCategories) {
+            const checked = selectedCatIds.includes(cat.id);
+            const control = new FormControl();
+            control.setValue(checked);
+            this.fields.categories.formGroup.addControl(cat.id.toString(), control);
+          }
+
+          this.fields.categories.formGroup.setValidators(validators);
+          this.resourceForm.addControl(fieldName, this.fields.categories.formGroup);
+        } else {
+          field.formControl.setValidators(validators);
+          field.formControl.patchValue(this.resource[fieldName]);
+          this.resourceForm.addControl(fieldName, field.formControl);
+        }
       }
     }
 
-    this.resourceForm = new FormGroup(formGroup);
     this.isDataLoaded = true;
+
+    if (!this.createNew) {
+      this.validate();
+    }
   }
 
-  onSubmit() {
+  getFields(): FormField[] {
+    const fields = [];
+
+    for (const fieldName in this.fields) {
+      if (this.fields.hasOwnProperty(fieldName)) {
+        fields.push(this.fields[fieldName]);
+      }
+    }
+
+    return fields;
+  }
+
+  onSubmit($event) {
+    $event.preventDefault();
     this.validate();
 
     if (this.resourceForm.valid) {
       this.isDataLoaded = false;
 
       for (const fieldName in this.fields) {
-        if (this.fields.hasOwnProperty(fieldName)) {
+        if (this.resource.hasOwnProperty(fieldName) && this.fields.hasOwnProperty(fieldName)) {
           this.resource[fieldName] = this.fields[fieldName].formControl.value;
         }
       }
@@ -142,22 +262,48 @@ export class ResourceFormComponent implements OnInit {
       if (this.createNew) {
         this.api.addResource(this.resource).subscribe(r => {
           this.resource = r;
-          if (this.data.parent_category) {
-            this.api.linkResourceAndCategory(this.resource, this.category).subscribe();
-          }
-          this.dialogRef.close();
+          this.updateCategories();
+          // this.close();
+          this.isDataLoaded = true;
         });
       } else {
         this.api.updateResource(this.resource).subscribe(r => {
           this.resource = r;
-          this.dialogRef.close();
+          this.updateCategories();
+          // this.close();
+          this.isDataLoaded = true;
+        });
+      }
+    } else {
+      console.log('FORM NOT VALID');
+    }
+  }
+
+  updateCategories() {
+    const selectedCatIds = [];
+    const controls = this.fields.categories.formGroup.controls;
+
+    for (const key in controls) {
+      if (controls.hasOwnProperty(key) && controls[key].value) {
+        selectedCatIds.push(parseInt(key, 10));
+      }
+    }
+
+    for (const cat of this.allCategories) {
+      if (selectedCatIds.includes(cat.id)) {
+        this.api.linkResourceAndCategory(this.resource, cat).subscribe();
+      } else {
+        this.resourceCategories.forEach(rc => {
+          if (rc.category.id === cat.id) {
+            this.api.unlinkResourceAndCategory(rc).subscribe();
+          }
         });
       }
     }
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.close();
   }
 
   validate() {
@@ -175,9 +321,27 @@ export class ResourceFormComponent implements OnInit {
 
   onDelete() {
     this.api.deleteResource(this.resource).subscribe(r => {
-      this.dialogRef.close();
+      this.close();
     },
       error => this.error = error
     );
+  }
+
+  // Go to resource screen
+  close() {
+    if (this.resource && this.resource.id) {
+      this.router.navigate(['resource', this.resource.id]);
+    } else {
+      this.route.params.subscribe(params => {
+        const resourceId = params['resource'];
+        const categoryId = params['category'];
+
+        if (resourceId) {
+          this.router.navigate(['resource', resourceId]);
+        } else if (categoryId) {
+          this.router.navigate(['category', categoryId]);
+        }
+      });
+    }
   }
 }
