@@ -5,14 +5,14 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 import { FormField } from '../form-field';
 import { Category } from '../category';
 import { of as observableOf, ObjectUnsubscribedError } from '../../../node_modules/rxjs';
-import { routerTransition } from '../shared/router.animations';
+import { Animations } from '../shared/router.animations';
 import { MatTreeNestedDataSource } from '../../../node_modules/@angular/material';
 
 @Component({
   selector: 'app-tree-select',
   templateUrl: './tree-select.component.html',
   styleUrls: ['./tree-select.component.scss'],
-  animations: [routerTransition]
+  animations: [Animations.routerTransition]
 })
 export class TreeSelectComponent implements OnInit {
   @Input() field: FormField;

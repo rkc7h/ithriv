@@ -2,13 +2,13 @@ import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
+import { Animations } from '../shared/router.animations';
 
 @Component({
   selector: 'app-browse',
   templateUrl: './browse.component.html',
   styleUrls: ['./browse.component.scss'],
-  animations: [routerTransition],
+  animations: [Animations.routerTransition],
 })
 export class BrowseComponent implements OnInit {
   @HostBinding('@routerTransition')
