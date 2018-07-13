@@ -29,7 +29,7 @@
             </div>
             <mat-card-title>{{sc.name}}</mat-card-title>
             <mat-card-subtitle>
-              <markdown>{{sc.description || dummyText.sc}}</markdown>
+              <markdown>{{sc.brief_description || dummyText.sc}}</markdown>
             </mat-card-subtitle>
             <app-edit-category-button [category]="sc" [parent]="c"></app-edit-category-button>
           </mat-card-header>
