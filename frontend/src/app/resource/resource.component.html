@@ -3,7 +3,14 @@
     <div fxFlex="75%">
       <h1>{{resource.name}}</h1>
       <markdown>{{resource.description}}</markdown>
-      <app-availability [resource]="resource"></app-availability>
+      <div class="container"
+        fxLayout="row wrap"
+        fxLayout.xs="column"
+        fxLayoutAlign="center"
+        fxLayoutGap="10px"
+        fxLayoutGap.xs="0">
+        <img src="/assets/institutions/{{resource.institution.name}}.png"/>
+      </div>
     </div>
     <mat-card fxFlex="25%">
       <mat-card-title>Information</mat-card-title>
