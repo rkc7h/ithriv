@@ -1,5 +1,6 @@
-<div class="container mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em" fxLayoutAlign="center">
-  <form *ngIf="isDataLoaded" [formGroup]="resourceForm" (ngSubmit)="onSubmit()" fxFlex="90%">
+<div *ngIf="isDataLoaded" class="container mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em"
+  fxLayoutAlign="center">
+  <form [formGroup]="resourceForm" (ngSubmit)="onSubmit()" fxFlex="90%">
     <h2>Resource Details</h2>
     <!-- TODO:  Add Type, Institution, and Availability -->
     <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
@@ -16,4 +17,7 @@
       </mat-toolbar>
     </footer>
   </form>
+</div>
+<div *ngIf="!isDataLoaded" id="spinnerContainer">
+  <mat-spinner></mat-spinner>
 </div>

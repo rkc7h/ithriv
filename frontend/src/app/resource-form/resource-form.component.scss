@@ -17,3 +17,10 @@ footer {
   height: 64px;
   @include mat-elevation(1);
 }
+
+#spinnerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}

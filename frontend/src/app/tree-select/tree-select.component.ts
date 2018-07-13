@@ -32,7 +32,6 @@ export class TreeSelectComponent implements OnInit {
     this.api.getCategories().subscribe(categories => {
       this.dataSource.data = categories;
       this.categories = categories;
-      this.dataLoaded = true;
       this.updateSelection();
     });
   }
@@ -52,10 +51,22 @@ export class TreeSelectComponent implements OnInit {
         }
       }
     }
+
+    this.dataLoaded = true;
+  }
+
+  getFormControl(node: Category) {
+    const key = node.id.toString();
+    this.nodes[key] = node;
+
+    if (this.field.formGroup.controls.hasOwnProperty(key)) {
+      return this.field.formGroup.controls[key];
+    } else {
+      console.log('Could not find control with key:', key);
+    }
   }
 
   hasNestedChild = (_: number, node: Category) => {
-    this.nodes[node.id.toString()] = node;
     return (node.children && (node.children.length > 0));
   }
 
