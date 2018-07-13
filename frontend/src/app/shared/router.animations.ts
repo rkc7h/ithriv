@@ -7,17 +7,19 @@ const show = style({ opacity: 1 });
 const transitionOut = [show, animate(easing, hide)];
 const transitionIn = [hide, animate(easing, show)];
 
-export const routerTransition = trigger('routerTransition', [
-  transition('* => *', [
-    query(':enter,:leave', show),
-    query(':enter', hide),
-    sequence([
-      query(':leave', animateChild()),
-      group([
-        query(':leave', transitionOut),
-        query(':enter', transitionIn),
-      ]),
-      query(':enter', animateChild()),
+export const Animations = {
+  routerTransition: trigger('routerTransition', [
+    transition('* => *', [
+      query(':enter,:leave', show),
+      query(':enter', hide),
+      sequence([
+        query(':leave', animateChild()),
+        group([
+          query(':leave', transitionOut),
+          query(':enter', transitionIn),
+        ]),
+        query(':enter', animateChild()),
+      ])
     ])
   ])
-]);
+};
