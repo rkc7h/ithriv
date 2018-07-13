@@ -6,7 +6,7 @@ import { routerTransition } from '../shared/router.animations';
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  animations: [routerTransition],
+  animations: [routerTransition()],
 })
 export class HeaderComponent implements OnInit {
   @HostBinding('@routerTransition')

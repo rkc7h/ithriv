@@ -14,7 +14,7 @@ import { ResourceCategory } from '../resource-category';
   selector: 'app-resource-form',
   templateUrl: './resource-form.component.html',
   styleUrls: ['./resource-form.component.scss'],
-  animations: [routerTransition]
+  animations: [routerTransition()]
 })
 export class ResourceFormComponent implements OnInit {
   @HostBinding('@routerTransition')

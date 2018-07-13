@@ -1,10 +1,10 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, OnInit, Input, HostBinding, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, HostBinding } from '@angular/core';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FormField } from '../form-field';
 import { Category } from '../category';
-import { of as observableOf, ObjectUnsubscribedError } from '../../../node_modules/rxjs';
+import { of as observableOf } from '../../../node_modules/rxjs';
 import { routerTransition } from '../shared/router.animations';
 import { MatTreeNestedDataSource } from '../../../node_modules/@angular/material';
 
@@ -12,7 +12,7 @@ import { MatTreeNestedDataSource } from '../../../node_modules/@angular/material
   selector: 'app-tree-select',
   templateUrl: './tree-select.component.html',
   styleUrls: ['./tree-select.component.scss'],
-  animations: [routerTransition]
+  animations: [routerTransition()]
 })
 export class TreeSelectComponent implements OnInit {
   @Input() field: FormField;

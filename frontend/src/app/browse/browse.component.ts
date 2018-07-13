@@ -8,7 +8,7 @@ import { routerTransition } from '../shared/router.animations';
   selector: 'app-browse',
   templateUrl: './browse.component.html',
   styleUrls: ['./browse.component.scss'],
-  animations: [routerTransition],
+  animations: [routerTransition()],
 })
 export class BrowseComponent implements OnInit {
   @HostBinding('@routerTransition')

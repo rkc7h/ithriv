@@ -9,7 +9,7 @@ import { routerTransition } from '../shared/router.animations';
   selector: 'app-resource',
   templateUrl: './resource.component.html',
   styleUrls: ['./resource.component.scss'],
-  animations: [routerTransition]
+  animations: [routerTransition()]
 })
 export class ResourceComponent implements OnInit {
   @HostBinding('@routerTransition')
