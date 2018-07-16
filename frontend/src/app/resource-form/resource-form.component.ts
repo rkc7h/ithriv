@@ -135,27 +135,28 @@ export class ResourceFormComponent implements OnInit {
 
   loadData() {
     this.isDataLoaded = false;
-    this.loadAllCategories();
     this.route.params.subscribe(params => {
       const resourceId = params['resource'];
 
       if (resourceId) {
         this.createNew = false;
-        this.api
-          .getResource(resourceId)
-          .subscribe(resource => {
-            this.resource = resource;
-            this.loadResourceCategories(resource, () => this.loadForm());
-          });
+        this.loadAllCategories(() => {
+          this.api
+            .getResource(resourceId)
+            .subscribe(resource => {
+              this.resource = resource;
+              this.loadResourceCategories(resource, () => this.loadForm());
+            });
+        });
       } else {
         this.createNew = true;
         this.resource = { id: null, name: '', description: '' };
-        this.loadForm();
+        this.loadAllCategories(() => this.loadForm());
       }
     });
   }
 
-  loadAllCategories() {
+  loadAllCategories(callback: Function) {
     const leafCats = function (cats, result = []) {
       for (const c of cats) {
         if (Array.isArray(c.children) && (c.children.length > 0)) {
@@ -169,6 +170,7 @@ export class ResourceFormComponent implements OnInit {
 
     this.api.getCategories().subscribe(categories => {
       this.allCategories = leafCats(categories);
+      callback();
     });
   }
 
@@ -182,6 +184,8 @@ export class ResourceFormComponent implements OnInit {
   }
 
   loadForm() {
+    this.isDataLoaded = false;
+
     for (const fieldName in this.fields) {
       if (this.fields.hasOwnProperty(fieldName)) {
         const field = this.fields[fieldName];
@@ -219,6 +223,7 @@ export class ResourceFormComponent implements OnInit {
 
           this.fields.categories.formGroup.setValidators(validators);
           this.resourceForm.addControl(fieldName, this.fields.categories.formGroup);
+          this.isDataLoaded = true;
         } else {
           field.formControl.setValidators(validators);
           field.formControl.patchValue(this.resource[fieldName]);
@@ -226,8 +231,6 @@ export class ResourceFormComponent implements OnInit {
         }
       }
     }
-
-    this.isDataLoaded = true;
 
     if (!this.createNew) {
       this.validate();

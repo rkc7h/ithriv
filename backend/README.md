@@ -19,7 +19,10 @@ sudo apt-get install -y libssl-dev libffi-dev
 
 #### PostgreSQL
 * MacOS:
-[Download and install Postgres.app](https://postgresapp.com). This will install `postgres`, along with the command-line tools, including `psql`, `pg_ctl`, and others.
+[Download and install Postgres.app](https://postgresapp.com). This will install `postgres`, along with the command-line tools, including `psql`, `pg_ctl`, and others. Then update your `PATH` variable to look in the Postgres.app `bin` directory for the relevant Postgres CLI tools.
+```BASH
+export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+```
 
 * Debian:
 ```BASH
@@ -105,7 +108,7 @@ flask initindex
 ```
 
 ### Starting Elastic Search
-Elastic Search (on Debian at least) may not start up automatically.  In these cases, you can start it 
+Elastic Search (on Debian at least) may not start up automatically.  In these cases, you can start it
 when you need it by running:
 ```BASH
 sudo service elasticsearch start

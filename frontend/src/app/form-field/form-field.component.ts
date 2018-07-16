@@ -32,6 +32,7 @@ export class FormFieldComponent implements OnInit {
       if (this.api[source] && (typeof this.api[source] === 'function')) {
         this.api[source]().subscribe(results => {
           this.options = results;
+          this.field.formControl.updateValueAndValidity();
           this.dataLoaded = true;
         });
       }

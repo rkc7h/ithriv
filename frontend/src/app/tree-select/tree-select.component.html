@@ -1,7 +1,7 @@
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree-select">
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
     <li class="mat-tree-node">
-      <mat-checkbox [formControl]="field.formGroup.controls[node.id]" [checked]="checklistSelection.isSelected(node)" [indeterminate]="descendantsPartiallySelected(node)"
+      <mat-checkbox [formControl]="getFormControl(node)" [checked]="checklistSelection.isSelected(node)" [indeterminate]="descendantsPartiallySelected(node)"
         (change)="toggleNode(node)">{{node.name}}</mat-checkbox>
     </li>
   </mat-tree-node>
@@ -13,13 +13,8 @@
           <mat-icon class="mat-icon-rtl-mirror">
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
-          <ng-container *ngIf="dataLoaded">
-            <span *ngIf="numSelectedDescendants(node)" matBadge="{{numSelectedDescendants(node)}}" matBadgeOverlap="false" matBadgeColor="accent">{{node.name}}</span>
-            <span *ngIf="!numSelectedDescendants(node)">{{node.name}}</span>
-          </ng-container>
-          <ng-container *ngIf="!dataLoaded">
-            ...
-          </ng-container>
+          <span *ngIf="numSelectedDescendants(node)" matBadge="{{numSelectedDescendants(node)}}" matBadgeOverlap="false" matBadgeColor="accent">{{node.name}}</span>
+          <span *ngIf="!numSelectedDescendants(node)">{{node.name}}</span>
         </button>
       </div>
       <ul [class.tree-select-invisible]="!treeControl.isExpanded(node)">
