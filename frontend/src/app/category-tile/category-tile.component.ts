@@ -7,7 +7,7 @@ import { routerTransition } from '../shared/router.animations';
   selector: 'app-category-tile',
   templateUrl: './category-tile.component.html',
   styleUrls: ['./category-tile.component.scss'],
-  animations: [routerTransition],
+  animations: [routerTransition()],
 })
 export class CategoryTileComponent implements OnInit {
   @HostBinding('@routerTransition')

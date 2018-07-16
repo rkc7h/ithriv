@@ -13,7 +13,7 @@ import { routerTransition } from '../shared/router.animations';
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  animations: [routerTransition],
+  animations: [routerTransition()],
 })
 export class SearchComponent implements OnInit {
   @HostBinding('@routerTransition')

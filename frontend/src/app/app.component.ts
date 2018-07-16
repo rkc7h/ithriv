@@ -10,7 +10,7 @@ import { RouterOutlet } from '../../node_modules/@angular/router';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  animations: [routerTransition],
+  animations: [routerTransition()],
 })
 export class AppComponent {
   trustUrl;
