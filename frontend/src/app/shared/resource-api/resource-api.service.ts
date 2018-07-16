@@ -11,6 +11,7 @@ import { CategoryResource } from '../../category-resource';
 import { Icon } from '../../icon';
 import { Institution } from '../../institution';
 import { ResourceType } from '../../resourceType';
+import { Availability } from '../../availability';
 
 @Injectable()
 export class ResourceApiService {
@@ -31,6 +32,7 @@ export class ResourceApiService {
     type: '/api/type/<id>',
     typeList: '/api/type',
     search: '/api/search',
+    resourceAvailabilityList: '/api/resource_availability',
     resourceCategoryList: '/api/resource_category',
     resourceCategory: '/api/resource_category/<id>',
     iconList: '/api/icon',
@@ -141,6 +143,19 @@ export class ResourceApiService {
   /** addResource */
   addResource(resource: Resource): Observable<Resource> {
     return this.httpClient.post<Resource>(this.apiRoot + this.endpoints.resourceList, resource)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** linkResourceAndInstitutionAvailability */
+  linkResourceAndInstitutionAvailability(resource: Resource, institution: Institution): Observable<any> {
+    const options = { resource_id: resource.id, institution_id: institution.id };
+    return this.httpClient.post<Availability>(this.apiRoot + this.endpoints.resourceAvailabilityList, options)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** unlinkResourceAndInstitutionAvailability */
+  unlinkResourceAndInstitutionAvailability(av: Availability): Observable<any> {
+    return this.httpClient.delete<Availability>(this.apiRoot + av._links.self)
       .pipe(catchError(this.handleError));
   }
 

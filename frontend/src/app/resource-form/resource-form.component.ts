@@ -120,6 +120,14 @@ export class ResourceFormComponent implements OnInit {
       apiSource: 'getCategories',
       multiSelect: true
     }),
+    availabilities: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      placeholder: 'Select Institutions that may access this resource',
+      type: 'select',
+      multiSelect: true,
+      apiSource: 'getInstitutions'
+    }),
   };
 
   constructor(
