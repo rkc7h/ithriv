@@ -120,7 +120,7 @@ export class ResourceFormComponent implements OnInit {
       apiSource: 'getCategories',
       multiSelect: true
     }),
-    availabilities: new FormField({
+    'availabilities.institution_id': new FormField({
       formControl: new FormControl(),
       required: false,
       placeholder: 'Select Institutions that may access this resource',
@@ -274,6 +274,7 @@ export class ResourceFormComponent implements OnInit {
         this.api.addResource(this.resource).subscribe(r => {
           this.resource = r;
           this.updateCategories();
+          this.updateAvailabilities();
           // this.close();
           this.isDataLoaded = true;
         });
@@ -281,6 +282,7 @@ export class ResourceFormComponent implements OnInit {
         this.api.updateResource(this.resource).subscribe(r => {
           this.resource = r;
           this.updateCategories();
+          this.updateAvailabilities();
           // this.close();
           this.isDataLoaded = true;
         });
@@ -311,6 +313,27 @@ export class ResourceFormComponent implements OnInit {
         });
       }
     }
+  }
+
+  updateAvailabilities() {
+    const selectedInstitutionIds: number[] = this.fields['availabilities.institution_id'].formControl.value;
+
+    // For each institution...
+    this.api.getInstitutions().subscribe(institutions => {
+      for (const institution of institutions) {
+        if (selectedInstitutionIds.includes(institution.id)) {
+          // ...link selected institutions with this resource
+          this.api.linkResourceAndInstitutionAvailability(this.resource, institution).subscribe();
+        } else {
+          // ...unlink any deselected institutions
+          this.resource.availabilities.forEach(av => {
+            if (av.institution_id === institution.id) {
+              this.api.unlinkResourceAndInstitutionAvailability(av).subscribe();
+            }
+          });
+        }
+      }
+    });
   }
 
   onCancel() {
