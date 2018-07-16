@@ -52,6 +52,7 @@ class DataLoader:
             for row in reader:
                 try:
                     resource = self.get_resource_by_id(row[0])
+                    resource.cost = row[9]
                 except:
                     print("Warning:  Availability references non existing resource id %s, Ignoring." % row[0])
                     continue
