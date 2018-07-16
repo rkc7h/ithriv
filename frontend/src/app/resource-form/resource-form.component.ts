@@ -128,6 +128,11 @@ export class ResourceFormComponent implements OnInit {
       multiSelect: true,
       apiSource: 'getInstitutions'
     }),
+    approved: new FormField({
+      formControl: new FormControl(),
+      placeholder: 'This resource has been approved',
+      type: 'toggle'
+    }),
   };
 
   constructor(

@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
+  MatBadgeModule,
   MatButtonModule,
   MatButtonToggleModule,
   MatCardModule,
@@ -23,21 +24,23 @@ import {
   MatRadioModule,
   MatSelectModule,
   MatSidenavModule,
+  MatSlideToggleModule,
   MatSnackBarModule,
   MatStepperModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTreeModule,
-  MatBadgeModule
+  MatTreeModule
 } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CovalentTextEditorModule } from '@covalent/text-editor';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { DeviceDetectorModule } from 'ngx-device-detector';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MarkdownModule } from 'ngx-markdown';
 import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
 import { AddResourceButtonComponent } from './add-resource-button/add-resource-button.component';
+import { AppRoutingModule } from './app-routing/app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthInterceptor } from './AuthInterceptor';
 import { AvailabilityComponent } from './availability/availability.component';
@@ -47,8 +50,11 @@ import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
 import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
+import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
 import { FormFieldComponent } from './form-field/form-field.component';
+import { GradientBackgroundDirective } from './gradient-background.directive';
 import { HeaderComponent } from './header/header.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
 import { ResourceListComponent } from './resource-list/resource-list.component';
 import { ResourceSearchComponent } from './resource-search/resource-search.component';
@@ -56,11 +62,6 @@ import { ResourceTileComponent } from './resource-tile/resource-tile.component';
 import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
-import { GradientBackgroundDirective } from './gradient-background.directive';
-import { DeviceDetectorModule } from 'ngx-device-detector';
-import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { AppRoutingModule } from './app-routing/app-routing.module';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 
 @NgModule({
@@ -119,6 +120,7 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     MatRadioModule,
     MatSelectModule,
     MatSidenavModule,
+    MatSlideToggleModule,
     MatSnackBarModule,
     MatStepperModule,
     MatTabsModule,
