@@ -614,6 +614,27 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(0, len(response))
 
+    def test_add_availability(self):
+        r = self.construct_resource()
+        institution = ThrivInstitution(id=1, name="Delmar's", description="autobody")
+
+        availability_data = {"resource_id": r.id, "institution_id": institution.id}
+
+        rv = self.app.post('/api/availability', data=json.dumps(availability_data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(institution.id, response["institution_id"])
+        self.assertEquals(r.id, response["resource_id"])
+
+    def test_remove_availability(self):
+        self.test_add_availability()
+        rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
+        self.assertSuccess(rv)
+        rv = self.app.delete('/api/availability/%i' % 1)
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
+        self.assertEqual(404, rv.status_code)
+
     def test_create_category(self):
         c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!",
              "color": "#000", "brief_description":"Funky Bowls!", "image":"image.png"}

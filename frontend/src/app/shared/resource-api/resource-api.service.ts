@@ -11,6 +11,7 @@ import { CategoryResource } from '../../category-resource';
 import { Icon } from '../../icon';
 import { Institution } from '../../institution';
 import { ResourceType } from '../../resourceType';
+import { Availability } from '../../availability';
 
 @Injectable()
 export class ResourceApiService {
@@ -31,6 +32,10 @@ export class ResourceApiService {
     type: '/api/type/<id>',
     typeList: '/api/type',
     search: '/api/search',
+    resourceAvailabilityList: '/api/resource_institution',
+    resourceAvailability: '/api/resource_institution/<id>',
+    availabilityList: '/api/availability',
+    availability: '/api/availability/<id>',
     resourceCategoryList: '/api/resource_category',
     resourceCategory: '/api/resource_category/<id>',
     iconList: '/api/icon',
@@ -141,6 +146,27 @@ export class ResourceApiService {
   /** addResource */
   addResource(resource: Resource): Observable<Resource> {
     return this.httpClient.post<Resource>(this.apiRoot + this.endpoints.resourceList, resource)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** linkResourceAndInstitutionAvailability */
+  linkResourceAndInstitutionAvailability(resource_id: number, institution_id: number): Observable<any> {
+    const options = {
+      resource_id: resource_id,
+      institution_id: institution_id,
+      available: true,
+    };
+    return this.httpClient.post<Availability>(this.apiRoot + this.endpoints.availabilityList, options)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** unlinkResourceAndInstitutionAvailability */
+  unlinkResourceAndInstitutionAvailability(av: Availability): Observable<any> {
+    console.log('unlink av:', av);
+    const path = this.endpoints.availability.replace('<id>', av.id.toString());
+
+    console.log('unlink path:', path);
+    return this.httpClient.delete<Availability>(this.apiRoot + path)
       .pipe(catchError(this.handleError));
   }
 

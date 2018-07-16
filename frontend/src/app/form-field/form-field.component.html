@@ -1,4 +1,4 @@
-<mat-form-field *ngIf="(field.type !== 'textarea') && (field.type !== 'tree')" [hideRequiredMarker]="formGroup.value.hideRequired"
+<mat-form-field *ngIf="(field.type !== 'textarea') && (field.type !== 'tree') && (field.type !== 'toggle')" [hideRequiredMarker]="formGroup.value.hideRequired"
   [floatLabel]="formGroup.value.floatLabel">
   <input *ngIf="(field.type === 'color')" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder"
     [required]="field.required" [(colorPicker)]="field.formControl.value" [style.background]="field.formControl.value" [value]="field.formControl.value"
@@ -8,7 +8,7 @@
 
   <mat-select *ngIf="field.type === 'select'" [multiple]="field.multiSelect" [formControl]="field.formControl" [placeholder]="field.placeholder"
     [required]="field.required">
-    <mat-option>-- None --</mat-option>
+    <mat-option *ngIf="!field.multiSelect">-- None --</mat-option>
     <mat-option *ngFor="let option of options" [value]="option.id">
       <mat-icon *ngIf="field.showIcons" svgIcon="ithriv_{{option.id}}"></mat-icon>
       {{option.name}}
@@ -70,4 +70,10 @@
     </span>
   </mat-error>
   <td-text-editor [formControl]="field.formControl" [value]="field.formControl.value" [options]="field.options"></td-text-editor>
+</div>
+
+<div *ngIf="field.type === 'toggle'" class="toggle mat-typography">
+  <mat-slide-toggle color="primary" [formControl]="field.formControl">
+    {{field.placeholder}}
+  </mat-slide-toggle>
 </div>
