@@ -16,6 +16,7 @@ footer {
   bottom: 2em;
   height: 64px;
   @include mat-elevation(1);
+  z-index: 7;
 }
 
 #spinnerContainer {

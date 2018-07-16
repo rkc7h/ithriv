@@ -234,7 +234,15 @@ export class ResourceFormComponent implements OnInit {
           this.isDataLoaded = true;
         } else {
           field.formControl.setValidators(validators);
-          field.formControl.patchValue(this.resource[fieldName]);
+
+          if (fieldName === 'availabilities.institution_id') {
+            const selectedInstitutions = this.resource.availabilities.filter(av => av.available);
+            const selectedInstitutionIds = selectedInstitutions.map(i => i.institution_id);
+            field.formControl.patchValue(selectedInstitutionIds);
+          } else {
+            field.formControl.patchValue(this.resource[fieldName]);
+          }
+
           this.resourceForm.addControl(fieldName, field.formControl);
         }
       }
@@ -316,14 +324,14 @@ export class ResourceFormComponent implements OnInit {
   }
 
   updateAvailabilities() {
-    const selectedInstitutionIds: number[] = this.fields['availabilities.institution_id'].formControl.value;
+    const selectedInstitutionIds: number[] = this.fields['availabilities.institution_id'].formControl.value || [];
 
     // For each institution...
     this.api.getInstitutions().subscribe(institutions => {
       for (const institution of institutions) {
         if (selectedInstitutionIds.includes(institution.id)) {
           // ...link selected institutions with this resource
-          this.api.linkResourceAndInstitutionAvailability(this.resource, institution).subscribe();
+          this.api.linkResourceAndInstitutionAvailability(this.resource.id, institution.id).subscribe();
         } else {
           // ...unlink any deselected institutions
           this.resource.availabilities.forEach(av => {
@@ -345,6 +353,7 @@ export class ResourceFormComponent implements OnInit {
       if (this.resourceForm.controls.hasOwnProperty(key)) {
         const control = this.resourceForm.controls[key];
         control.markAsTouched();
+        control.updateValueAndValidity();
       }
     }
   }
