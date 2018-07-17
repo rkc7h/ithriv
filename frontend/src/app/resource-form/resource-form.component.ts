@@ -376,23 +376,31 @@ export class ResourceFormComponent implements OnInit {
 
   updateAvailabilities() {
     const selectedInstitutionIds: number[] = this.fields['availabilities.institution_id'].formControl.value || [];
+    const savedAvailabilities = this.resource.availabilities;
 
-    // For each institution...
-    this.api.getInstitutions().subscribe(institutions => {
-      for (const institution of institutions) {
-        if (selectedInstitutionIds.includes(institution.id)) {
-          // ...link selected institutions with this resource
-          this.api.linkResourceAndInstitutionAvailability(this.resource.id, institution.id).subscribe();
-        } else {
-          // ...unlink any deselected institutions
-          this.resource.availabilities.forEach(av => {
-            if (av.institution_id === institution.id) {
-              this.api.unlinkResourceAndInstitutionAvailability(av).subscribe();
-            }
-          });
-        }
-      }
-    });
+    // First, confirm that set of selected availabilities matches selected list of institutions
+    const savedInstitutionIds = savedAvailabilities.map(av => av.available ? av.institution_id : -1);
+
+    if (savedInstitutionIds.sort().join('|') === selectedInstitutionIds.sort().join('|')) {
+      // No changes. Do nothing.
+      return;
+    } else {
+      // Unlink all old availabilities
+      savedAvailabilities.forEach(av => {
+        this.api.unlinkResourceAndInstitutionAvailability(av).subscribe();
+      });
+
+      // For each institution...
+      this.api.getInstitutions().subscribe(institutions => {
+        institutions.forEach(institution => {
+          this.api.linkResourceAndInstitutionAvailability(
+            this.resource.id,
+            institution.id,
+            selectedInstitutionIds.includes(institution.id)
+          ).subscribe();
+        });
+      });
+    }
   }
 
   onCancel() {

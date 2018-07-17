@@ -51,6 +51,13 @@ export class ResourceComponent implements OnInit {
     );
   }
 
+  getAvailableInstitutions() {
+    return this.resource
+      .availabilities
+      .filter(av => av.available)
+      .map(av => av.institution);
+  }
+
   goInstitution($event, institution: Institution) {
     $event.preventDefault();
     console.log('Go to the resource search screen, filtered by Institution');

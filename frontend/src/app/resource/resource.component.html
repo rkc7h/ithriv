@@ -18,9 +18,10 @@
           <mat-list-item *ngIf="resource.institution">
             <h4 mat-line>Home Institution</h4>
             <a mat-line href="#" (click)="goInstitution($event, resource.institution)">{{resource.institution.name}}</a>
-
+          </mat-list-item>
+          <mat-list-item *ngIf="resource.availabilities">
             <h4 mat-line>Institutions with access</h4>
-            <a *ngFor="let av of resource.availabilities" mat-line href="#" (click)="goInstitution($event, av.institution)">{{av.institution.name}}</a>
+            <a *ngFor="let institution of getAvailableInstitutions()" mat-line href="#" (click)="goInstitution($event, institution)">{{institution.name}}</a>
           </mat-list-item>
           <mat-list-item *ngIf="resource.cost">
             <h4 mat-line>Cost</h4>
