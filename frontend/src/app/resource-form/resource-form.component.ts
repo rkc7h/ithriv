@@ -11,6 +11,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 import { routerTransition } from '../shared/router.animations';
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { getRandomString } from '../../../node_modules/@types/selenium-webdriver/safari';
+import { FormSelectOption } from '../form-select-option';
 
 @Component({
   selector: 'app-resource-form',
@@ -94,10 +95,15 @@ export class ResourceFormComponent implements OnInit {
     cost: new FormField({
       formControl: new FormControl(),
       required: false,
-      maxLength: 100,
-      minLength: 1,
       placeholder: 'Cost',
-      type: 'text'
+      type: 'select',
+      selectOptions: [
+        'N / A',
+        'Variable',
+        'Free Across iTHRIV',
+        'Free to Home Institution',
+        'Cost Recovery',
+      ]
     }),
     type_id: new FormField({
       formControl: new FormControl(),
