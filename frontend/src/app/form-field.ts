@@ -5,14 +5,17 @@ export class FormField {
   apiSource: string;
   formControl?: FormControl;
   formGroup?: FormGroup;
-  required: boolean;
-  maxLength: number;
-  minLength: number;
+  required?: boolean;
+  maxLength?: number;
+  minLength?: number;
   placeholder: string;
   type: string;
-  options: object;
+  options?: object;
   showIcons = false;
   multiSelect = false;
+  fieldsetId?: string;
+  fieldsetLabel?: string;
+
 
   constructor(private _props) {
     for (const propName in this._props) {

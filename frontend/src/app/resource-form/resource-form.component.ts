@@ -1,14 +1,16 @@
-import { Component, OnInit, HostBinding } from '@angular/core';
-import { FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
+import { Component, HostBinding, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
+import { Fieldset } from '../fieldset';
 import { FormField } from '../form-field';
 import { Resource } from '../resource';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { ValidateUrl } from '../shared/validators/url.validator';
-import { routerTransition } from '../shared/router.animations';
 import { ResourceCategory } from '../resource-category';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { routerTransition } from '../shared/router.animations';
+import { ValidateUrl } from '../shared/validators/url.validator';
+import { getRandomString } from '../../../node_modules/@types/selenium-webdriver/safari';
 
 @Component({
   selector: 'app-resource-form',
@@ -27,6 +29,9 @@ export class ResourceFormComponent implements OnInit {
   resource: Resource;
   resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
+
+  // Field groupings
+  fieldsets: Fieldset[] = [];
 
   // Form Fields
   fields = {
@@ -56,7 +61,9 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 100,
       minLength: 1,
       placeholder: 'Contact email',
-      type: 'email'
+      type: 'email',
+      fieldsetId: 'contact_info',
+      fieldsetLabel: 'Contact:'
     }),
     contact_notes: new FormField({
       formControl: new FormControl(),
@@ -64,7 +71,8 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 100,
       minLength: 1,
       placeholder: 'Contact notes',
-      type: 'text'
+      type: 'text',
+      fieldsetId: 'contact_info'
     }),
     contact_phone: new FormField({
       formControl: new FormControl(),
@@ -72,7 +80,8 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 100,
       minLength: 1,
       placeholder: 'Contact phone',
-      type: 'text'
+      type: 'text',
+      fieldsetId: 'contact_info'
     }),
     owner: new FormField({
       formControl: new FormControl(),
@@ -196,6 +205,32 @@ export class ResourceFormComponent implements OnInit {
       });
   }
 
+  loadFieldsets() {
+    this.fieldsets = [];
+
+    // Loop through each form field
+    for (const fieldName in this.fields) {
+      if (this.fields.hasOwnProperty(fieldName)) {
+        const field = this.fields[fieldName];
+
+        // If fieldset id is different from current, create new fieldset
+        if (
+          (this.fieldsets.length === 0) ||
+          (this.fieldsets[this.fieldsets.length - 1].id !== field.fieldsetId)
+        ) {
+          this.fieldsets.push(new Fieldset({
+            id: field.fieldsetId || Math.random().toString(),
+            label: field.fieldsetLabel || null,
+            fields: []
+          }));
+        }
+
+        // Add the field to the fieldset
+        this.fieldsets[this.fieldsets.length - 1].fields.push(field);
+      }
+    }
+  }
+
   loadForm() {
     this.isDataLoaded = false;
 
@@ -256,6 +291,8 @@ export class ResourceFormComponent implements OnInit {
     if (!this.createNew) {
       this.validate();
     }
+
+    this.loadFieldsets();
   }
 
   getFields(): FormField[] {
