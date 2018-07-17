@@ -106,8 +106,8 @@ export class ResourceFormComponent implements OnInit {
     }),
     website: new FormField({
       formControl: new FormControl(),
-      required: true,
-      maxLength: 100,
+      required: false,
+      maxLength: 200,
       minLength: 7,
       placeholder: 'Website',
       type: 'url'
