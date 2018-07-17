@@ -115,9 +115,20 @@ export class ResourceFormComponent implements OnInit {
     institution_id: new FormField({
       formControl: new FormControl(),
       required: true,
-      placeholder: 'Select Institution',
+      placeholder: 'Home Institution',
       type: 'select',
-      apiSource: 'getInstitutions'
+      apiSource: 'getInstitutions',
+      fieldsetId: 'institution_prefs',
+      fieldsetLabel: 'Institutions'
+    }),
+    'availabilities.institution_id': new FormField({
+      formControl: new FormControl(),
+      required: false,
+      placeholder: 'Institutions that may access this resource',
+      type: 'select',
+      multiSelect: true,
+      apiSource: 'getInstitutions',
+      fieldsetId: 'institution_prefs',
     }),
     website: new FormField({
       formControl: new FormControl(),
@@ -134,14 +145,6 @@ export class ResourceFormComponent implements OnInit {
       type: 'tree',
       apiSource: 'getCategories',
       multiSelect: true
-    }),
-    'availabilities.institution_id': new FormField({
-      formControl: new FormControl(),
-      required: false,
-      placeholder: 'Select Institutions that may access this resource',
-      type: 'select',
-      multiSelect: true,
-      apiSource: 'getInstitutions'
     }),
     approved: new FormField({
       formControl: new FormControl(),
