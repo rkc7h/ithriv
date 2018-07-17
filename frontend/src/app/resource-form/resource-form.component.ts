@@ -55,23 +55,23 @@ export class ResourceFormComponent implements OnInit {
         status: ['words'],
       }
     }),
-    contact_email: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      maxLength: 100,
-      minLength: 1,
-      placeholder: 'Contact email',
-      type: 'email',
-      fieldsetId: 'contact_info',
-      fieldsetLabel: 'Contact:'
-    }),
     contact_notes: new FormField({
       formControl: new FormControl(),
       required: false,
       maxLength: 100,
       minLength: 1,
-      placeholder: 'Contact notes',
+      placeholder: 'Contact Details',
       type: 'text',
+      fieldsetId: 'contact_info',
+      fieldsetLabel: 'Contact:'
+    }),
+    contact_email: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact Email',
+      type: 'email',
       fieldsetId: 'contact_info'
     }),
     contact_phone: new FormField({
@@ -79,7 +79,7 @@ export class ResourceFormComponent implements OnInit {
       required: false,
       maxLength: 100,
       minLength: 1,
-      placeholder: 'Contact phone',
+      placeholder: 'Contact Phone',
       type: 'text',
       fieldsetId: 'contact_info'
     }),
