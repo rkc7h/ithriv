@@ -1,0 +1,68 @@
+// Import theming functions
+@import '~@angular/material/theming';
+// Import your custom theme
+@import '../../ithriv_material';
+// Load the UVA Theme
+@include ithriv-theme($ithriv-theme);
+
+.ribbon {
+  position: absolute;
+  right: -5px; top: -5px;
+  z-index: 1;
+  overflow: hidden;
+  width: 75px; height: 75px;
+  text-align: right;
+}
+
+.ribbon span {
+  font-size: 10px;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 20px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  width: 100px;
+  display: block;
+  background-color: #999999;
+  box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+  position: absolute;
+  top: 19px; right: -21px;
+}
+
+.ribbon span::before, .ribbon span::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  z-index: -1;
+  border-width: 3px;
+  border-style: solid;
+  border-top-color: #666666;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.ribbon span::before {
+  left: 0px;
+  border-left-color: #666666;
+}
+
+.ribbon span::after {
+  right: 0px;
+  border-right-color: #666666;
+}
+
+.ribbon span.approved {
+  background-color: mat-color($ithriv-primary, default, 1);
+  color: white;
+
+  &::before {
+    border-left-color: mat-color($ithriv-primary, 800, 1);
+  }
+
+  &::after {
+    border-right-color: mat-color($ithriv-primary, 800, 1);
+  }
+}

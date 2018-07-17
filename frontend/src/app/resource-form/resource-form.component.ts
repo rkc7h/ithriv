@@ -47,12 +47,9 @@ export class ResourceFormComponent implements OnInit {
     description: new FormField({
       formControl: new FormControl(),
       required: true,
-      maxLength: 2000,
-      minLength: 20,
       placeholder: 'Description',
       type: 'textarea',
       options: {
-        hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
         status: ['words'],
       }
     }),

@@ -8,18 +8,10 @@
       </div>
     </div>
     <mat-card fxFlex="25%">
-      <mat-card-title>Information</mat-card-title>
-      <mat-card-subtitle>
-        <mat-chip-list fxLayoutAlign="center">
-          <mat-chip selected [color]="resource.approved ? 'primary' : 'warning'">
-            <ng-container *ngIf="resource.approved">
-              <mat-icon>check</mat-icon>
-              Approved
-            </ng-container>
-            <ng-container *ngIf="!resource.approved">Not approved yet</ng-container>
-          </mat-chip>
-        </mat-chip-list>
-      </mat-card-subtitle>
+      <app-approved-badge [resource]="resource"></app-approved-badge>
+      <mat-card-title>
+        Information
+      </mat-card-title>
       <mat-card-content>
         <mat-list dense>
           <mat-list-item *ngIf="resource.type">
