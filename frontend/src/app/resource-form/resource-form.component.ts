@@ -50,14 +50,6 @@ export class ResourceFormComponent implements OnInit {
         status: ['words'],
       }
     }),
-    owner: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      maxLength: 100,
-      minLength: 1,
-      placeholder: 'Owner',
-      type: 'text'
-    }),
     contact_email: new FormField({
       formControl: new FormControl(),
       required: false,
@@ -80,6 +72,14 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 100,
       minLength: 1,
       placeholder: 'Contact phone',
+      type: 'text'
+    }),
+    owner: new FormField({
+      formControl: new FormControl(),
+      required: true,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Owner',
       type: 'text'
     }),
     cost: new FormField({
