@@ -10,6 +10,7 @@ import {
   MatButtonToggleModule,
   MatCardModule,
   MatCheckboxModule,
+  MatChipsModule,
   MatDatepickerModule,
   MatDialogModule,
   MatExpansionModule,
@@ -63,6 +64,7 @@ import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
+import { ApprovedBadgeComponent } from './approved-badge/approved-badge.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +89,8 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     GradientBackgroundDirective,
     FormFieldLabelComponent,
     NotFoundComponent,
-    TreeSelectComponent
+    TreeSelectComponent,
+    ApprovedBadgeComponent
   ],
   imports: [
     AppRoutingModule,
@@ -106,6 +109,7 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     MatButtonToggleModule,
     MatCardModule,
     MatCheckboxModule,
+    MatChipsModule,
     MatDatepickerModule,
     MatDialogModule,
     MatExpansionModule,

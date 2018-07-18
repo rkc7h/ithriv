@@ -3,6 +3,7 @@ import { FormGroup, ValidationErrors } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FormField } from '../form-field';
+import { FormSelectOption } from '../form-select-option';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,14 +28,19 @@ export class FormFieldComponent implements OnInit {
 
   loadOptions() {
     if (this.field.type === 'select') {
-      const source = this.field.apiSource;
+      if (this.field.hasOwnProperty('selectOptions')) {
+        this.options = this.field.selectOptions.map(s => new FormSelectOption({ id: s, name: s }));
+        this.dataLoaded = true;
+      } else if (this.field.hasOwnProperty('apiSource')) {
+        const source = this.field.apiSource;
 
-      if (this.api[source] && (typeof this.api[source] === 'function')) {
-        this.api[source]().subscribe(results => {
-          this.options = results;
-          this.field.formControl.updateValueAndValidity();
-          this.dataLoaded = true;
-        });
+        if (this.api[source] && (typeof this.api[source] === 'function')) {
+          this.api[source]().subscribe(results => {
+            this.options = results;
+            this.field.formControl.updateValueAndValidity();
+            this.dataLoaded = true;
+          });
+        }
       }
     } else {
       this.dataLoaded = true;

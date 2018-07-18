@@ -8,7 +8,10 @@
       </div>
     </div>
     <mat-card fxFlex="25%">
-      <mat-card-title>Information</mat-card-title>
+      <app-approved-badge [resource]="resource"></app-approved-badge>
+      <mat-card-title>
+        Information
+      </mat-card-title>
       <mat-card-content>
         <mat-list dense>
           <mat-list-item *ngIf="resource.type">
@@ -16,8 +19,12 @@
             <a mat-line href="#" (click)="goResourceType($event)">{{resource.type.name}}</a>
           </mat-list-item>
           <mat-list-item *ngIf="resource.institution">
-            <h4 mat-line>Institution</h4>
-            <a mat-line href="#" (click)="goInstitution($event)">{{resource.institution.name}}</a>
+            <h4 mat-line>Home Institution</h4>
+            <a mat-line href="#" (click)="goInstitution($event, resource.institution)">{{resource.institution.name}}</a>
+          </mat-list-item>
+          <mat-list-item *ngIf="resource.availabilities">
+            <h4 mat-line>Institutions with access</h4>
+            <a *ngFor="let institution of getAvailableInstitutions()" mat-line href="#" (click)="goInstitution($event, institution)">{{institution.name}}</a>
           </mat-list-item>
           <mat-list-item *ngIf="resource.cost">
             <h4 mat-line>Cost</h4>

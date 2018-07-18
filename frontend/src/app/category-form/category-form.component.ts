@@ -33,12 +33,9 @@ export class CategoryFormComponent implements OnInit {
     description: new FormField({
       formControl: new FormControl(),
       required: true,
-      maxLength: 600,
-      minLength: 20,
       placeholder: 'Description',
       type: 'textarea',
       options: {
-        // hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
         status: ['words']
       }
     }),
