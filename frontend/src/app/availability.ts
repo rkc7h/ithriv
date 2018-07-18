@@ -2,8 +2,10 @@ import { Institution } from './institution';
 import { Links } from './links';
 
 export interface Availability {
-  institution: Institution;
-  viewable: boolean;
+  id: number;
+  institution_id: number;
+  resource_id: number;
   available: boolean;
-  links: Links;
+  institution: Institution;
+  _links: Links;
 }

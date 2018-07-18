@@ -58,8 +58,8 @@ $mat-orange: (
     200 : #000000,
     300 : #000000,
     400 : #000000,
-    500 : #000000,
-    600 : #000000,
+    500 : #ffffff,
+    600 : #ffffff,
     700 : #ffffff,
     800 : #ffffff,
     900 : #ffffff,
@@ -137,6 +137,20 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
     color: #666;
     font-weight: 400;
     max-width: 600px;
+  }
+
+  #browse {
+    .header {
+      markdown {
+        p, blockquote, li {
+          color: white;
+        }
+      }
+    }
+
+    .sub-category > markdown > p {
+      margin-left: 2em;
+    }
   }
 
   h1, h2 {

@@ -1,13 +1,16 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
+import { routerTransition } from '../shared/router.animations';
 
 @Component({
   selector: 'app-category-tile',
   templateUrl: './category-tile.component.html',
-  styleUrls: ['./category-tile.component.scss']
+  styleUrls: ['./category-tile.component.scss'],
+  animations: [routerTransition()],
 })
 export class CategoryTileComponent implements OnInit {
+  @HostBinding('@routerTransition')
   @Input() category: Category;
 
   constructor(private router: Router) { }

@@ -1,14 +1,18 @@
-import { Component } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
 import {environment} from 'environments/environment';
+import { Component, HostBinding } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { routerTransition } from '../shared/router.animations';
 import {ResourceApiService} from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
+  animations: [routerTransition()],
 })
-export class HeaderComponent  {
+
+export class HeaderComponent {
+  @HostBinding('@routerTransition')
   title = 'app';
   isHome = false;
   login_url = environment.api + '/api/login';

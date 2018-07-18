@@ -34,7 +34,7 @@ class ThrivResourceSchema(ModelSchema):
     class Meta:
         model = ThrivResource
         fields = ('id', 'name', 'description', 'last_updated', 'owner',
-                  'website', 'institution_id', 'type_id', 'type',
+                  'website', 'cost', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', 'approved',
                   'contact_email', 'contact_phone', 'contact_notes',
                   '_links')

@@ -1,3 +1,41 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
 form {
   width: 100%;
+  min-height: 100%;
+  position: relative;
+  padding-top: 2em;
+  padding-bottom: 8em;
+}
+
+footer {
+  position: fixed;
+  bottom: 2em;
+  right: 2em;
+  height: 64px;
+  @include mat-elevation(2);
+  z-index: 7;
+}
+
+#spinnerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+fieldset {
+  border: none;
+  outline: none;
+  padding: none;
+  margin: none;
+
+  &.show {
+    padding: 2em;
+    margin-bottom: 2em;
+    @include mat-elevation(1);
+  }
 }

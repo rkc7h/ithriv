@@ -3,11 +3,14 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Icon } from './icon';
 import { MatIconRegistry } from '@angular/material';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
+import { routerTransition } from './shared/router.animations';
+import { RouterOutlet } from '../../node_modules/@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  animations: [routerTransition()],
 })
 export class AppComponent {
   trustUrl;
@@ -44,5 +47,9 @@ export class AppComponent {
       this.trustUrl(icon.url)
     );
   }
-}
 
+  getState(outlet: RouterOutlet) {
+    return outlet.activatedRouteData.state;
+  }
+
+}

@@ -1,15 +1,19 @@
 import { ActivatedRoute } from '@angular/router';
 import { Category } from '../category';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { routerTransition } from '../shared/router.animations';
+import { Institution } from '../institution';
 
 @Component({
   selector: 'app-resource',
   templateUrl: './resource.component.html',
-  styleUrls: ['./resource.component.scss']
+  styleUrls: ['./resource.component.scss'],
+  animations: [routerTransition()]
 })
 export class ResourceComponent implements OnInit {
+  @HostBinding('@routerTransition')
   resourceId: number;
   @Input() resource: Resource;
   @Input() categories: Category[];
@@ -47,9 +51,17 @@ export class ResourceComponent implements OnInit {
     );
   }
 
-  goInstitution($event) {
+  getAvailableInstitutions() {
+    return this.resource
+      .availabilities
+      .filter(av => av.available)
+      .map(av => av.institution);
+  }
+
+  goInstitution($event, institution: Institution) {
     $event.preventDefault();
     console.log('Go to the resource search screen, filtered by Institution');
+    console.log('institution:', institution);
   }
 
   goOwner($event) {
