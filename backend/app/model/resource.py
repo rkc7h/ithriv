@@ -21,6 +21,6 @@ class ThrivResource(db.Model):
     institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
     availabilities = db.relationship(lambda: Availability,  cascade="all, delete-orphan",
                                      backref=db.backref('resource', lazy=True))
-    approved = db.Column(db.Boolean, default=False)
+    approved = db.Column(db.String)
 
 

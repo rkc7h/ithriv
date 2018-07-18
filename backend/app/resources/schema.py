@@ -46,6 +46,7 @@ class ThrivResourceSchema(ModelSchema):
     website = fields.String(required=False, allow_none=True)
     institution_id = fields.Integer(required=False, allow_none=True)
     type_id = fields.Integer(required=False, allow_none=True)
+    approved = fields.String(required=False, allow_none=True)
 
     type = fields.Nested(ThrivTypeSchema(), dump_only=True)
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)

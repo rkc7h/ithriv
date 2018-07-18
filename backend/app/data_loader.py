@@ -37,6 +37,7 @@ class DataLoader:
                 institution = self.get_inst_by_name(row[2])
                 resource = ThrivResource(id=row[0], name=row[1], description=row[12], type=type, institution=institution,
                                          owner=row[5], website=row[9])
+                resource.approved = "Unapproved"
                 db.session.add(resource)
             print("Resources loaded.  There are now %i resources into the database." % db.session.query(ThrivResource).count())
         db.session.commit()

@@ -123,7 +123,7 @@ class ElasticResource(DocType):
     website = Keyword()
     owner = Text()
     viewable_institution = Keyword(multi=True)
-    approved = Boolean()
+    approved = Keyword()
 
 
 class ResourceSearch(elasticsearch_dsl.FacetedSearch):
@@ -138,9 +138,9 @@ class ResourceSearch(elasticsearch_dsl.FacetedSearch):
     fields = ['name^10', 'description^5', 'type^2', 'institution', 'owner', 'website']
 
     facets = {
-        'type': elasticsearch_dsl.TermsFacet(field='type'),
-        'institution': elasticsearch_dsl.TermsFacet(field='institution'),
-        'approved': elasticsearch_dsl.TermsFacet(field='approved')
+        'Type': elasticsearch_dsl.TermsFacet(field='type'),
+        'Institution': elasticsearch_dsl.TermsFacet(field='institution'),
+        'Approved': elasticsearch_dsl.RangeFacet(field='approved', ranges=[("False", (None, 0)), ("True", (1, None))])
     }
 
     def search(self):
