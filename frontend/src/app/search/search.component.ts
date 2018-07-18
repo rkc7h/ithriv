@@ -48,7 +48,7 @@ export class SearchComponent implements OnInit {
       const query = ('query' in params ? params['query'] : '');
       this.resourceQuery = { query: query, filters: [], facets: [], total: 0, size: 20, start: 0, resources: [] };
     });
-    renderer.listen(window, 'resize', (event) => {
+    this.renderer.listen(window, 'resize', (event) => {
       this.checkWindowWidth();
     });
   }
@@ -92,7 +92,7 @@ export class SearchComponent implements OnInit {
   doSearch() {
     this.resourceService.searchResources(this.resourceQuery).subscribe(
       (query) => {
-        console.log('Searching ...' + query);
+        console.log('Searching ...', query);
         this.resourceQuery = query;
         this.resources = query.resources;
         this.checkWindowWidth();

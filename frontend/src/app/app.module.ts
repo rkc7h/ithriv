@@ -66,6 +66,11 @@ import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { ApprovedBadgeComponent } from './approved-badge/approved-badge.component';
 import {SessionRedirectComponent} from './session-redirect/session-redirect.component';
+import { LoginComponent } from './login/login.component';
+import { LoginFormComponent } from './login-form/login-form.component';
+import { RegisterComponent } from './register/register.component';
+import { ProfileComponent } from './profile/profile.component';
+import { ProfileFormComponent } from './profile-form/profile-form.component';
 
 @NgModule({
   declarations: [
@@ -92,7 +97,12 @@ import {SessionRedirectComponent} from './session-redirect/session-redirect.comp
     FormFieldLabelComponent,
     NotFoundComponent,
     TreeSelectComponent,
-    ApprovedBadgeComponent
+    ApprovedBadgeComponent,
+    LoginComponent,
+    LoginFormComponent,
+    RegisterComponent,
+    ProfileComponent,
+    ProfileFormComponent
   ],
   imports: [
     AppRoutingModule,

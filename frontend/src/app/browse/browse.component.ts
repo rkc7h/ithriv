@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
+import { Title } from '../../../node_modules/@angular/platform-browser';
 
 @Component({
   selector: 'app-browse',
@@ -34,9 +35,11 @@ export class BrowseComponent implements OnInit {
     `,
   };
 
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private route: ActivatedRoute,
-    private api: ResourceApiService
+    private api: ResourceApiService,
+    private titleService: Title
   ) {
 
     this.route.params.subscribe(params => {
@@ -55,6 +58,10 @@ export class BrowseComponent implements OnInit {
       (category) => {
         this.category = category;
         this.isDataLoaded = true;
+
+        // Set page title
+        const currentTitle = this.titleService.getTitle();
+        this.titleService.setTitle(`${currentTitle} - ${this.category.name}`);
       }
     );
   }

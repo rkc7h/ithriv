@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Icon } from './icon';
 import { MatIconRegistry } from '@angular/material';
+import { DomSanitizer, Title } from '@angular/platform-browser';
+import { ActivationEnd, ActivationStart, Router, RouterOutlet } from '../../node_modules/@angular/router';
+import { Icon } from './icon';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { routerTransition } from './shared/router.animations';
-import { RouterOutlet } from '../../node_modules/@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -20,10 +20,21 @@ export class AppComponent {
   public constructor(
     public iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
-    private api: ResourceApiService
+    private api: ResourceApiService,
+    private router: Router,
+    private titleService: Title
   ) {
     this.trustUrl = this.sanitizer.bypassSecurityTrustResourceUrl;
     this.loadIcons();
+    this.router.events.subscribe((e) => {
+      if (e instanceof ActivationStart || e instanceof ActivationEnd) {
+        if (e.snapshot && e.snapshot.data) {
+          const data = e.snapshot.data;
+          this.title = data.title ? `iThriv - ${data.title}` : 'iThriv';
+          this.titleService.setTitle(this.title);
+        }
+      }
+    });
   }
 
   loadIcons() {

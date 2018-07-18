@@ -12,6 +12,7 @@ import { routerTransition } from '../shared/router.animations';
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { getRandomString } from '../../../node_modules/@types/selenium-webdriver/safari';
 import { FormSelectOption } from '../form-select-option';
+import { Title } from '../../../node_modules/@angular/platform-browser';
 
 @Component({
   selector: 'app-resource-form',
@@ -19,7 +20,7 @@ import { FormSelectOption } from '../form-select-option';
   styleUrls: ['./resource-form.component.scss'],
   animations: [routerTransition()]
 })
-export class ResourceFormComponent implements OnInit {
+export class ResourceFormComponent {
   @HostBinding('@routerTransition')
   allCategories: Category[] = [];
   resourceCategories: ResourceCategory[] = [];
@@ -153,12 +154,10 @@ export class ResourceFormComponent implements OnInit {
   constructor(
     private api: ResourceApiService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private titleService: Title
   ) {
     this.loadData();
-  }
-
-  ngOnInit() {
   }
 
   loadData() {
@@ -174,6 +173,10 @@ export class ResourceFormComponent implements OnInit {
             .subscribe(resource => {
               this.resource = resource;
               this.loadResourceCategories(resource, () => this.loadForm());
+
+              // Set page title
+              const currentTitle = this.titleService.getTitle();
+              this.titleService.setTitle(`${currentTitle} - ${this.resource.name}`);
             });
         });
       } else {

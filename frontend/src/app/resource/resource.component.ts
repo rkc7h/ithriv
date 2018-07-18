@@ -5,6 +5,7 @@ import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
 import { Institution } from '../institution';
+import { Title } from '../../../node_modules/@angular/platform-browser';
 
 @Component({
   selector: 'app-resource',
@@ -22,7 +23,8 @@ export class ResourceComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private api: ResourceApiService
+    private api: ResourceApiService,
+    private titleService: Title
   ) {
     this.route.params.subscribe(params => {
       this.resourceId = params['resource'];
@@ -38,6 +40,10 @@ export class ResourceComponent implements OnInit {
       (resource) => {
         this.resource = resource;
         this.isDataLoaded = true;
+
+        // Set page title
+        const currentTitle = this.titleService.getTitle();
+        this.titleService.setTitle(`${currentTitle} - ${this.resource.name}`);
       }
     );
   }
