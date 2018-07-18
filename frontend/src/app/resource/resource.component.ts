@@ -4,6 +4,7 @@ import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
+import { Institution } from '../institution';
 
 @Component({
   selector: 'app-resource',
@@ -50,9 +51,17 @@ export class ResourceComponent implements OnInit {
     );
   }
 
-  goInstitution($event) {
+  getAvailableInstitutions() {
+    return this.resource
+      .availabilities
+      .filter(av => av.available)
+      .map(av => av.institution);
+  }
+
+  goInstitution($event, institution: Institution) {
     $event.preventDefault();
     console.log('Go to the resource search screen, filtered by Institution');
+    console.log('institution:', institution);
   }
 
   goOwner($event) {

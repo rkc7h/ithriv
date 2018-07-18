@@ -1,14 +1,17 @@
-import { Component, OnInit, HostBinding } from '@angular/core';
-import { FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
+import { Component, HostBinding, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
+import { Fieldset } from '../fieldset';
 import { FormField } from '../form-field';
 import { Resource } from '../resource';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { ValidateUrl } from '../shared/validators/url.validator';
-import { routerTransition } from '../shared/router.animations';
 import { ResourceCategory } from '../resource-category';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { routerTransition } from '../shared/router.animations';
+import { ValidateUrl } from '../shared/validators/url.validator';
+import { getRandomString } from '../../../node_modules/@types/selenium-webdriver/safari';
+import { FormSelectOption } from '../form-select-option';
 
 @Component({
   selector: 'app-resource-form',
@@ -28,6 +31,9 @@ export class ResourceFormComponent implements OnInit {
   resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
 
+  // Field groupings
+  fieldsets: Fieldset[] = [];
+
   // Form Fields
   fields = {
     name: new FormField({
@@ -41,14 +47,39 @@ export class ResourceFormComponent implements OnInit {
     description: new FormField({
       formControl: new FormControl(),
       required: true,
-      maxLength: 2000,
-      minLength: 20,
       placeholder: 'Description',
       type: 'textarea',
       options: {
-        hideIcons: ['heading', 'image', 'side-by-side', 'fullscreen'],
         status: ['words'],
       }
+    }),
+    contact_notes: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact Details',
+      type: 'text',
+      fieldsetId: 'contact_info',
+      fieldsetLabel: 'Contact:'
+    }),
+    contact_email: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact Email',
+      type: 'email',
+      fieldsetId: 'contact_info'
+    }),
+    contact_phone: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      maxLength: 100,
+      minLength: 1,
+      placeholder: 'Contact Phone',
+      type: 'text',
+      fieldsetId: 'contact_info'
     }),
     owner: new FormField({
       formControl: new FormControl(),
@@ -58,37 +89,18 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Owner',
       type: 'text'
     }),
-    contact_email: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      maxLength: 100,
-      minLength: 1,
-      placeholder: 'Contact email',
-      type: 'email'
-    }),
-    contact_notes: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      maxLength: 100,
-      minLength: 1,
-      placeholder: 'Contact notes',
-      type: 'text'
-    }),
-    contact_phone: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      maxLength: 100,
-      minLength: 1,
-      placeholder: 'Contact phone',
-      type: 'text'
-    }),
     cost: new FormField({
       formControl: new FormControl(),
       required: false,
-      maxLength: 100,
-      minLength: 1,
       placeholder: 'Cost',
-      type: 'text'
+      type: 'select',
+      selectOptions: [
+        'N / A',
+        'Variable',
+        'Free Across iTHRIV',
+        'Free to Home Institution',
+        'Cost Recovery',
+      ]
     }),
     type_id: new FormField({
       formControl: new FormControl(),
@@ -100,14 +112,25 @@ export class ResourceFormComponent implements OnInit {
     institution_id: new FormField({
       formControl: new FormControl(),
       required: true,
-      placeholder: 'Select Institution',
+      placeholder: 'Home Institution',
       type: 'select',
-      apiSource: 'getInstitutions'
+      apiSource: 'getInstitutions',
+      fieldsetId: 'institution_prefs',
+      fieldsetLabel: 'Institutions'
+    }),
+    'availabilities.institution_id': new FormField({
+      formControl: new FormControl(),
+      required: false,
+      placeholder: 'Institutions that may access this resource',
+      type: 'select',
+      multiSelect: true,
+      apiSource: 'getInstitutions',
+      fieldsetId: 'institution_prefs',
     }),
     website: new FormField({
       formControl: new FormControl(),
-      required: true,
-      maxLength: 100,
+      required: false,
+      maxLength: 200,
       minLength: 7,
       placeholder: 'Website',
       type: 'url'
@@ -119,14 +142,6 @@ export class ResourceFormComponent implements OnInit {
       type: 'tree',
       apiSource: 'getCategories',
       multiSelect: true
-    }),
-    'availabilities.institution_id': new FormField({
-      formControl: new FormControl(),
-      required: false,
-      placeholder: 'Select Institutions that may access this resource',
-      type: 'select',
-      multiSelect: true,
-      apiSource: 'getInstitutions'
     }),
     approved: new FormField({
       formControl: new FormControl(),
@@ -196,6 +211,32 @@ export class ResourceFormComponent implements OnInit {
       });
   }
 
+  loadFieldsets() {
+    this.fieldsets = [];
+
+    // Loop through each form field
+    for (const fieldName in this.fields) {
+      if (this.fields.hasOwnProperty(fieldName)) {
+        const field = this.fields[fieldName];
+
+        // If fieldset id is different from current, create new fieldset
+        if (
+          (this.fieldsets.length === 0) ||
+          (this.fieldsets[this.fieldsets.length - 1].id !== field.fieldsetId)
+        ) {
+          this.fieldsets.push(new Fieldset({
+            id: field.fieldsetId || Math.random().toString(),
+            label: field.fieldsetLabel || null,
+            fields: []
+          }));
+        }
+
+        // Add the field to the fieldset
+        this.fieldsets[this.fieldsets.length - 1].fields.push(field);
+      }
+    }
+  }
+
   loadForm() {
     this.isDataLoaded = false;
 
@@ -256,6 +297,8 @@ export class ResourceFormComponent implements OnInit {
     if (!this.createNew) {
       this.validate();
     }
+
+    this.loadFieldsets();
   }
 
   getFields(): FormField[] {
@@ -330,23 +373,31 @@ export class ResourceFormComponent implements OnInit {
 
   updateAvailabilities() {
     const selectedInstitutionIds: number[] = this.fields['availabilities.institution_id'].formControl.value || [];
+    const savedAvailabilities = this.resource.availabilities;
 
-    // For each institution...
-    this.api.getInstitutions().subscribe(institutions => {
-      for (const institution of institutions) {
-        if (selectedInstitutionIds.includes(institution.id)) {
-          // ...link selected institutions with this resource
-          this.api.linkResourceAndInstitutionAvailability(this.resource.id, institution.id).subscribe();
-        } else {
-          // ...unlink any deselected institutions
-          this.resource.availabilities.forEach(av => {
-            if (av.institution_id === institution.id) {
-              this.api.unlinkResourceAndInstitutionAvailability(av).subscribe();
-            }
-          });
-        }
-      }
-    });
+    // First, confirm that set of selected availabilities matches selected list of institutions
+    const savedInstitutionIds = savedAvailabilities.map(av => av.available ? av.institution_id : -1);
+
+    if (savedInstitutionIds.sort().join('|') === selectedInstitutionIds.sort().join('|')) {
+      // No changes. Do nothing.
+      return;
+    } else {
+      // Unlink all old availabilities
+      savedAvailabilities.forEach(av => {
+        this.api.unlinkResourceAndInstitutionAvailability(av).subscribe();
+      });
+
+      // For each institution...
+      this.api.getInstitutions().subscribe(institutions => {
+        institutions.forEach(institution => {
+          this.api.linkResourceAndInstitutionAvailability(
+            this.resource.id,
+            institution.id,
+            selectedInstitutionIds.includes(institution.id)
+          ).subscribe();
+        });
+      });
+    }
   }
 
   onCancel() {

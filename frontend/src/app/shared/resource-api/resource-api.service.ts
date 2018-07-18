@@ -150,11 +150,15 @@ export class ResourceApiService {
   }
 
   /** linkResourceAndInstitutionAvailability */
-  linkResourceAndInstitutionAvailability(resource_id: number, institution_id: number): Observable<any> {
+  linkResourceAndInstitutionAvailability(
+    resource_id: number,
+    institution_id: number,
+    available: boolean
+  ): Observable<any> {
     const options = {
       resource_id: resource_id,
       institution_id: institution_id,
-      available: true,
+      available: available,
     };
     return this.httpClient.post<Availability>(this.apiRoot + this.endpoints.availabilityList, options)
       .pipe(catchError(this.handleError));

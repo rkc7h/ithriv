@@ -3,8 +3,11 @@
   <form [formGroup]="resourceForm" (ngSubmit)="onSubmit()" fxFlex="90%">
     <h2>Resource Details</h2>
     <!-- TODO:  Add Type, Institution, and Availability -->
-    <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
-      [field]="field" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <fieldset *ngFor="let fieldset of fieldsets" [ngClass]="{'show': !!fieldset.label}">
+      <h3 *ngIf="fieldset.label">{{fieldset.label}}</h3>
+      <app-form-field *ngFor="let field of fieldset.fields" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
+        [field]="field" [formGroup]="resourceForm" [errorMatcher]="errorMatcher"></app-form-field>
+    </fieldset>
 
     <footer>
       <mat-toolbar color="primary">

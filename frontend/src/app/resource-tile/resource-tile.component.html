@@ -4,9 +4,7 @@
       <div class="mat-card-pre-title">{{resource.name}}</div>
     </mat-card-title>
     <mat-card-subtitle>
-      <!--  DHF:   Johanna asked us to strip this out, will be details eventually, actual owner will not be shown
-  <div *ngIf="resource.owner">Owner: {{resource.owner}}</div>
-      -->
+      <app-approved-badge [resource]="resource"></app-approved-badge>
       <div *ngIf="resource.website">{{resource.website}}</div>
     </mat-card-subtitle>
   </mat-card-header>
@@ -14,14 +12,9 @@
     {{resource.description}}
   </mat-card-content>
   <mat-card-actions>
-      <div class="container"
-        fxLayout="row wrap"
-        fxLayout.xs="column"
-        fxLayoutAlign="center"
-        fxLayoutGap="10px"
-        fxLayoutGap.xs="0">
-        <img src="/assets/institutions/{{resource.institution.name}}.png"/>
-      </div>
+    <div class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="center" fxLayoutGap="10px" fxLayoutGap.xs="0">
+      <img src="/assets/institutions/{{resource.institution.name}}.png" />
+    </div>
   </mat-card-actions>
 
 </mat-card>

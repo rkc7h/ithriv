@@ -16,10 +16,10 @@
   }
 }
 
+mat-card {
+  padding-top: 2em;
+}
+
 mat-card-title {
-  background-color: mat-color($ithriv-primary, 800, 1.0);
-  color: mat-contrast($ithriv-primary, 800);
-  font-size: 24px;
-  font-weight: bolder;
-  padding: 0.5em;
+  color: mat-color($ithriv-primary, 800, 1.0);
 }
