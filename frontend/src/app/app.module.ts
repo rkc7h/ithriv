@@ -43,6 +43,7 @@ import { AddCategoryButtonComponent } from './add-category-button/add-category-b
 import { AddResourceButtonComponent } from './add-resource-button/add-resource-button.component';
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { AppComponent } from './app.component';
+import { ApprovedBadgeComponent } from './approved-badge/approved-badge.component';
 import { AuthInterceptor } from './AuthInterceptor';
 import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
@@ -51,26 +52,26 @@ import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
 import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
 import { FormFieldComponent } from './form-field/form-field.component';
 import { GradientBackgroundDirective } from './gradient-background.directive';
 import { HeaderComponent } from './header/header.component';
+import { LoginComponent } from './login/login.component';
+import { LogoComponent } from './logo/logo.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { ProfileComponent } from './profile/profile.component';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
 import { ResourceListComponent } from './resource-list/resource-list.component';
 import { ResourceSearchComponent } from './resource-search/resource-search.component';
 import { ResourceTileComponent } from './resource-tile/resource-tile.component';
 import { ResourceComponent } from './resource/resource.component';
 import { SearchComponent } from './search/search.component';
+import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
-import { ApprovedBadgeComponent } from './approved-badge/approved-badge.component';
-import {SessionRedirectComponent} from './session-redirect/session-redirect.component';
-import { LoginComponent } from './login/login.component';
 import { LoginFormComponent } from './login-form/login-form.component';
-import { RegisterComponent } from './register/register.component';
-import { ProfileComponent } from './profile/profile.component';
-import { ProfileFormComponent } from './profile-form/profile-form.component';
+import { RegisterFormComponent } from './register-form/register-form.component';
 
 @NgModule({
   declarations: [
@@ -99,10 +100,11 @@ import { ProfileFormComponent } from './profile-form/profile-form.component';
     TreeSelectComponent,
     ApprovedBadgeComponent,
     LoginComponent,
-    LoginFormComponent,
-    RegisterComponent,
     ProfileComponent,
-    ProfileFormComponent
+    ForgotPasswordComponent,
+    LogoComponent,
+    LoginFormComponent,
+    RegisterFormComponent
   ],
   imports: [
     AppRoutingModule,

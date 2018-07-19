@@ -1,0 +1,8 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
+footer button {
+  width: 100%;
+}

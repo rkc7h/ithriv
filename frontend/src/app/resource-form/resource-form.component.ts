@@ -1,18 +1,18 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Title } from '../../../node_modules/@angular/platform-browser';
+import { getRandomString } from '../../../node_modules/@types/selenium-webdriver/safari';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
 import { Fieldset } from '../fieldset';
 import { FormField } from '../form-field';
+import { FormSelectOption } from '../form-select-option';
 import { Resource } from '../resource';
 import { ResourceCategory } from '../resource-category';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
 import { ValidateUrl } from '../shared/validators/url.validator';
-import { getRandomString } from '../../../node_modules/@types/selenium-webdriver/safari';
-import { FormSelectOption } from '../form-select-option';
-import { Title } from '../../../node_modules/@angular/platform-browser';
 
 @Component({
   selector: 'app-resource-form',

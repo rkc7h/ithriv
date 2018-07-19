@@ -6,15 +6,15 @@ import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
+  selector: 'app-register-form',
+  templateUrl: './register-form.component.html',
+  styleUrls: ['./register-form.component.scss']
 })
-export class ProfileComponent implements OnInit {
+export class RegisterFormComponent implements OnInit {
   login_url = environment.api + '/api/login';
   error: string;
   errorMatcher = new ErrorMatcher();
-  profileForm: FormGroup = new FormGroup({});
+  registerForm: FormGroup = new FormGroup({});
   fields = {
     first_name: new FormField({
       formControl: new FormControl(),
@@ -37,13 +37,13 @@ export class ProfileComponent implements OnInit {
     password: new FormField({
       formControl: new FormControl(),
       required: true,
-      placeholder: 'Current Password',
+      placeholder: 'Password',
       type: 'password',
     }),
     confirm_password: new FormField({
       formControl: new FormControl(),
       required: true,
-      placeholder: 'New Password',
+      placeholder: 'Confirm Password',
       type: 'password',
     }),
   };
@@ -81,7 +81,7 @@ export class ProfileComponent implements OnInit {
           validators.push(Validators.email);
         }
 
-        this.profileForm.addControl(fieldName, field.formControl);
+        this.registerForm.addControl(fieldName, field.formControl);
       }
     }
   }

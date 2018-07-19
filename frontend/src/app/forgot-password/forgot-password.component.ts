@@ -1,50 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '../../../node_modules/@angular/forms';
 import { Router } from '../../../node_modules/@angular/router';
-import { environment } from '../../environments/environment.staging';
+import { environment } from '../../environments/environment.prod';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
+  selector: 'app-forgot-password',
+  templateUrl: './forgot-password.component.html',
+  styleUrls: ['./forgot-password.component.scss']
 })
-export class ProfileComponent implements OnInit {
+export class ForgotPasswordComponent implements OnInit {
   login_url = environment.api + '/api/login';
   error: string;
   errorMatcher = new ErrorMatcher();
-  profileForm: FormGroup = new FormGroup({});
+  forgotPasswordForm: FormGroup = new FormGroup({});
   fields = {
-    first_name: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'First Name',
-      type: 'text',
-    }),
-    last_name: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'Last Name',
-      type: 'text',
-    }),
     email: new FormField({
       formControl: new FormControl(),
       required: true,
       placeholder: 'Email',
       type: 'email',
-    }),
-    password: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'Current Password',
-      type: 'password',
-    }),
-    confirm_password: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'New Password',
-      type: 'password',
     }),
   };
 
@@ -81,7 +57,7 @@ export class ProfileComponent implements OnInit {
           validators.push(Validators.email);
         }
 
-        this.profileForm.addControl(fieldName, field.formControl);
+        this.forgotPasswordForm.addControl(fieldName, field.formControl);
       }
     }
   }

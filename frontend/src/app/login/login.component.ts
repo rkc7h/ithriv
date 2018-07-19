@@ -1,21 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivationStart, Router, ActivationEnd } from '../../../node_modules/@angular/router';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { ChangeDetectionStrategy, Component, HostBinding, OnInit } from '@angular/core';
+import { ActivatedRoute } from '../../../node_modules/@angular/router';
+import { routerTransition } from '../shared/router.animations';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.scss'],
+  animations: [routerTransition()]
 })
 export class LoginComponent implements OnInit {
+  @HostBinding('@routerTransition')
   title: string;
+  selectedTabIndex = 0;
 
   constructor(
-    private api: ResourceApiService
+    private route: ActivatedRoute
   ) {
+    this.selectedTabIndex = (this.route.routeConfig.path === 'register') ? 1 : 0;
   }
 
   ngOnInit() {
   }
-
 }

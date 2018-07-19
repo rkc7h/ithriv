@@ -45,18 +45,15 @@ export class HeaderComponent {
   goLogin($event) {
     $event.preventDefault();
     this.router.navigate(['login']);
-    // window.location.href = this.login_url;
   }
 
   goProfile($event) {
     $event.preventDefault();
     this.router.navigate(['profile']);
-    // window.location.href = this.login_url;
   }
   goRegister($event) {
     $event.preventDefault();
     this.router.navigate(['register']);
-    // window.location.href = this.login_url;
   }
 
   goLogout($event) {
