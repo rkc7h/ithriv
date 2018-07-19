@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Title } from '../../../node_modules/@angular/platform-browser';
 import { Category } from '../category';
 import { CategoryResource } from '../category-resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';

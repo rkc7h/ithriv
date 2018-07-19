@@ -1,11 +1,11 @@
+import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Category } from '../category';
-import { Component, Input, OnInit, HostBinding } from '@angular/core';
+import { Institution } from '../institution';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
-import { Institution } from '../institution';
-import { Title } from '../../../node_modules/@angular/platform-browser';
 
 @Component({
   selector: 'app-resource',

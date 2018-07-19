@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer, Title } from '@angular/platform-browser';
-import { ActivationEnd, ActivationStart, Router, RouterOutlet } from '../../node_modules/@angular/router';
+import { ActivationEnd, ActivationStart, Router, RouterOutlet } from '@angular/router';
 import { Icon } from './icon';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { routerTransition } from './shared/router.animations';

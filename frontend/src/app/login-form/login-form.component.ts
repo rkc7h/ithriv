@@ -1,6 +1,6 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '../../../node_modules/@angular/forms';
-import { Router } from '../../../node_modules/@angular/router';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { environment } from '../../environments/environment.staging';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
@@ -16,8 +16,8 @@ import { routerTransition } from '../shared/router.animations';
 })
 export class LoginFormComponent implements OnInit {
   @HostBinding('@routerTransition')
-  login_url = environment.api + '/api/login';
   title: string;
+  login_url = environment.api + '/api/login';
   loginServices: LoginService[] = [];
   error: string;
   errorMatcher = new ErrorMatcher();
