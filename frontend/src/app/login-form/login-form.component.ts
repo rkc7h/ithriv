@@ -1,7 +1,7 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment.staging';
+import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { LoginService } from '../login-service';
@@ -99,12 +99,10 @@ export class LoginFormComponent implements OnInit {
   }
 
   goForgotPassword() {
-    console.log('goForgotPassword');
     this.router.navigate(['forgot_password']);
   }
 
   goRegister() {
-    console.log('goRegister');
     this.router.navigate(['register']);
   }
 
