@@ -15,7 +15,7 @@ export interface Resource {
   institution_id?: number;
   type_id?: number;
   website?: string;
-  approved?: boolean;
+  approved?: string;
   last_updated?: string;
   availabilities?: Availability[];
   institution?: Institution;

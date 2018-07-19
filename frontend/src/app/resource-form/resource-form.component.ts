@@ -12,6 +12,7 @@ import { routerTransition } from '../shared/router.animations';
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { getRandomString } from '../../../node_modules/@types/selenium-webdriver/safari';
 import { FormSelectOption } from '../form-select-option';
+import {Availability} from '../availability';
 
 @Component({
   selector: 'app-resource-form',
@@ -30,6 +31,7 @@ export class ResourceFormComponent implements OnInit {
   resource: Resource;
   resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
+  savesInAction = 0;
 
   // Field groupings
   fieldsets: Fieldset[] = [];
@@ -145,8 +147,13 @@ export class ResourceFormComponent implements OnInit {
     }),
     approved: new FormField({
       formControl: new FormControl(),
-      placeholder: 'This resource has been approved',
-      type: 'toggle'
+      required: true,
+      placeholder: 'Approval Status',
+      type: 'select',
+      selectOptions: [
+        'Approved',
+        'Unapproved'
+      ]
     }),
   };
 
@@ -313,6 +320,14 @@ export class ResourceFormComponent implements OnInit {
     return fields;
   }
 
+  closeIfComplete() {
+    this.savesInAction--;
+    console.log("Total Saves in action:" + this.savesInAction)
+    if (this.savesInAction === 0) {
+      this.close();
+    }
+  }
+
   onSubmit($event) {
     $event.preventDefault();
     this.validate();
@@ -326,78 +341,48 @@ export class ResourceFormComponent implements OnInit {
         }
       }
 
+      this.savesInAction = 3; // Assumes we'll have three api calls
       if (this.createNew) {
         this.api.addResource(this.resource).subscribe(r => {
           this.resource = r;
-          this.updateCategories();
-          this.updateAvailabilities();
-          // this.close();
-          this.isDataLoaded = true;
+          this.closeIfComplete();
         });
       } else {
         this.api.updateResource(this.resource).subscribe(r => {
           this.resource = r;
-          this.updateCategories();
-          this.updateAvailabilities();
-          // this.close();
-          this.isDataLoaded = true;
+          this.closeIfComplete();
         });
       }
+      this.updateCategories();
+      this.updateAvailabilities();
+
     } else {
       console.log('FORM NOT VALID');
     }
   }
 
   updateCategories() {
-    const selectedCatIds = [];
+    const selectedCategories = [];
     const controls = this.fields.categories.formGroup.controls;
 
     for (const key in controls) {
       if (controls.hasOwnProperty(key) && controls[key].value) {
-        selectedCatIds.push(parseInt(key, 10));
+        selectedCategories.push({resource_id: this.resource.id, category_id: parseInt(key, 10) });
       }
     }
-
-    for (const cat of this.allCategories) {
-      if (selectedCatIds.includes(cat.id)) {
-        this.api.linkResourceAndCategory(this.resource, cat).subscribe();
-      } else {
-        this.resourceCategories.forEach(rc => {
-          if (rc.category.id === cat.id) {
-            this.api.unlinkResourceAndCategory(rc).subscribe();
-          }
-        });
-      }
-    }
+    this.api.updateResourceCategories(this.resource, selectedCategories).subscribe( e => {
+      this.closeIfComplete();
+    });
   }
 
   updateAvailabilities() {
-    const selectedInstitutionIds: number[] = this.fields['availabilities.institution_id'].formControl.value || [];
-    const savedAvailabilities = this.resource.availabilities;
-
-    // First, confirm that set of selected availabilities matches selected list of institutions
-    const savedInstitutionIds = savedAvailabilities.map(av => av.available ? av.institution_id : -1);
-
-    if (savedInstitutionIds.sort().join('|') === selectedInstitutionIds.sort().join('|')) {
-      // No changes. Do nothing.
-      return;
-    } else {
-      // Unlink all old availabilities
-      savedAvailabilities.forEach(av => {
-        this.api.unlinkResourceAndInstitutionAvailability(av).subscribe();
-      });
-
-      // For each institution...
-      this.api.getInstitutions().subscribe(institutions => {
-        institutions.forEach(institution => {
-          this.api.linkResourceAndInstitutionAvailability(
-            this.resource.id,
-            institution.id,
-            selectedInstitutionIds.includes(institution.id)
-          ).subscribe();
-        });
-      });
+    const availabilities: Availability[] = [];
+    for (const value of this.fields['availabilities.institution_id'].formControl.value || []) {
+        availabilities.push({resource_id: this.resource.id, institution_id: value, available: true});
     }
+    this.api.updateResourceAvailability(this.resource, availabilities).subscribe( e => {
+      this.closeIfComplete();
+    });
   }
 
   onCancel() {

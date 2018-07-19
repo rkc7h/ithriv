@@ -4,6 +4,7 @@ import { Category } from './category';
 
 export interface CategoryResource {
   id: number;
+  category_id: number;
   resource: Resource;
   category: Category;
   _links: Links;

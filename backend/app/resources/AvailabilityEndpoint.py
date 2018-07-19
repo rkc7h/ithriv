@@ -23,14 +23,27 @@ class AvailabilityEndpoint(flask_restful.Resource):
 class AvailabilityListEndpoint(flask_restful.Resource):
     schema = AvailabilitySchema()
 
-    def get(self):
-        schema = AvailabilitySchema(many=True)
-        availabilities = db.session.query(Availability).all()
-        return schema.dump(availabilities)
-
     def post(self):
         request_data = request.get_json()
         load_result = self.schema.load(request_data).data
         db.session.add(load_result)
         db.session.commit()
         return self.schema.dump(load_result)
+
+
+class ResourceAvailabilityEndpoint(flask_restful.Resource):
+    schema = AvailabilitySchema()
+
+    def get(self, resource_id):
+        schema = AvailabilitySchema(many=True)
+        availabilities = db.session.query(Availability).filter_by(resource_id=resource_id).all()
+        return schema.dump(availabilities)
+
+    def post(self, resource_id):
+        request_data = request.get_json()
+        availabilities = self.schema.load(request_data, many=True).data
+        db.session.query(Availability).filter_by(resource_id=resource_id).delete()
+        for i in availabilities:
+            db.session.add(i)
+        db.session.commit()
+        return self.get(resource_id)
