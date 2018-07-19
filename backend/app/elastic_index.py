@@ -1,3 +1,4 @@
+from elasticsearch import Elasticsearch
 from flask import logging
 
 from elasticsearch_dsl import DocType, Date, Float, Keyword, Text, \
@@ -45,6 +46,8 @@ class ElasticIndex:
                                                             use_ssl=settings["use_ssl"])
     def clear(self):
         try:
+            es = Elasticsearch()
+            es.indices.delete(index=self.resource_index_name, ignore=[400, 404])
             self.logger.info("Clearing the index.")
             self.resource_index.delete(ignore=404)
             ElasticResource.init()
@@ -123,7 +126,7 @@ class ElasticResource(DocType):
     website = Keyword()
     owner = Text()
     viewable_institution = Keyword(multi=True)
-    approved = Boolean()
+    approved = Keyword()
 
 
 class ResourceSearch(elasticsearch_dsl.FacetedSearch):
@@ -138,9 +141,9 @@ class ResourceSearch(elasticsearch_dsl.FacetedSearch):
     fields = ['name^10', 'description^5', 'type^2', 'institution', 'owner', 'website']
 
     facets = {
-        'type': elasticsearch_dsl.TermsFacet(field='type'),
-        'institution': elasticsearch_dsl.TermsFacet(field='institution'),
-        'approved': elasticsearch_dsl.TermsFacet(field='approved')
+        'Type': elasticsearch_dsl.TermsFacet(field='type'),
+        'Institution': elasticsearch_dsl.TermsFacet(field='institution'),
+        'Approved': elasticsearch_dsl.TermsFacet(field='approved')
     }
 
     def search(self):

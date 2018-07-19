@@ -137,9 +137,21 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** updateResourceCategories */
+  updateResourceCategories(resource: Resource, categories: CategoryResource[]): Observable<CategoryResource[]> {
+    return this.httpClient.post<CategoryResource[]>(this.apiRoot + resource._links.categories, categories)
+      .pipe(catchError(this.handleError));
+  }
+
   /** updateResource */
   updateResource(resource: Resource): Observable<Resource> {
     return this.httpClient.put<Resource>(this.apiRoot + resource._links.self, resource)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateResourceAvailability(resource: Resource, avails: Availability[]) {
+    console.log("Making this call:" + this.apiRoot + resource._links.availability);
+    return this.httpClient.post<Availability>(this.apiRoot + resource._links.availability, avails)
       .pipe(catchError(this.handleError));
   }
 
@@ -149,30 +161,6 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
-  /** linkResourceAndInstitutionAvailability */
-  linkResourceAndInstitutionAvailability(
-    resource_id: number,
-    institution_id: number,
-    available: boolean
-  ): Observable<any> {
-    const options = {
-      resource_id: resource_id,
-      institution_id: institution_id,
-      available: available,
-    };
-    return this.httpClient.post<Availability>(this.apiRoot + this.endpoints.availabilityList, options)
-      .pipe(catchError(this.handleError));
-  }
-
-  /** unlinkResourceAndInstitutionAvailability */
-  unlinkResourceAndInstitutionAvailability(av: Availability): Observable<any> {
-    console.log('unlink av:', av);
-    const path = this.endpoints.availability.replace('<id>', av.id.toString());
-
-    console.log('unlink path:', path);
-    return this.httpClient.delete<Availability>(this.apiRoot + path)
-      .pipe(catchError(this.handleError));
-  }
 
   /** linkResourceAndCategory */
   linkResourceAndCategory(resource: Resource, category: Category): Observable<any> {

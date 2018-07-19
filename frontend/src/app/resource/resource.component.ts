@@ -1,10 +1,11 @@
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { Category } from '../category';
 import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
 import { Institution } from '../institution';
+import {ResourceCategory} from '../resource-category';
 
 @Component({
   selector: 'app-resource',
@@ -16,11 +17,12 @@ export class ResourceComponent implements OnInit {
   @HostBinding('@routerTransition')
   resourceId: number;
   @Input() resource: Resource;
-  @Input() categories: Category[];
+  @Input() categories: ResourceCategory[];
 
   isDataLoaded = false;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private api: ResourceApiService
   ) {
@@ -37,18 +39,19 @@ export class ResourceComponent implements OnInit {
     this.api.getResource(this.resourceId).subscribe(
       (resource) => {
         this.resource = resource;
-        this.isDataLoaded = true;
+        this.loadResourceCategories();
       }
     );
   }
 
-  loadCategory() {
-    this.api.getCategories().subscribe(
-      (categories) => {
-        this.categories = categories;
+  loadResourceCategories() {
+    this.api
+      .getResourceCategories(this.resource)
+      .subscribe(rcs => {
+        console.log("Loaded Categories:" + rcs)
+        this.categories = rcs;
         this.isDataLoaded = true;
-      }
-    );
+      });
   }
 
   getAvailableInstitutions() {
@@ -63,6 +66,14 @@ export class ResourceComponent implements OnInit {
     console.log('Go to the resource search screen, filtered by Institution');
     console.log('institution:', institution);
   }
+
+  goCategory($event, category: Category) {
+    $event.preventDefault();
+    this.router.navigate(['category', category.id])
+    console.log('Go to the category page, filtered by Institution');
+    console.log('category:', category);
+  }
+
 
   goOwner($event) {
     $event.preventDefault();

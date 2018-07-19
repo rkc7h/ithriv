@@ -34,6 +34,15 @@ class CategoryByResourceEndpoint(flask_restful.Resource):
             all()
         return self.schema.dump(resource_categories,many=True)
 
+    def post(self, resource_id):
+        request_data = request.get_json()
+        resource_categories = self.schema.load(request_data, many=True).data
+        db.session.query(ResourceCategory).filter_by(resource_id=resource_id).delete()
+        for c in resource_categories:
+            db.session.add(ResourceCategory(resource_id=resource_id,
+                           category_id=c.category_id))
+        db.session.commit()
+        return self.get(resource_id)
 
 class ResourceCategoryEndpoint(flask_restful.Resource):
     schema = ResourceCategorySchema()
@@ -54,6 +63,8 @@ class ResourceCategoryListEndpoint(flask_restful.Resource):
     def post(self):
         request_data = request.get_json()
         load_result = self.schema.load(request_data).data
+        db.session.query(ResourceCategory).filter_by(resource_id=load_result.resource_id,
+                                                     category_id=load_result.category_id).delete()
         db.session.add(load_result)
         db.session.commit()
         return self.schema.dump(load_result)
