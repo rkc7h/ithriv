@@ -1,18 +1,18 @@
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { Availability } from '../../availability';
 import { Category } from '../../category';
+import { CategoryResource } from '../../category-resource';
+import { Icon } from '../../icon';
+import { Institution } from '../../institution';
 import { Resource } from '../../resource';
 import { ResourceCategory } from '../../resource-category';
 import { ResourceQuery } from '../../resource-query';
-import { CategoryResource } from '../../category-resource';
-import { Icon } from '../../icon';
-import {User} from '../../user';
-import { Institution } from '../../institution';
 import { ResourceType } from '../../resourceType';
-import { Availability } from '../../availability';
+import { User } from '../../user';
 
 @Injectable()
 export class ResourceApiService {
@@ -55,19 +55,20 @@ export class ResourceApiService {
     }
   }
 
-  openSession(token) {
+  openSession(token: string, callback: Function) {
     localStorage.setItem('token', token);
     this._getSession().subscribe(s => {
       this.session = s;
+      callback(this.session);
     });
   }
 
-  closeSession() {
+  closeSession(callback: Function) {
     localStorage.removeItem('token');
     this._deleteSession().subscribe(s => {
       this.session = null;
+      callback(this.session);
     });
-
   }
 
   /** Get current users information, if logged in */

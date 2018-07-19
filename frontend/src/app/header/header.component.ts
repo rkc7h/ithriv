@@ -58,7 +58,9 @@ export class HeaderComponent {
 
   goLogout($event) {
     $event.preventDefault();
-    this.api.closeSession();
+    this.api.closeSession(session => {
+      this.router.navigate(['']);
+    });
   }
 
   getSession() {
