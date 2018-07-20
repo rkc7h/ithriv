@@ -9,7 +9,8 @@ from app.resources.ResourceAndCategoryEndoint import ResourceByCategoryEndpoint,
     ResourceCategoryEndpoint, ResourceCategoryListEndpoint
 from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint
 from app.resources.CategoryEndoint import CategoryListEndpoint, CategoryEndpoint
-from app.resources.AvailabilityEndpoint import AvailabilityEndpoint, AvailabilityListEndpoint
+from app.resources.AvailabilityEndpoint import AvailabilityEndpoint, AvailabilityListEndpoint, \
+    ResourceAvailabilityEndpoint
 from app.resources.InstitutionEndpoint import InstitutionEndpoint, InstitutionListEndpoint
 from app.resources.SearchEndpoint import SearchEndpoint
 from app.resources.SessionEndpoint import SessionEndpoint
@@ -90,6 +91,7 @@ api.add_resource(ResourceCategoryListEndpoint, '/api/resource_category')
 api.add_resource(ResourceCategoryEndpoint, '/api/resource_category/<id>')
 api.add_resource(AvailabilityListEndpoint, '/api/availability')
 api.add_resource(AvailabilityEndpoint, '/api/availability/<id>')
+api.add_resource(ResourceAvailabilityEndpoint, '/api/resource/<resource_id>/availability')
 api.add_resource(IconListEndpoint, '/api/icon')
 api.add_resource(IconEndpoint, '/api/icon/<id>')
 api.add_resource(UserListEndpoint, '/api/user')

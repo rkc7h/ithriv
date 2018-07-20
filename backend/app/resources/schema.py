@@ -47,6 +47,7 @@ class ThrivResourceSchema(ModelSchema):
     website = fields.String(required=False, allow_none=True)
     institution_id = fields.Integer(required=False, allow_none=True)
     type_id = fields.Integer(required=False, allow_none=True)
+    approved = fields.String(required=False, allow_none=True)
 
     type = fields.Nested(ThrivTypeSchema(), dump_only=True)
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
@@ -57,6 +58,7 @@ class ThrivResourceSchema(ModelSchema):
         'institution': ma.UrlFor('institutionendpoint', id='<institution_id>'),
         'type': ma.UrlFor('typeendpoint', id='<type_id>'),
         'categories': ma.UrlFor('categorybyresourceendpoint', resource_id='<id>'),
+        'availability': ma.UrlFor('resourceavailabilityendpoint', resource_id='<id>')
     },
         dump_only=True)
 
@@ -107,7 +109,7 @@ class CategorySchema(ModelSchema):
 class ResourceCategoriesSchema(ModelSchema):
     class Meta:
         model = ResourceCategory
-        fields = ('id', '_links', 'category')
+        fields = ('id', '_links', 'resource_id', 'category_id', 'category')
     category = fields.Nested(CategorySchema, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourcecategoryendpoint', id='<id>'),
@@ -119,7 +121,7 @@ class ResourceCategoriesSchema(ModelSchema):
 class CategoryResourcesSchema(ModelSchema):
     class Meta:
         model = ResourceCategory
-        fields = ('id', '_links', 'resource')
+        fields = ('id', '_links', 'resource_id', 'category_id', 'resource')
     resource = fields.Nested(ThrivResourceSchema, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourcecategoryendpoint', id='<id>'),

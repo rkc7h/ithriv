@@ -608,6 +608,31 @@ class TestCase(unittest.TestCase):
         self.assertEquals(c.id, response["category_id"])
         self.assertEquals(r.id, response["resource_id"])
 
+    def test_set_all_categories_on_resource(self):
+        c1 = self.construct_category(name="c1")
+        c2 = self.construct_category(name="c2")
+        c3 = self.construct_category(name="c3")
+        r = self.construct_resource()
+
+        rc_data = [
+            {"category_id": c1.id},
+            {"category_id": c2.id},
+            {"category_id": c3.id},
+        ]
+        rv = self.app.post('/api/resource/%i/category' % r.id, data=json.dumps(rc_data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(3, len(response))
+
+        rc_data = [
+            {"category_id": c1.id}
+        ]
+        rv = self.app.post('/api/resource/%i/category' % r.id, data=json.dumps(rc_data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(1, len(response))
+
+
     def test_remove_category_from_resource(self):
         self.test_add_category_to_resource()
         rv = self.app.delete('/api/resource_category/%i' % 1)
@@ -631,6 +656,37 @@ class TestCase(unittest.TestCase):
 
     def test_remove_availability(self):
         self.test_add_availability()
+        rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
+        self.assertSuccess(rv)
+        rv = self.app.delete('/api/availability/%i' % 1)
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
+        self.assertEqual(404, rv.status_code)
+
+    def test_set_all_availability(self):
+        r = self.construct_resource()
+        i1 = ThrivInstitution(id=1, name="Delmar's", description="autobody")
+        i2 = ThrivInstitution(id=2, name="Frank's", description="printers n stuff")
+        i3 = ThrivInstitution(id=3, name="Rick's", description="custom cabinets")
+
+        availability_data = [{"institution_id": i1.id},
+                             {"institution_id": i2.id},
+                             {"institution_id": i3.id}]
+
+        rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(3, len(response))
+
+        availability_data = [{"institution_id": i2.id}]
+
+        rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(1, len(response))
+        self.assertEquals(2, response[0]["institution_id"])
+
+
         rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
         self.assertSuccess(rv)
         rv = self.app.delete('/api/availability/%i' % 1)

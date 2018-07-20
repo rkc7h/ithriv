@@ -38,6 +38,10 @@
             </p>
             <p mat-line *ngIf="resource.contact_phone">{{resource.contact_phone}}</p>
           </mat-list-item>
+          <mat-list-item *ngIf="categories">
+            <h4 mat-line>Categories</h4>
+            <a *ngFor="let rc of categories" mat-line href="#" (click)="goCategory($event, rc.category)">{{rc.category.name}}</a>
+          </mat-list-item>
         </mat-list>
       </mat-card-content>
       <mat-card-actions>
@@ -45,6 +49,7 @@
         <div fxFlex></div>
         <app-edit-resource-button [resource]="resource"></app-edit-resource-button>
       </mat-card-actions>
+
     </mat-card>
   </div>
   <div *ngIf="!resource">
