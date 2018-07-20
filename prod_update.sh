@@ -32,16 +32,10 @@ source ./backend/python-env/bin/activate
 export FLASK_APP=${HOME_DIR}/backend/app/__init__.py
 eval 'cd ${HOME_DIR}/backend && pip3 install -r requirements.txt'
 
-# Load up the staging environment
-if [ "$ENV" == "staging" ]; then 
-   eval 'cd ${HOME_DIR}/backend && flask cleardb'
-   eval 'cd ${HOME_DIR}/backend && flask loadicons'
-fi
+# Upgrade the database
 eval 'cd ${HOME_DIR}/backend && flask db upgrade'
-if [ "$ENV" == "staging" ]; then
-    eval 'cd ${HOME_DIR}/backend && flask initdb'
-fi
-eval 'cd ${HOME_DIR}/backend && flask clearindex'
+
+# rebuild the index
 eval 'cd ${HOME_DIR}/backend && flask initindex'
 
 # Rebuild the front end.
