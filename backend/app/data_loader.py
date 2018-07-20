@@ -37,8 +37,8 @@ class DataLoader:
             for row in reader:
                 type = self.get_type_by_name(row[3])
                 institution = self.get_inst_by_name(row[2])
-                resource = ThrivResource(id=row[0], name=row[1], description=row[12], type=type, institution=institution,
-                                         owner=row[5], website=row[9])
+                resource = ThrivResource(id=row[0], name=row[1], description=row[10], type=type, institution=institution,
+                                         owner=row[8], website=row[9], contact_notes=row[4])
                 resource.approved = "Unapproved"
                 db.session.add(resource)
             print("Resources loaded.  There are now %i resources into the database." % db.session.query(ThrivResource).count())
@@ -55,11 +55,11 @@ class DataLoader:
             for row in reader:
                 try:
                     resource = self.get_resource_by_id(row[0])
-                    resource.cost = row[9]
+                    resource.cost = row[10]
                 except:
                     print("Warning:  Availability references non existing resource id %s, Ignoring." % row[0])
                     continue
-                for i in range(3,8):
+                for i in range(3,9):
                     is_available = row[i].lower().strip() == "yes" or row[i].lower().strip() == "true"
                     institution = self.get_inst_by_name(header[i])
                     availability = Availability(resource=resource, institution_id=institution.id,
