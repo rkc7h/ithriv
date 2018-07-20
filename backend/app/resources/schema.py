@@ -10,6 +10,7 @@ from app.model.resource_category import ResourceCategory
 from app.model.search import Filter, Search
 from app.model.type import ThrivType
 from app.model.user import User
+from app.model.favorite import Favorite
 
 
 class ThrivInstitutionSchema(ModelSchema):
@@ -29,6 +30,13 @@ class AvailabilitySchema(ModelSchema):
         model = Availability
         fields = ('id', 'institution_id', 'resource_id', 'available', 'institution')
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
+
+
+class FavoriteSchema(ModelSchema):
+    class Meta:
+        model = Favorite
+        fields = ('id', 'resource_id', 'user_id', 'resource', 'user')
+
 
 class ThrivResourceSchema(ModelSchema):
     class Meta:
@@ -52,6 +60,7 @@ class ThrivResourceSchema(ModelSchema):
     type = fields.Nested(ThrivTypeSchema(), dump_only=True)
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
     availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
+    favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourceendpoint', id='<id>'),
         'collection': ma.URLFor('resourcelistendpoint'),
@@ -137,6 +146,19 @@ class ResourceCategorySchema(ModelSchema):
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourcecategoryendpoint', id='<id>'),
         'category': ma.URLFor('categoryendpoint', id='<category_id>'),
+        'resource': ma.URLFor('resourceendpoint', id='<resource_id>')
+    })
+
+
+class UserFavoritesSchema(ModelSchema):
+    class Meta:
+        model = Favorite
+        fields = ('id', 'user_id', 'resource_id', 'resource', 'user')
+
+    resource = fields.Nested(ThrivResourceSchema, dump_only=True)
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('favoriteendpoint', id='<id>'),
+        'user': ma.URLFor('userendpoint', id='<user_id>'),
         'resource': ma.URLFor('resourceendpoint', id='<resource_id>')
     })
 

@@ -16,6 +16,7 @@ from app.resources.SearchEndpoint import SearchEndpoint
 from app.resources.SessionEndpoint import SessionEndpoint
 from app.resources.TypeEndpoint import TypeEndpoint, TypeListEndpoint
 from app.resources.UserEndpoint import UserEndpoint, UserListEndpoint
+from app.resources.FavoriteEndpoint import UserFavoriteEndpoint, FavoriteEndpoint, FavoriteListEndpoint
 
 api = flask_restful.Api(app)
 
@@ -76,6 +77,7 @@ def verify_token(token):
     else:
         return False
 
+
 api.add_resource(ResourceListEndpoint, '/api/resource')
 api.add_resource(ResourceEndpoint, '/api/resource/<id>')
 api.add_resource(CategoryByResourceEndpoint, '/api/resource/<resource_id>/category')
@@ -97,4 +99,5 @@ api.add_resource(IconEndpoint, '/api/icon/<id>')
 api.add_resource(UserListEndpoint, '/api/user')
 api.add_resource(UserEndpoint, '/api/user/<id>')
 api.add_resource(SessionEndpoint, '/api/session')
-
+api.add_resource(FavoriteListEndpoint, '/api/favorite')
+api.add_resource(FavoriteEndpoint, '/api/favorite/<id>')
