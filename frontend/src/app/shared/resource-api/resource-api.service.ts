@@ -64,11 +64,11 @@ export class ResourceApiService {
   }
 
   closeSession(callback: Function) {
-    localStorage.removeItem('token');
     this._deleteSession().subscribe(s => {
       this.session = null;
       callback(this.session);
     });
+    localStorage.removeItem('token');
   }
 
   /** Get current users information, if logged in */
@@ -188,7 +188,6 @@ export class ResourceApiService {
   }
 
   updateResourceAvailability(resource: Resource, avails: Availability[]) {
-    console.log("Making this call:" + this.apiRoot + resource._links.availability);
     return this.httpClient.post<Availability>(this.apiRoot + resource._links.availability, avails)
       .pipe(catchError(this.handleError));
   }
