@@ -1,0 +1,35 @@
+<mat-card>
+  <mat-card-content>
+    <div *ngFor="let s of loginServices" class="login-service">
+      <button mat-stroked-button (click)="goLoginService(s)" [ngStyle]="{
+              'border-color': s.color,
+              'background-color': s.color
+            }">
+        <span class="service-logo">
+          <img [src]="s.image">
+        </span>
+        Login with {{s.name}}
+      </button>
+    </div>
+    <h3 style="text-align: center">or</h3>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
+        [field]="field" [formGroup]="loginForm" [errorMatcher]="errorMatcher"></app-form-field>
+
+      <div id="error_message" class="display mat-error" *ngIf="error">{{error}}</div>
+
+      <footer>
+        <button type="button" color="primary" mat-raised-button (click)="onSubmit()">Next</button>
+      </footer>
+    </form>
+  </mat-card-content>
+</mat-card>
+<div fxLayout="row" fxLayoutAlign="center center">
+  <button type="button" mat-button (click)="goForgotPassword()">
+    Forgot password?
+  </button>
+  <div fxFlex></div>
+  <button type="button" (click)="onCancel()" mat-button>
+    Cancel
+  </button>
+</div>

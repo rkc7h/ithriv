@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormGroup, ValidationErrors } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FormField } from '../form-field';
 import { FormSelectOption } from '../form-select-option';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,5 +59,9 @@ export class FormFieldComponent implements OnInit {
   // Replaces underscores with spaces and capitalizes each word in given string
   getLabel(s) {
     return s.split('_').map(w => w[0].toUpperCase() + w.substr(1)).join(' ');
+  }
+
+  isTextField(field: FormField) {
+    return ['text', 'url', 'email', 'password'].includes(field.type);
   }
 }

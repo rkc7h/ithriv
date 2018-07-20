@@ -1,0 +1,21 @@
+<div class="container mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10px" fxLayoutAlign="center center">
+  <div fxFlex="50%">
+    <app-logo></app-logo>
+    <mat-card>
+      <mat-card-content>
+        <h1>Edit your iThriv profile</h1>
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+          <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
+            [field]="field" [formGroup]="profileForm" [errorMatcher]="errorMatcher"></app-form-field>
+
+          <div id="error_message" class="display mat-error" *ngIf="error">{{error}}</div>
+
+          <footer>
+            <button type="button" color="primary" mat-raised-button (click)="onSubmit()">Next</button>
+          </footer>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>

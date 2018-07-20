@@ -13,11 +13,14 @@ from app.model.resource import ThrivResource
 from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
 from app.model.icon import Icon
-
+from app.model.user import User
 from app import app, db, elastic_index
 
 
 class TestCase(unittest.TestCase):
+
+    test_uid = "dhf8rtest"
+    admin_uid = "dhf8admin"
 
     def setUp(self):
         self.ctx = app.test_request_context()
@@ -810,3 +813,49 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(icon.id, response["icon_id"]);
         self.assertEquals("Cool Places", response["icon"]["name"]);
+
+    def logged_in_headers(self, user=None):
+        if not user:
+            uid = self.test_uid
+            headers = {'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
+        else:
+            uid = user.uid
+            headers = {'uid': user.id, 'givenName': user.display_name, 'mail': user.email_address}
+
+        rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
+                          content_type="application/json")
+        participant = User.query.filter_by(uid=uid).first()
+
+        return dict(Authorization='Bearer ' + participant.encode_auth_token().decode())
+
+    def add_test_user(self):
+        data = {
+            "display_name": "Peter Dinklage",
+            "uid": "pad123" + self.randomString(),
+            "email_address": "tyrion@got.com",
+            "created": "2017-08-28T16:09:00.000Z"
+        }
+        rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
+                           content_type="application/json", headers=self.logged_in_headers_admin())
+        self.assert_success(rv)
+        return json.loads(rv.get_data(as_text=True))
+
+    def test_get_current_participant(self):
+        """ Test for the current participant status """
+        # Create the user
+        headers = {'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
+        rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
+                          content_type="application/json")
+        # Don't check success, login does a redirect to the front end that might not be running.
+        # self.assert_success(rv)
+
+        user = User.query.filter_by(uid=self.test_uid).first()
+
+        # Now get the user back.
+        response = self.app.get('/api/session', headers=dict(
+            Authorization='Bearer ' +
+                          user.encode_auth_token().decode()
+            )
+        )
+        self.assertSuccess(response)
+        return json.loads(response.data.decode())

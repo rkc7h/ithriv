@@ -9,6 +9,9 @@ class RestException(Exception):
     PERMISSON_DENIED = {'code': 'permission_denied', 'message': 'You are not authorized to make this call.'}
     INVALID_OBJECT = {'code': 'invalid_object', 'message': 'Unable to save the provided object.'}
     CAN_NOT_DELETE = {'code': 'can_not_delete', 'message': 'You must delete all dependent records first.'}
+    TOKEN_INVALID = {'code': 'token_invalid', 'message': 'Please log in again.'}
+    TOKEN_EXPIRED = {'code': 'token_expired', 'message': 'Your session timed out.  Please log in again.'}
+    TOKEN_MISSING = {'code': 'token_missing', 'message': 'Your are not logged in.'}
 
     def __init__(self, payload, status_code=None, details=None):
         Exception.__init__(self)

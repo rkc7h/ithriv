@@ -3,15 +3,16 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { Availability } from '../../availability';
 import { Category } from '../../category';
-import { Resource } from '../../resource';
-import { ResourceCategory } from '../../resource-category';
-import { ResourceQuery } from '../../resource-query';
 import { CategoryResource } from '../../category-resource';
 import { Icon } from '../../icon';
 import { Institution } from '../../institution';
+import { Resource } from '../../resource';
+import { ResourceCategory } from '../../resource-category';
+import { ResourceQuery } from '../../resource-query';
 import { ResourceType } from '../../resourceType';
-import { Availability } from '../../availability';
+import { User } from '../../user';
 
 @Injectable()
 export class ResourceApiService {
@@ -40,9 +41,46 @@ export class ResourceApiService {
     resourceCategory: '/api/resource_category/<id>',
     iconList: '/api/icon',
     icon: '/api/icon/<id>',
+    session: '/api/session'
   };
 
+  session: User;  // The current user is always directly accessible via this variable.
+
   constructor(private httpClient: HttpClient) {
+    if (localStorage.getItem('token')) {
+      // todo:  Notify user if their token expired.
+      this._getSession().subscribe(s => {
+        this.session = s;
+      });
+    }
+  }
+
+  openSession(token: string, callback: Function) {
+    localStorage.setItem('token', token);
+    this._getSession().subscribe(s => {
+      this.session = s;
+      callback(this.session);
+    });
+  }
+
+  closeSession(callback: Function) {
+    this._deleteSession().subscribe(s => {
+      this.session = null;
+      callback(this.session);
+    });
+    localStorage.removeItem('token');
+  }
+
+  /** Get current users information, if logged in */
+  _getSession(): Observable<User> {
+    return this.httpClient.get<User>(this.apiRoot + this.endpoints.session)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** Logging out */
+  _deleteSession(): Observable<any> {
+    return this.httpClient.delete<User>(this.apiRoot + this.endpoints.session)
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -150,7 +188,6 @@ export class ResourceApiService {
   }
 
   updateResourceAvailability(resource: Resource, avails: Availability[]) {
-    console.log("Making this call:" + this.apiRoot + resource._links.availability);
     return this.httpClient.post<Availability>(this.apiRoot + resource._links.availability, avails)
       .pipe(catchError(this.handleError));
   }
@@ -180,5 +217,4 @@ export class ResourceApiService {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
       .pipe(catchError(this.handleError));
   }
-
 }

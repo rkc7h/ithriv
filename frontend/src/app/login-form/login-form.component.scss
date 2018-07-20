@@ -1,0 +1,40 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
+mat-card .login-service {
+  margin-bottom: 1em;
+
+  button {
+    width: 100%;
+    height: 62px;
+    padding-left: 80px;
+    border-width: 1px;
+    border-style: solid;
+    text-transform: uppercase;
+    color: white;
+    text-align: left;
+
+    .service-logo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: white;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        max-width: 40px;
+        max-height: 40px;
+      }
+    }
+  }
+}
+
+footer button {
+  width: 100%;
+}

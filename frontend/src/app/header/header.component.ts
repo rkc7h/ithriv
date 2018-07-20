@@ -1,5 +1,7 @@
-import { Component, OnInit, HostBinding } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { Component, HostBinding } from '@angular/core';
+import { ActivationStart, NavigationEnd, Router, ActivationEnd } from '@angular/router';
+import { environment } from '../../environments/environment';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
 
 @Component({
@@ -8,25 +10,61 @@ import { routerTransition } from '../shared/router.animations';
   styleUrls: ['./header.component.scss'],
   animations: [routerTransition()],
 })
-export class HeaderComponent implements OnInit {
-  @HostBinding('@routerTransition')
-  title = 'app';
-  isHome = false;
 
-  constructor(private router: Router) {
-    router.events.subscribe((val) => {
-      if (val instanceof NavigationEnd) {
-        this.isHome = ['/', '/search'].includes(val.url);
+export class HeaderComponent {
+  @HostBinding('@routerTransition')
+  title: string;
+  isHome = false;
+  login_url = environment.api + '/api/login';
+  hideHeader = false;
+
+  constructor(
+    private router: Router,
+    private api: ResourceApiService
+  ) {
+    this.router.events.subscribe((e) => {
+      if (e instanceof ActivationStart || e instanceof ActivationEnd) {
+        if (e.snapshot && e.snapshot.data) {
+          const data = e.snapshot.data;
+          this.hideHeader = !!data.hideHeader;
+          this.title = data.title;
+        }
+      }
+
+      if (e instanceof NavigationEnd) {
+        this.isHome = ['/', '/search'].includes(e.url);
       }
     });
-  }
-
-  ngOnInit() {
   }
 
   goHome($event) {
     $event.preventDefault();
     this.router.navigate(['']);
+  }
+
+  goLogin($event) {
+    $event.preventDefault();
+    this.router.navigate(['login']);
+  }
+
+  goProfile($event) {
+    $event.preventDefault();
+    this.router.navigate(['profile']);
+  }
+  goRegister($event) {
+    $event.preventDefault();
+    this.router.navigate(['register']);
+  }
+
+  goLogout($event) {
+    $event.preventDefault();
+    this.api.closeSession(session => {
+      this.router.navigate(['']);
+    });
+  }
+
+  getSession() {
+    return this.api.session;
   }
 
 }

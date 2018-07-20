@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { CategoryResource } from '../category-resource';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-category',
@@ -18,7 +19,9 @@ export class CategoryComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private api: ResourceApiService) {
+    private api: ResourceApiService,
+    private titleService: Title
+  ) {
 
     this.route.params.subscribe(params => {
       this.categoryId = params['category'];
@@ -31,6 +34,10 @@ export class CategoryComponent implements OnInit {
       (category) => {
         this.category = category;
         this.loadResources();
+
+        // Set page title
+        const currentTitle = this.titleService.getTitle();
+        this.titleService.setTitle(`${currentTitle} - ${this.category.name}`);
       }
     );
   }

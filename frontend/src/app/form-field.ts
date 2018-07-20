@@ -1,5 +1,4 @@
 import { FormControl, FormGroup } from '@angular/forms';
-import { Category } from './category';
 
 export class FormField {
   formControl?: FormControl;

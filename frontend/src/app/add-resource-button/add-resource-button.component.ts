@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Category } from '../category';
-import { Router } from '../../../node_modules/@angular/router';
 
 @Component({
   selector: 'app-add-resource-button',

@@ -7,8 +7,6 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-
-  authToken: String;
   isS3 = new RegExp('^https?:\/\/s3.amazonaws.com.*');
 
   //  constructor(private auth: AuthService) {}
@@ -17,14 +15,14 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     // Get the auth token from the service.
     // const authToken = this.auth.getAuthorizationToken();
-    this.authToken = 'InValidAuthToken';
+    const token = localStorage.getItem('token');
 
     if (this.isS3.test(req.url)) {
       // NOOP - don't add authorization headers when making s3 requests, it confuses AWS.
     } else {
       req = req.clone({
         setHeaders: {
-          Authorization: `Bearer ${this.authToken}`
+          Authorization: `Bearer ${token}`
         }
       });
     }

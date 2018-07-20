@@ -1,14 +1,16 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask_httpauth import HTTPTokenAuth
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import click
 import os
 import signal
 from flask_marshmallow import Marshmallow
+from flask_sso import SSO
 
 from app.elastic_index import ElasticIndex
-from app.model.file_server import FileServer
+from app.file_server import FileServer
 from app.rest_exception import RestException
 
 app = Flask(__name__, instance_relative_config=True)
@@ -41,6 +43,12 @@ elastic_index = ElasticIndex(app)
 
 # file Server
 file_server = FileServer(app)
+
+# Single Signon
+sso = SSO(app=app)
+
+# Token Authentication
+auth = HTTPTokenAuth('Bearer')
 
 @app.cli.command()
 def stop():
@@ -80,6 +88,7 @@ def _load_data(data_loader):
     # data_loader.load_icons()
     data_loader.load_categories()
     data_loader.load_resource_categories()
+    data_loader.load_users()
 
 @app.cli.command()
 def initdb():

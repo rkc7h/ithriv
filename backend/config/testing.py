@@ -17,3 +17,15 @@ ELASTIC_SEARCH = {
     "http_auth_user": "",
     "http_auth_pass": ""
 }
+
+#: Default attribute map for single signon.
+# This makes it a little easier to spoof the values that come back from
+# Shibboleth.  One of the aspects of constructing custom headers is that
+# they are automatically converted to META Keys, so we have to refer
+# to them as that when pulling them out.  This is slightly different from
+# the structure that actually comes back from Shibboleth.
+SSO_ATTRIBUTE_MAP = {
+    'HTTP_UID': (True, 'uid'), # dhf8r
+    'HTTP_GIVENNAME': (False, 'givenName'), # Daniel
+    'HTTP_MAIL': (False, 'email')  # dhf8r@Virginia.EDU
+}

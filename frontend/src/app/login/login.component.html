@@ -1,0 +1,13 @@
+<div class="container mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10px" fxLayoutAlign="center center">
+  <div fxFlex="50%">
+    <app-logo></app-logo>
+    <mat-tab-group mat-stretch-tabs dynamicHeight [selectedIndex]="selectedTabIndex">
+      <mat-tab label="Log in">
+        <app-login-form></app-login-form>
+      </mat-tab>
+      <mat-tab label="Sign up">
+        <app-register-form></app-register-form>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
