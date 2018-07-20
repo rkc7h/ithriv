@@ -16,7 +16,7 @@ class ElasticIndex:
         self.establish_connection(app.config['ELASTIC_SEARCH'])
         self.index_prefix = app.config['ELASTIC_SEARCH']["index_prefix"]
 
-        self.resource_index_name = '%s_workshops' % self.index_prefix
+        self.resource_index_name = '%s_resource' % self.index_prefix
         self.resource_index = Index(self.resource_index_name)
         self.resource_index.doc_type(ElasticResource)
 
