@@ -89,7 +89,6 @@ class DataLoader:
             header = next(reader, None)  # use headers to set availability
 
             for row in reader:
-                print(row)
                 id = eval(row[0])
                 category = Category(id=id, brief_description=row[4], name=row[3], description=row[5], color=row[7], image=row[8])
                 if row[2] != '':
