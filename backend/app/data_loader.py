@@ -10,6 +10,7 @@ from app.model.resource import ThrivResource
 from app.model.institution import ThrivInstitution
 from app.model.resource_category import ResourceCategory
 from app.model.type import ThrivType
+from app.model.favorite import Favorite
 from app import db, elastic_index, file_server
 import csv
 
@@ -27,6 +28,7 @@ class DataLoader:
         self.resource_category_file = directory + "/resource_categories.csv"
         self.icon_file = directory + "/icons.csv"
         self.user_file = directory + "/users.csv"
+        self.user_favorite_file = directory + "/user_favorites.csv"
         self.mime = magic.Magic(mime=True)
         print("Data loader initialized")
 
@@ -135,6 +137,24 @@ class DataLoader:
             print("There are now %i users in the database." %
                   db.session.query(User).count())
 
+    def load_user_favorites(self):
+        with open(self.user_favorite_file, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
+            next(reader, None)  # use headers to set availability
+
+            for row in reader:
+                for i in range(1, 7):
+                    if not row[i]: continue
+                    user_id = eval(row[0])
+                    resource_id = eval(row[i])
+
+                    user_favorite = Favorite(user_id=user_id,
+                                                     resource_id=resource_id)
+                    db.session.add(user_favorite)
+            db.session.commit()
+            print("Favorites Loaded. There are now %i links between users and resources in the database." %
+                  db.session.query(Favorite).count())
+
     def get_resource_by_id(self, id):
         resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
         if resource is None:
@@ -166,6 +186,7 @@ class DataLoader:
     def clear(self):
         db.session.query(ResourceCategory).delete()
         db.session.query(Availability).delete()
+        db.session.query(Favorite).delete()
         db.session.query(ThrivResource).delete()
         db.session.query(ThrivInstitution).delete()
         db.session.query(ThrivType).delete()
