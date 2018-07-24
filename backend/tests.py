@@ -2,6 +2,8 @@
 import os
 # IMPORTANT - Environment must be loaded before app, models, etc....
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
+import random
+import string
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema, IconSchema
@@ -41,6 +43,10 @@ class TestCase(unittest.TestCase):
         self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
                         "BAD Response: %i. \n %s" %
                         (rv.status_code, json.dumps(data)))
+
+    def randomString(self):
+        char_set = string.ascii_uppercase + string.digits
+        return ''.join(random.sample(char_set * 6, 6))
 
     def test_base_endpoint(self):
         rv = self.app.get('/api',
@@ -666,9 +672,11 @@ class TestCase(unittest.TestCase):
         i2 = ThrivInstitution(id=2, name="Frank's", description="printers n stuff")
         i3 = ThrivInstitution(id=3, name="Rick's", description="custom cabinets")
 
-        availability_data = [{"institution_id": i1.id},
-                             {"institution_id": i2.id},
-                             {"institution_id": i3.id}]
+        availability_data = [
+            {"institution_id": i1.id},
+            {"institution_id": i2.id},
+            {"institution_id": i3.id},
+        ]
 
         rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
         self.assertSuccess(rv)
@@ -699,8 +707,8 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/favorite', data=json.dumps(favorite_data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(u.id, response["user_id"])
-        self.assertEquals(r.id, response["resource_id"])
+        self.assertEqual(u.id, response["user_id"])
+        self.assertEqual(r.id, response["resource_id"])
 
     def test_remove_favorite(self):
         self.test_add_favorite()
@@ -710,6 +718,38 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         rv = self.app.get('/api/favorite/%i' % 1, content_type="application/json")
         self.assertEqual(404, rv.status_code)
+
+    def test_user_favorites(self):
+        r1 = self.construct_resource(name="Birdseed sale at Hooper's")
+        r2 = self.construct_resource(name="Slimy the worm's flying school")
+        r3 = self.construct_resource(name="Oscar's Trash Orchestra")
+        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email_address="oscar@sesamestreet.com")
+        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email_address="bigbird@sesamestreet.com")
+
+        db.session.commit()
+
+        favorite_data_u1 = [
+            {"resource_id": r2.id},
+            {"resource_id": r3.id},
+        ]
+
+        favorite_data_u2 = [
+            {"resource_id": r1.id},
+            {"resource_id": r2.id},
+            {"resource_id": r3.id},
+        ]
+
+        rv = self.app.post('/api/user/%i/favorite' % u1.id, data=json.dumps(favorite_data_u1),
+                           content_type="application/json", headers=self.logged_in_headers(), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(2, len(response))
+
+        rv = self.app.post('/api/user/%i/favorite' % u2.id, data=json.dumps(favorite_data_u2),
+                           content_type="application/json", headers=self.logged_in_headers(), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(3, len(response))
 
     def test_create_category(self):
         c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!",
@@ -849,7 +889,7 @@ class TestCase(unittest.TestCase):
             "created": "2017-08-28T16:09:00.000Z"
         }
         rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
-                           content_type="application/json", headers=self.logged_in_headers_admin())
+                           content_type="application/json", headers=self.logged_in_headers())
         self.assert_success(rv)
         return json.loads(rv.get_data(as_text=True))
 

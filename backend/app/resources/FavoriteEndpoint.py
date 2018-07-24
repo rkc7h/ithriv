@@ -1,6 +1,5 @@
 import flask_restful
-from flask import g
-from flask import request
+from flask import g, request
 
 from app import db, RestException, auth
 from app.resources.schema import FavoriteSchema, UserFavoritesSchema
@@ -23,6 +22,19 @@ class UserFavoriteEndpoint(flask_restful.Resource):
                 .all()
             return schema.dump(favorites)
 
+        else:
+            raise RestException(RestException.TOKEN_INVALID)
+
+    @auth.login_required
+    def post(self, user_id):
+        if "user" in g:
+            request_data = request.get_json()
+            favorites = self.schema.load(request_data, many=True).data
+            db.session.query(Favorite).filter_by(user_id=g.user.id).delete()
+            for f in favorites:
+                db.session.add(Favorite(user_id=g.user.id, resource_id=f.resource_id))
+            db.session.commit()
+            return self.get()
         else:
             raise RestException(RestException.TOKEN_INVALID)
 
