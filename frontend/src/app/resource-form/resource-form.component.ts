@@ -185,7 +185,7 @@ export class ResourceFormComponent implements OnInit {
         });
       } else {
         this.createNew = true;
-        this.resource = { id: null, name: '', description: '' };
+        this.resource = { id: null, name: '', description: '', availabilities: [] };
         this.loadAllCategories(() => this.loadForm());
       }
     });
