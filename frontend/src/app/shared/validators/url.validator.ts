@@ -24,7 +24,7 @@ export function ValidateUrl(control: AbstractControl): ValidationErrors {
     '$', 'i'
   );
 
-  if (!urlRegEx.test(control.value) && control.value !== '') {
+  if (!urlRegEx.test(control.value) && control.value && control.value !== '') {
     const error: ValidationErrors = { url: true };
     return error;
   }
