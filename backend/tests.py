@@ -193,6 +193,13 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["type"]["name"], 'TestyType')
 
+    def test_proper_error_on_no_resource(self):
+        rv = self.app.get('/api/resource/1',
+                          follow_redirects=True,
+                          content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(response["code"], "not_found")
+
     def test_resource_has_institution(self):
         self.construct_resource()
         rv = self.app.get('/api/resource/1',
@@ -239,12 +246,12 @@ class TestCase(unittest.TestCase):
                           content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response["approved"], False)
-        response["approved"] = True;
+        self.assertEquals('0', response["approved"])
+        response["approved"] = "approved";
         rv = self.app.put('/api/resource/%i' % 1, data=json.dumps(response), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response["approved"], True)
+        self.assertEqual("approved", response["approved"])
 
     def test_resource_has_availability(self):
         self.construct_resource(owner="Mac Daddy Test", available_to="UVA")
@@ -403,9 +410,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(search_results["resources"]), 1)
 
     def test_search_filter_on_approval(self):
-        resource = self.construct_resource(type="Woods", description="A short trip on the river.", approved=False)
+        resource = self.construct_resource(type="Woods", description="A short trip on the river.", approved="Approved")
         self.index_resource(resource)
-        data = {'query': '', 'filters': [{'field': 'approved', 'value': False}]}
+        data = {'query': '', 'filters': [{'field': 'Approved', 'value': "Approved"}]}
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
 
@@ -669,16 +676,16 @@ class TestCase(unittest.TestCase):
         i2 = ThrivInstitution(id=2, name="Frank's", description="printers n stuff")
         i3 = ThrivInstitution(id=3, name="Rick's", description="custom cabinets")
 
-        availability_data = [{"institution_id": i1.id},
-                             {"institution_id": i2.id},
-                             {"institution_id": i3.id}]
+        availability_data = [{"institution_id": i1.id, "resource_id": r.id, "available": True},
+                             {"institution_id": i2.id, "resource_id": r.id, "available": True},
+                             {"institution_id": i3.id, "resource_id": r.id, "available": True}]
 
         rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(3, len(response))
 
-        availability_data = [{"institution_id": i2.id}]
+        availability_data = [{"institution_id": i2.id, "resource_id": r.id, "available": True}]
 
         rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
         self.assertSuccess(rv)
