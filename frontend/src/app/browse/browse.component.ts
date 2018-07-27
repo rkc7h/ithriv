@@ -72,11 +72,15 @@ export class BrowseComponent implements OnInit {
   }
 
   updateCategory(category) {
-    // No need to updated anything, since the model is passed through.
+    // This is very lazy, we could replace the category in place.
+    this.isDataLoaded = false;
+    this.loadCategory(this.categoryId);
   }
 
   addCategory(category) {
-    // No need to updated anything, since the model is passed through.
+    // This is very lazy, we could replace the category in place.
+    this.isDataLoaded = false;
+    this.loadCategory(this.categoryId);
   }
 
 
