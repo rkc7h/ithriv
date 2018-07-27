@@ -3,8 +3,8 @@
     <h1 class="mat-display-1">
       <mat-icon *ngIf="category.icon" svgIcon="{{categoryIcon(category)}}"></mat-icon>
       {{category.name}}
-      <app-edit-category-button [category]="category"></app-edit-category-button>
-      <app-add-category-button [category]="category"></app-add-category-button>
+      <app-edit-category-button [category]="category" (updatedCategory)="updateCategory($event)"></app-edit-category-button>
+      <app-add-category-button [category]="category" (updatedCategory)="addCategory($event)"></app-add-category-button>
     </h1>
     <markdown>{{category.description || dummyText.category}}</markdown>
     <div class="bg-img" [ngStyle]="{'background-image': headerImage()}"></div>
@@ -13,12 +13,12 @@
 
   <div *ngIf="isDataLoaded">
     <section *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top-color': c.color}">
-      <div (click)="goCategory($event, c.id)">
+      <div>
         <mat-icon *ngIf="c.icon" class="cat-icon-2" svgIcon="{{categoryIcon(c)}}" [ngStyle]="{'color': c.color, 'border-color': c.color}"></mat-icon>
         <h2>{{c.name}}</h2>
-        <app-edit-category-button [category]="c" [parent]="category"></app-edit-category-button>
-        <app-add-category-button [category]="c"></app-add-category-button>
       </div>
+      <app-edit-category-button [category]="c" [parent]="category" (updatedCategory)="updateCategory($event)"></app-edit-category-button>
+      <app-add-category-button [category]="c" (updatedCategory)="addCategory($event)"></app-add-category-button>
       <markdown>{{c.description || dummyText.c}}</markdown>
 
       <div class="sub-categories container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0px grid" fxLayoutAlign="center">
@@ -31,8 +31,8 @@
             <mat-card-subtitle>
               <markdown>{{sc.brief_description || dummyText.sc}}</markdown>
             </mat-card-subtitle>
-            <app-edit-category-button [category]="sc" [parent]="c"></app-edit-category-button>
           </mat-card-header>
+          <app-edit-category-button [category]="sc" [parent]="c" (updatedCategory)="updateCategory($event)"></app-edit-category-button>
         </mat-card>
       </div>
     </section>

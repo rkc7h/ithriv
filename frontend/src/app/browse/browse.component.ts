@@ -71,6 +71,15 @@ export class BrowseComponent implements OnInit {
     this.router.navigate(['category', category]);
   }
 
+  updateCategory(category) {
+    // No need to updated anything, since the model is passed through.
+  }
+
+  addCategory(category) {
+    // No need to updated anything, since the model is passed through.
+  }
+
+
   ngOnInit() {
   }
 
