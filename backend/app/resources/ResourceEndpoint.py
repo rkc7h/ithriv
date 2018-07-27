@@ -8,6 +8,7 @@ from flask import jsonify, request
 from marshmallow import ValidationError
 
 from app import app, RestException, db, elastic_index
+from app.model.availability import Availability
 from app.model.resource_category import ResourceCategory
 from app.model.resource import ThrivResource
 from app.resources.schema import ThrivResourceSchema
@@ -22,7 +23,12 @@ class ResourceEndpoint(flask_restful.Resource):
 
     def delete(self, id):
         resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
-        elastic_index.remove_resource(resource)
+        try:
+            elastic_index.remove_resource(resource)
+        except:
+            print("unable to remove record from elastic index, might not exist.")
+        db.session.query(Availability).filter_by(resource_id=id).delete()
+        db.session.query(ResourceCategory).filter_by(resource_id=id).delete()
         db.session.query(ThrivResource).filter_by(id=id).delete()
         db.session.commit()
         return None
@@ -31,8 +37,8 @@ class ResourceEndpoint(flask_restful.Resource):
         request_data = request.get_json()
         instance = db.session.query(ThrivResource).filter_by(id=id).first()
         updated, errors = ThrivResourceSchema().load(request_data, instance=instance)
+        if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
         updated.last_updated = datetime.datetime.now()
-        if errors: raise RestException(RestException.INVALID_RESOURCE, details=errors)
         db.session.add(updated)
         db.session.commit()
         elastic_index.update_resource(updated)

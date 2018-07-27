@@ -29,6 +29,7 @@ export class ResourceFormComponent implements OnInit {
   errorMatcher = new ErrorMatcher();
   isDataLoaded = false;
   resource: Resource;
+  category: Category;
   resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
   savesInAction = 0;
@@ -48,7 +49,7 @@ export class ResourceFormComponent implements OnInit {
     }),
     description: new FormField({
       formControl: new FormControl(),
-      required: true,
+      required: false,
       placeholder: 'Description',
       type: 'textarea',
       options: {
@@ -172,6 +173,7 @@ export class ResourceFormComponent implements OnInit {
     this.isDataLoaded = false;
     this.route.params.subscribe(params => {
       const resourceId = params['resource'];
+      this.category = params['category'];
 
       if (resourceId) {
         this.createNew = false;
@@ -185,7 +187,7 @@ export class ResourceFormComponent implements OnInit {
         });
       } else {
         this.createNew = true;
-        this.resource = { id: null, name: '', description: '' };
+        this.resource = { id: null, name: '', description: '', availabilities: [] };
         this.loadAllCategories(() => this.loadForm());
       }
     });
@@ -274,6 +276,7 @@ export class ResourceFormComponent implements OnInit {
 
         if (fieldName === 'categories') {
           const selectedCatIds = this.resourceCategories.map(rc => rc.category.id);
+          selectedCatIds.push(+this.category);
 
           for (const cat of this.allCategories) {
             const checked = selectedCatIds.includes(cat.id);
@@ -336,7 +339,7 @@ export class ResourceFormComponent implements OnInit {
       this.isDataLoaded = false;
 
       for (const fieldName in this.fields) {
-        if (this.resource.hasOwnProperty(fieldName) && this.fields.hasOwnProperty(fieldName)) {
+        if (this.fields[fieldName].formControl) {
           this.resource[fieldName] = this.fields[fieldName].formControl.value;
         }
       }
@@ -345,16 +348,18 @@ export class ResourceFormComponent implements OnInit {
       if (this.createNew) {
         this.api.addResource(this.resource).subscribe(r => {
           this.resource = r;
+          this.updateCategories();
+          this.updateAvailabilities();
           this.closeIfComplete();
         });
       } else {
         this.api.updateResource(this.resource).subscribe(r => {
           this.resource = r;
+          this.updateCategories();
+          this.updateAvailabilities();
           this.closeIfComplete();
         });
       }
-      this.updateCategories();
-      this.updateAvailabilities();
 
     } else {
       console.log('FORM NOT VALID');

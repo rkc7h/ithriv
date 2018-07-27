@@ -64,17 +64,8 @@ class ElasticIndex:
         return ElasticResource.get(id='workshop_' + str(resource.id))
 
     def update_resource(self, resource, flush=True):
-        r = resource
-        obj = self.get_resource(r)
-        obj.name = r.name
-        obj.description = r.description
-        obj.last_updated = r.last_updated
-        obj.website = r.website
-        obj.owner = r.owner
-        obj.approved = r.approved
-        ElasticResource.save(obj)
-        if flush:
-            self.resource_index.flush()
+        # update is the same as add, as it will overwrite.  Better to have code in one place.
+        self.add_resource(resource, flush)
 
     def add_resource(self, r, flush=True):
         er = ElasticResource(meta={'id': 'workshop_' + str(r.id)},
@@ -86,15 +77,14 @@ class ElasticIndex:
                              owner=r.owner,
                              approved=r.approved
                              )
-
-        if (r.institution != None):
+        if r.institution:
             er.institution = r.institution.name
-
-        if (r.type != None):
+        if r.type:
             er.type = r.type.name
 
         ElasticResource.save(er)
-        if(flush): self.resource_index.flush()
+        if flush:
+            self.resource_index.flush()
 
     def load_resources(self, resources):
         print ("Loading resources into %s" % self.index_prefix)
