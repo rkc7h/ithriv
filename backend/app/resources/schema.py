@@ -11,6 +11,7 @@ from app.model.search import Filter, Search
 from app.model.type import ThrivType
 from app.model.user import User
 from app.model.favorite import Favorite
+from flask import g
 
 
 class ThrivInstitutionSchema(ModelSchema):
@@ -45,7 +46,7 @@ class ThrivResourceSchema(ModelSchema):
                   'website', 'cost', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', 'approved',
                   'contact_email', 'contact_phone', 'contact_notes',
-                  '_links', 'favorites', 'favorite_count')
+                  '_links', 'favorites', 'favorite_count', 'user_favorite')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
@@ -62,6 +63,7 @@ class ThrivResourceSchema(ModelSchema):
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
     availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
     favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
+    user_favorite = fields.Method('get_user_favorite')
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourceendpoint', id='<id>'),
         'collection': ma.URLFor('resourcelistendpoint'),
@@ -71,6 +73,13 @@ class ThrivResourceSchema(ModelSchema):
         'availability': ma.UrlFor('resourceavailabilityendpoint', resource_id='<id>')
     },
         dump_only=True)
+
+    def get_user_favorite(self, obj):
+        user = g.user
+        for f in obj.favorites:
+            if f.user_id == user.id:
+                return True
+        return False
 
 
 class ParentCategorySchema(ModelSchema):
