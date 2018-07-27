@@ -45,7 +45,7 @@ class ThrivResourceSchema(ModelSchema):
                   'website', 'cost', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', 'approved',
                   'contact_email', 'contact_phone', 'contact_notes',
-                  '_links')
+                  '_links', 'favorites', 'favorite_count')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
@@ -56,6 +56,7 @@ class ThrivResourceSchema(ModelSchema):
     institution_id = fields.Integer(required=False, allow_none=True)
     type_id = fields.Integer(required=False, allow_none=True)
     approved = fields.String(required=False, allow_none=True)
+    favorite_count = fields.Integer(required=False, allow_none=True)
 
     type = fields.Nested(ThrivTypeSchema(), dump_only=True)
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
