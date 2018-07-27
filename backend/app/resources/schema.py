@@ -35,7 +35,7 @@ class AvailabilitySchema(ModelSchema):
 class FavoriteSchema(ModelSchema):
     class Meta:
         model = Favorite
-        fields = ('id', 'resource_id', 'user_id', 'resource', 'user')
+        fields = ('id', 'resource_id', 'user_id')
 
 
 class ThrivResourceSchema(ModelSchema):
@@ -153,7 +153,7 @@ class ResourceCategorySchema(ModelSchema):
 class UserFavoritesSchema(ModelSchema):
     class Meta:
         model = Favorite
-        fields = ('id', 'user_id', 'resource_id', 'resource', 'user')
+        fields = ('id', 'user_id', 'resource_id')
 
     resource = fields.Nested(ThrivResourceSchema, dump_only=True)
     _links = ma.Hyperlinks({

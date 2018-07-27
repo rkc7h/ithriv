@@ -713,6 +713,7 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(u.id, response["user_id"])
         self.assertEqual(r.id, response["resource_id"])
+        self.assertEqual(1, len(r.favorites))
 
     def test_remove_favorite(self):
         self.test_add_favorite()
