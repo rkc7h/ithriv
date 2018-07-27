@@ -116,7 +116,7 @@ class CategorySchema(ModelSchema):
     parent_id = fields.Integer(required=False, allow_none=True)
     children = fields.Nested('self', many=True, dump_only=True)
     parent = fields.Nested(ParentCategorySchema, dump_only=True)
-    color = fields.Function(lambda obj: obj.calculate_color(), dump_only=True)
+    color = fields.Function(lambda obj: obj.calculate_color())
     level = fields.Function(lambda obj: obj.calculate_level(), dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('categoryendpoint', id='<id>'),
