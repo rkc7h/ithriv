@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { Category } from '../category';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 import { MatDialog } from '@angular/material';
@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 export class EditCategoryButtonComponent implements OnInit {
   @Input() category: Category;
   @Input() parent: Category;
+  @Output() updatedCategory: EventEmitter<Category> = new EventEmitter();
 
   constructor(private dialog: MatDialog) { }
 
@@ -18,8 +19,12 @@ export class EditCategoryButtonComponent implements OnInit {
   }
 
   openEdit() {
-    this.dialog.open(CategoryFormComponent, {
+    const dialogRef = this.dialog.open(CategoryFormComponent, {
       data: { 'edit': this.category, 'parent_category': this.parent }
     });
+    dialogRef.afterClosed().subscribe(result => {
+      this.updatedCategory.emit(result);
+    });
   }
+
 }

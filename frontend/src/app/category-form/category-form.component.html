@@ -14,7 +14,7 @@
   </mat-dialog-content>
 
   <mat-dialog-actions>
-    <button type="submit" color="primary" [disabled]="categoryForm.invalid" mat-raised-button (click)="onSubmit()">Save</button>
+    <button type="button" color="primary" [disabled]="categoryForm.invalid" mat-raised-button (click)="onSubmit()">Save</button>
     <button type="button" mat-raised-button (click)="onCancel()">Cancel</button>
     <button type="button" mat-raised-button *ngIf="!showConfirmDelete && !createNew" (click)="showDelete()">Delete</button>
     <button *ngIf="showConfirmDelete" id="confirm_delete" type="button" color="warning" mat-raised-button (click)="onDelete()">Permanently Delete This Category!!!</button>

@@ -159,13 +159,13 @@ export class CategoryFormComponent implements OnInit {
           if (this.data.parent_category) {
             this.data.parent_category.children.push(this.category);
           }
-          this.dialogRef.close();
+          this.dialogRef.close(this.category);
           this.isDataLoaded = true;
         });
       } else {
         this.api.updateCategory(this.category).subscribe(c => {
           this.category = c;
-          this.dialogRef.close();
+          this.dialogRef.close(this.category);
           this.isDataLoaded = true;
         });
       }
@@ -182,7 +182,7 @@ export class CategoryFormComponent implements OnInit {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close(this.category);
   }
 
   showDelete() {
@@ -197,7 +197,7 @@ export class CategoryFormComponent implements OnInit {
           this.data.parent_category.children.splice(index, 1);
         }
       }
-      this.dialogRef.close();
+      this.dialogRef.close(this.category);
     },
       error => this.error = error
     );

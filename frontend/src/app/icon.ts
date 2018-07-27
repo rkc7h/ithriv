@@ -1,4 +1,3 @@
-import { TrustedUrlString } from '@angular/core/src/sanitization/sanitization';
 
 export interface Icon {
   id: number;

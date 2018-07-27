@@ -71,6 +71,19 @@ export class BrowseComponent implements OnInit {
     this.router.navigate(['category', category]);
   }
 
+  updateCategory(category) {
+    // This is very lazy, we could replace the category in place.
+    this.isDataLoaded = false;
+    this.loadCategory(this.categoryId);
+  }
+
+  addCategory(category) {
+    // This is very lazy, we could replace the category in place.
+    this.isDataLoaded = false;
+    this.loadCategory(this.categoryId);
+  }
+
+
   ngOnInit() {
   }
 
