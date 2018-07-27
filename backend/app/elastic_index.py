@@ -81,6 +81,8 @@ class ElasticIndex:
             er.institution = r.institution.name
         if r.type:
             er.type = r.type.name
+        if r.favorites:
+            er.favorite_count = len(r.favorites)
 
         ElasticResource.save(er)
         if flush:
@@ -117,6 +119,7 @@ class ElasticResource(DocType):
     owner = Text()
     viewable_institution = Keyword(multi=True)
     approved = Keyword()
+    favorite_count = Integer()
 
 
 class ResourceSearch(elasticsearch_dsl.FacetedSearch):
