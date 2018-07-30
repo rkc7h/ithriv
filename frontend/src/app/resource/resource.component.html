@@ -42,6 +42,7 @@
             <h4 mat-line>Categories</h4>
             <a *ngFor="let rc of categories" mat-line href="#" (click)="goCategory($event, rc.category)">{{rc.category.name}}</a>
           </mat-list-item>
+          <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
         </mat-list>
       </mat-card-content>
       <mat-card-actions>

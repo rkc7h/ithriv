@@ -1,0 +1,10 @@
+<div *ngIf="getSession()">
+  <div *ngIf="userFavorite()" class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+    <img src="/assets/favorite_star.svg" />
+    <!--<mat-icon>grade</mat-icon>-->
+  </div>
+  <div *ngIf="!userFavorite()" class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+    <img src="/assets/favorite_outline_star.svg" />
+  </div>
+</div>
+

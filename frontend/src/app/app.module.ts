@@ -72,6 +72,7 @@ import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { RegisterFormComponent } from './register-form/register-form.component';
+import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
 
 @NgModule({
   declarations: [
@@ -104,7 +105,8 @@ import { RegisterFormComponent } from './register-form/register-form.component';
     ForgotPasswordComponent,
     LogoComponent,
     LoginFormComponent,
-    RegisterFormComponent
+    RegisterFormComponent,
+    FavoriteResourceButtonComponent
   ],
   imports: [
     AppRoutingModule,
