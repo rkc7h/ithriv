@@ -762,6 +762,11 @@ class TestCase(unittest.TestCase):
 
         favorite_data = {"resource_id": r.id, "user_id": user['id']}
 
+        # Get resource, not yet a user favorite
+        response = self.app.get('api/resource/%i' % r.id, headers=self.logged_in_headers())
+        resource = json.loads(response.get_data(as_text=True))
+        self.assertEqual(False, resource['user_favorite'])
+
         # Create the favorite
         rv = self.app.post('/api/favorite', data=json.dumps(favorite_data), content_type="application/json")
 
