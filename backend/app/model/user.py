@@ -2,7 +2,8 @@ import datetime
 
 import jwt
 
-from app import db, app, RestException
+from sqlalchemy.ext.hybrid import hybrid_property
+from app import db, app, RestException, bcrypt
 
 
 class User(db.Model):
@@ -11,6 +12,18 @@ class User(db.Model):
     uid = db.Column(db.String)
     email_address = db.Column(db.String)
     display_name = db.Column(db.String)
+    _password = db.Column(db.String(128))
+
+    @hybrid_property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def _set_password(self, plaintext):
+        self._password = bcrypt.generate_password_hash(plaintext)
+
+    def is_correct_password(self, plaintext):
+        return bcrypt.check_password_hash(self._password, plaintext)
 
     def encode_auth_token(self):
         try:

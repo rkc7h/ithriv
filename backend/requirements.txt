@@ -14,3 +14,4 @@ python-magic==0.4.13
 PyJWT==1.6.3
 flask-sso==0.4.0
 flask-httpauth==3.2.4
+flask-bcrypt==0.7.1
