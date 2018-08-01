@@ -767,9 +767,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual("Hefeweizen", response["children"][1]["name"])
         self.assertEqual("Zinger", response["children"][2]["name"])
 
-
-
-
     def test_list_category_icons(self):
         i1 = Icon(name="Happy Coconuts")
         i2 = Icon(name="Fly on Strings")
@@ -835,6 +832,26 @@ class TestCase(unittest.TestCase):
 
         return dict(Authorization='Bearer ' + participant.encode_auth_token().decode())
 
+    def test_create_user_password(self):
+        data = {
+            "display_name": "Peter Dinklage",
+            "uid": "pad123",
+            "email_address": "tyrion@got.com",
+        }
+        rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
+                           content_type="application/json")
+        self.assertSuccess(rv)
+        user = User.query.filter_by(uid=data["uid"]).first()
+        user.password = "peterpass"
+        db.session.add(user)
+        db.session.commit()
+
+        rv = self.app.get('/api/user/%i' % user.id, content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual("Peter Dinklage", response["display_name"])
+        self.assertEqual("tyrion@got.com", response["email_address"])
+        self.assertEqual(True, user.is_correct_password("peterpass"))
+
     def add_test_user(self):
         data = {
             "display_name": "Peter Dinklage",
@@ -843,8 +860,8 @@ class TestCase(unittest.TestCase):
             "created": "2017-08-28T16:09:00.000Z"
         }
         rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
-                           content_type="application/json", headers=self.logged_in_headers_admin())
-        self.assert_success(rv)
+                           content_type="application/json", headers=self.logged_in_headers())
+        self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
 
     def test_get_current_participant(self):

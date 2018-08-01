@@ -1,7 +1,7 @@
-id,uid,email_address,display_name
-1,dhf8r,daniel.h.funk@gmail.com,Dan Funk
-2,egraham,eleanorcjkgraham@gmail.com ,Eleanor Graham
-3,ajlouie,ajlouie@gmail.com,Aaron Louie
-4,jjk4d,JJL4D@hscmail.mcc.virginia.edu ,Johanna Loomba
-5,bk7k,BK7K@hscmail.mcc.virginia.edu ,DB Kim
-6,nem2p,NEM2P@hscmail.mcc.virginia.edu ,Neal Magee
+id,uid,email_address,display_name, password
+1,dhf8r,daniel.h.funk@gmail.com,Dan Funk, dfunk7
+2,egraham,eleanorcjkgraham@gmail.com ,Eleanor Graham, egraham4
+3,ajlouie,ajlouie@gmail.com,Aaron Louie, alouie2
+4,jjk4d,JJL4D@hscmail.mcc.virginia.edu ,Johanna Loomba, jloomba5
+5,bk7k,BK7K@hscmail.mcc.virginia.edu ,DB Kim, dbkim8
+6,nem2p,NEM2P@hscmail.mcc.virginia.edu ,Neal Magee, nmagee9
