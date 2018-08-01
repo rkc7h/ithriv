@@ -1,7 +1,8 @@
-from flask import jsonify, url_for, redirect, g
+from flask import jsonify, url_for, redirect, g, request
 from app import app, db, sso, auth
 import flask_restful
 from flask_restful import reqparse
+
 
 from app.model.user import User
 from app.resources.IconEndpoint import IconListEndpoint, IconEndpoint
@@ -61,6 +62,18 @@ def login(user_info):
     auth_token = user.encode_auth_token().decode()
     response_url = ("%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
     return redirect(response_url)
+
+
+@app.route('/api/password_login', methods=["GET", "POST"])
+def password_login():
+    request_data = request.get_json()
+    user_email = request_data['email_address']
+    user = User.query.filter_by(email_address=user_email).first()
+
+    if user.is_correct_password(request_data["password"]):
+        # redirect users back to the front end, include the new auth token.
+        auth_token = user.encode_auth_token().decode()
+        return jsonify({ "auth_token": auth_token })
 
 
 @auth.verify_token

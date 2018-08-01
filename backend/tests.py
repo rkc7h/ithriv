@@ -832,7 +832,7 @@ class TestCase(unittest.TestCase):
 
         return dict(Authorization='Bearer ' + participant.encode_auth_token().decode())
 
-    def test_create_user_password(self):
+    def test_create_user_with_password(self):
         data = {
             "display_name": "Peter Dinklage",
             "uid": "pad123",
@@ -851,6 +851,17 @@ class TestCase(unittest.TestCase):
         self.assertEqual("Peter Dinklage", response["display_name"])
         self.assertEqual("tyrion@got.com", response["email_address"])
         self.assertEqual(True, user.is_correct_password("peterpass"))
+
+    def test_login_user(self):
+        self.test_create_user_with_password()
+        data = {
+            "email_address": "tyrion@got.com",
+            "password": "peterpass"
+        }
+        rv = self.app.post('/api/password_login', data=json.dumps(data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertIsNotNone(response["auth_token"])
 
     def add_test_user(self):
         data = {
