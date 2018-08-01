@@ -62,4 +62,10 @@ export class CategoryComponent implements OnInit {
   ngOnInit() {
   }
 
+  goMode($event, category: Category) {
+    $event.preventDefault();
+    this.router.navigate(['browse', category.id])
+    console.log('Go to the category page');
+    console.log('category:', category);
+  }
 }

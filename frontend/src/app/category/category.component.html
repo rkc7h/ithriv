@@ -7,7 +7,9 @@
             <h1 class="mat-h1">
               {{category.name}}
             </h1>
-            <p>{{category.description}}</p>
+            <p mat-line><a href="#" (click)="goMode($event, category.parent.parent)">{{category.parent.parent.name}}</a> >
+              {{category.parent.name}} > {{category.name}}</p>
+            <p mat-line>{{category.description}}</p>
           </mat-card-title>
         </mat-card-title-group>
         <div fxFlex></div>
