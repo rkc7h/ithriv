@@ -38,7 +38,7 @@ class UserListEndpoint(flask_restful.Resource):
 
     def get(self):
         models = db.session.query(User).all()
-        return self.userSchema.dump(models)
+        return self.usersSchema.dump(models)
 
     def post(self):
         request_data = request.get_json()

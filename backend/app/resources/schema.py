@@ -30,6 +30,7 @@ class AvailabilitySchema(ModelSchema):
         fields = ('id', 'institution_id', 'resource_id', 'available', 'institution')
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
 
+
 class ThrivResourceSchema(ModelSchema):
     class Meta:
         model = ThrivResource
@@ -179,5 +180,8 @@ class SearchSchema(ma.Schema):
 class UserSchema(ModelSchema):
     class Meta:
         model = User
-        fields = ('id', 'uid', 'display_name', 'email_address')
+        fields = ('id', '_links', 'uid', 'display_name', 'email_address', '_password',)
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('userendpoint', id='<id>'),
+    })
 

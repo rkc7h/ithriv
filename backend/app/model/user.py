@@ -12,14 +12,14 @@ class User(db.Model):
     uid = db.Column(db.String)
     email_address = db.Column(db.String)
     display_name = db.Column(db.String)
-    _password = db.Column(db.String(128))
+    _password = db.Column('password', db.String(128))
 
     @hybrid_property
     def password(self):
         return self._password
 
     @password.setter
-    def _set_password(self, plaintext):
+    def password(self, plaintext):
         self._password = bcrypt.generate_password_hash(plaintext)
 
     def is_correct_password(self, plaintext):
