@@ -36,7 +36,10 @@ class AvailabilitySchema(ModelSchema):
 class FavoriteSchema(ModelSchema):
     class Meta:
         model = Favorite
-        fields = ('id', 'resource_id', 'user_id')
+        fields = ('id', 'resource_id', 'user_id', '_links')
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('favoriteendpoint', id='<id>'),
+    })
 
 
 class ThrivResourceSchema(ModelSchema):
@@ -63,7 +66,6 @@ class ThrivResourceSchema(ModelSchema):
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
     availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
     favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
-    user_favorite = fields.Method('get_user_favorite')
     _links = ma.Hyperlinks({
         'self': ma.URLFor('resourceendpoint', id='<id>'),
         'collection': ma.URLFor('resourcelistendpoint'),
@@ -73,13 +75,6 @@ class ThrivResourceSchema(ModelSchema):
         'availability': ma.UrlFor('resourceavailabilityendpoint', resource_id='<id>')
     },
         dump_only=True)
-
-    def get_user_favorite(self, obj):
-        user = g.user
-        for f in obj.favorites:
-            if f.user_id == user.id:
-                return True
-        return False
 
 
 class ParentCategorySchema(ModelSchema):
@@ -163,7 +158,7 @@ class ResourceCategorySchema(ModelSchema):
 class UserFavoritesSchema(ModelSchema):
     class Meta:
         model = Favorite
-        fields = ('id', 'user_id', 'resource_id')
+        fields = ('id', 'user_id', 'resource_id', '_links')
 
     resource = fields.Nested(ThrivResourceSchema, dump_only=True)
     _links = ma.Hyperlinks({

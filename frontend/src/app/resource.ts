@@ -18,7 +18,6 @@ export interface Resource {
   website?: string;
   approved?: string;
   last_updated?: string;
-  user_favorite?: boolean;
   favorites?: Favorite[];
   availabilities?: Availability[];
   institution?: Institution;
