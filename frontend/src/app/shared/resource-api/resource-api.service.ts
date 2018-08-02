@@ -13,6 +13,7 @@ import { ResourceCategory } from '../../resource-category';
 import { ResourceQuery } from '../../resource-query';
 import { ResourceType } from '../../resourceType';
 import { User } from '../../user';
+import { Favorite } from "../../favorite";
 
 @Injectable()
 export class ResourceApiService {
@@ -41,6 +42,8 @@ export class ResourceApiService {
     resourceCategory: '/api/resource_category/<id>',
     iconList: '/api/icon',
     icon: '/api/icon/<id>',
+    favoriteList: '/api/favorite',
+    favorite: '/api/favorite/<id>',
     session: '/api/session'
   };
 
@@ -198,7 +201,6 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
-
   /** linkResourceAndCategory */
   linkResourceAndCategory(resource: Resource, category: Category): Observable<any> {
     const options = { resource_id: resource.id, category_id: category.id };
@@ -215,6 +217,19 @@ export class ResourceApiService {
   /** deleteResource */
   deleteResource(resource: Resource): Observable<any> {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** addFavorite */
+  addFavorite(user:User, resource:Resource): Observable<any> {
+    const options = { resource_id: resource.id, user_id:user.id };
+    return this.httpClient.post<Favorite>(this.apiRoot + this.endpoints.favoriteList, options)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** deleteFavorite */
+  deleteFavorite(favorite: Favorite): Observable<any> {
+    return this.httpClient.delete<Favorite>(this.apiRoot + favorite._links.self)
       .pipe(catchError(this.handleError));
   }
 }
