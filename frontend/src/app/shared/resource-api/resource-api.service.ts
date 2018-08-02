@@ -41,6 +41,8 @@ export class ResourceApiService {
     resourceCategory: '/api/resource_category/<id>',
     iconList: '/api/icon',
     icon: '/api/icon/<id>',
+    userList: '/api/user',
+    password_login: '/api/password_login',
     session: '/api/session'
   };
 
@@ -215,6 +217,34 @@ export class ResourceApiService {
   /** deleteResource */
   deleteResource(resource: Resource): Observable<any> {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** updateUser */
+  updateUser(user: User): Observable<User> {
+    return this.httpClient.put<User>(this.apiRoot + user._links.self, user)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** addUser */
+  addUser(user: User): Observable<User> {
+    return this.httpClient.post<User>(this.apiRoot + this.endpoints.userList, user)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** deleteUser */
+  deleteUser(user: User): Observable<any> {
+    return this.httpClient.delete<User>(this.apiRoot + user._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** loginUser */
+  loginUser(email_address: string, password: string): Observable<User> {
+    const options = { user_email: email_address, password: password };
+    const response = this.httpClient.post(this.apiRoot + this.endpoints.password_login, options)
+      .pipe(catchError(this.handleError));
+    localStorage.setItem('token', response["token"]);
+    return this.httpClient.get<User>(this.apiRoot + user._links.self, user)
       .pipe(catchError(this.handleError));
   }
 }

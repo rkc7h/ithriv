@@ -4,7 +4,10 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
+import { User } from '../user';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
+import {Availability} from "../availability";
 
 @Component({
   selector: 'app-register-form',
@@ -15,10 +18,13 @@ import { routerTransition } from '../shared/router.animations';
 export class RegisterFormComponent implements OnInit {
   @HostBinding('@routerTransition')
   title: string;
-  login_url = environment.api + '/api/login';
+  login_url = environment.api + '/api/register';
   error: string;
   errorMatcher = new ErrorMatcher();
+  user: User;
   registerForm: FormGroup = new FormGroup({});
+
+  // Form Fields
   fields = {
     first_name: new FormField({
       formControl: new FormControl(),
@@ -52,7 +58,10 @@ export class RegisterFormComponent implements OnInit {
     }),
   };
 
-  constructor(private router: Router) {
+  constructor(
+    private api: ResourceApiService,
+    private router: Router
+  ) {
     this.loadForm();
   }
 
@@ -85,13 +94,46 @@ export class RegisterFormComponent implements OnInit {
           validators.push(Validators.email);
         }
 
+        this.user = { id: null, name: "", email_address: "", display_name: "", password: "" };
         this.registerForm.addControl(fieldName, field.formControl);
       }
     }
   }
 
+  // onSubmit() {
+  //   window.location.href = this.login_url;
+  // }
+
   onSubmit() {
-    window.location.href = this.login_url;
+    this.validate();
+
+    if (this.registerForm.valid) {
+
+      for (const fieldName in this.fields) {
+        if (this.fields[fieldName].formControl) {
+          this.user[fieldName] = this.fields[fieldName].formControl.value;
+        }
+      }
+
+      this.api.addUser(this.user).subscribe(u => {
+        this.user = u;
+        // window.location.href = this.login_url;
+      });
+
+
+    } else {
+      console.log('FORM NOT VALID');
+    }
+  }
+
+  validate() {
+    for (const key in this.registerForm.controls) {
+      if (this.registerForm.controls.hasOwnProperty(key)) {
+        const control = this.registerForm.controls[key];
+        control.markAsTouched();
+        control.updateValueAndValidity();
+      }
+    }
   }
 
   onCancel() {

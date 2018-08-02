@@ -73,7 +73,7 @@ def password_login():
     if user.is_correct_password(request_data["password"]):
         # redirect users back to the front end, include the new auth token.
         auth_token = user.encode_auth_token().decode()
-        return jsonify({ "auth_token": auth_token })
+        return jsonify({"auth_token": auth_token})
 
 
 @auth.verify_token

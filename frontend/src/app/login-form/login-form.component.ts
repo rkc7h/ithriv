@@ -18,6 +18,7 @@ export class LoginFormComponent implements OnInit {
   @HostBinding('@routerTransition')
   title: string;
   login_url = environment.api + '/api/login';
+  password_url = environment.api + '/api/password_login';
   loginServices: LoginService[] = [];
   error: string;
   errorMatcher = new ErrorMatcher();
@@ -107,7 +108,7 @@ export class LoginFormComponent implements OnInit {
   }
 
   onSubmit() {
-    window.location.href = this.login_url;
+    this.api.loginUser(email_address: , password: , user: )
   }
 
   onCancel() {
