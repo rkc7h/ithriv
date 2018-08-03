@@ -44,6 +44,7 @@ export class ResourceApiService {
     icon: '/api/icon/<id>',
     favoriteList: '/api/favorite',
     favorite: '/api/favorite/<id>',
+    userFavorites: '/api/user/<id>/favorite',
     session: '/api/session'
   };
 
@@ -230,6 +231,12 @@ export class ResourceApiService {
   /** deleteFavorite */
   deleteFavorite(favorite: Favorite): Observable<any> {
     return this.httpClient.delete<Favorite>(this.apiRoot + favorite._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getUserFavorites */
+  getUserFavorites(user: User): Observable<Resource[]> {
+    return this.httpClient.get<Resource[]>(this.apiRoot + user._links.favorites)
       .pipe(catchError(this.handleError));
   }
 }
