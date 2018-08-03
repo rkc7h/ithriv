@@ -2,6 +2,8 @@
 import os
 # IMPORTANT - Environment must be loaded before app, models, etc....
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
+import random
+import string
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema, IconSchema
@@ -14,6 +16,7 @@ from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
 from app.model.icon import Icon
 from app.model.user import User
+from app.model.favorite import Favorite
 from app import app, db, elastic_index
 
 
@@ -41,6 +44,10 @@ class TestCase(unittest.TestCase):
                         "BAD Response: %i. \n %s" %
                         (rv.status_code, json.dumps(data)))
 
+    def randomString(self):
+        char_set = string.ascii_uppercase + string.digits
+        return ''.join(random.sample(char_set * 6, 6))
+
     def test_base_endpoint(self):
         rv = self.app.get('/',
                           follow_redirects=True,
@@ -51,13 +58,12 @@ class TestCase(unittest.TestCase):
         self.assertTrue("categories" in response['_links'])
         self.assertTrue("resources" in response['_links'])
 
-
     def construct_resource(self, type="TestyType", institution="TestyU",
                            name="Test Resource", description="Some stuff bout it",
                            owner="Mac Daddy Test", website="testy.edu", cost='$100 or your firstborn', available_to=None,
                            contact_email='mac@daddy.com', contact_phone='540-457-0024',
                            contact_notes='No robo-calls if you please.',
-                           approved=False):
+                           approved='Unapproved'):
         type_obj = ThrivType(name=type)
         inst_obj = ThrivInstitution(name=institution)
         resource = ThrivResource(name=name, description=description,
@@ -152,7 +158,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response['type']['name'], "A sort of greenish purple apricot like thing. ")
         self.assertEqual(response['type_id'], type.id)
 
-
     def test_delete_resource(self):
         r = self.construct_resource()
         rv = self.app.get('/api/resource/1', content_type="application/json")
@@ -246,12 +251,12 @@ class TestCase(unittest.TestCase):
                           content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals('0', response["approved"])
-        response["approved"] = "approved";
+        self.assertEqual(response["approved"], 'Unapproved')
+        response["approved"] = 'Approved';
         rv = self.app.put('/api/resource/%i' % 1, data=json.dumps(response), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual("approved", response["approved"])
+        self.assertEqual(response["approved"], 'Approved')
 
     def test_resource_has_availability(self):
         self.construct_resource(owner="Mac Daddy Test", available_to="UVA")
@@ -308,7 +313,6 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["parent"]['id'], 2)
         self.assertNotIn("children", response["parent"])
-
 
     def test_category_depth_is_limited(self):
         c1 = self.construct_category()
@@ -416,7 +420,6 @@ class TestCase(unittest.TestCase):
         data = {'query': '', 'filters': [{'field': 'Approved', 'value': "Approved"}]}
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
-
 
     def test_search_facet_counts(self):
         resource = self.construct_resource(type="hgttg", description="There is a theory which states that if ever anyone discovers exactly what the Universe is for and why it is here, it will instantly disappear and be replaced by something even more bizarre and inexplicable. There is another theory which states that this has already happened.")
@@ -640,7 +643,6 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(1, len(response))
 
-
     def test_remove_category_from_resource(self):
         self.test_add_category_to_resource()
         rv = self.app.delete('/api/resource_category/%i' % 1)
@@ -694,13 +696,66 @@ class TestCase(unittest.TestCase):
         self.assertEquals(1, len(response))
         self.assertEquals(2, response[0]["institution_id"])
 
-
         rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
         self.assertSuccess(rv)
         rv = self.app.delete('/api/availability/%i' % 1)
         self.assertSuccess(rv)
         rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
         self.assertEqual(404, rv.status_code)
+
+    def test_add_favorite(self):
+        r = self.construct_resource()
+        u = User(id=1, display_name="Oscar the Grouch")
+
+        favorite_data = {"resource_id": r.id, "user_id": u.id}
+
+        rv = self.app.post('/api/favorite', data=json.dumps(favorite_data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(u.id, response["user_id"])
+        self.assertEqual(r.id, response["resource_id"])
+        self.assertEqual(1, len(r.favorites))
+
+    def test_remove_favorite(self):
+        self.test_add_favorite()
+        rv = self.app.get('/api/favorite/%i' % 1, content_type="application/json")
+        self.assertSuccess(rv)
+        rv = self.app.delete('/api/favorite/%i' % 1)
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/favorite/%i' % 1, content_type="application/json")
+        self.assertEqual(404, rv.status_code)
+
+    def test_user_favorites_list(self):
+        r1 = self.construct_resource(name="Birdseed sale at Hooper's")
+        r2 = self.construct_resource(name="Slimy the worm's flying school")
+        r3 = self.construct_resource(name="Oscar's Trash Orchestra")
+        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
+
+        db.session.commit()
+
+        favorite_data_u1 = [
+            {"resource_id": r2.id},
+            {"resource_id": r3.id},
+        ]
+
+        favorite_data_u2 = [
+            {"resource_id": r1.id},
+            {"resource_id": r2.id},
+            {"resource_id": r3.id},
+        ]
+
+        rv = self.app.post('/api/user/%i/favorite' % u1.id, data=json.dumps(favorite_data_u1),
+                           content_type="application/json", headers=self.logged_in_headers(), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(2, len(response))
+
+        rv = self.app.post('/api/user/%i/favorite' % u2.id, data=json.dumps(favorite_data_u2),
+                           content_type="application/json", headers=self.logged_in_headers(), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(3, len(response))
 
     def test_create_category(self):
         c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!",
@@ -725,7 +780,6 @@ class TestCase(unittest.TestCase):
         self.assertEquals(parent.id, response["parent"]["id"])
         self.assertEquals(0, response["parent"]["level"])
         self.assertEquals(1, response["level"])
-
 
     def test_update_category(self):
         c = Category(name="Desk Stuffs",
@@ -806,7 +860,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/icon/%i.svg" % icon_id, data["url"])
 
     def test_set_category_icon(self):
-        category = Category(name="City Museum", description="A wickly cool amazing place in St Louis",
+        category = Category(name="City Museum", description="A wickedly cool amazing place in St Louis",
                             color="blue")
         db.session.add(category)
         icon = Icon(name="Cool Places")
@@ -816,8 +870,8 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/category', data=json.dumps(CategorySchema().dump(category).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(icon.id, response["icon_id"]);
-        self.assertEquals("Cool Places", response["icon"]["name"]);
+        self.assertEquals(icon.id, response["icon_id"])
+        self.assertEquals("Cool Places", response["icon"]["name"])
 
     def logged_in_headers(self, user=None):
         if not user:
@@ -859,7 +913,7 @@ class TestCase(unittest.TestCase):
             "email": "tyrion@got.com",
             "password": "peterpass"
         }
-        rv = self.app.post('/auth/password_login', data=json.dumps(data), content_type="application/json")
+        rv = self.app.post('/api/password_login', data=json.dumps(data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertIsNotNone(response["token"])

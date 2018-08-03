@@ -27,7 +27,7 @@
             <a *ngFor="let institution of getAvailableInstitutions()" mat-line href="#" (click)="goInstitution($event, institution)">{{institution.name}}</a>
           </mat-list-item>
           <mat-list-item *ngIf="resource.cost">
-            <h4 mat-line>Cost</h4>
+            <h4 mat-line>Cost Type</h4>
             <p mat-line>{{resource.cost}}</p>
           </mat-list-item>
           <mat-list-item *ngIf="resource.contact_notes || resource.contact_email || resource.contact_phone">
@@ -42,6 +42,7 @@
             <h4 mat-line>Categories</h4>
             <a *ngFor="let rc of categories" mat-line href="#" (click)="goCategory($event, rc.category)">{{rc.category.name}}</a>
           </mat-list-item>
+          <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
         </mat-list>
       </mat-card-content>
       <mat-card-actions>

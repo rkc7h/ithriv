@@ -1,5 +1,6 @@
 import datetime
 from app.model.availability import Availability
+from app.model.favorite import Favorite
 from app import db
 
 
@@ -21,6 +22,9 @@ class ThrivResource(db.Model):
     institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
     availabilities = db.relationship(lambda: Availability,  cascade="all, delete-orphan",
                                      backref=db.backref('resource', lazy=True))
+    favorites = db.relationship(lambda: Favorite, cascade="all, delete-orphan",
+                                backref=db.backref('resource', lazy=True))
     approved = db.Column(db.String)
 
-
+    def favorite_count(self):
+        return len(self.favorites)

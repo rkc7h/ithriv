@@ -10,6 +10,8 @@ from app.model.resource_category import ResourceCategory
 from app.model.search import Filter, Search
 from app.model.type import ThrivType
 from app.model.user import User
+from app.model.favorite import Favorite
+from flask import g
 
 
 class ThrivInstitutionSchema(ModelSchema):
@@ -31,6 +33,15 @@ class AvailabilitySchema(ModelSchema):
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
 
 
+class FavoriteSchema(ModelSchema):
+    class Meta:
+        model = Favorite
+        fields = ('id', 'resource_id', 'user_id', '_links')
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('api.favoriteendpoint', id='<id>'),
+    })
+
+
 class ThrivResourceSchema(ModelSchema):
     class Meta:
         model = ThrivResource
@@ -38,7 +49,7 @@ class ThrivResourceSchema(ModelSchema):
                   'website', 'cost', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', 'approved',
                   'contact_email', 'contact_phone', 'contact_notes',
-                  '_links')
+                  '_links', 'favorites', 'favorite_count')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
@@ -49,10 +60,12 @@ class ThrivResourceSchema(ModelSchema):
     institution_id = fields.Integer(required=False, allow_none=True)
     type_id = fields.Integer(required=False, allow_none=True)
     approved = fields.String(required=False, allow_none=True)
+    favorite_count = fields.Integer(required=False, allow_none=True)
 
     type = fields.Nested(ThrivTypeSchema(), dump_only=True)
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
     availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
+    favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.resourceendpoint', id='<id>'),
         'collection': ma.URLFor('api.resourcelistendpoint'),
@@ -142,6 +155,19 @@ class ResourceCategorySchema(ModelSchema):
     })
 
 
+class UserFavoritesSchema(ModelSchema):
+    class Meta:
+        model = Favorite
+        fields = ('id', 'user_id', 'resource_id', '_links')
+
+    resource = fields.Nested(ThrivResourceSchema, dump_only=True)
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('api.favoriteendpoint', id='<id>'),
+        'user': ma.URLFor('api.userendpoint', id='<user_id>'),
+        'resource': ma.URLFor('api.resourceendpoint', id='<resource_id>')
+    })
+
+
 class SearchSchema(ma.Schema):
 
     class FilterSchema(ma.Schema):
@@ -169,7 +195,6 @@ class SearchSchema(ma.Schema):
     total = fields.Integer(dump_only=True)
     resources = fields.List(fields.Dict(), dump_only=True)
     facets = ma.List(ma.Nested(FacetSchema), dump_only=True)
-    # facets = fields.Dict(dump_only=True)
     ordered = True
 
     @post_load
@@ -185,5 +210,5 @@ class UserSchema(ModelSchema):
     id = fields.Integer(required=False, allow_none=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.userendpoint', id='<id>'),
+        'favorites': ma.UrlFor('api.userfavoriteendpoint', user_id='<id>'),
     })
-

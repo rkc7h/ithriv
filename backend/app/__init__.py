@@ -93,6 +93,7 @@ def _load_data(data_loader):
     data_loader.load_categories()
     data_loader.load_resource_categories()
     data_loader.load_users()
+    data_loader.load_user_favorites()
 
 @app.cli.command()
 def initdb():

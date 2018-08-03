@@ -43,7 +43,8 @@ class ResourceAvailabilityEndpoint(flask_restful.Resource):
         request_data = request.get_json()
         availabilities = self.schema.load(request_data, many=True).data
         db.session.query(Availability).filter_by(resource_id=resource_id).delete()
-        for i in availabilities:
-            db.session.add(i)
+        for a in availabilities:
+            db.session.add(Availability(resource_id=resource_id,
+                           institution_id=a.institution_id))
         db.session.commit()
         return self.get(resource_id)

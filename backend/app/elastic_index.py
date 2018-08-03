@@ -61,14 +61,14 @@ class ElasticIndex:
             self.resource_index.flush()
 
     def get_resource(self, resource):
-        return ElasticResource.get(id='workshop_' + str(resource.id))
+        return ElasticResource.get(id='resource_' + str(resource.id))
 
     def update_resource(self, resource, flush=True):
         # update is the same as add, as it will overwrite.  Better to have code in one place.
         self.add_resource(resource, flush)
 
     def add_resource(self, r, flush=True):
-        er = ElasticResource(meta={'id': 'workshop_' + str(r.id)},
+        er = ElasticResource(meta={'id': 'resource_' + str(r.id)},
                              id=r.id,
                              name=r.name,
                              description=r.description,
@@ -81,6 +81,8 @@ class ElasticIndex:
             er.institution = r.institution.name
         if r.type:
             er.type = r.type.name
+        if r.favorites:
+            er.favorite_count = len(r.favorites)
 
         ElasticResource.save(er)
         if flush:
@@ -117,6 +119,7 @@ class ElasticResource(DocType):
     owner = Text()
     viewable_institution = Keyword(multi=True)
     approved = Keyword()
+    favorite_count = Integer()
 
 
 class ResourceSearch(elasticsearch_dsl.FacetedSearch):

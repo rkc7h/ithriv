@@ -2,6 +2,7 @@ import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { Category } from '../category';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 import { MatDialog } from '@angular/material';
+import {ResourceApiService} from "../shared/resource-api/resource-api.service";
 
 @Component({
   selector: 'app-edit-category-button',
@@ -13,7 +14,10 @@ export class EditCategoryButtonComponent implements OnInit {
   @Input() parent: Category;
   @Output() updatedCategory: EventEmitter<Category> = new EventEmitter();
 
-  constructor(private dialog: MatDialog) { }
+  constructor(
+    private dialog: MatDialog,
+    private api: ResourceApiService
+  ) { }
 
   ngOnInit() {
   }
@@ -25,6 +29,10 @@ export class EditCategoryButtonComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       this.updatedCategory.emit(result);
     });
+  }
+
+  getSession() {
+    return this.api.session;
   }
 
 }

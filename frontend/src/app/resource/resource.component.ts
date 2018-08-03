@@ -87,7 +87,7 @@ export class ResourceComponent implements OnInit {
 
   goWebsite($event) {
     $event.preventDefault();
-    location.href = this.resource.website;
+    window.open(this.resource.website, '_blank');
   }
 
 }

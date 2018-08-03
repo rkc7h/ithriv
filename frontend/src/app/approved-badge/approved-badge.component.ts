@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Resource } from '../resource';
+import {ResourceApiService} from "../shared/resource-api/resource-api.service";
 
 @Component({
   selector: 'app-approved-badge',
@@ -9,9 +10,14 @@ import { Resource } from '../resource';
 export class ApprovedBadgeComponent implements OnInit {
   @Input() resource: Resource;
 
-  constructor() { }
+  constructor(
+    private api: ResourceApiService
+  ) { }
 
   ngOnInit() {
   }
 
+  getSession() {
+    return this.api.session;
+  }
 }

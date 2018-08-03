@@ -2,6 +2,7 @@ import { Availability } from './availability';
 import { Institution } from './institution';
 import { Links } from './links';
 import { ResourceType } from './resourceType';
+import { Favorite } from './favorite';
 
 export interface Resource {
   id: number;
@@ -17,6 +18,7 @@ export interface Resource {
   website?: string;
   approved?: string;
   last_updated?: string;
+  favorites?: Favorite[];
   availabilities?: Availability[];
   institution?: Institution;
   type?: ResourceType;

@@ -95,7 +95,7 @@ export class ResourceFormComponent implements OnInit {
     cost: new FormField({
       formControl: new FormControl(),
       required: false,
-      placeholder: 'Cost',
+      placeholder: 'Cost Type',
       type: 'select',
       selectOptions: [
         'N / A',

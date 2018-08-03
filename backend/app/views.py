@@ -16,6 +16,7 @@ from app.resources.SearchEndpoint import SearchEndpoint
 from app.resources.SessionEndpoint import SessionEndpoint
 from app.resources.TypeEndpoint import TypeEndpoint, TypeListEndpoint
 from app.resources.UserEndpoint import UserEndpoint, UserListEndpoint
+from app.resources.FavoriteEndpoint import UserFavoriteEndpoint, FavoriteEndpoint, FavoriteListEndpoint
 
 
 class IThrivApi(flask_restful.Api):
@@ -35,6 +36,7 @@ app.register_blueprint(auth_blueprint)
 parser = flask_restful.reqparse.RequestParser()
 parser.add_argument('resource')
 
+
 @app.route('/', methods=['GET'])
 def root():
     _links = {"_links": {
@@ -46,6 +48,7 @@ def root():
         "auth": url_for("auth.password_login"),
     }}
     return jsonify(_links)
+
 
 api.add_resource(ResourceListEndpoint, '/resource')
 api.add_resource(ResourceEndpoint, '/resource/<id>')
@@ -68,3 +71,6 @@ api.add_resource(IconEndpoint, '/icon/<id>')
 api.add_resource(UserListEndpoint, '/user')
 api.add_resource(UserEndpoint, '/user/<id>')
 api.add_resource(SessionEndpoint, '/session')
+api.add_resource(FavoriteListEndpoint, '/favorite')
+api.add_resource(FavoriteEndpoint, '/favorite/<id>')
+api.add_resource(UserFavoriteEndpoint, '/user/<user_id>/favorite')

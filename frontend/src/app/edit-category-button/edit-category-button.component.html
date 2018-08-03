@@ -1,3 +1,5 @@
-<button mat-mini-fab color="accent" (click)="openEdit()" aria-label="Edit Category">
-  <mat-icon>edit</mat-icon>
-</button>
+<div *ngIf="getSession()">
+  <button mat-mini-fab color="accent" (click)="openEdit()" aria-label="Edit Category">
+    <mat-icon>edit</mat-icon>
+  </button>
+</div>
