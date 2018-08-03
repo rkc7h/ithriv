@@ -49,7 +49,7 @@ class TestCase(unittest.TestCase):
         return ''.join(random.sample(char_set * 6, 6))
 
     def test_base_endpoint(self):
-        rv = self.app.get('/api',
+        rv = self.app.get('/',
                           follow_redirects=True,
                           content_type="application/json")
         self.assertSuccess(rv)
@@ -410,6 +410,7 @@ class TestCase(unittest.TestCase):
         resource = self.construct_resource(type="hgttg", description="There is a theory which states that if ever anyone discovers exactly what the Universe is for and why it is here, it will instantly disappear and be replaced by something even more bizarre and inexplicable. There is another theory which states that this has already happened.")
         self.index_resource(resource)
         data = {'query': '', 'filters': [{'field': 'Type', 'value': 'hgttg'}]}
+
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
 
@@ -728,8 +729,8 @@ class TestCase(unittest.TestCase):
         r1 = self.construct_resource(name="Birdseed sale at Hooper's")
         r2 = self.construct_resource(name="Slimy the worm's flying school")
         r3 = self.construct_resource(name="Oscar's Trash Orchestra")
-        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email_address="oscar@sesamestreet.com")
-        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email_address="bigbird@sesamestreet.com")
+        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
 
         db.session.commit()
 
@@ -878,7 +879,7 @@ class TestCase(unittest.TestCase):
             headers = {'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
         else:
             uid = user.uid
-            headers = {'uid': user.id, 'givenName': user.display_name, 'mail': user.email_address}
+            headers = {'uid': user.id, 'givenName': user.display_name, 'mail': user.email}
 
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
@@ -886,16 +887,47 @@ class TestCase(unittest.TestCase):
 
         return dict(Authorization='Bearer ' + participant.encode_auth_token().decode())
 
+    def test_create_user_with_password(self):
+        data = {
+            "display_name": "Peter Dinklage",
+            "uid": "pad123",
+            "email": "tyrion@got.com",
+        }
+        rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
+                           content_type="application/json")
+        self.assertSuccess(rv)
+        user = User.query.filter_by(uid=data["uid"]).first()
+        user.password = "peterpass"
+        db.session.add(user)
+        db.session.commit()
+
+        rv = self.app.get('/api/user/%i' % user.id, content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual("Peter Dinklage", response["display_name"])
+        self.assertEqual("tyrion@got.com", response["email"])
+        self.assertEqual(True, user.is_correct_password("peterpass"))
+
+    def test_login_user(self):
+        self.test_create_user_with_password()
+        data = {
+            "email": "tyrion@got.com",
+            "password": "peterpass"
+        }
+        rv = self.app.post('/api/password_login', data=json.dumps(data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertIsNotNone(response["token"])
+
     def add_test_user(self):
         data = {
             "display_name": "Peter Dinklage",
             "uid": "pad123" + self.randomString(),
-            "email_address": "tyrion@got.com",
+            "email": "tyrion@got.com",
             "created": "2017-08-28T16:09:00.000Z"
         }
         rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
                            content_type="application/json", headers=self.logged_in_headers())
-        self.assert_success(rv)
+        self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
 
     def test_get_current_participant(self):

@@ -131,8 +131,11 @@ class DataLoader:
             next(reader, None)  # use headers to set availability
 
             for row in reader:
-                user = User(id=row[0], uid=row[1], email_address=row[2], display_name=row[3])
+                user = User(id=row[0], uid=row[1], email=row[2], display_name=row[3], password=row[4])
                 db.session.add(user)
+            db.session.commit()
+            db.session.execute("SELECT setval('ithriv_user_id_seq', "
+                               "COALESCE((SELECT MAX(id) + 1 FROM ithriv_user), 1), false);")
             db.session.commit()
             print("There are now %i users in the database." %
                   db.session.query(User).count())

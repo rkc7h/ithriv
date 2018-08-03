@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { CategoryResource } from '../category-resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { User } from '../user';
 
 @Component({
   selector: 'app-category',
@@ -15,6 +16,7 @@ export class CategoryComponent implements OnInit {
   category: Category;
   categoryResources: CategoryResource[];
   isDataLoaded = false;
+  user: User;
 
   constructor(
     private router: Router,
@@ -27,6 +29,8 @@ export class CategoryComponent implements OnInit {
       this.categoryId = params['category'];
       this.loadCategory(this.categoryId);
     });
+
+    this.loadUser();
   }
 
   loadCategory(categoryId: Number) {
@@ -51,15 +55,45 @@ export class CategoryComponent implements OnInit {
     );
   }
 
-  resources() {
-    const resources = [];
-    for (const categoryResource of this.categoryResources) {
-      resources.push(categoryResource.resource);
-    }
-    return resources;
+  loadUser() {
+    this.api._getSession().subscribe(s => {
+      this.user = s;
+      this.user.institution_id = 1;
+    });
+  }
+
+  getResources(institutionId?: number) {
+    return this.categoryResources.filter(cr => {
+      const isApproved = this.user ? true : cr.resource.approved;
+
+      if (Number.isFinite(institutionId)) {
+        return isApproved && cr.resource.availabilities.some(av => {
+          return (av.institution_id === institutionId) && av.available;
+        });
+      } else {
+        return isApproved;
+      }
+    }).map(cr => cr.resource);
+  }
+
+  // Returns current user's name, or "public" if user is not logged in.
+  getUserName() {
+    return this.user ? this.user.display_name : 'the public';
+  }
+
+  // Returns current user's institution_id, or Public institution_id
+  // if user is not logged in.
+  getInstitutionId() {
+    return this.user ? this.user.institution_id : 2;
   }
 
   ngOnInit() {
   }
 
+  goMode($event, category: Category) {
+    $event.preventDefault();
+    this.router.navigate(['browse', category.id])
+    console.log('Go to the category page');
+    console.log('category:', category);
+  }
 }
