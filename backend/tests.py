@@ -756,25 +756,6 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(3, len(response))
 
-    def test_user_favorite_resource(self):
-        user = self.test_get_current_participant()
-        r = self.construct_resource()
-
-        favorite_data = {"resource_id": r.id, "user_id": user['id']}
-
-        # Get resource, not yet a user favorite
-        response = self.app.get('api/resource/%i' % r.id, headers=self.logged_in_headers())
-        resource = json.loads(response.get_data(as_text=True))
-        self.assertEqual(False, resource['user_favorite'])
-
-        # Create the favorite
-        rv = self.app.post('/api/favorite', data=json.dumps(favorite_data), content_type="application/json")
-
-        # Get resource, now marked as user favorite
-        response = self.app.get('api/resource/%i' % r.id, headers=self.logged_in_headers())
-        resource = json.loads(response.get_data(as_text=True))
-        self.assertEqual(True, resource['user_favorite'])
-
     def test_create_category(self):
         c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!",
              "color": "#000", "brief_description":"Funky Bowls!", "image":"image.png"}
