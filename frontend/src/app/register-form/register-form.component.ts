@@ -95,10 +95,6 @@ export class RegisterFormComponent implements OnInit {
     }
   }
 
-  // onSubmit() {
-  //   window.location.href = this.login_url;
-  // }
-
   onSubmit() {
     this.validate();
 
