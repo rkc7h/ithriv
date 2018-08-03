@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import {Component, EventEmitter, HostBinding, OnInit} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
@@ -20,7 +20,7 @@ export class LoginFormComponent implements OnInit {
   login_url = environment.api + '/api/login';
   password_url = environment.api + '/api/password_login';
   loginServices: LoginService[] = [];
-  error: string;
+  errorEmitter = new EventEmitter<string>();
   errorMatcher = new ErrorMatcher();
   loginForm: FormGroup = new FormGroup({});
   fields = {
@@ -108,7 +108,18 @@ export class LoginFormComponent implements OnInit {
   }
 
   onSubmit() {
-    this.api.loginUser(email_address: , password: , user: )
+    this.api.login(this.fields['email'].formControl.value,
+                    this.fields['password'].formControl.value).subscribe(token => {
+       this.api.openSession(token['token']);
+       this.router.navigate(['']);
+    }, error1 => {
+      this.errorEmitter.emit(error1);
+    });
+  }
+
+  goHome() {
+    // Return to the home page once we successfully log in.
+    console.log("Does this send me home?")
   }
 
   onCancel() {

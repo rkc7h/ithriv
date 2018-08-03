@@ -5,8 +5,7 @@
       <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
         [field]="field" [formGroup]="registerForm" [errorMatcher]="errorMatcher"></app-form-field>
 
-      <div id="error_message" class="display mat-error" *ngIf="error">{{error}}</div>
-
+      <div id="error_message" class="display mat-error">{{errorEmitter | async}}</div>
       <footer>
         <button type="button" color="primary" mat-raised-button (click)="onSubmit()">Next</button>
       </footer>

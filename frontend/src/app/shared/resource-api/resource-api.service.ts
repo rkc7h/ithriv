@@ -57,12 +57,21 @@ export class ResourceApiService {
     }
   }
 
-  openSession(token: string, callback: Function) {
+  openSession(token: string, callback?: Function) {
     localStorage.setItem('token', token);
     this._getSession().subscribe(s => {
       this.session = s;
-      callback(this.session);
+      if (callback) {
+        callback(this.session);
+      }
     });
+  }
+
+  /** loginUser - An alternative to single sign on, allow users to log into the system with a user name and password. */
+  login(email: string, password): Observable<any> {
+    const options = { email: email, password: password };
+    return this.httpClient.post(this.apiRoot + this.endpoints.password_login, options)
+      .pipe(catchError(this.handleError));
   }
 
   closeSession(callback: Function) {
@@ -238,13 +247,7 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
-  /** loginUser */
-  loginUser(email_address: string, password: string): Observable<User> {
-    const options = { user_email: email_address, password: password };
-    const response = this.httpClient.post(this.apiRoot + this.endpoints.password_login, options)
-      .pipe(catchError(this.handleError));
-    localStorage.setItem('token', response["token"]);
-    return this.httpClient.get<User>(this.apiRoot + user._links.self, user)
-      .pipe(catchError(this.handleError));
-  }
+
+
+
 }

@@ -12,6 +12,8 @@ class RestException(Exception):
     TOKEN_INVALID = {'code': 'token_invalid', 'message': 'Please log in again.'}
     TOKEN_EXPIRED = {'code': 'token_expired', 'message': 'Your session timed out.  Please log in again.'}
     TOKEN_MISSING = {'code': 'token_missing', 'message': 'Your are not logged in.'}
+    LOGIN_FAILURE = {'code': 'login_failure', 'message': 'The credentials you supplied are incorrect.'}
+    EMAIL_EXISTS = {'code': 'duplicate_email', 'message': 'The email you provided is already in use.'}
 
     def __init__(self, payload, status_code=None, details=None):
         Exception.__init__(self)

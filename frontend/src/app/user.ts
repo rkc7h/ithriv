@@ -1,9 +1,9 @@
-import {Links} from "./links";
+import {Links} from './links';
 
 export interface User {
   id: number;
-  name: string;
-  email_address: string;
+  uid?: string;
+  email: string;
   display_name: string;
   password: string;
   _links?: Links;

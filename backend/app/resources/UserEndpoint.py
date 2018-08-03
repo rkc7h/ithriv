@@ -1,6 +1,8 @@
 import flask_restful
 from flask import request
 from marshmallow import ValidationError
+from sqlalchemy import exists
+from sqlalchemy.exc import IntegrityError
 
 from app import RestException, db
 from app.model.user import User
@@ -43,10 +45,17 @@ class UserListEndpoint(flask_restful.Resource):
     def post(self):
         request_data = request.get_json()
         try:
-            load_result = self.userSchema.load(request_data).data
+            load_result, errors = self.userSchema.load(request_data)
+            if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
+            email_exists = db.session.query(exists().where(User.email == load_result.email)).scalar()
+            if email_exists:
+                raise RestException(RestException.EMAIL_EXISTS)
             db.session.add(load_result)
             db.session.commit()
             return self.userSchema.dump(load_result)
+        except IntegrityError as ie:
+            raise RestException(RestException.INVALID_OBJECT)
         except ValidationError as err:
             raise RestException(RestException.INVALID_OBJECT,
                                 details=load_result.errors)
+

@@ -42,7 +42,7 @@ class TestCase(unittest.TestCase):
                         (rv.status_code, json.dumps(data)))
 
     def test_base_endpoint(self):
-        rv = self.app.get('/api',
+        rv = self.app.get('/',
                           follow_redirects=True,
                           content_type="application/json")
         self.assertSuccess(rv)
@@ -405,7 +405,8 @@ class TestCase(unittest.TestCase):
     def test_search_filters(self):
         resource = self.construct_resource(type="hgttg", description="There is a theory which states that if ever anyone discovers exactly what the Universe is for and why it is here, it will instantly disappear and be replaced by something even more bizarre and inexplicable. There is another theory which states that this has already happened.")
         self.index_resource(resource)
-        data = {'query': '', 'filters': [{'field': 'type', 'value': 'hgttg'}]}
+        data = {'query': '', 'filters': [{'field': 'Type', 'value': 'hgttg'}]}
+
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
 
@@ -824,7 +825,7 @@ class TestCase(unittest.TestCase):
             headers = {'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
         else:
             uid = user.uid
-            headers = {'uid': user.id, 'givenName': user.display_name, 'mail': user.email_address}
+            headers = {'uid': user.id, 'givenName': user.display_name, 'mail': user.email}
 
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
@@ -836,7 +837,7 @@ class TestCase(unittest.TestCase):
         data = {
             "display_name": "Peter Dinklage",
             "uid": "pad123",
-            "email_address": "tyrion@got.com",
+            "email": "tyrion@got.com",
         }
         rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
                            content_type="application/json")
@@ -849,25 +850,25 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/user/%i' % user.id, content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual("Peter Dinklage", response["display_name"])
-        self.assertEqual("tyrion@got.com", response["email_address"])
+        self.assertEqual("tyrion@got.com", response["email"])
         self.assertEqual(True, user.is_correct_password("peterpass"))
 
     def test_login_user(self):
         self.test_create_user_with_password()
         data = {
-            "email_address": "tyrion@got.com",
+            "email": "tyrion@got.com",
             "password": "peterpass"
         }
-        rv = self.app.post('/api/password_login', data=json.dumps(data), content_type="application/json")
+        rv = self.app.post('/auth/password_login', data=json.dumps(data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertIsNotNone(response["auth_token"])
+        self.assertIsNotNone(response["token"])
 
     def add_test_user(self):
         data = {
             "display_name": "Peter Dinklage",
             "uid": "pad123" + self.randomString(),
-            "email_address": "tyrion@got.com",
+            "email": "tyrion@got.com",
             "created": "2017-08-28T16:09:00.000Z"
         }
         rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
