@@ -11,11 +11,10 @@
   <mat-card-content>
     {{resource.description}}
   </mat-card-content>
-  <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
   <mat-card-actions>
     <div class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="center" fxLayoutGap="10px" fxLayoutGap.xs="0">
       <img src="/assets/institutions/{{resource.institution.name}}.png" />
     </div>
   </mat-card-actions>
-
+  <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
 </mat-card>
