@@ -41,6 +41,8 @@ export class ResourceApiService {
     resourceCategory: '/api/resource_category/<id>',
     iconList: '/api/icon',
     icon: '/api/icon/<id>',
+    userList: '/api/user',
+    password_login: '/api/password_login',
     session: '/api/session'
   };
 
@@ -55,12 +57,21 @@ export class ResourceApiService {
     }
   }
 
-  openSession(token: string, callback: Function) {
+  openSession(token: string, callback?: Function) {
     localStorage.setItem('token', token);
     this._getSession().subscribe(s => {
       this.session = s;
-      callback(this.session);
+      if (callback) {
+        callback(this.session);
+      }
     });
+  }
+
+  /** loginUser - An alternative to single sign on, allow users to log into the system with a user name and password. */
+  login(email: string, password): Observable<any> {
+    const options = { email: email, password: password };
+    return this.httpClient.post(this.apiRoot + this.endpoints.password_login, options)
+      .pipe(catchError(this.handleError));
   }
 
   closeSession(callback: Function) {
@@ -217,4 +228,26 @@ export class ResourceApiService {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
       .pipe(catchError(this.handleError));
   }
+
+  /** updateUser */
+  updateUser(user: User): Observable<User> {
+    return this.httpClient.put<User>(this.apiRoot + user._links.self, user)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** addUser */
+  addUser(user: User): Observable<User> {
+    return this.httpClient.post<User>(this.apiRoot + this.endpoints.userList, user)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** deleteUser */
+  deleteUser(user: User): Observable<any> {
+    return this.httpClient.delete<User>(this.apiRoot + user._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+
+
+
 }

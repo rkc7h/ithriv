@@ -8,9 +8,11 @@
 .resource {
   border-top: 4px solid mat-color($uva-accent, 500);
   min-height: 240px;
-  min-width: 320px;
+  width: 400px;
+  min-width: 400px;
   max-width: 400px;
-  margin: 10px;
+  margin: 0px;
+  padding: 1em;
 }
 
 mat-card {

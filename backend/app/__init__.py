@@ -8,6 +8,7 @@ import os
 import signal
 from flask_marshmallow import Marshmallow
 from flask_sso import SSO
+from flask_bcrypt import Bcrypt
 
 from app.elastic_index import ElasticIndex
 from app.file_server import FileServer
@@ -49,6 +50,9 @@ sso = SSO(app=app)
 
 # Token Authentication
 auth = HTTPTokenAuth('Bearer')
+
+# Password Encryption
+bcrypt = Bcrypt(app)
 
 @app.cli.command()
 def stop():

@@ -8,6 +8,7 @@ import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { Filter, ResourceQuery } from '../resource-query';
 import { routerTransition } from '../shared/router.animations';
+import { User } from '../user';
 
 @Component({
   selector: 'app-search',
@@ -26,19 +27,21 @@ export class SearchComponent implements OnInit {
   loading = false;
   resources: Resource[];
   categories: Category[];
+  user: User;
 
   @ViewChild('sidenav') public sideNav: MatSidenav;
 
   constructor(
-    private resourceService: ResourceApiService,
+    private api: ResourceApiService,
     private router: Router,
     private route: ActivatedRoute,
     private renderer: Renderer2
   ) {
+    this.loadUser();
     this.resources = [];
     this.categories = [];
 
-    this.resourceService.getCategories().subscribe(
+    this.api.getCategories().subscribe(
       (categories) => {
         this.categories = categories;
       }
@@ -78,6 +81,13 @@ export class SearchComponent implements OnInit {
       });
   }
 
+  loadUser() {
+    this.api._getSession().subscribe(s => {
+      this.user = s;
+      this.user.institution_id = 1;
+    });
+  }
+
   goSearch($event) {
     $event.preventDefault();
     this.router.navigate(['search']);
@@ -90,7 +100,7 @@ export class SearchComponent implements OnInit {
   }
 
   doSearch() {
-    this.resourceService.searchResources(this.resourceQuery).subscribe(
+    this.api.searchResources(this.resourceQuery).subscribe(
       (query) => {
         console.log('Searching ...', query);
         this.resourceQuery = query;
@@ -114,7 +124,7 @@ export class SearchComponent implements OnInit {
     this.loading = true;
     const scrollSearch = this.resourceQuery;
     scrollSearch.start = this.resources.length;
-    this.resourceService.searchResources(scrollSearch).subscribe(
+    this.api.searchResources(scrollSearch).subscribe(
       (query) => {
         this.resources = this.resources.concat(query.resources);
         this.loading = false;
@@ -139,4 +149,28 @@ export class SearchComponent implements OnInit {
     this.doSearch();
   }
 
+  getResources(institutionId?: number) {
+    return this.resources.filter(r => {
+      const isApproved = this.user ? true : r.approved;
+
+      if (Number.isFinite(institutionId)) {
+        return isApproved && r.availabilities.some(av => {
+          return (av.institution_id === institutionId) && av.available;
+        });
+      } else {
+        return isApproved;
+      }
+    });
+  }
+
+  // Returns current user's name, or "public" if user is not logged in.
+  getUserName() {
+    return this.user ? this.user.display_name : 'the public';
+  }
+
+  // Returns current user's institution_id, or Public institution_id
+  // if user is not logged in.
+  getInstitutionId() {
+    return this.user ? this.user.institution_id : 2;
+  }
 }
