@@ -7,5 +7,6 @@ export interface Links {
   resource?: string;
   resources?: string;
   availability?: string;
+  favorites?: string;
   self: string;
 }

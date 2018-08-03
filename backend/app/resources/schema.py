@@ -206,5 +206,8 @@ class SearchSchema(ma.Schema):
 class UserSchema(ModelSchema):
     class Meta:
         model = User
-        fields = ('id', 'uid', 'display_name', 'email_address')
-
+        fields = ('id', 'uid', 'display_name', 'email_address', '_links')
+    _links = ma.Hyperlinks({
+        'self': ma.URLFor('userendpoint', id='<id>'),
+        'favorites': ma.UrlFor('userfavoriteendpoint', user_id='<id>')
+    })
