@@ -103,10 +103,6 @@ export class LoginFormComponent implements OnInit {
     this.router.navigate(['forgot_password']);
   }
 
-  goRegister() {
-    this.router.navigate(['register']);
-  }
-
   onSubmit() {
     this.api.login(this.fields['email'].formControl.value,
                     this.fields['password'].formControl.value).subscribe(token => {
@@ -115,11 +111,6 @@ export class LoginFormComponent implements OnInit {
     }, error1 => {
       this.errorEmitter.emit(error1);
     });
-  }
-
-  goHome() {
-    // Return to the home page once we successfully log in.
-    console.log("Does this send me home?")
   }
 
   onCancel() {
