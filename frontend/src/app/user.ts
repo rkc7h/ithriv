@@ -6,6 +6,6 @@ export interface User {
   email: string;
   display_name: string;
   password: string;
-  institution_id?zz: number;
+  institution_id?: number;
   _links?: Links;
 }
