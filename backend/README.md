@@ -173,6 +173,13 @@ flask initdb
 flask initindex
 ```
 
+### Migration Conflicts
+If you find yourself with conflicting migrations, it might be appropriate to resolve with a merge:
+```bash
+flask db merge -m "merge cc4610a6ece3 and 2679ef53e0bd" cc4610a6ece3 2679ef53e0bd
+```
+This will auto-generate a new migration that ties the streams together.
+
 ## Best Practices
 There are a few things I hope to do consistently for this project, to avoid some pitfalls from the [Cadre Academy site](https://education.cadre.virginia.edu/#/home).  When adding code please follow these guidelines:
 
