@@ -5,13 +5,9 @@ import quopri
 import re
 
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
-<<<<<<< Updated upstream
 import random
 import string
-=======
-
 from app.email_service import TEST_MESSAGES
->>>>>>> Stashed changes
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema, IconSchema
@@ -24,11 +20,7 @@ from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
 from app.model.icon import Icon
 from app.model.user import User
-<<<<<<< Updated upstream
-from app.model.favorite import Favorite
-=======
 from app.model.email_log import EmailLog
->>>>>>> Stashed changes
 from app import app, db, elastic_index
 
 
@@ -918,6 +910,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual("Peter Dinklage", response["display_name"])
         self.assertEqual("tyrion@got.com", response["email"])
         self.assertEqual(True, user.is_correct_password("peterpass"))
+        return user;
 
     def test_login_user(self):
         self.test_create_user_with_password()
@@ -950,6 +943,14 @@ class TestCase(unittest.TestCase):
 
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
+
+    def test_confirm_email(self):
+        user = self.test_create_user_with_password()
+        self.assertFalse(user.email_verified)
+        self.assertEqual("iThriv: Confirm Email", self.decode(TEST_MESSAGES[-1]['subject']))
+
+
+
 
 
     def test_get_current_participant(self):

@@ -1,5 +1,7 @@
 # Login
 # *****************************
+from itsdangerous import URLSafeTimedSerializer
+
 from app import sso, app, RestException, db, auth
 from app.model.user import User
 from flask import jsonify, redirect, g, request, Blueprint
@@ -31,6 +33,26 @@ def login(user_info):
     response_url = ("%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
     return redirect(response_url)
 
+
+# ourapp/views.py
+
+@auth_blueprint.route('/confirm/<token>')
+def confirm_email(token):
+    """When users create a new account with an email and a password, this
+    allows the front end ot confirm their email and log them into the system."""
+    try:
+        ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+        email = ts.loads(token, salt="email-confirm-key", max_age=86400)
+    except:
+        raise RestException(RestException.TOKEN_INVALID)
+
+    user = User.query.filter_by(email=email).first_or_404()
+    user.email_confirmed = True
+    db.session.add(user)
+    db.session.commit()
+
+    auth_token = user.encode_auth_token().decode()
+    return jsonify({"token": auth_token})
 
 @auth_blueprint.route('/password_login', methods=["GET", "POST"])
 def password_login():
