@@ -10,8 +10,6 @@ import { ResourceCategory } from '../resource-category';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
 import { ValidateUrl } from '../shared/validators/url.validator';
-import { getRandomString } from '../../../node_modules/@types/selenium-webdriver/safari';
-import { FormSelectOption } from '../form-select-option';
 import {Availability} from '../availability';
 
 @Component({
