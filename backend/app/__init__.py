@@ -11,6 +11,7 @@ from flask_sso import SSO
 from flask_bcrypt import Bcrypt
 
 from app.elastic_index import ElasticIndex
+from app.email_service import EmailService
 from app.file_server import FileServer
 from app.rest_exception import RestException
 
@@ -44,6 +45,9 @@ elastic_index = ElasticIndex(app)
 
 # file Server
 file_server = FileServer(app)
+
+# email service
+email_service = EmailService(app)
 
 # Single Signon
 sso = SSO(app=app)

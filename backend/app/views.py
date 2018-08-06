@@ -14,6 +14,7 @@ from app.resources.AvailabilityEndpoint import AvailabilityEndpoint, Availabilit
 from app.resources.InstitutionEndpoint import InstitutionEndpoint, InstitutionListEndpoint
 from app.resources.SearchEndpoint import SearchEndpoint
 from app.resources.SessionEndpoint import SessionEndpoint
+from app.resources.Tracking import tracking_blueprint
 from app.resources.TypeEndpoint import TypeEndpoint, TypeListEndpoint
 from app.resources.UserEndpoint import UserEndpoint, UserListEndpoint
 from app.resources.FavoriteEndpoint import UserFavoriteEndpoint, FavoriteEndpoint, FavoriteListEndpoint
@@ -32,6 +33,7 @@ api_blueprint = Blueprint("api", __name__, url_prefix='/api')
 api = IThrivApi(api_blueprint)
 app.register_blueprint(api_blueprint)
 app.register_blueprint(auth_blueprint)
+app.register_blueprint(tracking_blueprint)
 
 parser = flask_restful.reqparse.RequestParser()
 parser.add_argument('resource')

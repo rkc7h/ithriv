@@ -39,5 +39,16 @@ SSO_ATTRIBUTE_MAP = {
     'title': (False, 'title')  # SOFTWARE ENGINEER V
 }
 
-FRONTEND_AUTH_CALLBACK = "http://localhost:4200/#/session"
+API_URL = "http://localhost:5000"
+SITE_URL = "http://localhost:4200"
+FRONTEND_AUTH_CALLBACK = SITE_URL + "/#/session"
 SSO_LOGIN_URL = '/api/login'
+
+MAIL_SERVER = 'smtp.mailtrap.io'
+MAIL_PORT = 25
+MAIL_USE_SSL = False
+MAIL_USE_TLS = False
+MAIL_USERNAME = "284248fc83dd0e"
+MAIL_PASSWORD = "2c1d39b870718a"
+MAIL_DEFAULT_SENDER='daniel.h.funk@gmail.com'
+MAIL_DEFAULT_USER='daniel.h.funk@gmail.com'

@@ -4,7 +4,8 @@ from marshmallow import ValidationError
 from sqlalchemy import exists
 from sqlalchemy.exc import IntegrityError
 
-from app import RestException, db
+from app import RestException, db, email_service
+from app.model.email_log import EmailLog
 from app.model.user import User
 from app.resources.schema import UserSchema
 
@@ -45,17 +46,24 @@ class UserListEndpoint(flask_restful.Resource):
     def post(self):
         request_data = request.get_json()
         try:
-            load_result, errors = self.userSchema.load(request_data)
+            new_user, errors = self.userSchema.load(request_data)
             if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
-            email_exists = db.session.query(exists().where(User.email == load_result.email)).scalar()
+            email_exists = db.session.query(exists().where(User.email == new_user.email)).scalar()
             if email_exists:
                 raise RestException(RestException.EMAIL_EXISTS)
-            db.session.add(load_result)
+            db.session.add(new_user)
             db.session.commit()
-            return self.userSchema.dump(load_result)
+            self.send_confirm_email(new_user);
+            email_service.confirm_email(new_user)
+            return self.userSchema.dump(new_user)
         except IntegrityError as ie:
             raise RestException(RestException.INVALID_OBJECT)
         except ValidationError as err:
             raise RestException(RestException.INVALID_OBJECT,
-                                details=load_result.errors)
+                                details=new_user.errors)
 
+    def send_confirm_email(self, user):
+        tracking_code = email_service.confirm_email(user);
+        log = EmailLog(user_id=user.id, type="confirm_email", tracking_code=tracking_code)
+        db.session.add(log)
+        db.session.commit()

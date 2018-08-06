@@ -1,9 +1,17 @@
 # Set enivoronment variable to testing before loading.
 import os
 # IMPORTANT - Environment must be loaded before app, models, etc....
+import quopri
+import re
+
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
+<<<<<<< Updated upstream
 import random
 import string
+=======
+
+from app.email_service import TEST_MESSAGES
+>>>>>>> Stashed changes
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema, IconSchema
@@ -16,7 +24,11 @@ from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
 from app.model.icon import Icon
 from app.model.user import User
+<<<<<<< Updated upstream
 from app.model.favorite import Favorite
+=======
+from app.model.email_log import EmailLog
+>>>>>>> Stashed changes
 from app import app, db, elastic_index
 
 
@@ -918,17 +930,27 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertIsNotNone(response["token"])
 
-    def add_test_user(self):
-        data = {
-            "display_name": "Peter Dinklage",
-            "uid": "pad123" + self.randomString(),
-            "email": "tyrion@got.com",
-            "created": "2017-08-28T16:09:00.000Z"
-        }
-        rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
-                           content_type="application/json", headers=self.logged_in_headers())
-        self.assertSuccess(rv)
-        return json.loads(rv.get_data(as_text=True))
+    def decode(self, encoded_words):
+        """Useful for checking the content of email messages (which we store in an array for testing"""
+        encoded_word_regex = r'=\?{1}(.+)\?{1}([b|q])\?{1}(.+)\?{1}='
+        charset, encoding, encoded_text = re.match(encoded_word_regex, encoded_words).groups()
+        if encoding is 'b':
+            byte_string = base64.b64decode(encoded_text)
+        elif encoding is 'q':
+            byte_string = quopri.decodestring(encoded_text)
+        text = byte_string.decode(charset)
+        text = text.replace("_", " ")
+        return text
+
+    def test_register_sends_email(self):
+        message_count = len(TEST_MESSAGES)
+        self.test_create_user_with_password()
+        self.assertGreater(len(TEST_MESSAGES), message_count)
+        self.assertEqual("iThriv: Confirm Email", self.decode(TEST_MESSAGES[-1]['subject']))
+
+        logs = EmailLog.query.all()
+        self.assertIsNotNone(logs[-1].tracking_code)
+
 
     def test_get_current_participant(self):
         """ Test for the current participant status """
