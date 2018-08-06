@@ -3,7 +3,7 @@ class RestException(Exception):
     NOT_FOUND = {'code': 'not_found', 'message': 'Unknown path.', 'status_code':404}
     TOKEN_INVALID = {'code': 'token_invalid', 'message': 'Please log in again.'}
     TOKEN_EXPIRED = {'code': 'token_expired', 'message': 'Your session timed out.  Please log in again.'}
-    TOKEN_MISSING = {'code': 'token_missing', 'message': 'Your are not logged in.'}
+    TOKEN_MISSING = {'code': 'token_missing', 'message': 'You\'re are not logged in.'}
     ELASTIC_ERROR = {'code': 'elastic_error', 'message':"Error connecting to ElasticSearch."}
     NOT_YOUR_ACCOUNT = {'code': 'permission_denied', 'message': 'You may not edit another users account.'}
     PERMISSON_DENIED = {'code': 'permission_denied', 'message': 'You are not authorized to make this call.'}
