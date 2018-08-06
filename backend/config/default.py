@@ -42,6 +42,7 @@ SSO_ATTRIBUTE_MAP = {
 API_URL = "http://localhost:5000"
 SITE_URL = "http://localhost:4200"
 FRONTEND_AUTH_CALLBACK = SITE_URL + "/#/session"
+FRONTEND_EMAIL_CONFIRM = SITE_URL + "/#/confirm/"
 SSO_LOGIN_URL = '/api/login'
 
 MAIL_SERVER = 'smtp.mailtrap.io'

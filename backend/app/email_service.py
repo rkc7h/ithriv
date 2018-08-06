@@ -81,7 +81,7 @@ class EmailService():
         tracking_code = self.tracking_code()
 
         subject = "iThriv: Confirm Email"
-        confirm_url = url_for('auth.confirm_email', token=token, _external=True)
+        confirm_url = self.app.config['FRONTEND_EMAIL_CONFIRM'] + token
         logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
         text_body = render_template("confirm_email.txt",
                                     user=user, confirm_url=confirm_url,
