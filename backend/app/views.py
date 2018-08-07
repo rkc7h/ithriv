@@ -47,7 +47,7 @@ def root():
         "institutions": url_for("api.institutionlistendpoint"),
         "types": url_for("api.typelistendpoint"),
         "search": url_for("api.searchendpoint"),
-        "auth": url_for("auth.password_login"),
+        "auth": url_for("auth.login_password"),
     }}
     return jsonify(_links)
 

@@ -36,13 +36,13 @@ def login(user_info):
 
 # ourapp/views.py
 
-@auth_blueprint.route('/confirm/<token>')
-def confirm_email(token):
+@auth_blueprint.route('/confirm/<email_token>')
+def confirm_email(email_token):
     """When users create a new account with an email and a password, this
     allows the front end ot confirm their email and log them into the system."""
     try:
         ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
-        email = ts.loads(token, salt="email-confirm-key", max_age=86400)
+        email = ts.loads(email_token, salt="email-confirm-key", max_age=86400)
     except:
         raise RestException(RestException.TOKEN_INVALID)
 
@@ -54,8 +54,8 @@ def confirm_email(token):
     auth_token = user.encode_auth_token().decode()
     return jsonify({"token": auth_token})
 
-@auth_blueprint.route('/password_login', methods=["GET", "POST"])
-def password_login():
+@auth_blueprint.route('/login_password', methods=["GET", "POST"])
+def login_password():
     request_data = request.get_json()
     email = request_data['email']
     user = User.query.filter_by(email=email).first()

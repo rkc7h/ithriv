@@ -918,7 +918,7 @@ class TestCase(unittest.TestCase):
             "email": "tyrion@got.com",
             "password": "peterpass"
         }
-        rv = self.app.post('/api/password_login', data=json.dumps(data), content_type="application/json")
+        rv = self.app.post('/api/login_password', data=json.dumps(data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertIsNotNone(response["token"])
