@@ -100,6 +100,7 @@ def reset_password():
         raise RestException(RestException.TOKEN_INVALID)
 
     user = User.query.filter_by(email=email).first_or_404()
+    user.email_confirmed = True
     user.password = password
     db.session.add(user)
     db.session.commit()
