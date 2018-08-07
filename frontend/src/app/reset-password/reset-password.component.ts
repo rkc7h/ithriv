@@ -12,7 +12,7 @@ import {IThrivForm} from '../shared/IThrivForm';
 })
 export class ResetPasswordComponent {
 
-  token: String;
+  token: string;
   passwordForm: FormGroup = new FormGroup({});
   formState = 'form';
   errorMessage = '';
@@ -57,13 +57,17 @@ export class ResetPasswordComponent {
     this.errorMessage = '';
 
     this.api.resetPassword(this.fields.password.formControl.value,
-                            this.token).subscribe(u => {
+                            this.token).subscribe(auth_token => {
       this.formState = 'complete';
       this.changeDetectorRef.detectChanges();
+      this.api.openSession(auth_token['token']);
+      this.router.navigate(['']);
+      console.log("We are all done!")
     }, error1 => {
       this.formState = 'form';
       this.errorMessage = error1;
       this.changeDetectorRef.detectChanges();
+      console.log("We had a terrible terrible error!")
     });
   }
 

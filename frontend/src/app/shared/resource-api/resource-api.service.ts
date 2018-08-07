@@ -281,9 +281,9 @@ export class ResourceApiService {
   }
 
   /** Reset password */
-  resetPassword(newPassword: String, token: String): Observable<any> {
-    const reset = {password: newPassword, token: token};
-    return this.httpClient.post<any>(this.apiRoot + this.endpoints.reset_password, reset)
+  resetPassword(newPassword: string, email_token: string): Observable<string> {
+    const reset = {password: newPassword, email_token: email_token};
+    return this.httpClient.post<string>(this.apiRoot + this.endpoints.reset_password, reset)
       .pipe(catchError(this.handleError));
   }
 
