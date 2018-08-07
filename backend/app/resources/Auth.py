@@ -87,6 +87,26 @@ def forgot_password():
     db.session.commit()
 
 
+@auth_blueprint.route('/reset_password', methods=["GET", "POST"])
+def login_password():
+    request_data = request.get_json()
+    password = request_data['password']
+    email_token = request_data['email_token']
+    try:
+        ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+        email = ts.loads(email_token, salt="email-reset-key", max_age=86400)
+    except:
+        raise RestException(RestException.TOKEN_INVALID)
+
+    user = User.query.filter_by(email=email).first_or_404()
+    user.password = password
+    db.session.add(user)
+    db.session.commit()
+
+    auth_token = user.encode_auth_token().decode()
+    return jsonify({"token": auth_token})
+
+
 @auth.verify_token
 def verify_token(token):
     try:
