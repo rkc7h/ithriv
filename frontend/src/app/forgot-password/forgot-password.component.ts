@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
+import {ResourceApiService} from '../shared/resource-api/resource-api.service';
+import {IThrivForm} from '../shared/IThrivForm';
 
 @Component({
   selector: 'app-forgot-password',
@@ -12,9 +14,10 @@ import { FormField } from '../form-field';
 })
 export class ForgotPasswordComponent implements OnInit {
   login_url = environment.api + '/api/login';
-  error: string;
+  errorMessage: string;
   errorMatcher = new ErrorMatcher();
   forgotPasswordForm: FormGroup = new FormGroup({});
+  formStatus = 'form';
   fields = {
     email: new FormField({
       formControl: new FormControl(),
@@ -23,47 +26,35 @@ export class ForgotPasswordComponent implements OnInit {
       type: 'email',
     }),
   };
+  iThrivForm = new IThrivForm(this.fields, this.forgotPasswordForm);
 
-  constructor(private router: Router) {
-    this.loadForm();
+  constructor(private router: Router, private api: ResourceApiService,
+              private changeDetectorRef: ChangeDetectorRef) {
+    this.iThrivForm.loadForm();
   }
 
   ngOnInit() {
   }
 
   getFields() {
-    const fields = [];
-
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        fields.push(this.fields[fieldName]);
-      }
-    }
-
-    return fields;
-  }
-
-  loadForm() {
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        const field = this.fields[fieldName];
-        const validators = [];
-
-        if (field.required) {
-          validators.push(Validators.required);
-        }
-
-        if (field.type === 'email') {
-          validators.push(Validators.email);
-        }
-
-        this.forgotPasswordForm.addControl(fieldName, field.formControl);
-      }
-    }
+    return this.iThrivForm.getFields();
   }
 
   onSubmit() {
-    window.location.href = this.login_url;
+    this.iThrivForm.validate();
+    if (!this.forgotPasswordForm.valid) { return; }
+    this.formStatus = 'submitting';
+    this.api.sendResetPasswordEmail(this.fields.email.formControl.value).subscribe(e => {
+        this.formStatus = 'complete';
+        }, error1 => {
+          if (error1) {
+            this.errorMessage = error1;
+          } else {
+            this.errorMessage = 'We encountered an error resetting your password.  Please contact support.';
+          }
+          this.formStatus = 'form';
+          this.changeDetectorRef.detectChanges();
+    });
   }
 
   onCancel() {

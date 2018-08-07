@@ -13,7 +13,7 @@ import { ResourceCategory } from '../../resource-category';
 import { ResourceQuery } from '../../resource-query';
 import { ResourceType } from '../../resourceType';
 import { User } from '../../user';
-import { Favorite } from "../../favorite";
+import { Favorite } from '../../favorite';
 
 @Injectable()
 export class ResourceApiService {
@@ -46,7 +46,9 @@ export class ResourceApiService {
     favorite: '/api/favorite/<id>',
     userFavorites: '/api/user/<id>/favorite',
     userList: '/api/user',
-    password_login: '/api/password_login',
+    login_password: '/api/login_password',
+    forgot_password: '/api/forgot_password',
+    reset_password: '/api/reset_password',
     session: '/api/session'
   };
 
@@ -71,10 +73,12 @@ export class ResourceApiService {
     });
   }
 
-  /** loginUser - An alternative to single sign on, allow users to log into the system with a user name and password. */
-  login(email: string, password): Observable<any> {
-    const options = { email: email, password: password };
-    return this.httpClient.post(this.apiRoot + this.endpoints.password_login, options)
+  /** loginUser - An alternative to single sign on, allow users to log into the system with a user name and password.
+   * email_token is not required, only send this if user is logging in for the first time
+   * after an email verification link. */
+  login(email: string, password: string, email_token = ''): Observable<any> {
+    const options = { email: email, password: password, email_token: email_token };
+    return this.httpClient.post(this.apiRoot + this.endpoints.login_password, options)
       .pipe(catchError(this.handleError));
   }
 
@@ -233,8 +237,8 @@ export class ResourceApiService {
   }
 
   /** addFavorite */
-  addFavorite(user:User, resource:Resource): Observable<any> {
-    const options = { resource_id: resource.id, user_id:user.id };
+  addFavorite(user: User, resource: Resource): Observable<any> {
+    const options = { resource_id: resource.id, user_id: user.id };
     return this.httpClient.post<Favorite>(this.apiRoot + this.endpoints.favoriteList, options)
       .pipe(catchError(this.handleError));
   }
@@ -269,4 +273,20 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** Reset password */
+  sendResetPasswordEmail(email: String): Observable<any> {
+    const email_data = {email: email};
+    return this.httpClient.post<any>(this.apiRoot + this.endpoints.forgot_password, email_data)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** Reset password */
+  resetPassword(newPassword: String, token: String): Observable<any> {
+    const reset = {password: newPassword, token: token};
+    return this.httpClient.post<any>(this.apiRoot + this.endpoints.reset_password, reset)
+      .pipe(catchError(this.handleError));
+  }
+
 }
+
+
