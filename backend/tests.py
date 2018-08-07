@@ -944,14 +944,7 @@ class TestCase(unittest.TestCase):
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
 
-    def test_confirm_email(self):
-        user = self.test_create_user_with_password()
-        self.assertFalse(user.email_verified)
-        self.assertEqual("iThriv: Confirm Email", self.decode(TEST_MESSAGES[-1]['subject']))
-
-
-
-
+    # def test_login_with_email_token(self):
 
     def test_get_current_participant(self):
         """ Test for the current participant status """

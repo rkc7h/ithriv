@@ -53,8 +53,7 @@ class UserListEndpoint(flask_restful.Resource):
                 raise RestException(RestException.EMAIL_EXISTS)
             db.session.add(new_user)
             db.session.commit()
-            self.send_confirm_email(new_user);
-            email_service.confirm_email(new_user)
+            self.send_confirm_email(new_user)
             return self.userSchema.dump(new_user)
         except IntegrityError as ie:
             raise RestException(RestException.INVALID_OBJECT)
@@ -63,7 +62,7 @@ class UserListEndpoint(flask_restful.Resource):
                                 details=new_user.errors)
 
     def send_confirm_email(self, user):
-        tracking_code = email_service.confirm_email(user);
+        tracking_code = email_service.confirm_email(user)
         log = EmailLog(user_id=user.id, type="confirm_email", tracking_code=tracking_code)
         db.session.add(log)
         db.session.commit()

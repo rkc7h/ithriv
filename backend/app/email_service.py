@@ -95,10 +95,4 @@ class EmailService():
         self.send_email(subject,
                         recipients=[user.email], text_body=text_body, html_body=html_body)
 
-
-        # email_log = EmailLog(user=user,
-        #                      type=type,
-        #                      tracking_code=tracking_code)
-        # self.db.session.add(email_log)
-        # self.db.session.commit()
-
+        return tracking_code
