@@ -103,14 +103,14 @@ class EmailService():
         tracking_code = self.tracking_code()
 
         subject = "iThriv: Password Reset Email"
-        confirm_url = self.app.config['FRONTEND_EMAIL_RESET'] + token
+        reset_url = self.app.config['FRONTEND_EMAIL_RESET'] + token
         logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
         text_body = render_template("reset_email.txt",
-                                    user=user, confirm_url=confirm_url,
+                                    user=user, reset_url=reset_url,
                                     tracking_code=tracking_code)
 
         html_body = render_template("reset_email.html",
-                                    user=user, confirm_url=confirm_url,
+                                    user=user, reset_url=reset_url,
                                     logo_url=logo_url,
                                     tracking_code=tracking_code)
 

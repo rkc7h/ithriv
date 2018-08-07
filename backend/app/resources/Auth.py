@@ -85,6 +85,7 @@ def forgot_password():
     log = EmailLog(user_id=user.id, type="reset_email", tracking_code=tracking_code)
     db.session.add(log)
     db.session.commit()
+    return ''
 
 
 @auth_blueprint.route('/reset_password', methods=["GET", "POST"])
