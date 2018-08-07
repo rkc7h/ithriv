@@ -949,6 +949,19 @@ class TestCase(unittest.TestCase):
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
 
+    def reset_password_sends_email(self):
+        message_count = len(TEST_MESSAGES)
+        data = {
+            "email": "tyrion@got.com"
+        }
+        rv = self.app.post('/api/reset_password', data=json.dumps(data), content_type="application/json")
+        self.assertSuccess(rv)
+        self.assertGreater(len(TEST_MESSAGES), message_count)
+        self.assertEqual("iThriv: Password Reset Email", self.decode(TEST_MESSAGES[-1]['subject']))
+
+        logs = EmailLog.query.all()
+        self.assertIsNotNone(logs[-1].tracking_code)
+
     def test_get_current_participant(self):
         """ Test for the current participant status """
         # Create the user

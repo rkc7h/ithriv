@@ -2,7 +2,8 @@
 # *****************************
 from itsdangerous import URLSafeTimedSerializer
 
-from app import sso, app, RestException, db, auth
+from app import sso, app, RestException, db, auth, email_service
+from app.model.email_log import EmailLog
 from app.model.user import User
 from flask import jsonify, redirect, g, request, Blueprint
 
@@ -72,6 +73,18 @@ def login_password():
             confirm_email('email_token')
         else:
             raise RestException(RestException.CONFIRM_EMAIL)
+
+
+@auth_blueprint.route('/forgot_password', methods=["GET", "POST"])
+def forgot_password():
+    request_data = request.get_json()
+    email = request_data['email']
+    user = User.query.filter_by(email=email).first_or_404()
+
+    tracking_code = email_service.reset_email(user)
+    log = EmailLog(user_id=user.id, type="reset_email", tracking_code=tracking_code)
+    db.session.add(log)
+    db.session.commit()
 
 
 @auth.verify_token
