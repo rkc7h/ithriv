@@ -36,7 +36,7 @@ def login(user_info):
 
 # ourapp/views.py
 
-@auth_blueprint.route('/confirm/<email_token>')
+
 def confirm_email(email_token):
     """When users create a new account with an email and a password, this
     allows the front end ot confirm their email and log them into the system."""
@@ -60,12 +60,19 @@ def login_password():
     email = request_data['email']
     user = User.query.filter_by(email=email).first()
 
-    if user.is_correct_password(request_data["password"]):
-        # redirect users back to the front end, include the new auth token.
-        auth_token = user.encode_auth_token().decode()
-        return jsonify({"token": auth_token})
+    if user.email_verified:
+        if user.is_correct_password(request_data["password"]):
+            # redirect users back to the front end, include the new auth token.
+            auth_token = user.encode_auth_token().decode()
+            return jsonify({"token": auth_token})
+        else:
+            raise RestException(RestException.LOGIN_FAILURE)
     else:
-        raise RestException(RestException.LOGIN_FAILURE)
+        if 'email_token' in request_data:
+            confirm_email('email_token')
+        else:
+            raise RestException(RestException.CONFIRM_EMAIL)
+
 
 @auth.verify_token
 def verify_token(token):

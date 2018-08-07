@@ -913,11 +913,16 @@ class TestCase(unittest.TestCase):
         return user;
 
     def test_login_user(self):
-        self.test_create_user_with_password()
+        user = self.test_create_user_with_password()
         data = {
             "email": "tyrion@got.com",
             "password": "peterpass"
         }
+        # Login shouldn't work with email not yet verified
+        rv = self.app.post('/api/login_password', data=json.dumps(data), content_type="application/json")
+        self.assertEqual(400, rv.status_code)
+
+        user.email_verified = True
         rv = self.app.post('/api/login_password', data=json.dumps(data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
@@ -943,8 +948,6 @@ class TestCase(unittest.TestCase):
 
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
-
-    # def test_login_with_email_token(self):
 
     def test_get_current_participant(self):
         """ Test for the current participant status """
