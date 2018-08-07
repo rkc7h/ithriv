@@ -1,11 +1,11 @@
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
 import { Institution } from '../institution';
-import {ResourceCategory} from '../resource-category';
+import { ResourceCategory } from '../resource-category';
 
 @Component({
   selector: 'app-resource',
@@ -39,16 +39,16 @@ export class ResourceComponent implements OnInit {
     this.api.getResource(this.resourceId).subscribe(
       (resource) => {
         this.resource = resource;
-        this.loadResourceCategories();
+        this.loadResourceCategories(resource);
       }
     );
   }
 
-  loadResourceCategories() {
+  loadResourceCategories(resource: Resource) {
     this.api
-      .getResourceCategories(this.resource)
+      .getResourceCategories(resource)
       .subscribe(rcs => {
-        console.log("Loaded Categories:" + rcs)
+        console.log('Loaded Categories:', rcs);
         this.categories = rcs;
         this.isDataLoaded = true;
       });
@@ -69,7 +69,7 @@ export class ResourceComponent implements OnInit {
 
   goCategory($event, category: Category) {
     $event.preventDefault();
-    this.router.navigate(['category', category.id])
+    this.router.navigate(['category', category.id]);
     console.log('Go to the category page, filtered by Institution');
     console.log('category:', category);
   }

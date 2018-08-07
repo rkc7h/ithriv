@@ -13,7 +13,7 @@ import { ResourceCategory } from '../../resource-category';
 import { ResourceQuery } from '../../resource-query';
 import { ResourceType } from '../../resourceType';
 import { User } from '../../user';
-import { Favorite } from "../../favorite";
+import { Favorite } from '../../favorite';
 
 @Injectable()
 export class ResourceApiService {
@@ -233,8 +233,8 @@ export class ResourceApiService {
   }
 
   /** addFavorite */
-  addFavorite(user:User, resource:Resource): Observable<any> {
-    const options = { resource_id: resource.id, user_id:user.id };
+  addFavorite(user: User, resource: Resource): Observable<any> {
+    const options = { resource_id: resource.id, user_id: user.id };
     return this.httpClient.post<Favorite>(this.apiRoot + this.endpoints.favoriteList, options)
       .pipe(catchError(this.handleError));
   }

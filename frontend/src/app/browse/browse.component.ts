@@ -95,9 +95,9 @@ export class BrowseComponent implements OnInit {
     return `linear-gradient(to right, ${this.category.color}FF, ${this.category.color}FF 50%, ${this.category.color}00 75%)`;
   }
 
-  categoryIcon(c) {
+  categoryIcon(c: Category) {
     if (c.icon) {
-      return `ithriv_${c.icon.id}`;
+      return `ithriv_${c.icon_id}`;
     }
   }
 
