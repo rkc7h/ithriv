@@ -2,6 +2,7 @@ class RestException(Exception):
     status_code = 400
     NOT_FOUND = {'code': 'not_found', 'message': 'Unknown path.', 'status_code':404}
     TOKEN_INVALID = {'code': 'token_invalid', 'message': 'Please log in again.'}
+    EMAIL_TOKEN_INVALID = {'code': 'email_token_invalid', 'message': 'Your email was not validated.  Please try resetting your password to continue.'}
     TOKEN_EXPIRED = {'code': 'token_expired', 'message': 'Your session timed out.  Please log in again.'}
     TOKEN_MISSING = {'code': 'token_missing', 'message': 'Your are not logged in.'}
     ELASTIC_ERROR = {'code': 'elastic_error', 'message':"Error connecting to ElasticSearch."}

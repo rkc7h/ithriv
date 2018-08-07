@@ -45,10 +45,10 @@ def confirm_email(email_token):
         ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
         email = ts.loads(email_token, salt="email-confirm-key", max_age=86400)
     except:
-        raise RestException(RestException.TOKEN_INVALID)
+        raise RestException(RestException.EMAIL_TOKEN_INVALID)
 
     user = User.query.filter_by(email=email).first_or_404()
-    user.email_confirmed = True
+    user.email_verified = True
     db.session.add(user)
     db.session.commit()
 
@@ -70,7 +70,7 @@ def login_password():
             raise RestException(RestException.LOGIN_FAILURE)
     else:
         if 'email_token' in request_data:
-            confirm_email('email_token')
+            return confirm_email(request_data['email_token'])
         else:
             raise RestException(RestException.CONFIRM_EMAIL)
 
