@@ -8,6 +8,7 @@ import { User } from '../user';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
 import {ValidatePasswordsMatch} from '../shared/validators/password_match.validator';
+import {IThrivForm} from '../shared/IThrivForm';
 
 @Component({
   selector: 'app-register-form',
@@ -15,7 +16,7 @@ import {ValidatePasswordsMatch} from '../shared/validators/password_match.valida
   styleUrls: ['./register-form.component.scss'],
   animations: [routerTransition()]
 })
-export class RegisterFormComponent implements OnInit {
+export class RegisterFormComponent  {
   @HostBinding('@routerTransition')
   title: string;
   login_url = environment.api + '/api/register';
@@ -55,67 +56,25 @@ export class RegisterFormComponent implements OnInit {
       passwordsMatch: true
     }),
   };
+  iThrivForm = new IThrivForm(this.fields, this.registerForm);
 
   constructor(
     private api: ResourceApiService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef
   ) {
-    this.loadForm();
-  }
-
-  ngOnInit() {
+    this.iThrivForm.loadForm();
+    this.user = { id: null, display_name: this.fields.display_name.formControl.value,
+      email: this.fields.email.formControl.value,
+      password: this.fields.password.formControl.value };
   }
 
   getFields() {
-    const fields = [];
-
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        fields.push(this.fields[fieldName]);
-      }
-    }
-
-    return fields;
-  }
-
-  loadForm() {
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        const field = this.fields[fieldName];
-        const validators = [];
-
-        if (field.required) {
-          validators.push(Validators.required);
-        }
-
-        if (field.minLength) {
-          validators.push(Validators.minLength(field.minLength));
-        }
-
-        if (field.maxLength) {
-          validators.push(Validators.maxLength(field.maxLength));
-        }
-
-        if (field.type === 'email') {
-          validators.push(Validators.email);
-        }
-
-        if (field.passwordsMatch) {
-          validators.push(ValidatePasswordsMatch);
-        }
-
-        field.formControl.setValidators(validators);
-        this.user = { id: null, display_name: this.fields.display_name.formControl.value,
-          email: this.fields.email.formControl.value,
-          password: this.fields.password.formControl.value };
-        this.registerForm.addControl(fieldName, field.formControl);
-      }
-    }
+    return this.iThrivForm.getFields();
   }
 
   onSubmit() {
-    this.validate();
+    this.iThrivForm.validate();
 
     if (!this.registerForm.valid) { return; }
 
@@ -140,18 +99,6 @@ export class RegisterFormComponent implements OnInit {
       this.changeDetectorRef.detectChanges();
       console.log('Register state is form?' + this.registerState);
     });
-  }
-
-
-
-  validate() {
-    for (const key in this.registerForm.controls) {
-      if (this.registerForm.controls.hasOwnProperty(key)) {
-        const control = this.registerForm.controls[key];
-        control.markAsTouched();
-        control.updateValueAndValidity();
-      }
-    }
   }
 
   onCancel() {
