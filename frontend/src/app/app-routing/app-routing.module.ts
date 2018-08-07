@@ -28,7 +28,6 @@ const routes: Routes = [
   { path: 'resource/:resource/edit', component: ResourceFormComponent, data: { title: 'Edit Resource' } },
   { path: 'resource/add/:category', component: ResourceFormComponent, data: { title: 'Add Resource' } },
   { path: 'session/:token', component: SessionRedirectComponent, data: { title: 'Logging in...' } },
-  { path: 'confirm/:token', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', component: NotFoundComponent }
 ];
 
