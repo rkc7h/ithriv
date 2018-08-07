@@ -88,7 +88,7 @@ def forgot_password():
 
 
 @auth_blueprint.route('/reset_password', methods=["GET", "POST"])
-def login_password():
+def reset_password():
     request_data = request.get_json()
     password = request_data['password']
     email_token = request_data['email_token']
