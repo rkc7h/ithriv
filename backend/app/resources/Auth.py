@@ -54,7 +54,7 @@ def verify_token(token):
     except:
         g.user = None
 
-    if 'user' in g:
+    if 'user' in g and g.user:
         return True
     else:
         return False

@@ -13,30 +13,23 @@ class UserFavoriteEndpoint(flask_restful.Resource):
 
     @auth.login_required
     def get(self):
-        if "user" in g:
-            schema = FavoriteSchema(many=True)
-            favorites = db.session.query(Favorite) \
-                .join(Favorite.resource) \
-                .filter(Favorite.user_id == g.user.id) \
-                .order_by(ThrivResource.name) \
-                .all()
-            return schema.dump(favorites)
-
-        else:
-            raise RestException(RestException.TOKEN_INVALID)
+        schema = FavoriteSchema(many=True)
+        favorites = db.session.query(Favorite) \
+            .join(Favorite.resource) \
+            .filter(Favorite.user_id == g.user.id) \
+            .order_by(ThrivResource.name) \
+            .all()
+        return schema.dump(favorites)
 
     @auth.login_required
-    def post(self, user_id):
-        if "user" in g:
-            request_data = request.get_json()
-            favorites = self.schema.load(request_data, many=True).data
-            db.session.query(Favorite).filter_by(user_id=g.user.id).delete()
-            for f in favorites:
-                db.session.add(Favorite(user_id=g.user.id, resource_id=f.resource_id))
-            db.session.commit()
-            return self.get()
-        else:
-            raise RestException(RestException.TOKEN_INVALID)
+    def post(self):
+        request_data = request.get_json()
+        favorites = self.schema.load(request_data, many=True).data
+        db.session.query(Favorite).filter_by(user_id=g.user.id).delete()
+        for f in favorites:
+            db.session.add(Favorite(user_id=g.user.id, resource_id=f.resource_id))
+        db.session.commit()
+        return self.get()
 
 
 class FavoriteEndpoint(flask_restful.Resource):
