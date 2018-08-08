@@ -39,8 +39,6 @@ export class CategoryNetworkViewComponent implements OnInit {
   ) {
 
     this.route.params.subscribe(params => {
-      console.log('params', params);
-
       this.categoryId = params['category'];
       this.loadRootCategories();
       this.loadCategory(this.categoryId);
@@ -78,15 +76,14 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   rotateChild(i: number) {
     if (this.category.children.length > 0) {
-      console.log('this.rotateChildDegrees(i)', this.rotateChildDegrees(i));
-
       return `rotate(${this.rotateChildDegrees(i)})`;
     }
   }
 
-  unrotateChild(node: Category, i: number) {
+  unrotateChild(c: Category, i: number) {
     if (this.category.children.length > 0) {
-      return `rotate(${-this.rotateChildDegrees(i)}, ${this.nodeLineLength(node, i) + this.nodeRadius}, 0)`;
+      const offset = this.nodeLineLength(c, i) + this.nodeRadius;
+      return `rotate(${-this.rotateChildDegrees(i)}, ${offset}, 0)`;
     }
   }
 
@@ -113,18 +110,14 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   childPosX(i: number) {
-    console.log('childPosX i', i);
     return 20 * (i + 1);
   }
 
   childPosY(i: number) {
-    console.log('childPosY i', i);
     return 20 * (i + 1);
   }
 
   words(s: string) {
-    console.log('s', s);
-
     return s.trim().split(' ');
   }
 
@@ -146,6 +139,13 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   nodeImagePath(c: Category) {
     return `/assets/browse/${c.image}`;
+  }
+
+  nodeIconUrl(c: Category) {
+    const url = c && c.icon && c.icon.url;
+    if (url) {
+      return `url('${url}')`;
+    }
   }
 
   categoryColor(hexColor: string, alpha = 1) {

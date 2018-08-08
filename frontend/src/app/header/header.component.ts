@@ -24,10 +24,6 @@ export class HeaderComponent {
     private api: ResourceApiService,
     private route: ActivatedRoute
   ) {
-    this.route.queryParams.subscribe(queryParams => {
-      console.log('queryParams', queryParams);
-    });
-
     this.router.events.subscribe((e) => {
       if (e instanceof ActivationStart || e instanceof ActivationEnd) {
         if (e.snapshot && e.snapshot.data) {
@@ -36,7 +32,6 @@ export class HeaderComponent {
           const data = e.snapshot.data;
           this.hideHeader = !!data.hideHeader;
           this.title = data.title;
-          console.log('router snapshot data', data);
         }
       }
 

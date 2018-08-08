@@ -28,27 +28,35 @@
     </g>
 
     <g [attr.transform]="translateTo('origin')">
+
       <!-- PARENT & CHILD NODES -->
       <g *ngFor="let node of categoryNodes(category); let i = index" [attr.transform]="rotateChild(i)" (click)="goCategory(node)">
-        <g *ngIf="isParentNode(node) && (node.level === 0)" [attr.transform]="unrotateChild(node, i)">
-          <rect fill="white" stroke="white" [attr.x]="nodeLineLength(node, i)" [attr.y]="0" [attr.width]="nodeRadius * 2" [attr.height]="nodeRadius + parentTitleHeight"
-          />
-          <rect [attr.fill]="categoryColor(category.color, 0.1)" [attr.stroke]="categoryColor(category.color, 0.1)" [attr.x]="nodeLineLength(node, i)"
-            [attr.y]="0" [attr.width]="nodeRadius * 2" [attr.height]="nodeRadius + parentTitleHeight" />
-          <rect fill="none" stroke="url(#linear)" [attr.x]="nodeLineLength(node, i) + strokeWidth" [attr.y]="strokeWidth" [attr.width]="(nodeRadius - strokeWidth) * 2"
-            [attr.height]="nodeRadius + parentTitleHeight - strokeWidth * 2" [ngStyle]="{'stroke-width': 1}" />
-          <text fill="black" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="nodeRadius + parentTitleHeight / 2" text-anchor="middle">{{node.name}}</text>
-        </g>
-        <circle [attr.cx]="nodeLineLength(node, i) + nodeRadius" cy="0" [attr.r]="nodeRadius" [attr.stroke]="category.color" fill="white"
-        />
-        <image *ngIf="node.level === 0" [attr.transform]="unrotateChild(node, i)" [attr.x]="nodeLineLength(node, i) + nodeRadius - nodeImageSize('node')/2"
-          [attr.y]="-nodeImageSize('node')/2" [attr.width]="nodeImageSize('node')" [attr.height]="nodeImageSize('node')" [attr.href]="nodeImagePath(node)"
-          class="clip-circle" preserveAspectRatio="xMidYMid slice" />
+        <g class="node">
+          <line x1="0" y1="0" [attr.x2]="nodeLineLength(node, i)" y2="0" [attr.stroke]="category.color" />
+          <g *ngIf="isParentNode(node) && (node.level === 0)" [attr.transform]="unrotateChild(node, i)">
+            <rect fill="white" stroke="white" [attr.x]="nodeLineLength(node, i)" [attr.y]="0" [attr.width]="nodeRadius * 2" [attr.height]="nodeRadius + parentTitleHeight"
+            />
+            <rect [attr.fill]="categoryColor(category.color, 0.1)" [attr.stroke]="categoryColor(category.color, 0.1)" [attr.x]="nodeLineLength(node, i)"
+              [attr.y]="0" [attr.width]="nodeRadius * 2" [attr.height]="nodeRadius + parentTitleHeight" />
+            <rect fill="none" stroke="url(#linear)" [attr.x]="nodeLineLength(node, i) + strokeWidth" [attr.y]="strokeWidth" [attr.width]="(nodeRadius - strokeWidth) * 2"
+              [attr.height]="nodeRadius + parentTitleHeight - strokeWidth * 2" [ngStyle]="{'stroke-width': 1}" />
+            <text fill="black" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="nodeRadius + parentTitleHeight / 2" text-anchor="middle">{{node.name}}</text>
+          </g>
 
-        <line [attr.x1]="selfRadius" y1="0" [attr.x2]="nodeLineLength(node, i)" y2="0" [attr.stroke]="category.color" />
-        <text *ngIf="node.level > 0" [attr.transform]="unrotateChild(node, i)" text-anchor="middle">
-          <tspan *ngFor="let word of words(node.name); let j = index" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="16 * j">{{word}}</tspan>
-        </text>
+          <circle [attr.cx]="nodeLineLength(node, i) + nodeRadius" cy="0" [attr.r]="nodeRadius" [attr.stroke]="category.color" fill="white"
+          />
+          <image *ngIf="node.level === 0" [attr.transform]="unrotateChild(node, i)" [attr.x]="nodeLineLength(node, i) + nodeRadius - nodeImageSize('node')/2"
+            [attr.y]="-nodeImageSize('node')/2" [attr.width]="nodeImageSize('node')" [attr.height]="nodeImageSize('node')"
+            [attr.href]="nodeImagePath(node)" class="clip-circle" preserveAspectRatio="xMidYMid slice" />
+          <g *ngIf="node.level === 1" [inlineSVG]="node.icon.url" [attr.transform]="unrotateChild(node, i)" [attr.fill]="node.color"></g>
+          <!-- <image *ngIf="node.level === 1" [attr.x]="nodeLineLength(node, i) + nodeRadius - nodeImageSize('node')/2"
+            [attr.y]="-nodeImageSize('node')/2" [attr.width]="nodeImageSize('node')" [attr.height]="nodeImageSize('node')"
+            [attr.href]="node.icon.url" class="clip-circle" preserveAspectRatio="xMidYMid slice" /> -->
+
+          <text *ngIf="node.level > 0" text-anchor="middle" [attr.transform]="unrotateChild(node, i)">
+            <tspan *ngFor="let word of words(node.name); let j = index" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="16 * j">{{word}}</tspan>
+          </text>
+        </g>
       </g>
 
       <!-- SELF -->

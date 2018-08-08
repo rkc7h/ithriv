@@ -77,6 +77,7 @@ import { SearchComponent } from './search/search.component';
 import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
+import { InlineSVGModule } from 'ng-inline-svg';
 
 @NgModule({
   declarations: [
@@ -130,6 +131,7 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     FlexLayoutModule,
     HttpClientModule,
     InfiniteScrollModule,
+    InlineSVGModule.forRoot(),
     MarkdownModule.forRoot(),
     MatBadgeModule,
     MatButtonModule,
