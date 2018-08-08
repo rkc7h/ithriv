@@ -1,0 +1,37 @@
+<div style="position: relative; width: 100%; height: 100%;" class="mat-typography">
+  <svg *ngIf="category" viewBox="-491 -321 982 642" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+    <!-- PARENT & CHILD NODES -->
+    <g *ngFor="let node of categoryNodes(category); let i = index" [attr.transform]="rotateChild(i)" (click)="goCategory(node)">
+      <g *ngIf="isParentNode(node) && (node.level === 0)" [attr.transform]="unrotateChild(node, i)">
+        <rect [attr.fill]="category.color" [attr.stroke]="category.color" [attr.x]="nodeLineLength(node, i)" [attr.y]="0" [attr.width]="nodeRadius * 2"
+          [attr.height]="nodeRadius + parentTitleHeight" />
+        <text fill="white" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="nodeRadius + parentTitleHeight / 2" text-anchor="middle">{{node.name}}</text>
+      </g>
+      <circle [attr.cx]="nodeLineLength(node, i) + nodeRadius" cy="0" [attr.r]="nodeRadius" [attr.stroke]="category.color" fill="white"
+      />
+      <image *ngIf="node.level === 0" [attr.transform]="unrotateChild(node, i)" [attr.x]="nodeLineLength(node, i) + nodeRadius - nodeImageSize(node)/2"
+        [attr.y]="-nodeImageSize(node)/2" [attr.width]="nodeImageSize(node)" [attr.height]="nodeImageSize(node)" [attr.href]="nodeImagePath(node)"
+        class="clip-circle" preserveAspectRatio="xMidYMid slice" />
+
+      <line [attr.x1]="selfRadius" y1="0" [attr.x2]="nodeLineLength(node, i)" y2="0" [attr.stroke]="category.color" />
+      <text *ngIf="node.level > 0" [attr.transform]="unrotateChild(node, i)" text-anchor="middle">
+        <tspan *ngFor="let word of words(node.name); let j = index" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="16 * j">{{word}}</tspan>
+      </text>
+    </g>
+
+    <!-- SELF -->
+    <g *ngIf="category.level === 0">
+      <rect [attr.stroke]="category.color" [attr.fill]="category.color" [attr.x]="-selfRadius" [attr.y]="0" [attr.width]="selfRadius * 2"
+        [attr.height]="selfRadius + selfTitleHeight" />
+      <text fill="white" [attr.x]="0" [attr.y]="selfRadius + selfTitleHeight / 2" text-anchor="middle">{{category.name}}</text>
+    </g>
+    <circle cx="0" cy="0" [attr.r]="selfRadius" [attr.stroke]="category.color" fill="white" />
+    <image *ngIf="category.level === 0" [attr.x]="-nodeImageSize(category)/2" [attr.y]="-nodeImageSize(category)/2" [attr.width]="nodeImageSize(category)"
+      [attr.height]="nodeImageSize(category)" [attr.href]="nodeImagePath(category)" class="clip-circle" preserveAspectRatio="xMidYMid slice"
+    />
+
+    <text *ngIf="category.level > 0" text-anchor="middle">
+      <tspan *ngFor="let word of words(category.name); let j = index" x="0" [attr.y]="16 * j">{{word}}</tspan>
+    </text>
+  </svg>
+</div>
