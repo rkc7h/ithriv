@@ -1,0 +1,67 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+// Load the UVA Theme
+@include ithriv-theme($ithriv-theme);
+
+form.search-box {
+  background: transparent;
+  border-radius: 5px;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  display: flex;
+
+  mat-form-field, mat-hint {
+    flex: 2 0 auto;
+  }
+}
+
+.container {
+  min-height: 600px;
+}
+
+#tiles {
+  padding-top: 1em;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+.mat-sidenav {
+  width: 100%;
+
+  h2 {
+    display: flex;
+
+    span {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+@media screen and (min-width: 720px) {
+  .mat-sidenav {
+    width: 400px;
+  }
+}
+
+.applied-filters > li {
+  list-style: none;
+}
+
+.mat-drawer-container {
+  background: transparent;
+}
+
+mat-list-item {
+  cursor: pointer;
+}
+
+mat-list-item:hover {
+  background-color: mat-color($uva-primary, 100)
+}
+
+button {
+  flex: 0 0 auto;
+  border: none;
+}
+

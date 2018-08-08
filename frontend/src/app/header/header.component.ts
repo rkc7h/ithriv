@@ -32,9 +32,14 @@ export class HeaderComponent {
       }
 
       if (e instanceof NavigationEnd) {
-        this.isHome = ['/', '/search'].includes(e.url);
+        this.isHome = ['/', '/home', '/dashboard'].includes(e.url);
       }
     });
+  }
+
+  goDashboard($event) {
+    $event.preventDefault();
+    this.router.navigate(['dashboard']);
   }
 
   goHome($event) {
@@ -51,9 +56,15 @@ export class HeaderComponent {
     $event.preventDefault();
     this.router.navigate(['profile']);
   }
+
   goRegister($event) {
     $event.preventDefault();
     this.router.navigate(['register']);
+  }
+
+  goSearch($event) {
+    $event.preventDefault();
+    this.router.navigate(['search']);
   }
 
   goLogout($event) {

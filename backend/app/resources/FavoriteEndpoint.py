@@ -13,7 +13,7 @@ class UserFavoriteEndpoint(flask_restful.Resource):
 
     @auth.login_required
     def get(self):
-        schema = FavoriteSchema(many=True)
+        schema = UserFavoritesSchema(many=True)
         favorites = db.session.query(Favorite) \
             .join(Favorite.resource) \
             .filter(Favorite.user_id == g.user.id) \

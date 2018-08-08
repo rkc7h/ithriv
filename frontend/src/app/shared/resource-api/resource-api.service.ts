@@ -44,7 +44,7 @@ export class ResourceApiService {
     icon: '/api/icon/<id>',
     favoriteList: '/api/favorite',
     favorite: '/api/favorite/<id>',
-    userFavorites: '/api/user/<id>/favorite',
+    userFavorites: '/api/session/favorite',
     userList: '/api/user',
     login_password: '/api/login_password',
     forgot_password: '/api/forgot_password',
@@ -250,8 +250,8 @@ export class ResourceApiService {
   }
 
   /** getUserFavorites */
-  getUserFavorites(user: User): Observable<Resource[]> {
-    return this.httpClient.get<Resource[]>(this.apiRoot + user._links.favorites)
+  getUserFavorites(): Observable<Favorite[]> {
+    return this.httpClient.get<Favorite[]>(this.apiRoot + this.endpoints.userFavorites)
       .pipe(catchError(this.handleError));
   }
 
