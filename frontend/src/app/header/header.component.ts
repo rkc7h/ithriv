@@ -37,6 +37,11 @@ export class HeaderComponent {
     });
   }
 
+  goDashboard($event) {
+    $event.preventDefault();
+    this.router.navigate(['dashboard']);
+  }
+
   goHome($event) {
     $event.preventDefault();
     this.router.navigate(['']);
@@ -51,9 +56,15 @@ export class HeaderComponent {
     $event.preventDefault();
     this.router.navigate(['profile']);
   }
+
   goRegister($event) {
     $event.preventDefault();
     this.router.navigate(['register']);
+  }
+
+  goSearch($event) {
+    $event.preventDefault();
+    this.router.navigate(['search']);
   }
 
   goLogout($event) {
