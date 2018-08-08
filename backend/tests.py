@@ -1,9 +1,13 @@
 # Set enivoronment variable to testing before loading.
 import os
 # IMPORTANT - Environment must be loaded before app, models, etc....
+import quopri
+import re
+
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 import random
 import string
+from app.email_service import TEST_MESSAGES
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema, IconSchema
@@ -16,7 +20,7 @@ from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
 from app.model.icon import Icon
 from app.model.user import User
-from app.model.favorite import Favorite
+from app.model.email_log import EmailLog
 from app import app, db, elastic_index
 
 
@@ -911,29 +915,57 @@ class TestCase(unittest.TestCase):
         self.assertEqual("Peter Dinklage", response["display_name"])
         self.assertEqual("tyrion@got.com", response["email"])
         self.assertEqual(True, user.is_correct_password("peterpass"))
+        return user;
 
     def test_login_user(self):
-        self.test_create_user_with_password()
+        user = self.test_create_user_with_password()
         data = {
             "email": "tyrion@got.com",
             "password": "peterpass"
         }
-        rv = self.app.post('/api/password_login', data=json.dumps(data), content_type="application/json")
+        # Login shouldn't work with email not yet verified
+        rv = self.app.post('/api/login_password', data=json.dumps(data), content_type="application/json")
+        self.assertEqual(400, rv.status_code)
+
+        user.email_verified = True
+        rv = self.app.post('/api/login_password', data=json.dumps(data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertIsNotNone(response["token"])
 
-    def add_test_user(self):
+    def decode(self, encoded_words):
+        """Useful for checking the content of email messages (which we store in an array for testing"""
+        encoded_word_regex = r'=\?{1}(.+)\?{1}([b|q])\?{1}(.+)\?{1}='
+        charset, encoding, encoded_text = re.match(encoded_word_regex, encoded_words).groups()
+        if encoding is 'b':
+            byte_string = base64.b64decode(encoded_text)
+        elif encoding is 'q':
+            byte_string = quopri.decodestring(encoded_text)
+        text = byte_string.decode(charset)
+        text = text.replace("_", " ")
+        return text
+
+    def test_register_sends_email(self):
+        message_count = len(TEST_MESSAGES)
+        self.test_create_user_with_password()
+        self.assertGreater(len(TEST_MESSAGES), message_count)
+        self.assertEqual("iThriv: Confirm Email", self.decode(TEST_MESSAGES[-1]['subject']))
+
+        logs = EmailLog.query.all()
+        self.assertIsNotNone(logs[-1].tracking_code)
+
+    def reset_password_sends_email(self):
+        message_count = len(TEST_MESSAGES)
         data = {
-            "display_name": "Peter Dinklage",
-            "uid": "pad123" + self.randomString(),
-            "email": "tyrion@got.com",
-            "created": "2017-08-28T16:09:00.000Z"
+            "email": "tyrion@got.com"
         }
-        rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
-                           content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.post('/api/reset_password', data=json.dumps(data), content_type="application/json")
         self.assertSuccess(rv)
-        return json.loads(rv.get_data(as_text=True))
+        self.assertGreater(len(TEST_MESSAGES), message_count)
+        self.assertEqual("iThriv: Password Reset Email", self.decode(TEST_MESSAGES[-1]['subject']))
+
+        logs = EmailLog.query.all()
+        self.assertIsNotNone(logs[-1].tracking_code)
 
     def test_get_current_participant(self):
         """ Test for the current participant status """

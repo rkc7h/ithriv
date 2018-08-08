@@ -12,11 +12,7 @@ class SessionEndpoint(flask_restful.Resource):
 
     @auth.login_required
     def get(self):
-        if "user" in g:
-            return jsonify(self.schema.dump(g.user).data)
-
-        else:
-            raise RestException(RestException.TOKEN_INVALID)
+        return jsonify(self.schema.dump(g.user).data)
 
     @staticmethod
     @auth.login_required
