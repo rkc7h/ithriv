@@ -32,7 +32,7 @@ export class HeaderComponent {
       }
 
       if (e instanceof NavigationEnd) {
-        this.isHome = ['/', '/search'].includes(e.url);
+        this.isHome = ['/', '/search', '/dashboard'].includes(e.url);
       }
     });
   }
