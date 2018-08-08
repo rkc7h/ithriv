@@ -1,3 +1,121 @@
 h1 {
   position: relative;
+
+  &.mat-display-2 {
+    margin-bottom: 0px;
+  }
+}
+
+p {
+  width: 90%;
+  max-width: 90%;
+}
+
+$breadcrumb-size: 90px;
+$breadcrumb-padding: 10px;
+$breadcrumb-border-width: 4px;
+$breadcrumb-inner-border-width: 1px;
+
+.breadcrumbs {
+  float: left;
+  margin-right: $breadcrumb-padding * 4;
+
+  .breadcrumb-root-title {
+    background-color: #FFEEEE;
+    border: $breadcrumb-border-width solid #FFEEEE;
+    width: $breadcrumb-size;
+    height: $breadcrumb-size;
+    margin-top: -(($breadcrumb-size / 2) + ($breadcrumb-padding));
+    z-index: 1;
+    text-align: center;
+    position: relative;
+    box-shadow: none;
+
+    > a {
+      position: absolute;
+      top: $breadcrumb-padding;
+      left: $breadcrumb-border-width / 2;
+      right: $breadcrumb-border-width / 2;
+      bottom: $breadcrumb-border-width / 2;
+      padding-top: $breadcrumb-size / 2;
+      border-style: solid;
+      border-image: linear-gradient(to bottom, rgba(255, 0, 0, 0), rgba(255, 0, 0, 1));
+      border-image-slice: 1;
+      border-width: $breadcrumb-inner-border-width;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: black;
+      box-shadow: none;
+    }
+  }
+
+  .breadcrumb {
+    border-radius: 50%;
+    border: solid $breadcrumb-border-width red;
+    height: $breadcrumb-size;
+    width: $breadcrumb-size;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+
+    &.breadcrumb-root {
+      background-size: cover;
+      background-position: center center;
+      position: relative;
+      z-index: 3;
+      box-shadow: 0px 0px 20px 5px #ffffff;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        border: $breadcrumb-border-width solid white;
+        border-radius: 50%;
+        z-index: 2;
+      }
+    }
+
+    &.breadcrumb-parent {
+      mat-icon {
+        color: red;
+        width: $breadcrumb-size / 3 * 2;
+        height: $breadcrumb-size / 3 * 2;
+        font-size: $breadcrumb-size / 3 * 2;
+        border-radius: 50%;
+        padding: $breadcrumb-size / 6;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+      }
+    }
+
+    &.breadcrumb-self {
+      .breadcrumb-self-name {
+        font-weight: 900;
+        padding: $breadcrumb-padding;
+      }
+    }
+
+    &.breadcrumb-parent, &.breadcrumb-self {
+      margin-top: $breadcrumb-padding;
+      position: relative;
+
+      &::before {
+        position: absolute;
+        content: '';
+        width: 0px;
+        height: $breadcrumb-border-width + $breadcrumb-padding;
+        top: -($breadcrumb-border-width + $breadcrumb-padding);
+        left: ($breadcrumb-size - $breadcrumb-border-width) / 2;
+        border-left: solid $breadcrumb-border-width red;
+        border-left-color: inherit;
+      }
+    }
+  }
 }
