@@ -214,5 +214,5 @@ class UserSchema(ModelSchema):
     id = fields.Integer(required=False, allow_none=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.userendpoint', id='<id>'),
-        'favorites': ma.UrlFor('api.userfavoriteendpoint', user_id='<id>'),
+        'favorites': ma.UrlFor('api.userfavoriteendpoint'),
     })

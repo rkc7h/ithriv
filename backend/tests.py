@@ -745,17 +745,22 @@ class TestCase(unittest.TestCase):
             {"resource_id": r3.id},
         ]
 
-        rv = self.app.post('/api/user/%i/favorite' % u1.id, data=json.dumps(favorite_data_u1),
-                           content_type="application/json", headers=self.logged_in_headers(), follow_redirects=True)
+        # Creating Favorites and testing that the correct amount show up for the correct user
+        rv = self.app.post('/api/session/favorite', data=json.dumps(favorite_data_u1),
+                           content_type="application/json", headers=self.logged_in_headers(user=u1), follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(2, len(response))
 
-        rv = self.app.post('/api/user/%i/favorite' % u2.id, data=json.dumps(favorite_data_u2),
-                           content_type="application/json", headers=self.logged_in_headers(), follow_redirects=True)
+        rv = self.app.post('/api/session/favorite', data=json.dumps(favorite_data_u2),
+                           content_type="application/json", headers=self.logged_in_headers(user=u2), follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(3, len(response))
+
+        # Testing to see that favorites are not viewable when logged out
+        rv = self.app.get('/api/session/favorite', content_type="application/json")
+        self.assertEqual(401, rv.status_code)
 
     def test_create_category(self):
         c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!",
@@ -879,7 +884,7 @@ class TestCase(unittest.TestCase):
             headers = {'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
         else:
             uid = user.uid
-            headers = {'uid': user.id, 'givenName': user.display_name, 'mail': user.email}
+            headers = {'uid': user.uid, 'givenName': user.display_name, 'mail': user.email}
 
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
