@@ -5,6 +5,7 @@ import { Category } from '../category';
 import { CategoryResource } from '../category-resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
+import { hexColorToRGBA } from '../shared/color';
 
 @Component({
   selector: 'app-category',
@@ -92,8 +93,20 @@ export class CategoryComponent implements OnInit {
 
   goMode($event, category: Category) {
     $event.preventDefault();
-    this.router.navigate(['browse', category.id])
+    this.router.navigate(['browse', category.id]);
     console.log('Go to the category page');
     console.log('category:', category);
   }
+
+  categoryImageURL() {
+    const rootCat = this.category && this.category.parent && this.category.parent.parent;
+    if (rootCat) {
+      return `url('/assets/browse/${rootCat.image.replace('.png', '')}-tile.png')`;
+    }
+  }
+
+  categoryColorLight() {
+    return hexColorToRGBA(this.category.color, 0.1);
+  }
+
 }

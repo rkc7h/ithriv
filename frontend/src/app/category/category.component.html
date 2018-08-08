@@ -2,16 +2,28 @@
   <div class="header" *ngIf="isDataLoaded">
     <mat-card>
       <mat-card-header>
-        <mat-card-title-group>
-          <mat-card-title>
-            <h1 class="mat-h1">
-              {{category.name}}
-            </h1>
-            <p mat-line><a href="#" (click)="goMode($event, category.parent.parent)">{{category.parent.parent.name}}</a> >
-              {{category.parent.name}} > {{category.name}}</p>
-            <p mat-line>{{category.description}}</p>
-          </mat-card-title>
-        </mat-card-title-group>
+        <div fxFlex="100%">
+          <div class="breadcrumbs" *ngIf="category.parent && category.parent.icon_id">
+            <div class="breadcrumb breadcrumb-root" (click)="goMode($event, category.parent.parent)" [ngStyle]="{'border-color': category.color, 'background-image': categoryImageURL()}"></div>
+            <div class="breadcrumb-root-title" (click)="goMode($event, category.parent.parent)" [ngStyle]="{'background-color': categoryColorLight(), 'border-color': categoryColorLight()}">
+              <a href="#" (click)="goMode($event, category.parent.parent)" [appGradientBorder]="category.color">{{category.parent.parent.name}}</a>
+            </div>
+            <div class="breadcrumb breadcrumb-parent" (click)="goMode($event, category.parent.parent)" [ngStyle]="{'border-color': category.color}">
+              <a href="#" (click)="goMode($event, category.parent.parent)">
+                <mat-icon svgIcon="ithriv_{{category.parent.icon_id}}" [ngStyle]="{'color': category.color}"></mat-icon>
+              </a>
+            </div>
+            <div class="breadcrumb breadcrumb-self" [ngStyle]="{'border-color': category.color}">
+              <div class="breadcrumb-self-name">
+                {{category.name}}
+              </div>
+            </div>
+          </div>
+          <h1 class="mat-display-2" [ngStyle]="{'color': category.color}">
+            {{category.name}}
+          </h1>
+          <p>{{category.description}}</p>
+        </div>
         <div fxFlex></div>
         <app-add-resource-button [category]="category"></app-add-resource-button>
       </mat-card-header>
