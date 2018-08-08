@@ -1,0 +1,27 @@
+line, circle, rect {
+  stroke-width: 4px;
+}
+
+circle, rect, text, image {
+  cursor: pointer;
+}
+
+// g.node {
+//   transition: 300ms ease transform;
+
+//   &:hover{
+//     transform: scale(1.2);
+//   }
+// }
+
+.clip-circle {
+  clip-path: circle(50%);
+}
+
+circle {
+  width:150px;
+  height:150px;
+  color:#fff;
+  padding:.5em;
+
+}

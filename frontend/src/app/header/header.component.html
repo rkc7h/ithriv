@@ -60,10 +60,10 @@
       <mat-icon>help_outline</mat-icon>
     </a>
     <mat-button-toggle-group>
-      <button mat-button>
+      <button mat-button (click)="viewMode(false)">
         <mat-icon>view_list</mat-icon>
       </button>
-      <button mat-button>
+      <button mat-button (click)="viewMode(true)">
         <mat-icon>device_hub</mat-icon>
       </button>
     </mat-button-toggle-group>

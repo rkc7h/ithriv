@@ -8,8 +8,8 @@
             <div class="breadcrumb-root-title" (click)="goMode($event, category.parent.parent)" [ngStyle]="{'background-color': categoryColorLight(), 'border-color': categoryColorLight()}">
               <a href="#" (click)="goMode($event, category.parent.parent)" [appGradientBorder]="category.color">{{category.parent.parent.name}}</a>
             </div>
-            <div class="breadcrumb breadcrumb-parent" (click)="goMode($event, category.parent.parent)" [ngStyle]="{'border-color': category.color}">
-              <a href="#" (click)="goMode($event, category.parent.parent)">
+            <div class="breadcrumb breadcrumb-parent" (click)="goMode($event, category.parent)" [ngStyle]="{'border-color': category.color}">
+              <a href="#" (click)="goMode($event, category.parent)">
                 <mat-icon svgIcon="ithriv_{{category.parent.icon_id}}" [ngStyle]="{'color': category.color}"></mat-icon>
               </a>
             </div>

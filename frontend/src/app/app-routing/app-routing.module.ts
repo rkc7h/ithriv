@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BrowseComponent } from '../browse/browse.component';
 import { CategoryFormComponent } from '../category-form/category-form.component';
+import { CategoryNetworkViewComponent } from '../category-network-view/category-network-view.component';
 import { CategoryComponent } from '../category/category.component';
 import { DashboardComponent } from "../dashboard/dashboard.component";
 import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
   { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
   { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
+  { path: 'category/:category/network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
   { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
   { path: 'resource/:resource/edit', component: ResourceFormComponent, data: { title: 'Edit Resource' } },

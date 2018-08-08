@@ -48,6 +48,7 @@ import { AuthInterceptor } from './AuthInterceptor';
 import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
 import { CategoryFormComponent } from './category-form/category-form.component';
+import { CategoryNetworkViewComponent } from './category-network-view/category-network-view.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -78,6 +79,7 @@ import { SearchComponent } from './search/search.component';
 import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
+import { InlineSVGModule } from 'ng-inline-svg';
 
 @NgModule({
   declarations: [
@@ -89,16 +91,20 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     BrowseComponent,
     CategoryComponent,
     CategoryFormComponent,
+    CategoryNetworkViewComponent,
     CategoryTileComponent,
     DashboardComponent,
     EditCategoryButtonComponent,
     EditResourceButtonComponent,
     FavoriteResourceButtonComponent,
+    FavoriteResourceButtonComponent,
+    FavoriteResourceListComponent,
     FavoriteResourceListComponent,
     ForgotPasswordComponent,
     FormFieldComponent,
     FormFieldLabelComponent,
     GradientBackgroundDirective,
+    GradientBorderDirective,
     GradientBorderDirective,
     HeaderComponent,
     HomeComponent,
@@ -129,6 +135,7 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     FlexLayoutModule,
     HttpClientModule,
     InfiniteScrollModule,
+    InlineSVGModule.forRoot(),
     MarkdownModule.forRoot(),
     MatBadgeModule,
     MatButtonModule,
