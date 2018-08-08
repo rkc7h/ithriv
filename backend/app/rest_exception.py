@@ -2,6 +2,7 @@ class RestException(Exception):
     status_code = 400
     NOT_FOUND = {'code': 'not_found', 'message': 'Unknown path.', 'status_code':404}
     TOKEN_INVALID = {'code': 'token_invalid', 'message': 'Please log in again.'}
+    EMAIL_TOKEN_INVALID = {'code': 'email_token_invalid', 'message': 'Your email was not validated.  Please try resetting your password to continue.'}
     TOKEN_EXPIRED = {'code': 'token_expired', 'message': 'Your session timed out.  Please log in again.'}
     TOKEN_MISSING = {'code': 'token_missing', 'message': 'You\'re are not logged in.'}
     ELASTIC_ERROR = {'code': 'elastic_error', 'message':"Error connecting to ElasticSearch."}
@@ -11,6 +12,7 @@ class RestException(Exception):
     CAN_NOT_DELETE = {'code': 'can_not_delete', 'message': 'You must delete all dependent records first.'}
     LOGIN_FAILURE = {'code': 'login_failure', 'message': 'The credentials you supplied are incorrect.'}
     EMAIL_EXISTS = {'code': 'duplicate_email', 'message': 'The email you provided is already in use.'}
+    CONFIRM_EMAIL = {'code': 'confirm_email', 'message': 'You must confirm your email address before signing in.'}
 
     def __init__(self, payload, status_code=None, details=None):
         Exception.__init__(self)

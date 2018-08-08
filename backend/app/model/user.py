@@ -14,6 +14,7 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False, unique=True)
     display_name = db.Column(db.String)
     _password = db.Column('password', db.Binary(60))
+    email_verified = db.Column(db.Boolean, nullable=False, default=False)
 
     @hybrid_property
     def password(self):
