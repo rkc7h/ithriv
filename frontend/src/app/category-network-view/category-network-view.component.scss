@@ -6,13 +6,13 @@ circle, rect, text, image {
   cursor: pointer;
 }
 
-g.node {
-  transition: 300ms ease transform;
+// g.node {
+//   transition: 300ms ease transform;
 
-  &:hover{
-    transform: scale(1.2);
-  }
-}
+//   &:hover{
+//     transform: scale(1.2);
+//   }
+// }
 
 .clip-circle {
   clip-path: circle(50%);

@@ -23,13 +23,15 @@ export class CategoryNetworkViewComponent implements OnInit {
   layoutWidth = 982;
   layoutHeight = 982; // 642;
   navRadius = 40;
-  selfRadius = 80;
+  selfRadius = 90;
   parentRadius = 70;
-  nodeRadius = 60;
+  nodeRadius = 70;
   rootNodeAngle = 35;
-  selfTitleHeight = 60;
-  parentTitleHeight = 40;
+  selfTitleHeight = 40;
+  parentTitleHeight = 30;
   strokeWidth = 4;
+  iconSize = 24;
+  fontSize = 16;
 
   constructor(
     private router: Router,
@@ -103,9 +105,9 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   nodeLineLength(node: Category, i: number) {
     if (this.isParentNode(node) && (i === 0)) {
-      return this.selfRadius + this.nodeRadius * 4;
-    } else {
       return this.selfRadius + this.nodeRadius * 2;
+    } else {
+      return this.selfRadius + this.nodeRadius;
     }
   }
 
@@ -170,6 +172,12 @@ export class CategoryNetworkViewComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  translateIcon(c: Category, i: number) {
+    const xOffset = this.nodeLineLength(c, i) + this.nodeRadius - this.iconSize;
+    const yOffset = -(this.nodeRadius - this.iconSize / 2);
+    return `translate(${xOffset}, ${yOffset}) scale(2)`;
   }
 
   viewBoxDimensions() {
