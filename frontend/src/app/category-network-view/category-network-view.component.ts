@@ -15,10 +15,14 @@ import { User } from '../user';
 export class CategoryNetworkViewComponent implements OnInit {
   categoryId: number;
   category: Category;
+  allCategories: Category[];
   categoryResources: CategoryResource[];
   isDataLoaded = false;
   user: User;
 
+  layoutWidth = 982;
+  layoutHeight = 982; // 642;
+  navRadius = 40;
   selfRadius = 80;
   parentRadius = 70;
   nodeRadius = 60;
@@ -38,8 +42,13 @@ export class CategoryNetworkViewComponent implements OnInit {
       console.log('params', params);
 
       this.categoryId = params['category'];
+      this.loadRootCategories();
       this.loadCategory(this.categoryId);
     });
+  }
+
+  loadRootCategories() {
+    this.api.getCategories().subscribe(cats => this.allCategories = cats);
   }
 
   loadCategory(categoryId: Number) {
@@ -127,15 +136,52 @@ export class CategoryNetworkViewComponent implements OnInit {
     return `url('/assets/browse/${c.image}')`;
   }
 
-  nodeImageSize(c: Category) {
-    if (c.id === this.category.id) {
-      return (this.selfRadius - this.strokeWidth) * 2 - this.strokeWidth;
-    } else {
-      return (this.nodeRadius - this.strokeWidth) * 2 - this.strokeWidth;
+  nodeImageSize(mode: string) {
+    const key = mode + 'Radius';
+
+    if (this.hasOwnProperty(key)) {
+      return (this[key] - this.strokeWidth) * 2 - this.strokeWidth;
     }
   }
 
   nodeImagePath(c: Category) {
     return `/assets/browse/${c.image}`;
+  }
+
+  categoryColor(hexColor: string, alpha = 1) {
+    return hexColorToRGBA(hexColor, alpha);
+  }
+
+  translateByIndex(i: number) {
+    const numNodes = this.allCategories.length;
+    return `translate(${-(numNodes - i) * this.nodeRadius * 2}, ${this.nodeRadius})`;
+  }
+
+  translateTo(s: string) {
+    switch (s) {
+      case 'origin':
+        return `translate(0, 0)`;
+        break;
+
+      case 'top-right':
+        return `translate(${this.layoutWidth / 2}, ${-this.layoutHeight / 2})`;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  viewBoxDimensions() {
+    return `${-this.layoutWidth / 2} ${-this.layoutHeight / 2} ${this.layoutWidth} ${this.layoutHeight}`;
+  }
+
+  isSelectedCategory(node: Category) {
+    if (node.id === this.category.id) { return true; }
+    if (this.category.parent && (node.id === this.category.parent.id)) { return true; }
+  }
+
+  nodeGradient(node: Category) {
+    return `url(#linear-${node.id})`;
   }
 }

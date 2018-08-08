@@ -2,6 +2,10 @@ line, circle, rect {
   stroke-width: 4px;
 }
 
+circle, rect, text, image {
+  cursor: pointer;
+}
+
 .clip-circle {
   clip-path: circle(50%);
 }
