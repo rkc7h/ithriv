@@ -75,6 +75,7 @@ import { RegisterFormComponent } from './register-form/register-form.component';
 import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
 import { FavoriteResourceListComponent } from './favorite-resource-list/favorite-resource-list.component';
 import { GradientBorderDirective } from './gradient-border.directive';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -110,7 +111,8 @@ import { GradientBorderDirective } from './gradient-border.directive';
     RegisterFormComponent,
     FavoriteResourceButtonComponent,
     FavoriteResourceListComponent,
-    GradientBorderDirective
+    GradientBorderDirective,
+    DashboardComponent
   ],
   imports: [
     AppRoutingModule,

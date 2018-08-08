@@ -11,9 +11,11 @@ import { ResourceFormComponent } from '../resource-form/resource-form.component'
 import { ResourceComponent } from '../resource/resource.component';
 import { SearchComponent } from '../search/search.component';
 import { SessionRedirectComponent } from '../session-redirect/session-redirect.component';
+import {DashboardComponent} from "../dashboard/dashboard.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
+  { path: 'dashboard', component: DashboardComponent, data: { title: 'MyThriv Workspace' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
   { path: 'register', component: LoginComponent, data: { title: 'Sign up for iThriv', hideHeader: true } },
   { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },

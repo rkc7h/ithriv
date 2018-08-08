@@ -1,0 +1,23 @@
+<div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center">
+  <div fxFlex="75%">
+    <!--<form class="search-box" [formGroup]="searchForm">-->
+      <!--<mat-form-field appearance="outline">-->
+        <!--<input matInput #query type="search" [formControl]="searchBox" placeholder="Search" value="{{resourceQuery.query}}">-->
+        <!--<mat-icon matSuffix>search</mat-icon>-->
+        <!--<mat-hint class="mat-h3">-->
+          <!--Need help?-->
+          <!--<a href="#">Request a Research Concierge Services Consultation</a>-->
+        <!--</mat-hint>-->
+      <!--</mat-form-field>-->
+    <!--</form>-->
+  </div>
+</div>
+
+<h1 class="mat-h1 page-title">myThriv Workspace</h1>
+
+<div id="tiles" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em" fxLayoutAlign="center">
+  <app-category-tile *ngFor="let category of categories" [category]="category" fxFlex="25%"></app-category-tile>
+</div>
+
+<app-favorite-resource-list></app-favorite-resource-list>
+
