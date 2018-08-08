@@ -165,6 +165,12 @@ You can find these values in your Mailtrap account in the settings portion of yo
 MAIL_USERNAME = "numbersandletters"
 MAIL_PASSWORD = "lettersandnumbers"
 
+Also note that mail is handled differently for tests. Make sure that your instance config has
+
+TESTING = False
+
+
+
 
 ## Maintenance
 
