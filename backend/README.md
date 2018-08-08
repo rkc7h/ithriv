@@ -151,11 +151,19 @@ npm install
 ng serve
 ```
 
-## Stopping the app
+### Stopping the app
 Execute the following at the top level of the repository to stop all running services:
 ```BASH
 ./stop.sh
 ```
+
+### Setting up Mailtrap
+To test email integration set up an account with [Mailtrap](https://mailtrap.io/)
+In your instance config, set your username and password.
+You can find these values in your Mailtrap account in the settings portion of your inbox; you will not find these values in your general account settings as the username and password are specific to each inbox you create.
+
+MAIL_USERNAME = "numbersandletters"
+MAIL_PASSWORD = "lettersandnumbers"
 
 
 ## Maintenance
@@ -197,7 +205,6 @@ not
 models.Resrouce.query( ...
 ```
 
-Testing github/slack integration.
 
 ### Security / Authentication
 This will become increasingly complicated, so check back here often.  
