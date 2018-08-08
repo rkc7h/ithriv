@@ -162,8 +162,7 @@ class ResourceCategorySchema(ModelSchema):
 class UserFavoritesSchema(ModelSchema):
     class Meta:
         model = Favorite
-        fields = ('id', 'user_id', 'resource_id', '_links')
-
+        fields = ('id', 'user_id', 'resource_id', 'resource', '_links')
     resource = fields.Nested(ThrivResourceSchema, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.favoriteendpoint', id='<id>'),
