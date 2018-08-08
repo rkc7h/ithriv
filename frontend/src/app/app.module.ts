@@ -61,6 +61,7 @@ import { FormFieldComponent } from './form-field/form-field.component';
 import { GradientBackgroundDirective } from './gradient-background.directive';
 import { GradientBorderDirective } from './gradient-border.directive';
 import { HeaderComponent } from './header/header.component';
+import { HomeComponent } from './home/home.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { LoginComponent } from './login/login.component';
 import { LogoComponent } from './logo/logo.component';
@@ -100,6 +101,7 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     GradientBackgroundDirective,
     GradientBorderDirective,
     HeaderComponent,
+    HomeComponent,
     LoginComponent,
     LoginFormComponent,
     LogoComponent,
