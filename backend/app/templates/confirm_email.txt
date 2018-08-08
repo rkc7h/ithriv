@@ -1,0 +1,6 @@
+{{ user.display_name }},
+
+You recently registered for an account with iThriv.
+
+To Complete your registration, please place the following url in your browser to confirm your Email Address:
+{{confirm_url}}.

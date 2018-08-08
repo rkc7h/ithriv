@@ -50,17 +50,24 @@ import { BrowseComponent } from './browse/browse.component';
 import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
+import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
+import { FavoriteResourceListComponent } from './favorite-resource-list/favorite-resource-list.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
 import { FormFieldComponent } from './form-field/form-field.component';
 import { GradientBackgroundDirective } from './gradient-background.directive';
+import { GradientBorderDirective } from './gradient-border.directive';
 import { HeaderComponent } from './header/header.component';
+import { LoginFormComponent } from './login-form/login-form.component';
 import { LoginComponent } from './login/login.component';
 import { LogoComponent } from './logo/logo.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ProfileComponent } from './profile/profile.component';
+import { RegisterFormComponent } from './register-form/register-form.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { ResourceFormComponent } from './resource-form/resource-form.component';
 import { ResourceListComponent } from './resource-list/resource-list.component';
 import { ResourceSearchComponent } from './resource-search/resource-search.component';
@@ -70,49 +77,44 @@ import { SearchComponent } from './search/search.component';
 import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
-import { LoginFormComponent } from './login-form/login-form.component';
-import { RegisterFormComponent } from './register-form/register-form.component';
-import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
-import { FavoriteResourceListComponent } from './favorite-resource-list/favorite-resource-list.component';
-import { GradientBorderDirective } from './gradient-border.directive';
-import { DashboardComponent } from './dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
+    AddCategoryButtonComponent,
+    AddResourceButtonComponent,
     AppComponent,
-    ResourceSearchComponent,
-    ResourceComponent,
-    ResourceListComponent,
-    SearchComponent,
+    ApprovedBadgeComponent,
     AvailabilityComponent,
     BrowseComponent,
     CategoryComponent,
     CategoryFormComponent,
-    ResourceFormComponent,
-    HeaderComponent,
     CategoryTileComponent,
-    ResourceTileComponent,
-    FormFieldComponent,
+    DashboardComponent,
     EditCategoryButtonComponent,
-    AddCategoryButtonComponent,
     EditResourceButtonComponent,
-    AddResourceButtonComponent,
-    GradientBackgroundDirective,
-    SessionRedirectComponent,
-    FormFieldLabelComponent,
-    NotFoundComponent,
-    TreeSelectComponent,
-    ApprovedBadgeComponent,
-    LoginComponent,
-    ProfileComponent,
-    ForgotPasswordComponent,
-    LogoComponent,
-    LoginFormComponent,
-    RegisterFormComponent,
     FavoriteResourceButtonComponent,
     FavoriteResourceListComponent,
+    ForgotPasswordComponent,
+    FormFieldComponent,
+    FormFieldLabelComponent,
+    GradientBackgroundDirective,
     GradientBorderDirective,
-    DashboardComponent
+    HeaderComponent,
+    LoginComponent,
+    LoginFormComponent,
+    LogoComponent,
+    NotFoundComponent,
+    ProfileComponent,
+    RegisterFormComponent,
+    ResetPasswordComponent,
+    ResourceComponent,
+    ResourceFormComponent,
+    ResourceListComponent,
+    ResourceSearchComponent,
+    ResourceTileComponent,
+    SearchComponent,
+    SessionRedirectComponent,
+    TreeSelectComponent
   ],
   imports: [
     AppRoutingModule,

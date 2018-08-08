@@ -3,22 +3,26 @@ import { RouterModule, Routes } from '@angular/router';
 import { BrowseComponent } from '../browse/browse.component';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 import { CategoryComponent } from '../category/category.component';
+import { DashboardComponent } from "../dashboard/dashboard.component";
 import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
 import { LoginComponent } from '../login/login.component';
 import { NotFoundComponent } from '../not-found/not-found.component';
 import { ProfileComponent } from '../profile/profile.component';
+import { ResetPasswordComponent } from '../reset-password/reset-password.component';
 import { ResourceFormComponent } from '../resource-form/resource-form.component';
 import { ResourceComponent } from '../resource/resource.component';
 import { SearchComponent } from '../search/search.component';
 import { SessionRedirectComponent } from '../session-redirect/session-redirect.component';
-import {DashboardComponent} from "../dashboard/dashboard.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'search', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent, data: { title: 'MyThriv Workspace' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
+  { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
   { path: 'register', component: LoginComponent, data: { title: 'Sign up for iThriv', hideHeader: true } },
   { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },
+  { path: 'reset_password/:email_token', component: ResetPasswordComponent,
+            data: { title: 'Reset your iThriv password', hideHeader: true } },
   { path: 'profile', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
   { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
   { path: 'search', component: SearchComponent, data: { title: 'Search' } },

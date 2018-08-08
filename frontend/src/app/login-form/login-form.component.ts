@@ -1,12 +1,13 @@
 import {Component, EventEmitter, HostBinding, OnInit} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { LoginService } from '../login-service';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition } from '../shared/router.animations';
+import {IThrivForm} from '../shared/IThrivForm';
 
 @Component({
   selector: 'app-login-form',
@@ -14,14 +15,15 @@ import { routerTransition } from '../shared/router.animations';
   styleUrls: ['./login-form.component.scss'],
   animations: [routerTransition()]
 })
-export class LoginFormComponent implements OnInit {
+export class LoginFormComponent {
   @HostBinding('@routerTransition')
   title: string;
   login_url = environment.api + '/api/login';
-  password_url = environment.api + '/api/password_login';
+  emailToken: string;
   loginServices: LoginService[] = [];
   errorEmitter = new EventEmitter<string>();
   errorMatcher = new ErrorMatcher();
+  linkFromConfirmEmail = false;
   loginForm: FormGroup = new FormGroup({});
   fields = {
     email: new FormField({
@@ -37,16 +39,21 @@ export class LoginFormComponent implements OnInit {
       type: 'password',
     }),
   };
+  iThrivForm = new IThrivForm(this.fields, this.loginForm);
 
   constructor(
+    private route: ActivatedRoute,
     private api: ResourceApiService,
     private router: Router
   ) {
+    this.route.params.subscribe(params => {
+      if ('email_token' in params) {
+        this.emailToken = params['email_token'];
+        this.linkFromConfirmEmail = true;
+      }
+    });
     this.loadServices();
-    this.loadForm();
-  }
-
-  ngOnInit() {
+    this.iThrivForm.loadForm();
   }
 
   loadServices() {
@@ -62,39 +69,11 @@ export class LoginFormComponent implements OnInit {
   }
 
   getFields() {
-    const fields = [];
-
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        fields.push(this.fields[fieldName]);
-      }
-    }
-
-    return fields;
-  }
-
-  loadForm() {
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        const field = this.fields[fieldName];
-        const validators = [];
-
-        if (field.required) {
-          validators.push(Validators.required);
-        }
-
-        if (field.type === 'email') {
-          validators.push(Validators.email);
-        }
-
-        this.loginForm.addControl(fieldName, field.formControl);
-      }
-    }
+    return this.iThrivForm.getFields();
   }
 
   goLoginService(loginService: LoginService) {
     console.log('loginService', loginService);
-
     // !!! TO DO: Open web intent associated with given LoginService
     window.location.href = this.login_url;
   }
@@ -104,12 +83,20 @@ export class LoginFormComponent implements OnInit {
   }
 
   onSubmit() {
+    this.iThrivForm.validate();
+    if (!this.loginForm.valid) { return; }
+
     this.api.login(this.fields['email'].formControl.value,
-                    this.fields['password'].formControl.value).subscribe(token => {
+                    this.fields['password'].formControl.value,
+                    this.emailToken).subscribe(token => {
        this.api.openSession(token['token']);
        this.router.navigate(['']);
     }, error1 => {
-      this.errorEmitter.emit(error1);
+                      if (error1) {
+                        this.errorEmitter.emit(error1);
+                      } else {
+                        this.errorEmitter.emit('An unexpected error occured.  Please contact support.');
+                      }
     });
   }
 
