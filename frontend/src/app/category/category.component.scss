@@ -93,6 +93,11 @@ $breadcrumb-inner-border-width: 1px;
         top: 0px;
         right: 0px;
       }
+
+      &:hover mat-icon {
+        color: white;
+        fill: white;
+      }
     }
 
     &.breadcrumb-self {

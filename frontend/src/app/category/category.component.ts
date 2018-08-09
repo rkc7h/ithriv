@@ -3,9 +3,9 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { CategoryResource } from '../category-resource';
+import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
-import { hexColorToRGBA } from '../shared/color';
 
 @Component({
   selector: 'app-category',
