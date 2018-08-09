@@ -1,24 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
-import { CategoryResource } from '../category-resource';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { routerTransition } from '../shared/router.animations';
 import { User } from '../user';
 
 @Component({
   selector: 'app-category-network-view',
   templateUrl: './category-network-view.component.html',
-  styleUrls: ['./category-network-view.component.scss']
+  styleUrls: ['./category-network-view.component.scss'],
+  animations: [routerTransition()],
 })
 export class CategoryNetworkViewComponent implements OnInit {
+  @HostBinding('@routerTransition')
+  isDataLoaded = false;
   categoryId: number;
   category: Category;
   allCategories: Category[];
-  categoryResources: CategoryResource[];
-  isDataLoaded = false;
   user: User;
+  resourceCounts = {};
 
   layoutWidth = 982;
   layoutHeight = 982; // 642;
@@ -52,16 +54,33 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   loadCategory(categoryId: Number) {
+    this.isDataLoaded = false;
     this.api.getCategory(categoryId).subscribe(
       (category) => {
-        console.log('loadCategory category', category);
         this.category = category;
 
         // Set page title
         const currentTitle = this.titleService.getTitle();
         this.titleService.setTitle(`${currentTitle} - ${this.category.name}`);
+        this.loadCategoryResources(category);
       }
     );
+  }
+
+  loadCategoryResources(c: Category) {
+    if (c.level === 1) {
+      c.children.forEach(child => {
+        this.resourceCounts[child.id] = 0;
+
+        this.api.getCategoryResources(child).subscribe(resources => {
+          resources.forEach(i => {
+            const currentNum = this.resourceCounts[child.id];
+            this.resourceCounts[child.id] = isFinite(currentNum) ? currentNum + 1 : 0;
+          });
+        });
+      });
+    }
+    this.isDataLoaded = true;
   }
 
   ngOnInit() {
@@ -120,8 +139,6 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   words(str: string) {
-    console.log('str', str);
-
     return str.trim()
       .replace('  ', ' ')
       .replace(/ to /i, '_to ')
@@ -174,12 +191,8 @@ export class CategoryNetworkViewComponent implements OnInit {
     switch (s) {
       case 'origin':
         return `translate(0, 0)`;
-        break;
-
       case 'top-right':
         return `translate(${this.layoutWidth / 2}, ${-this.layoutHeight / 2})`;
-        break;
-
       default:
         break;
     }
@@ -218,6 +231,8 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   numResources(node: Category) {
-    return 0;
+    if (this.resourceCounts.hasOwnProperty(node.id)) {
+      return this.resourceCounts[node.id];
+    }
   }
 }
