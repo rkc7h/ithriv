@@ -211,7 +211,11 @@ class UserSchema(ModelSchema):
         fields = ('id', '_links', 'uid', 'display_name', 'email', 'password')
     password = fields.String(load_only=True)
     id = fields.Integer(required=False, allow_none=True)
+    institution_id = fields.Integer(required=False, allow_none=True)
+
+    institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.userendpoint', id='<id>'),
         'favorites': ma.UrlFor('api.userfavoriteendpoint'),
+        'institution': ma.UrlFor('api.institutionendpoint', id='<institution_id>'),
     })
