@@ -72,14 +72,25 @@ export class HeaderComponent {
   }
 
   viewMode(network = false) {
-    console.log('\n\n=== viewMode ===');
-    console.log('category', this.categoryId);
-
-    const mode = network ? 'network' : undefined;
-
     if (this.categoryId) {
       if (network) {
-        this.router.navigate(['category', this.categoryId, mode]);
+        // Go up the hierarchy to the Level 1 or 0 parent for this category
+        this.api.getCategory(parseInt(this.categoryId, 10)).subscribe(c => {
+          let catId: number;
+          if (c.level === 2) { catId = c.parent.id; }
+          if (c.level <= 1) { catId = c.id; }
+          this.router.navigate(['category', catId.toString(), 'network']);
+        });
+
+      } else {
+        // Go up the hierarchy to the Level 0 parent for this category
+        this.api.getCategory(parseInt(this.categoryId, 10)).subscribe(c => {
+          let catId: number;
+          if (c.level === 0) { catId = c.id; }
+          if (c.level === 1) { catId = c.parent.id; }
+          if (c.level === 2) { catId = c.parent.parent.id; }
+          this.router.navigate(['browse', catId.toString()]);
+        });
       }
     }
   }

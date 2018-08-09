@@ -102,7 +102,6 @@ export class SearchComponent implements OnInit {
   doSearch() {
     this.api.searchResources(this.resourceQuery).subscribe(
       (query) => {
-        console.log('Searching ...', query);
         this.resourceQuery = query;
         this.resources = query.resources;
         this.checkWindowWidth();
