@@ -49,12 +49,10 @@
             [attr.width]="nodeImageSize('node')" [attr.height]="nodeImageSize('node')" [attr.href]="nodeImagePath(node)" class="clip-circle"
             preserveAspectRatio="xMidYMid slice" />
           <g *ngIf="node.level === 1" [inlineSVG]="node.icon.url" [attr.transform]="translateIcon(node, i)" [attr.fill]="node.color"></g>
-          <!-- <image *ngIf="node.level === 1" [attr.x]="nodeLineLength(node, i) + nodeRadius - nodeImageSize('node')/4"
-            [attr.y]="-nodeImageSize('node')/2" [attr.width]="nodeImageSize('node')/2" [attr.height]="nodeImageSize('node')/2"
-            [attr.href]="node.icon.url" preserveAspectRatio="xMidYMid slice" /> -->
-
-          <text *ngIf="node.level > 0" text-anchor="middle">
-            <tspan *ngFor="let word of words(node.name); let j = index" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="16 * j">{{word}}</tspan>
+          <text *ngIf="node.level > 0" text-anchor="middle" [attr.transform]="translateText(node)">
+            <tspan *ngFor="let word of words(node.name); let j = index" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="fontSize * j"
+              class="category-name">{{word}}</tspan>
+            <tspan *ngIf="node.level === 2" [attr.x]="nodeLineLength(node, words(node.name).length) + nodeRadius" [attr.y]="fontSize * words(node.name).length + fontSize">{{numResources(node)}} resources</tspan>
           </text>
         </g>
       </g>
@@ -73,8 +71,10 @@
       <image *ngIf="category.level === 0" [attr.x]="-nodeImageSize('self')/2" [attr.y]="-nodeImageSize('self')/2" [attr.width]="nodeImageSize('self')"
         [attr.height]="nodeImageSize('self')" [attr.href]="nodeImagePath(category)" class="clip-circle" preserveAspectRatio="xMidYMid slice"
       />
-      <text *ngIf="category.level > 0" text-anchor="middle">
-        <tspan *ngFor="let word of words(category.name); let j = index" x="0" [attr.y]="16 * j">{{word}}</tspan>
+      <g *ngIf="category.level === 1" [inlineSVG]="category.icon.url" [attr.fill]="category.color" [attr.transform]="translateIcon(category)"></g>
+      <text *ngIf="category.level > 0" text-anchor="middle" [attr.transform]="translateText(category)">
+        <tspan *ngFor="let word of words(category.name); let j = index" x="0" [attr.y]="fontSize * j" class="category-name">{{word}}</tspan>
+        <tspan *ngIf="category.level === 2" [attr.x]="0" [attr.y]="fontSize * words(category.name).length + fontSize">{{numResources(category)}} resources</tspan>
       </text>
     </g>
 

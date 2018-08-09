@@ -119,12 +119,23 @@ export class CategoryNetworkViewComponent implements OnInit {
     return 20 * (i + 1);
   }
 
-  words(s: string) {
-    return s.trim().split(' ');
+  words(str: string) {
+    console.log('str', str);
+
+    return str.trim()
+      .replace('  ', ' ')
+      .replace(/ to /i, '_to ')
+      .replace(/ and /i, '_& ')
+      .split(' ')
+      .map(s => s.replace('_&', ' &').replace('_to', ' to'));
   }
 
   goCategory(c: Category) {
-    this.router.navigate(['category', c.id, 'network']);
+    if (c.level === 2) {
+      this.router.navigate(['category', c.id]);
+    } else {
+      this.router.navigate(['category', c.id, 'network']);
+    }
   }
 
   backgroundImage(c: Category) {
@@ -175,9 +186,22 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   translateIcon(c: Category, i: number) {
-    const xOffset = this.nodeLineLength(c, i) + this.nodeRadius - this.iconSize;
-    const yOffset = -(this.nodeRadius - this.iconSize / 2);
-    return `translate(${xOffset}, ${yOffset}) scale(2)`;
+    if (isFinite(i)) {
+      const xOffset = this.nodeLineLength(c, i) + this.nodeRadius - this.iconSize;
+      const yOffset = -(this.nodeRadius - this.iconSize / 2);
+      return `translate(${xOffset}, ${yOffset}) scale(2)`;
+    } else {
+      return `translate(-${this.iconSize * 2}, -${this.iconSize * 3}) scale(4)`;
+    }
+  }
+
+  translateText(c: Category) {
+    const scale = (this.category.id === c.id) ? 2 : 1;
+    if (c.level === 1) {
+      return `translate(0, ${this.iconSize * scale})`;
+    } else {
+      return `translate(0, -${this.fontSize})`;
+    }
   }
 
   viewBoxDimensions() {
@@ -191,5 +215,9 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   nodeGradient(node: Category) {
     return `url(#linear-${node.id})`;
+  }
+
+  numResources(node: Category) {
+    return 0;
   }
 }

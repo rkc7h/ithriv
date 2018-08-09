@@ -14,7 +14,8 @@
   <div *ngIf="isDataLoaded">
     <section *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top-color': c.color}">
       <div>
-        <mat-icon *ngIf="c.icon" class="cat-icon-2" svgIcon="{{categoryIcon(c)}}" [ngStyle]="{'color': c.color, 'border-color': c.color}"></mat-icon>
+        <mat-icon *ngIf="c.icon" class="cat-icon-2" svgIcon="{{categoryIcon(c)}}" [ngStyle]="c.hover ? {'background-color': c.color, 'border-color': c.color} : {'color': c.color, 'border-color': c.color}"
+          (mouseover)="c.hover=true" (mouseleave)="c.hover=false" (click)="goNetworkView(c)"></mat-icon>
         <h2>{{c.name}}</h2>
       </div>
       <app-edit-category-button [category]="c" [parent]="category" (updatedCategory)="updateCategory($event)"></app-edit-category-button>
