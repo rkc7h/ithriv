@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
+import { User } from "../user";
+import { ResourceApiService } from "../shared/resource-api/resource-api.service";
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,17 +18,13 @@ export class ProfileComponent implements OnInit {
   error: string;
   errorMatcher = new ErrorMatcher();
   profileForm: FormGroup = new FormGroup({});
+  user: User;
+  errorMessage = '';
   fields = {
-    first_name: new FormField({
+    display_name: new FormField({
       formControl: new FormControl(),
       required: true,
-      placeholder: 'First Name',
-      type: 'text',
-    }),
-    last_name: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'Last Name',
+      placeholder: 'Display Name',
       type: 'text',
     }),
     email: new FormField({
@@ -35,22 +33,31 @@ export class ProfileComponent implements OnInit {
       placeholder: 'Email',
       type: 'email',
     }),
+    institution_id: new FormField({
+      formControl: new FormControl(),
+      required: true,
+      placeholder: 'Home Institution',
+      type: 'select',
+      apiSource: 'getInstitutions',
+      fieldsetId: 'institution_prefs',
+      fieldsetLabel: 'Institutions'
+    }),
     password: new FormField({
       formControl: new FormControl(),
       required: true,
       placeholder: 'Current Password',
       type: 'password',
     }),
-    confirm_password: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'New Password',
-      type: 'password',
-    }),
   };
 
-  constructor(private router: Router) {
+  constructor(
+    private api: ResourceApiService,
+    private router: Router
+  ) {
     this.loadForm();
+    this.user = { id: null, display_name: this.fields.display_name.formControl.value,
+      email: this.fields.email.formControl.value, institution_id: this.fields.institution_id.formControl.value,
+      password: this.fields.password.formControl.value };
   }
 
   ngOnInit() {
