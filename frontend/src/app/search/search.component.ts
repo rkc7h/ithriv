@@ -27,6 +27,7 @@ export class SearchComponent implements OnInit {
   loading = false;
   resources: Resource[];
   categories: Category[];
+  publicId: number;
   user: User;
 
   @ViewChild('sidenav') public sideNav: MatSidenav;
@@ -40,6 +41,7 @@ export class SearchComponent implements OnInit {
     this.loadUser();
     this.resources = [];
     this.categories = [];
+    this.publicId = 387;
 
     this.api.getCategories().subscribe(
       (categories) => {
@@ -84,7 +86,6 @@ export class SearchComponent implements OnInit {
   loadUser() {
     this.api._getSession().subscribe(s => {
       this.user = s;
-      this.user.institution_id = 1;
     });
   }
 
@@ -158,9 +159,17 @@ export class SearchComponent implements OnInit {
           return (av.institution_id === institutionId) && av.available;
         });
       } else {
-        return isApproved;
+        return isApproved && r.availabilities.some(av => {
+          return (av.institution_id === this.publicId) && av.available;
+        });
       }
     });
+  }
+
+  getAllResources() {
+    return this.resources.filter(r => {
+      return this.user ? true : r.approved;
+    })
   }
 
   // Returns current user's name, or "public" if user is not logged in.
@@ -171,6 +180,6 @@ export class SearchComponent implements OnInit {
   // Returns current user's institution_id, or Public institution_id
   // if user is not logged in.
   getInstitutionId() {
-    return this.user ? this.user.institution_id : 2;
+    return this.user ? this.user.institution_id : this.publicId;
   }
 }
