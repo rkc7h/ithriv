@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -30,11 +30,13 @@ import {
   MatStepperModule,
   MatTabsModule,
   MatToolbarModule,
+  MatTooltipModule,
   MatTreeModule
 } from '@angular/material';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CovalentTextEditorModule } from '@covalent/text-editor';
+import { InlineSVGModule } from 'ng-inline-svg';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { DeviceDetectorModule } from 'ngx-device-detector';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
@@ -77,7 +79,6 @@ import { SearchComponent } from './search/search.component';
 import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
-import { InlineSVGModule } from 'ng-inline-svg';
 
 @NgModule({
   declarations: [
@@ -158,6 +159,7 @@ import { InlineSVGModule } from 'ng-inline-svg';
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,
+    MatTooltipModule,
     MatTreeModule,
     ReactiveFormsModule
   ],

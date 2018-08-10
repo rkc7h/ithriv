@@ -18,6 +18,8 @@ export class HeaderComponent {
   login_url = environment.api + '/api/login';
   hideHeader = false;
   categoryId: string;
+  isResourceView = false;
+  isNetworkView = false;
 
   constructor(
     private router: Router,
@@ -37,6 +39,8 @@ export class HeaderComponent {
 
       if (e instanceof NavigationEnd) {
         this.isHome = ['/', '/search'].includes(e.url);
+        this.isResourceView = /^\/resource\//.test(e.url);
+        this.isNetworkView = /network$/.test(e.url);
       }
     });
   }

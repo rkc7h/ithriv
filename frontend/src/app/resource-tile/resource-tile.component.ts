@@ -19,4 +19,22 @@ export class ResourceTileComponent implements OnInit {
     $event.preventDefault();
     this.router.navigate(['resource', resource.id]);
   }
+
+  truncateWords(str: string, numWords: number) {
+    const maxChars = 36 * 2;
+    const allWords = str.split(' ');
+    const someWords = allWords.slice(0, numWords);
+    if (allWords.length > someWords.length) {
+      const someStr = someWords.join(' ') + '...';
+
+      if (someStr.length > maxChars) {
+        return someWords.slice(0, (someWords.length - 1)).join(' ') + '...';
+      } else {
+        return someStr;
+      }
+    } else {
+      return str;
+    }
+  }
 }
+
