@@ -89,11 +89,6 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  goSearch($event) {
-    $event.preventDefault();
-    this.router.navigate(['search']);
-  }
-
   updateQuery(query) {
     this.resourceQuery.query = query;
     this.resourceQuery.start = 0;
@@ -150,36 +145,9 @@ export class SearchComponent implements OnInit {
     this.doSearch();
   }
 
-  getResources(institutionId?: number) {
-    return this.resources.filter(r => {
-      const isApproved = this.user ? true : r.approved;
-
-      if (Number.isFinite(institutionId)) {
-        return isApproved && r.availabilities.some(av => {
-          return (av.institution_id === institutionId) && av.available;
-        });
-      } else {
-        return isApproved && r.availabilities.some(av => {
-          return (av.institution_id === this.publicId) && av.available;
-        });
-      }
-    });
-  }
-
   getAllResources() {
     return this.resources.filter(r => {
       return this.user ? true : r.approved;
-    })
-  }
-
-  // Returns current user's name, or "public" if user is not logged in.
-  getUserName() {
-    return this.user ? this.user.display_name : 'the public';
-  }
-
-  // Returns current user's institution_id, or Public institution_id
-  // if user is not logged in.
-  getInstitutionId() {
-    return this.user ? this.user.institution_id : this.publicId;
+    });
   }
 }

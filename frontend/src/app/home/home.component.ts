@@ -69,18 +69,10 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.doSearch();
     this.searchBox = new FormControl();
     this.searchForm = new FormGroup({
       searchBox: this.searchBox
     });
-
-    this.searchBox.setValue(this.resourceQuery.query);
-    this.searchBox.valueChanges.pipe(
-      debounceTime(300)).subscribe(query => {
-        this.resourceQuery.query = query;
-        this.doSearch();
-      });
   }
 
   loadUser() {
@@ -89,65 +81,8 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  goSearch($event) {
-    $event.preventDefault();
-    this.router.navigate(['search']);
-  }
-
-  updateQuery(query) {
-    this.resourceQuery.query = query;
-    this.resourceQuery.start = 0;
-    this.doSearch();
-  }
-
-  doSearch() {
-    this.api.searchResources(this.resourceQuery).subscribe(
-      (query) => {
-        console.log('Searching ...', query);
-        this.resourceQuery = query;
-        this.resources = query.resources;
-        this.checkWindowWidth();
-      }
-    );
-    (<any>window).gtag('event', this.resourceQuery.query, {
-      'event_category': 'search'
-    });
-  }
-
-  onScroll() {
-    console.log('Scrolled!');
-    if (this.loading) { return; }
-
-    if (this.resources != null && this.resources.length === this.resourceQuery.total) {
-      return;
-    }
-    console.log('finding more resources....');
-    this.loading = true;
-    const scrollSearch = this.resourceQuery;
-    scrollSearch.start = this.resources.length;
-    this.api.searchResources(scrollSearch).subscribe(
-      (query) => {
-        this.resources = this.resources.concat(query.resources);
-        this.loading = false;
-      }
-    );
-  }
-
-  addFilter(field: string, value: string) {
-    this.resourceQuery.filters.push({ field: field, value: value });
-    this.showFilters = false;
-    this.resourceQuery.start = 0;
-    this.doSearch();
-  }
-
-  removeFilter(filter: Filter) {
-    const index = this.resourceQuery.filters.indexOf(filter, 0);
-    if (index > -1) {
-      this.resourceQuery.filters.splice(index, 1);
-    }
-    this.showFilters = false;
-    this.resourceQuery.start = 0;
-    this.doSearch();
+  goSearch() {
+    this.router.navigate(['search', this.searchBox.value]);
   }
 
   getResources(institutionId?: number) {
@@ -165,13 +100,6 @@ export class HomeComponent implements OnInit {
       }
     });
   }
-
-  getAllResources() {
-    return this.resources.filter(r => {
-      return this.user ? true : r.approved;
-    })
-  }
-
 
   // Returns current user's name, or "public" if user is not logged in.
   getUserName() {
