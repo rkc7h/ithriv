@@ -5,7 +5,7 @@
 // Load the UVA Theme
 @include ithriv-theme($uva-theme);
 
-$base-font-size: 14px;
+$base-font-size: 16px;
 
 .resource {
   border-top: 4px solid mat-color($uva-accent, 500);
