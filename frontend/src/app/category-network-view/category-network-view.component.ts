@@ -28,6 +28,7 @@ export class CategoryNetworkViewComponent implements OnInit {
   selfRadius = 90;
   parentRadius = 70;
   nodeRadius = 70;
+  nodeChildRadius = 15;
   rootNodeAngle = 35;
   selfTitleHeight = 40;
   parentTitleHeight = 30;
@@ -86,25 +87,25 @@ export class CategoryNetworkViewComponent implements OnInit {
   ngOnInit() {
   }
 
-  private rotateChildDegrees(i: number) {
-    if (this.category.children.length > 0) {
-      const numNodes = this.categoryNodes(this.category).length;
-      return i * 360 / numNodes + this.rootNodeAngle;
+  private rotateChildDegrees(i: number, numTotal: number) {
+    if (numTotal > 0) {
+      return i * 360 / numTotal + this.rootNodeAngle;
     }
 
     return 0;
   }
 
-  rotateChild(i: number) {
-    if (this.category.children.length > 0) {
-      return `rotate(${this.rotateChildDegrees(i)})`;
+  rotateChild(i: number, numTotal: number) {
+    if (numTotal > 0) {
+      return `rotate(${this.rotateChildDegrees(i, numTotal)})`;
     }
   }
 
-  unrotateChild(c: Category, i: number) {
+  unrotateChild(c: Category, i: number, numTotal: number) {
     if (this.category.children.length > 0) {
-      const offset = this.nodeLineLength(c, i) + this.nodeRadius;
-      return `rotate(${-this.rotateChildDegrees(i)}, ${offset}, 0)`;
+      const scale = c.hover ? 1.1 : 1;
+      const offset = (this.nodeLineLength(c, i) + this.nodeRadius) * scale;
+      return `rotate(${-this.rotateChildDegrees(i, numTotal)}, ${offset}, 0) scale(${scale})`;
     }
   }
 
@@ -187,12 +188,14 @@ export class CategoryNetworkViewComponent implements OnInit {
     return `translate(${-(numNodes - i) * this.nodeRadius * 2}, ${this.nodeRadius})`;
   }
 
-  translateTo(s: string) {
+  translateTo(s: string, node: Category, i: number) {
     switch (s) {
       case 'origin':
         return `translate(0, 0)`;
       case 'top-right':
         return `translate(${this.layoutWidth / 2}, ${-this.layoutHeight / 2})`;
+      case 'node':
+        return `translate(${this.nodeLineLength(node, i) + this.nodeRadius})`;
       default:
         break;
     }
