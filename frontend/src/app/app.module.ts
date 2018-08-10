@@ -53,6 +53,7 @@ import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryNetworkViewComponent } from './category-network-view/category-network-view.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
 import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
@@ -63,6 +64,7 @@ import { FormFieldComponent } from './form-field/form-field.component';
 import { GradientBackgroundDirective } from './gradient-background.directive';
 import { GradientBorderDirective } from './gradient-border.directive';
 import { HeaderComponent } from './header/header.component';
+import { HomeComponent } from './home/home.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { LoginComponent } from './login/login.component';
 import { LogoComponent } from './logo/logo.component';
@@ -92,6 +94,7 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     CategoryFormComponent,
     CategoryNetworkViewComponent,
     CategoryTileComponent,
+    DashboardComponent,
     EditCategoryButtonComponent,
     EditResourceButtonComponent,
     FavoriteResourceButtonComponent,
@@ -105,6 +108,7 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     GradientBorderDirective,
     GradientBorderDirective,
     HeaderComponent,
+    HomeComponent,
     LoginComponent,
     LoginFormComponent,
     LogoComponent,

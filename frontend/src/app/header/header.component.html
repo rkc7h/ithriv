@@ -38,11 +38,11 @@
       <img src="/assets/logo/ithriv-logomark.png" alt="iThriv" class="logomark" /> Research Concierge Portal
     </a>
     <span class="fill-remaining-space"></span>
-    <button mat-button>
+    <button mat-button *ngIf="getSession()" (click)="goDashboard($event)">
       <mat-icon>dashboard</mat-icon>
       Dashboard
     </button>
-    <button mat-button>
+    <button mat-button (click)="goSearch($event)">
       <mat-icon>search</mat-icon>
       Search
     </button>
@@ -67,5 +67,4 @@
       </mat-button-toggle-group>
     </ng-container>
   </mat-toolbar-row>
-
 </mat-toolbar>
