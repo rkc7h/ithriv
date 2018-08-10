@@ -40,6 +40,15 @@ export class RegisterFormComponent  {
       type: 'email',
       minLength: 10
     }),
+    institution_id: new FormField({
+      formControl: new FormControl(),
+      required: true,
+      placeholder: 'Home Institution',
+      type: 'select',
+      apiSource: 'getInstitutions',
+      fieldsetId: 'institution_prefs',
+      fieldsetLabel: 'Institutions'
+    }),
     password: new FormField({
       formControl: new FormControl(),
       required: true,
@@ -65,7 +74,7 @@ export class RegisterFormComponent  {
   ) {
     this.iThrivForm.loadForm();
     this.user = { id: null, display_name: this.fields.display_name.formControl.value,
-      email: this.fields.email.formControl.value,
+      email: this.fields.email.formControl.value, institution_id: this.fields.institution_id.formControl.value,
       password: this.fields.password.formControl.value };
   }
 

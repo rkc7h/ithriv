@@ -2,7 +2,8 @@
   <div fxFlex="75%">
     <form class="search-box" [formGroup]="searchForm">
       <mat-form-field appearance="outline">
-        <input matInput #query type="search" [formControl]="searchBox" placeholder="Search" value="{{resourceQuery.query}}">
+        <input matInput #query type="search" [formControl]="searchBox" placeholder="Search"
+               value="{{resourceQuery.query}}">
         <mat-icon matSuffix>search</mat-icon>
         <mat-hint class="mat-h3">
           Need help?
@@ -63,21 +64,11 @@
     </li>
   </ul>
 
-  <mat-tab-group mat-stretch-tabs dynamicHeight>
-    <mat-tab label="
-              Resources available to {{getUserName()}}
-              ({{getResources(getInstitutionId()).length}})
-            ">
-      <div class="example-small-box mat-elevation-z4">
-        <app-resource-list [resources]="getResources(getInstitutionId())" infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="300"
-          (scrolled)="onScroll()"></app-resource-list>
-      </div>
-    </mat-tab>
-    <mat-tab label="View all in category ({{getResources().length}})">
-      <div class="example-large-box mat-elevation-z4">
-        <app-resource-list [resources]="getResources()" infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="300"
-          (scrolled)="onScroll()"></app-resource-list>
-      </div>
-    </mat-tab>
-  </mat-tab-group>
+
+  <div class="example-large-box mat-elevation-z4">
+    <app-resource-list [resources]="getAllResources()" infiniteScroll [infiniteScrollDistance]="1"
+                       [infiniteScrollThrottle]="300"
+                       (scrolled)="onScroll()"></app-resource-list>
+  </div>
+
 </mat-sidenav-container>
