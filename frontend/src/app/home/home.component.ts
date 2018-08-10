@@ -41,7 +41,7 @@ export class HomeComponent implements OnInit {
     this.loadUser();
     this.resources = [];
     this.categories = [];
-    this.publicId = 387;
+    this.publicId = 87;
 
     this.api.getCategories().subscribe(
       (categories) => {

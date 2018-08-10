@@ -32,7 +32,7 @@ export class CategoryComponent implements OnInit {
       this.categoryId = params['category'];
       this.loadCategory(this.categoryId);
     });
-    this.publicId = 387;
+    this.publicId = 87;
     this.loadUser();
   }
 
