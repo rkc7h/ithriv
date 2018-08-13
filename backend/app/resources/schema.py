@@ -20,10 +20,18 @@ class ThrivInstitutionSchema(ModelSchema):
         fields = ('id', 'name', 'description')
 
 
+class IconSchema(ModelSchema):
+    class Meta:
+        model = Icon
+        fields = ('id', 'name', 'url')
+
+
 class ThrivTypeSchema(ModelSchema):
     class Meta:
         model = ThrivType
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'icon_id', 'icon')
+    icon_id = fields.Integer(required=False, allow_none=True)
+    icon = fields.Nested(IconSchema,  allow_none=True, dump_only=True)
 
 
 class AvailabilitySchema(ModelSchema):
@@ -75,12 +83,6 @@ class ThrivResourceSchema(ModelSchema):
         'availability': ma.UrlFor('api.resourceavailabilityendpoint', resource_id='<id>')
     },
         dump_only=True)
-
-
-class IconSchema(ModelSchema):
-    class Meta:
-        model = Icon
-        fields = ('id', 'name', 'url')
 
 
 class ParentCategorySchema(ModelSchema):
