@@ -13,8 +13,8 @@
   </div>
 </div>
 
-<div id="tiles" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em" fxLayoutAlign="center">
-  <app-category-tile *ngFor="let category of categories" [category]="category" fxFlex="25%"></app-category-tile>
+<div id="tiles" class="mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="45px" fxLayoutAlign="center">
+  <app-category-tile *ngFor="let category of categories" [category]="category"></app-category-tile>
 </div>
 
 <mat-sidenav-container fxLayout="row" fxLayout.xs="column">

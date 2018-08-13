@@ -1,10 +1,7 @@
 <div *ngIf="isDataLoaded" fxLayout="column" class="container mat-typography" fxLayoutGap="20px">
   <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="20px">
     <div *ngIf="category.parent && category.parent.icon_id" class="breadcrumbs" fxFlex="calc(15% - 20px)">
-      <div class="breadcrumb breadcrumb-root" (click)="goMode($event, category.parent.parent)" [ngStyle]="{'border-color': category.color, 'background-image': categoryImageURL()}"></div>
-      <div class="breadcrumb-root-title" (click)="goMode($event, category.parent.parent)" [ngStyle]="{'background-color': categoryColorLight(), 'border-color': categoryColorLight()}">
-        <a href="#" (click)="goMode($event, category.parent.parent)" [appGradientBorder]="category.color">{{category.parent.parent.name}}</a>
-      </div>
+      <app-category-tile [category]="category.parent.parent"></app-category-tile>
       <div class="breadcrumb breadcrumb-parent" (click)="goMode($event, category.parent)" [ngStyle]="category.parent.hover ? {'background-color': category.color, 'border-color': category.color, 'color': 'white'} : {'color': category.color, 'border-color': category.color}"
         (mouseover)="category.parent.hover=true" (mouseleave)="category.parent.hover=false">
         <a href="#" (click)="goMode($event, category.parent)">
