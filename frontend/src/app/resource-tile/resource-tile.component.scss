@@ -6,7 +6,7 @@
 @include ithriv-theme($uva-theme);
 
 $base-font-size: 16px;
-
+$icon-size: 50px;
 .resource {
   border-top: 4px solid mat-color($uva-accent, 500);
   margin: 0px;
@@ -25,14 +25,38 @@ mat-card {
     outline: 1px solid mat-color($ithriv-accent, 200, 1);
     background-color: mat-color($ithriv-accent, 100, 1);
   }
+
+  div.icon-with-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    div.type-icon {
+      width: $icon-size + 20px;
+      height: $icon-size + 20px;
+      background-color: mat-color($ithriv-accent, 500, 1);
+
+      mat-icon {
+        color: white;
+        fill: white;
+        width: $icon-size;
+        height: $icon-size;
+        font-size: $icon-size;
+        border-radius: 50%;
+        padding: 10px;
+      }
+    }
+  }
 }
 
 mat-card-title, mat-card-title.mat-card-title {
   font-weight: 900;
-  padding: 10px 0 20px 0;
-  height: $base-font-size * 3;
-  min-height: $base-font-size * 3;
-  max-height: $base-font-size * 3;
+  margin: 0 0 5px 0;
+  padding: 0 0 10px 0;
+  height: $base-font-size * 2;
+  min-height: $base-font-size * 2;
+  max-height: $base-font-size * 2;
+  overflow: hidden;
 }
 
 mat-card-content {
@@ -51,7 +75,7 @@ mat-card-actions {
   app-favorite-resource-button {
     position: absolute;
     bottom: $base-font-size;
-    left: $base-font-size;
+    right: $base-font-size;
   }
 
   .institution {
