@@ -5,12 +5,10 @@
 // Load the UVA Theme
 @include ithriv-theme($uva-theme);
 
+$base-font-size: 16px;
+
 .resource {
   border-top: 4px solid mat-color($uva-accent, 500);
-  min-height: 240px;
-  width: 400px;
-  min-width: 400px;
-  max-width: 400px;
   margin: 0px;
   padding: 1em;
 }
@@ -29,24 +27,44 @@ mat-card {
   }
 }
 
-mat-card-subtitle, .sub-title, .mat-card-pre-title {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.74);
-  font-weight: 700;
+mat-card-title, mat-card-title.mat-card-title {
+  font-weight: 900;
   padding: 10px 0 20px 0;
-}
-
-mat-card-subtitle {
-  padding: 0 0 10px 0;
-  margin: 0;
-}
-
-mat-card-subtitle div {
-  padding: 0;
-  margin: 0;
+  height: $base-font-size * 3;
+  min-height: $base-font-size * 3;
+  max-height: $base-font-size * 3;
 }
 
 mat-card-content {
-  height: 100px;
   overflow: hidden;
+  margin-left: 8px;
+  height: $base-font-size * 4;
+  min-height: $base-font-size * 4;
+  max-height: $base-font-size * 4;
 }
+
+mat-card-actions {
+  height: $base-font-size * 3;
+  min-height: $base-font-size * 3;
+  max-height: $base-font-size * 3;
+
+  app-favorite-resource-button {
+    position: absolute;
+    bottom: $base-font-size;
+    left: $base-font-size;
+  }
+
+  .institution {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    text-align: center;
+    margin: $base-font-size;
+    img {
+      max-height: $base-font-size * 3;
+    }
+  }
+}
+
+

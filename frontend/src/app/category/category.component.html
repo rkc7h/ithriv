@@ -1,38 +1,35 @@
-<div *ngIf="isDataLoaded">
-  <div class="header" *ngIf="isDataLoaded">
-    <mat-card>
-      <mat-card-header>
-        <div fxFlex="100%">
-          <div class="breadcrumbs" *ngIf="category.parent && category.parent.icon_id">
-            <div class="breadcrumb breadcrumb-root" (click)="goMode($event, category.parent.parent)" [ngStyle]="{'border-color': category.color, 'background-image': categoryImageURL()}"></div>
-            <div class="breadcrumb-root-title" (click)="goMode($event, category.parent.parent)" [ngStyle]="{'background-color': categoryColorLight(), 'border-color': categoryColorLight()}">
-              <a href="#" (click)="goMode($event, category.parent.parent)" [appGradientBorder]="category.color">{{category.parent.parent.name}}</a>
-            </div>
-            <div class="breadcrumb breadcrumb-parent" (click)="goMode($event, category.parent)" [ngStyle]="{'border-color': category.color}">
-              <a href="#" (click)="goMode($event, category.parent)">
-                <mat-icon svgIcon="ithriv_{{category.parent.icon_id}}" [ngStyle]="{'color': category.color}"></mat-icon>
-              </a>
-            </div>
-            <div class="breadcrumb breadcrumb-self" [ngStyle]="{'border-color': category.color}">
-              <div class="breadcrumb-self-name">
-                {{category.name}}
-              </div>
-            </div>
-          </div>
-          <h1 class="mat-display-2" [ngStyle]="{'color': category.color}">
-            {{category.name}}
-          </h1>
-          <p>{{category.description}}</p>
+<div *ngIf="isDataLoaded" fxLayout="column" class="container mat-typography" fxLayoutGap="20px">
+  <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="20px">
+    <div *ngIf="category.parent && category.parent.icon_id" class="breadcrumbs" fxFlex="calc(15% - 20px)">
+      <app-category-tile [category]="category.parent.parent"></app-category-tile>
+      <div class="breadcrumb breadcrumb-parent" (click)="goMode($event, category.parent)" [ngStyle]="category.parent.hover ? {'background-color': category.color, 'border-color': category.color, 'color': 'white'} : {'color': category.color, 'border-color': category.color}"
+        (mouseover)="category.parent.hover=true" (mouseleave)="category.parent.hover=false">
+        <a href="#" (click)="goMode($event, category.parent)">
+          <mat-icon svgIcon="ithriv_{{category.parent.icon_id}}" [ngStyle]="{'color': category.color}"></mat-icon>
+        </a>
+      </div>
+      <div class="breadcrumb breadcrumb-self" [ngStyle]="{'border-color': category.color}">
+        <div class="breadcrumb-self-name">
+          {{category.name}}
         </div>
+      </div>
+    </div>
+
+    <div class="content" fxFlex="calc(85% - 20px)">
+      <div fxLayout="column">
+        <h1 class="mat-display-2" [ngStyle]="{'color': category.color}">
+          {{category.name}}
+        </h1>
+        <p>{{category.description}}</p>
         <div fxFlex></div>
         <app-add-resource-button [category]="category"></app-add-resource-button>
-      </mat-card-header>
-      <mat-card-content *ngIf="getResources()">
+      </div>
+      <div *ngIf="getResources()" class="resources">
         <mat-tab-group mat-stretch-tabs dynamicHeight>
           <mat-tab label="
-            Resources available to {{getUserName()}}
-            ({{getResources(getInstitutionId()).length}})
-          ">
+                Resources available to {{getUserName()}}
+                ({{getResources(getInstitutionId()).length}})
+              ">
             <div class="example-small-box mat-elevation-z4">
               <app-resource-list [resources]="getResources(getInstitutionId())"></app-resource-list>
             </div>
@@ -43,7 +40,9 @@
             </div>
           </mat-tab>
         </mat-tab-group>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
+
+
   </div>
 </div>

@@ -2,6 +2,7 @@ import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
 import { routerTransition } from '../shared/router.animations';
+import { hexColorToRGBA } from '../shared/color';
 
 @Component({
   selector: 'app-category-tile',
@@ -20,7 +21,17 @@ export class CategoryTileComponent implements OnInit {
 
   goBrowse($event, category) {
     $event.preventDefault();
-    this.router.navigate(['browse', category.id]);
+    this.router.navigate(['category', category.id, 'network']);
   }
 
+  categoryImageURL() {
+    const rootCat = this.category && (this.category.level === 0);
+    if (rootCat) {
+      return `url('/assets/browse/${this.category.image.replace('.png', '')}-tile.png')`;
+    }
+  }
+
+  categoryColorLight() {
+    return hexColorToRGBA(this.category.color, 0.1);
+  }
 }
