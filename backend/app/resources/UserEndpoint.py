@@ -72,8 +72,6 @@ class UserListEndpoint(flask_restful.Resource):
             raise RestException(RestException.INVALID_OBJECT,
                                 details=new_user.errors)
 
-    # @auth.login_required
-    # @requires_roles('Admin')
     def send_confirm_email(self, user):
         tracking_code = email_service.confirm_email(user)
         log = EmailLog(user_id=user.id, type="confirm_email", tracking_code=tracking_code)
