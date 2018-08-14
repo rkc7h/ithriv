@@ -11,6 +11,6 @@ class ResourceCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     resource_id = db.Column(db.Integer, db.ForeignKey(ThrivResource.id), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey(Category.id), nullable=False)
-    resource = db.relationship(ThrivResource)
-    category = db.relationship(Category)
+    resource = db.relationship(ThrivResource, backref='resource_categories')
+    category = db.relationship(Category, backref='category_resources')
 

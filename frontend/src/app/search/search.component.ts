@@ -27,6 +27,7 @@ export class SearchComponent implements OnInit {
   loading = false;
   resources: Resource[];
   categories: Category[];
+  publicId: number;
   user: User;
 
   @ViewChild('sidenav') public sideNav: MatSidenav;
@@ -40,6 +41,7 @@ export class SearchComponent implements OnInit {
     this.loadUser();
     this.resources = [];
     this.categories = [];
+    this.publicId = 87;
 
     this.api.getCategories().subscribe(
       (categories) => {
@@ -84,13 +86,7 @@ export class SearchComponent implements OnInit {
   loadUser() {
     this.api._getSession().subscribe(s => {
       this.user = s;
-      this.user.institution_id = 1;
     });
-  }
-
-  goSearch($event) {
-    $event.preventDefault();
-    this.router.navigate(['search']);
   }
 
   updateQuery(query) {
@@ -148,28 +144,9 @@ export class SearchComponent implements OnInit {
     this.doSearch();
   }
 
-  getResources(institutionId?: number) {
+  getAllResources() {
     return this.resources.filter(r => {
-      const isApproved = this.user ? true : r.approved;
-
-      if (Number.isFinite(institutionId)) {
-        return isApproved && r.availabilities.some(av => {
-          return (av.institution_id === institutionId) && av.available;
-        });
-      } else {
-        return isApproved;
-      }
+      return this.user ? true : r.approved;
     });
-  }
-
-  // Returns current user's name, or "public" if user is not logged in.
-  getUserName() {
-    return this.user ? this.user.display_name : 'the public';
-  }
-
-  // Returns current user's institution_id, or Public institution_id
-  // if user is not logged in.
-  getInstitutionId() {
-    return this.user ? this.user.institution_id : 2;
   }
 }

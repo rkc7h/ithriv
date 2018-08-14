@@ -34,9 +34,9 @@
               <app-resource-list [resources]="getResources(getInstitutionId())"></app-resource-list>
             </div>
           </mat-tab>
-          <mat-tab label="View all in category ({{getResources().length}})">
+          <mat-tab label="View all in category ({{getAllResources().length}})">
             <div class="example-large-box mat-elevation-z4">
-              <app-resource-list [resources]="getResources()"></app-resource-list>
+              <app-resource-list [resources]="getAllResources()"></app-resource-list>
             </div>
           </mat-tab>
         </mat-tab-group>

@@ -6,6 +6,8 @@ import { CategoryResource } from '../category-resource';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
+import { hexColorToRGBA } from '../shared/color';
+import {collectExternalReferences} from "@angular/compiler";
 
 @Component({
   selector: 'app-category',
@@ -17,6 +19,7 @@ export class CategoryComponent implements OnInit {
   category: Category;
   categoryResources: CategoryResource[];
   isDataLoaded = false;
+  publicId: number;
   user: User;
 
   constructor(
@@ -30,7 +33,7 @@ export class CategoryComponent implements OnInit {
       this.categoryId = params['category'];
       this.loadCategory(this.categoryId);
     });
-
+    this.publicId = 87;
     this.loadUser();
   }
 
@@ -59,21 +62,27 @@ export class CategoryComponent implements OnInit {
   loadUser() {
     this.api._getSession().subscribe(s => {
       this.user = s;
-      this.user.institution_id = 1;
     });
   }
 
   getResources(institutionId?: number) {
     return this.categoryResources.filter(cr => {
       const isApproved = this.user ? true : cr.resource.approved;
-
       if (Number.isFinite(institutionId)) {
         return isApproved && cr.resource.availabilities.some(av => {
           return (av.institution_id === institutionId) && av.available;
         });
       } else {
-        return isApproved;
+        return isApproved && cr.resource.availabilities.some(av => {
+          return (av.institution_id === this.publicId) && av.available;
+        });
       }
+    }).map(cr => cr.resource);
+  }
+
+  getAllResources() {
+    return this.categoryResources.filter(cr => {
+      return this.user ? true : cr.resource.approved;
     }).map(cr => cr.resource);
   }
 
@@ -85,7 +94,7 @@ export class CategoryComponent implements OnInit {
   // Returns current user's institution_id, or Public institution_id
   // if user is not logged in.
   getInstitutionId() {
-    return this.user ? this.user.institution_id : 2;
+    return this.user ? this.user.institution_id : this.publicId;
   }
 
   ngOnInit() {

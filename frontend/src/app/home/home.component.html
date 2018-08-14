@@ -1,9 +1,9 @@
 <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center">
   <div fxFlex="75%">
-    <form class="search-box" [formGroup]="searchForm">
+    <form class="search-box" [formGroup]="searchForm" (ngSubmit)="goSearch()">
       <mat-form-field appearance="outline">
         <input matInput #query type="search" [formControl]="searchBox" placeholder="Search" value="{{resourceQuery.query}}">
-        <mat-icon matSuffix>search</mat-icon>
+        <mat-icon matSuffix (click)="goSearch()">search</mat-icon>
         <mat-hint class="mat-h3">
           Need help?
           <a href="#">Request a Research Concierge Services Consultation</a>
@@ -85,3 +85,4 @@
     </mat-tab>
   </mat-tab-group>
 </mat-sidenav-container>
+

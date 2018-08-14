@@ -7,7 +7,7 @@ from app.model.email_log import EmailLog
 from app.model.user import User
 from flask import jsonify, redirect, g, request, Blueprint, send_file
 
-tracking_blueprint = Blueprint('track', __name__, url_prefix='/track')
+tracking_blueprint = Blueprint('track', __name__, url_prefix='/api/track')
 
 
 @tracking_blueprint.route('/<string:user_id>/<string:code>/logo.png')

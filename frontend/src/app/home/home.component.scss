@@ -14,6 +14,10 @@ form.search-box {
   mat-form-field, mat-hint {
     flex: 2 0 auto;
   }
+  
+  mat-icon {
+    cursor: pointer;
+  }
 }
 
 .container {
