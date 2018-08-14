@@ -78,6 +78,11 @@ mat-icon.cat-icon-2 {
   position: absolute;
   top: -30px;
   right: -30px;
+  cursor: pointer;
+
+  &:hover {
+    fill: #FFF;
+  }
 }
 
 mat-icon.cat-icon-3 {

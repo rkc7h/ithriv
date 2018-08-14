@@ -71,6 +71,10 @@ export class BrowseComponent implements OnInit {
     this.router.navigate(['category', category]);
   }
 
+  goNetworkView(category: Category) {
+    this.router.navigate(['category', category.id, 'network']);
+  }
+
   updateCategory(category) {
     // This is very lazy, we could replace the category in place.
     this.isDataLoaded = false;

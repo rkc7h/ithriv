@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { CategoryResource } from '../category-resource';
+import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
 import { hexColorToRGBA } from '../shared/color';
@@ -101,9 +102,11 @@ export class CategoryComponent implements OnInit {
 
   goMode($event, category: Category) {
     $event.preventDefault();
-    this.router.navigate(['browse', category.id]);
-    console.log('Go to the category page');
-    console.log('category:', category);
+    if (category.level === 0) {
+      this.router.navigate(['browse', category.id]);
+    } else if (category.level === 1) {
+      this.router.navigate(['category', category.id, 'network']);
+    }
   }
 
   categoryImageURL() {

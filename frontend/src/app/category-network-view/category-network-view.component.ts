@@ -1,24 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
-import { CategoryResource } from '../category-resource';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { routerTransition } from '../shared/router.animations';
 import { User } from '../user';
 
 @Component({
   selector: 'app-category-network-view',
   templateUrl: './category-network-view.component.html',
-  styleUrls: ['./category-network-view.component.scss']
+  styleUrls: ['./category-network-view.component.scss'],
+  animations: [routerTransition()],
 })
 export class CategoryNetworkViewComponent implements OnInit {
+  @HostBinding('@routerTransition')
+  isDataLoaded = false;
   categoryId: number;
   category: Category;
   allCategories: Category[];
-  categoryResources: CategoryResource[];
-  isDataLoaded = false;
   user: User;
+  resourceCounts = {};
 
   layoutWidth = 982;
   layoutHeight = 982; // 642;
@@ -26,6 +28,7 @@ export class CategoryNetworkViewComponent implements OnInit {
   selfRadius = 90;
   parentRadius = 70;
   nodeRadius = 70;
+  nodeChildRadius = 15;
   rootNodeAngle = 35;
   selfTitleHeight = 40;
   parentTitleHeight = 30;
@@ -52,40 +55,57 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   loadCategory(categoryId: Number) {
+    this.isDataLoaded = false;
     this.api.getCategory(categoryId).subscribe(
       (category) => {
-        console.log('loadCategory category', category);
         this.category = category;
 
         // Set page title
         const currentTitle = this.titleService.getTitle();
         this.titleService.setTitle(`${currentTitle} - ${this.category.name}`);
+        this.loadCategoryResources(category);
       }
     );
+  }
+
+  loadCategoryResources(c: Category) {
+    if (c.level === 1) {
+      c.children.forEach(child => {
+        this.resourceCounts[child.id] = 0;
+
+        this.api.getCategoryResources(child).subscribe(resources => {
+          resources.forEach(i => {
+            const currentNum = this.resourceCounts[child.id];
+            this.resourceCounts[child.id] = isFinite(currentNum) ? currentNum + 1 : 0;
+          });
+        });
+      });
+    }
+    this.isDataLoaded = true;
   }
 
   ngOnInit() {
   }
 
-  private rotateChildDegrees(i: number) {
-    if (this.category.children.length > 0) {
-      const numNodes = this.categoryNodes(this.category).length;
-      return i * 360 / numNodes + this.rootNodeAngle;
+  private rotateChildDegrees(i: number, numTotal: number) {
+    if (numTotal > 0) {
+      return i * 360 / numTotal + this.rootNodeAngle;
     }
 
     return 0;
   }
 
-  rotateChild(i: number) {
-    if (this.category.children.length > 0) {
-      return `rotate(${this.rotateChildDegrees(i)})`;
+  rotateChild(i: number, numTotal: number) {
+    if (numTotal > 0) {
+      return `rotate(${this.rotateChildDegrees(i, numTotal)})`;
     }
   }
 
-  unrotateChild(c: Category, i: number) {
+  unrotateChild(c: Category, i: number, numTotal: number) {
     if (this.category.children.length > 0) {
-      const offset = this.nodeLineLength(c, i) + this.nodeRadius;
-      return `rotate(${-this.rotateChildDegrees(i)}, ${offset}, 0)`;
+      const scale = c.hover ? 1.1 : 1;
+      const offset = (this.nodeLineLength(c, i) + this.nodeRadius) * scale;
+      return `rotate(${-this.rotateChildDegrees(i, numTotal)}, ${offset}, 0) scale(${scale})`;
     }
   }
 
@@ -119,12 +139,21 @@ export class CategoryNetworkViewComponent implements OnInit {
     return 20 * (i + 1);
   }
 
-  words(s: string) {
-    return s.trim().split(' ');
+  words(str: string) {
+    return str.trim()
+      .replace('  ', ' ')
+      .replace(/ to /i, '_to ')
+      .replace(/ and /i, '_& ')
+      .split(' ')
+      .map(s => s.replace('_&', ' &').replace('_to', ' to'));
   }
 
   goCategory(c: Category) {
-    this.router.navigate(['category', c.id, 'network']);
+    if (c.level === 2) {
+      this.router.navigate(['category', c.id]);
+    } else {
+      this.router.navigate(['category', c.id, 'network']);
+    }
   }
 
   backgroundImage(c: Category) {
@@ -159,25 +188,36 @@ export class CategoryNetworkViewComponent implements OnInit {
     return `translate(${-(numNodes - i) * this.nodeRadius * 2}, ${this.nodeRadius})`;
   }
 
-  translateTo(s: string) {
+  translateTo(s: string, node: Category, i: number) {
     switch (s) {
       case 'origin':
         return `translate(0, 0)`;
-        break;
-
       case 'top-right':
         return `translate(${this.layoutWidth / 2}, ${-this.layoutHeight / 2})`;
-        break;
-
+      case 'node':
+        return `translate(${this.nodeLineLength(node, i) + this.nodeRadius})`;
       default:
         break;
     }
   }
 
   translateIcon(c: Category, i: number) {
-    const xOffset = this.nodeLineLength(c, i) + this.nodeRadius - this.iconSize;
-    const yOffset = -(this.nodeRadius - this.iconSize / 2);
-    return `translate(${xOffset}, ${yOffset}) scale(2)`;
+    if (isFinite(i)) {
+      const xOffset = this.nodeLineLength(c, i) + this.nodeRadius - this.iconSize;
+      const yOffset = -(this.nodeRadius - this.iconSize / 2);
+      return `translate(${xOffset}, ${yOffset}) scale(2)`;
+    } else {
+      return `translate(-${this.iconSize * 2}, -${this.iconSize * 3}) scale(4)`;
+    }
+  }
+
+  translateText(c: Category) {
+    const scale = (this.category.id === c.id) ? 2 : 1;
+    if (c.level === 1) {
+      return `translate(0, ${this.iconSize * scale})`;
+    } else {
+      return `translate(0, -${this.fontSize})`;
+    }
   }
 
   viewBoxDimensions() {
@@ -191,5 +231,11 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   nodeGradient(node: Category) {
     return `url(#linear-${node.id})`;
+  }
+
+  numResources(node: Category) {
+    if (this.resourceCounts.hasOwnProperty(node.id)) {
+      return this.resourceCounts[node.id];
+    }
   }
 }
