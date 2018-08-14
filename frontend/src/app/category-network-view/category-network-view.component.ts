@@ -4,26 +4,25 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
-import { User } from '../user';
+import { routerTransition, zoomTransition } from '../shared/router.animations';
 
 @Component({
   selector: 'app-category-network-view',
   templateUrl: './category-network-view.component.html',
   styleUrls: ['./category-network-view.component.scss'],
-  animations: [routerTransition()],
+  animations: [routerTransition(), zoomTransition()]
 })
 export class CategoryNetworkViewComponent implements OnInit {
   @HostBinding('@routerTransition')
   isDataLoaded = false;
+
+  @HostBinding('@zoomTransition')
   categoryId: number;
   category: Category;
   allCategories: Category[];
-  user: User;
-  resourceCounts = {};
 
   layoutWidth = 982;
-  layoutHeight = 982; // 642;
+  layoutHeight = 982;
   navRadius = 40;
   selfRadius = 90;
   parentRadius = 70;
@@ -42,20 +41,21 @@ export class CategoryNetworkViewComponent implements OnInit {
     private api: ResourceApiService,
     private titleService: Title
   ) {
-
     this.route.params.subscribe(params => {
+      this.isDataLoaded = false;
       this.categoryId = params['category'];
       this.loadRootCategories();
-      this.loadCategory(this.categoryId);
     });
   }
 
   loadRootCategories() {
-    this.api.getCategories().subscribe(cats => this.allCategories = cats);
+    this.api.getCategories().subscribe(cats => {
+      this.allCategories = cats;
+      this.loadCategory(this.categoryId);
+    });
   }
 
   loadCategory(categoryId: Number) {
-    this.isDataLoaded = false;
     this.api.getCategory(categoryId).subscribe(
       (category) => {
         this.category = category;
@@ -63,49 +63,35 @@ export class CategoryNetworkViewComponent implements OnInit {
         // Set page title
         const currentTitle = this.titleService.getTitle();
         this.titleService.setTitle(`${currentTitle} - ${this.category.name}`);
-        this.loadCategoryResources(category);
+        this.isDataLoaded = true;
       }
     );
-  }
-
-  loadCategoryResources(c: Category) {
-    if (c.level === 1) {
-      c.children.forEach(child => {
-        this.resourceCounts[child.id] = 0;
-
-        this.api.getCategoryResources(child).subscribe(resources => {
-          resources.forEach(i => {
-            const currentNum = this.resourceCounts[child.id];
-            this.resourceCounts[child.id] = isFinite(currentNum) ? currentNum + 1 : 0;
-          });
-        });
-      });
-    }
-    this.isDataLoaded = true;
   }
 
   ngOnInit() {
   }
 
-  private rotateChildDegrees(i: number, numTotal: number) {
+  private rotateChildDegrees(i: number, numTotal: number, rotateMultiplier = 1) {
     if (numTotal > 0) {
-      return i * 360 / numTotal + this.rootNodeAngle;
+      return (i * 360 / numTotal) + (this.rootNodeAngle * rotateMultiplier);
     }
 
     return 0;
   }
 
-  rotateChild(i: number, numTotal: number) {
+  rotateChild(i: number, numTotal: number, mode: string) {
     if (numTotal > 0) {
-      return `rotate(${this.rotateChildDegrees(i, numTotal)})`;
+      const rotateMultiplier = (mode === 'siblings') ? -2 : 1;
+      return `rotate(${this.rotateChildDegrees(i, numTotal, rotateMultiplier)})`;
     }
   }
 
-  unrotateChild(c: Category, i: number, numTotal: number) {
+  unrotateChild(c: Category, i: number, numTotal: number, mode: string) {
     if (this.category.children.length > 0) {
       const scale = c.hover ? 1.1 : 1;
       const offset = (this.nodeLineLength(c, i) + this.nodeRadius) * scale;
-      return `rotate(${-this.rotateChildDegrees(i, numTotal)}, ${offset}, 0) scale(${scale})`;
+      const rotateMultiplier = (mode === 'siblings') ? -2 : 1;
+      return `rotate(${-this.rotateChildDegrees(i, numTotal, rotateMultiplier)}, ${offset}, 0) scale(${scale})`;
     }
   }
 
@@ -131,51 +117,11 @@ export class CategoryNetworkViewComponent implements OnInit {
     }
   }
 
-  childPosX(i: number) {
-    return 20 * (i + 1);
-  }
-
-  childPosY(i: number) {
-    return 20 * (i + 1);
-  }
-
-  words(str: string) {
-    return str.trim()
-      .replace('  ', ' ')
-      .replace(/ to /i, '_to ')
-      .replace(/ and /i, '_& ')
-      .split(' ')
-      .map(s => s.replace('_&', ' &').replace('_to', ' to'));
-  }
-
   goCategory(c: Category) {
     if (c.level === 2) {
       this.router.navigate(['category', c.id]);
     } else {
       this.router.navigate(['category', c.id, 'network']);
-    }
-  }
-
-  backgroundImage(c: Category) {
-    return `url('/assets/browse/${c.image}')`;
-  }
-
-  nodeImageSize(mode: string) {
-    const key = mode + 'Radius';
-
-    if (this.hasOwnProperty(key)) {
-      return (this[key] - this.strokeWidth) * 2 - this.strokeWidth;
-    }
-  }
-
-  nodeImagePath(c: Category) {
-    return `/assets/browse/${c.image}`;
-  }
-
-  nodeIconUrl(c: Category) {
-    const url = c && c.icon && c.icon.url;
-    if (url) {
-      return `url('${url}')`;
     }
   }
 
@@ -201,25 +147,6 @@ export class CategoryNetworkViewComponent implements OnInit {
     }
   }
 
-  translateIcon(c: Category, i: number) {
-    if (isFinite(i)) {
-      const xOffset = this.nodeLineLength(c, i) + this.nodeRadius - this.iconSize;
-      const yOffset = -(this.nodeRadius - this.iconSize / 2);
-      return `translate(${xOffset}, ${yOffset}) scale(2)`;
-    } else {
-      return `translate(-${this.iconSize * 2}, -${this.iconSize * 3}) scale(4)`;
-    }
-  }
-
-  translateText(c: Category) {
-    const scale = (this.category.id === c.id) ? 2 : 1;
-    if (c.level === 1) {
-      return `translate(0, ${this.iconSize * scale})`;
-    } else {
-      return `translate(0, -${this.fontSize})`;
-    }
-  }
-
   viewBoxDimensions() {
     return `${-this.layoutWidth / 2} ${-this.layoutHeight / 2} ${this.layoutWidth} ${this.layoutHeight}`;
   }
@@ -229,13 +156,21 @@ export class CategoryNetworkViewComponent implements OnInit {
     if (this.category.parent && (node.id === this.category.parent.id)) { return true; }
   }
 
-  nodeGradient(node: Category) {
-    return `url(#linear-${node.id})`;
-  }
+  siblings(node: Category): Category[] {
+    const sibs: Category[] = [];
 
-  numResources(node: Category) {
-    if (this.resourceCounts.hasOwnProperty(node.id)) {
-      return this.resourceCounts[node.id];
+    for (const rootCat of this.allCategories) {
+      if (node.id === rootCat.id) {
+        for (const sib of rootCat.children) {
+          if (sib.id === this.category.id) {
+            sibs.push(sib);
+          } else {
+            sibs.unshift(sib);
+          }
+        }
+      }
     }
+
+    return sibs;
   }
 }

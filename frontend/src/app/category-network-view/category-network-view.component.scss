@@ -3,34 +3,6 @@ line, circle, rect {
   transition: 300ms ease transform;
 }
 
-circle, rect, text, image {
-  cursor: pointer;
-}
-
-#self-node {
-  cursor: default;
-
-  g, circle, rect, text, image {
-    cursor: default;
-  }
-}
-
 g.node {
   transition: 300ms ease transform;
-}
-
-tspan.category-name {
-  font-weight: 900;
-  font-size: 16px;
-}
-
-.clip-circle {
-  clip-path: circle(50%);
-}
-
-circle {
-  width:150px;
-  height:150px;
-  color:#fff;
-  padding:.5em;
 }

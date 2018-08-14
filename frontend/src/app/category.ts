@@ -16,4 +16,5 @@ export interface Category {
   parent?: Category;
   _links?: Links;
   hover?: boolean;
+  resource_count?: number;
 }

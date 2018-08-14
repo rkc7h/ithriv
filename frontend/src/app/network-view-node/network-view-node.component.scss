@@ -1,0 +1,36 @@
+line, circle, rect {
+  stroke-width: 4px;
+  transition: 300ms ease transform;
+}
+
+circle, rect, text, image, .sibling-node {
+  cursor: pointer;
+}
+
+#self-node {
+  cursor: default;
+
+  g, circle, rect, text, image, g > svg {
+    cursor: default;
+  }
+}
+
+g.node {
+  transition: 300ms ease transform;
+}
+
+tspan.category-name {
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.clip-circle {
+  clip-path: circle(50%);
+}
+
+circle {
+  width:150px;
+  height:150px;
+  color:#fff;
+  padding:.5em;
+}

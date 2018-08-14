@@ -52,3 +52,22 @@ export function slideTransition(): AnimationTriggerMetadata {
     ])
   ]);
 }
+
+export function zoomTransition(): AnimationTriggerMetadata {
+  return trigger('zoomTransition', [
+    transition('* <=> *', [
+      query(':enter, :leave',
+        style({ position: 'fixed', transform: 'scale(1)' }), optional),
+      group([
+        query(':enter', [
+          style({ transform: 'scale(100)', opacity: 0 }),
+          animate(easing, style({ transform: 'scale(1)', opacity: 1 }))
+        ], optional),
+        query(':leave', [
+          style({ transform: 'scale(1)', opacity: 1 }),
+          animate(easing, style({ transform: 'scale(100)', opacity: 0 }))
+        ], optional),
+      ])
+    ])
+  ]);
+}

@@ -81,6 +81,7 @@ import { SearchComponent } from './search/search.component';
 import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
+import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
 
 @NgModule({
   declarations: [
@@ -123,7 +124,8 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     ResourceTileComponent,
     SearchComponent,
     SessionRedirectComponent,
-    TreeSelectComponent
+    TreeSelectComponent,
+    NetworkViewNodeComponent
   ],
   imports: [
     AppRoutingModule,
