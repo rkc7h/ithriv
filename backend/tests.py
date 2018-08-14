@@ -942,6 +942,7 @@ class TestCase(unittest.TestCase):
             "display_name": "Peter Dinklage",
             "uid": "pad123",
             "email": "tyrion@got.com",
+            "role": "User"
         }
         rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
                            content_type="application/json")
@@ -955,6 +956,7 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual("Peter Dinklage", response["display_name"])
         self.assertEqual("tyrion@got.com", response["email"])
+        self.assertEqual("User", response["role"])
         self.assertEqual(True, user.is_correct_password("peterpass"))
         return user;
 
