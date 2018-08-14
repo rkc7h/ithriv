@@ -5,6 +5,7 @@ from flask import json
 
 from app.model.availability import Availability
 from app.model.category import Category
+from app.model.email_log import EmailLog
 from app.model.icon import Icon
 from app.model.resource import ThrivResource
 from app.model.institution import ThrivInstitution
@@ -194,5 +195,6 @@ class DataLoader:
         db.session.query(ThrivInstitution).delete()
         db.session.query(ThrivType).delete()
         db.session.query(Category).delete()
+        db.session.query(EmailLog).delete()
         db.session.query(User).delete()
         db.session.commit()

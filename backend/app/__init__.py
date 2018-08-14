@@ -139,6 +139,7 @@ def reset():
     data_loader.clear_index()
     data_loader.clear()
     _load_data(data_loader)
+    data_loader.build_index()
 
 @app.cli.command()
 def loadicons():
