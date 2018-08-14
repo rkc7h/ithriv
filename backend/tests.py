@@ -10,7 +10,7 @@ import string
 from app.email_service import TEST_MESSAGES
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
-from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema
+from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema, UserSchema
 import unittest
 import json
 from app.model.availability import Availability
@@ -934,6 +934,9 @@ class TestCase(unittest.TestCase):
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
         participant = User.query.filter_by(uid=uid).first()
+        participant.role = "Admin"
+        db.session.add(participant)
+        db.session.commit()
 
         return dict(Authorization='Bearer ' + participant.encode_auth_token().decode())
 
@@ -944,7 +947,7 @@ class TestCase(unittest.TestCase):
             "email": "tyrion@got.com",
             "role": "User"
         }
-        rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True,
+        rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True, headers=self.logged_in_headers(),
                            content_type="application/json")
         self.assertSuccess(rv)
         user = User.query.filter_by(uid=data["uid"]).first()
@@ -952,7 +955,7 @@ class TestCase(unittest.TestCase):
         db.session.add(user)
         db.session.commit()
 
-        rv = self.app.get('/api/user/%i' % user.id, content_type="application/json")
+        rv = self.app.get('/api/user/%i' % user.id, content_type="application/json", headers=self.logged_in_headers())
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual("Peter Dinklage", response["display_name"])
         self.assertEqual("tyrion@got.com", response["email"])
@@ -975,6 +978,32 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertIsNotNone(response["token"])
+
+    def test_admin_get_users(self):
+        rv = self.app.get('/api/user')
+        self.assertEqual(rv.status, "401 UNAUTHORIZED")
+
+        rv = self.app.get('/api/user', content_type="application/json", headers=self.logged_in_headers())
+        self.assertSuccess(rv)
+
+    def test_admin_update_user(self):
+        user = self.test_create_user_with_password()
+        user.name = "The Artist Formerly Known As Prince"
+        rv = self.app.put('/api/user/%i' % user.id, data=json.dumps(UserSchema().dump(user).data),
+                          content_type="application/json")
+        self.assertEqual(rv.status, "401 UNAUTHORIZED")
+
+        rv = self.app.put('/api/user/%i' % user.id, data=json.dumps(UserSchema().dump(user).data),
+                          content_type="application/json", headers=self.logged_in_headers())
+        self.assertSuccess(rv)
+
+    def test_admin_delete_user(self):
+        user = self.test_create_user_with_password()
+        rv = self.app.delete('/api/user/%i' % user.id, content_type="application/json")
+        self.assertEqual(rv.status, "401 UNAUTHORIZED")
+
+        rv = self.app.delete('/api/user/%i' % user.id, content_type="application/json", headers=self.logged_in_headers())
+        self.assertSuccess(rv)
 
     def decode(self, encoded_words):
         """Useful for checking the content of email messages (which we store in an array for testing"""
