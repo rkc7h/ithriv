@@ -6,8 +6,6 @@ import { CategoryResource } from '../category-resource';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
-import { hexColorToRGBA } from '../shared/color';
-import {collectExternalReferences} from "@angular/compiler";
 
 @Component({
   selector: 'app-category',
