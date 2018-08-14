@@ -10,7 +10,7 @@ import string
 from app.email_service import TEST_MESSAGES
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
-from app.resources.schema import CategorySchema, IconSchema
+from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema
 import unittest
 import json
 from app.model.availability import Availability
@@ -598,6 +598,17 @@ class TestCase(unittest.TestCase):
         self.assertEquals(r.id, response[0]["id"])
         self.assertEquals(r.description, response[0]["resource"]["description"])
 
+    def test_category_resource_count(self):
+        c = self.construct_category()
+        r = self.construct_resource()
+        cr = ResourceCategory(resource=r, category=c)
+        db.session.add(cr)
+        db.session.commit()
+        rv = self.app.get('/api/category/%i' % c.id, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(1, response["resource_count"])
+
     def test_get_category_by_resource(self):
         c = self.construct_category()
         r = self.construct_resource()
@@ -877,6 +888,19 @@ class TestCase(unittest.TestCase):
         db.session.commit()
         category.icon_id = icon.id
         rv = self.app.post('/api/category', data=json.dumps(CategorySchema().dump(category).data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(icon.id, response["icon_id"])
+        self.assertEquals("Cool Places", response["icon"]["name"])
+
+    def test_set_type_icon(self):
+        thrivtype = ThrivType(name="Wickedly Cool")
+        db.session.add(thrivtype)
+        icon = Icon(name="Cool Places")
+        db.session.add(icon)
+        db.session.commit()
+        thrivtype.icon_id = icon.id
+        rv = self.app.post('/api/category', data=json.dumps(ThrivTypeSchema().dump(thrivtype).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(icon.id, response["icon_id"])

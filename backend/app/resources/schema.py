@@ -20,10 +20,18 @@ class ThrivInstitutionSchema(ModelSchema):
         fields = ('id', 'name', 'description')
 
 
+class IconSchema(ModelSchema):
+    class Meta:
+        model = Icon
+        fields = ('id', 'name', 'url')
+
+
 class ThrivTypeSchema(ModelSchema):
     class Meta:
         model = ThrivType
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'icon_id', 'icon')
+    icon_id = fields.Integer(required=False, allow_none=True)
+    icon = fields.Nested(IconSchema,  allow_none=True, dump_only=True)
 
 
 class AvailabilitySchema(ModelSchema):
@@ -77,12 +85,6 @@ class ThrivResourceSchema(ModelSchema):
         dump_only=True)
 
 
-class IconSchema(ModelSchema):
-    class Meta:
-        model = Icon
-        fields = ('id', 'name', 'url')
-
-
 class ParentCategorySchema(ModelSchema):
     """Provides a view of the parent category, all the way to the top, but ignores children"""
     class Meta:
@@ -92,7 +94,7 @@ class ParentCategorySchema(ModelSchema):
     level = fields.Function(lambda obj: obj.calculate_level())
     color = fields.Function(lambda obj: obj.calculate_color())
     icon_id = fields.Integer(required=False, allow_none=True)
-    icon = fields.Nested(IconSchema,  allow_none=True, dump_only=True)
+    icon = fields.Nested(IconSchema, allow_none=True, dump_only=True)
     image = fields.String(required=False, allow_none=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.categoryendpoint', id='<id>'),
@@ -107,7 +109,8 @@ class CategorySchema(ModelSchema):
         model = Category
         fields = ('id', 'name', 'brief_description', 'description',
                   'color', 'level', 'image', 'icon_id', 'icon',
-                  'children', 'parent_id', 'parent', '_links')
+                  'children', 'parent_id', 'parent', 'resource_count',
+                  '_links')
     id = fields.Integer(required=False, allow_none=True)
     icon_id = fields.Integer(required=False, allow_none=True)
     icon = fields.Nested(IconSchema,  allow_none=True, dump_only=True)
@@ -117,11 +120,15 @@ class CategorySchema(ModelSchema):
     parent = fields.Nested(ParentCategorySchema, dump_only=True)
     color = fields.Function(lambda obj: obj.calculate_color())
     level = fields.Function(lambda obj: obj.calculate_level(), dump_only=True)
+    resource_count = fields.Method('get_resource_count')
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.categoryendpoint', id='<id>'),
         'collection': ma.URLFor('api.categorylistendpoint'),
         'resources': ma.URLFor('api.resourcebycategoryendpoint', category_id='<id>')
     })
+
+    def get_resource_count(self, obj):
+        return len(obj.category_resources)
 
 
 class ResourceCategoriesSchema(ModelSchema):
