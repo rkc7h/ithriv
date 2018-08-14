@@ -1,11 +1,13 @@
 <mat-toolbar *ngIf="!hideHeader" class="mat-toolbar-tools">
   <mat-toolbar-row class="menubar">
     <span class="fill-remaining-space"></span>
+    <!--
     <button mat-button *ngIf="!getSession()" (click)="goRegister($event)">
       <mat-icon>person_add</mat-icon>
       Register
     </button>
     <mat-divider [vertical]="true"></mat-divider>
+    -->
 
     <button mat-button *ngIf="!getSession()" (click)="goLogin($event)">
       <mat-icon>account_circle</mat-icon>
