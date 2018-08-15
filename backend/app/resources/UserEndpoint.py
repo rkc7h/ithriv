@@ -4,26 +4,33 @@ from marshmallow import ValidationError
 from sqlalchemy import exists
 from sqlalchemy.exc import IntegrityError
 
-from app import RestException, db, email_service
+from app import RestException, db, email_service, auth
 from app.model.email_log import EmailLog
 from app.model.user import User
 from app.resources.schema import UserSchema
+from app.wrappers import requires_roles
 
 
 class UserEndpoint(flask_restful.Resource):
 
     schema = UserSchema()
 
+    @auth.login_required
+    @requires_roles('Admin')
     def get(self, id):
         model = db.session.query(User).filter_by(id=id).first()
         if model is None: raise RestException(RestException.NOT_FOUND)
         return self.schema.dump(model)
 
+    @auth.login_required
+    @requires_roles('Admin')
     def delete(self, id):
         db.session.query(User).filter_by(id=id).delete()
         db.session.commit()
         return None
 
+    @auth.login_required
+    @requires_roles('Admin')
     def put(self, id):
         request_data = request.get_json()
         instance = db.session.query(User).filter_by(id=id).first()
@@ -39,10 +46,14 @@ class UserListEndpoint(flask_restful.Resource):
     usersSchema = UserSchema(many=True)
     userSchema = UserSchema()
 
+    @auth.login_required
+    @requires_roles('Admin')
     def get(self):
         models = db.session.query(User).all()
         return self.usersSchema.dump(models)
 
+    @auth.login_required
+    @requires_roles('Admin')
     def post(self):
         request_data = request.get_json()
         try:
