@@ -24,6 +24,7 @@ class ThrivResource(db.Model):
                                      backref=db.backref('resource', lazy=True))
     favorites = db.relationship(lambda: Favorite, cascade="all, delete-orphan",
                                 backref=db.backref('resource', lazy=True))
+    categories = db.relationship("ResourceCategory", back_populates="resource")
     approved = db.Column(db.String)
 
     def favorite_count(self):
