@@ -82,12 +82,12 @@ export class HeaderComponent implements OnInit {
 
   goUserAdmin($event) {
     $event.preventDefault();
-    this.router.navigate(['userAdmin']);
+    this.router.navigate(['admin/users']);
   }
 
   goSearch($event) {
     $event.preventDefault();
-    this.router.navigate(['admin/users']);
+    this.router.navigate(['search']);
   }
 
   goLogout($event) {
