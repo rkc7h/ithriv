@@ -4,13 +4,13 @@ import { DomSanitizer, Title } from '@angular/platform-browser';
 import { ActivationEnd, ActivationStart, Router, RouterOutlet } from '@angular/router';
 import { Icon } from './icon';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
-import { routerTransition } from './shared/router.animations';
+import { fadeTransition } from './shared/animations';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  animations: [routerTransition()],
+  animations: [fadeTransition()],
 })
 export class AppComponent {
   trustUrl;

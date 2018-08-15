@@ -6,17 +6,17 @@ import { of as observableOf } from 'rxjs';
 import { Category } from '../category';
 import { FormField } from '../form-field';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
+import { fadeTransition } from '../shared/animations';
 
 @Component({
   selector: 'app-tree-select',
   templateUrl: './tree-select.component.html',
   styleUrls: ['./tree-select.component.scss'],
-  animations: [routerTransition()]
+  animations: [fadeTransition()]
 })
 export class TreeSelectComponent implements OnInit {
   @Input() field: FormField;
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   categories: Category[] = [];
   treeControl: NestedTreeControl<Category>;
   dataSource: MatTreeNestedDataSource<Category>;

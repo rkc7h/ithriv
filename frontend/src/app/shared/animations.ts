@@ -17,8 +17,8 @@ const transitionOut = [show, animate(easing, hide)];
 const transitionIn = [hide, animate(easing, show)];
 const optional = { optional: true };
 
-export function routerTransition(): AnimationTriggerMetadata {
-  return trigger('routerTransition', [
+export function fadeTransition(): AnimationTriggerMetadata {
+  return trigger('fadeTransition', [
     transition('* <=> *', [
       query(':enter, :leave', show, optional),
       query(':enter', hide, optional),

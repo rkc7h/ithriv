@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Category } from '../category';
 import { NodeOptions } from '../node-options';
 import { hexColorToRGBA } from '../shared/color';
-import { zoomTransition } from '../shared/router.animations';
+import { zoomTransition } from '../shared/animations';
 
 @Component({
   selector: '[app-network-view-node]',

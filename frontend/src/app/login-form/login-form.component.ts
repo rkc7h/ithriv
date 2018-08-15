@@ -6,17 +6,17 @@ import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { LoginService } from '../login-service';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
+import { fadeTransition } from '../shared/animations';
 import {IThrivForm} from '../shared/IThrivForm';
 
 @Component({
   selector: 'app-login-form',
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.scss'],
-  animations: [routerTransition()]
+  animations: [fadeTransition()]
 })
 export class LoginFormComponent {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   title: string;
   login_url = environment.api + '/api/login';
   emailToken: string;

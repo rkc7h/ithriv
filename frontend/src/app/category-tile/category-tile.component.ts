@@ -1,17 +1,17 @@
 import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
-import { routerTransition } from '../shared/router.animations';
+import { fadeTransition } from '../shared/animations';
 import { hexColorToRGBA } from '../shared/color';
 
 @Component({
   selector: 'app-category-tile',
   templateUrl: './category-tile.component.html',
   styleUrls: ['./category-tile.component.scss'],
-  animations: [routerTransition()],
+  animations: [fadeTransition()],
 })
 export class CategoryTileComponent implements OnInit {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   @Input() category: Category;
 
   constructor(private router: Router) { }

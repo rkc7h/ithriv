@@ -6,7 +6,7 @@ import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { User } from '../user';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
+import { fadeTransition } from '../shared/animations';
 import {ValidatePasswordsMatch} from '../shared/validators/password_match.validator';
 import {IThrivForm} from '../shared/IThrivForm';
 
@@ -14,10 +14,10 @@ import {IThrivForm} from '../shared/IThrivForm';
   selector: 'app-register-form',
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.scss'],
-  animations: [routerTransition()]
+  animations: [fadeTransition()]
 })
 export class RegisterFormComponent  {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   title: string;
   login_url = environment.api + '/api/register';
   errorMatcher = new ErrorMatcher();

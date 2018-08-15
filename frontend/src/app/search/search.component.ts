@@ -7,17 +7,17 @@ import { Category } from '../category';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { Filter, ResourceQuery } from '../resource-query';
-import { routerTransition } from '../shared/router.animations';
+import { fadeTransition } from '../shared/animations';
 import { User } from '../user';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  animations: [routerTransition()],
+  animations: [fadeTransition()],
 })
 export class SearchComponent implements OnInit {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   @Input() resourceQuery: ResourceQuery;
 
   showFilters = false;

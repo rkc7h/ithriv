@@ -3,7 +3,7 @@ import { Category } from '../category';
 import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
+import { fadeTransition } from '../shared/animations';
 import { Institution } from '../institution';
 import { ResourceCategory } from '../resource-category';
 
@@ -11,10 +11,10 @@ import { ResourceCategory } from '../resource-category';
   selector: 'app-resource',
   templateUrl: './resource.component.html',
   styleUrls: ['./resource.component.scss'],
-  animations: [routerTransition()]
+  animations: [fadeTransition()]
 })
 export class ResourceComponent implements OnInit {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   resourceId: number;
   @Input() resource: Resource;
   @Input() categories: ResourceCategory[];
