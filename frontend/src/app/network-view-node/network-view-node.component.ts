@@ -3,16 +3,13 @@ import { Router } from '@angular/router';
 import { Category } from '../category';
 import { NodeOptions } from '../node-options';
 import { hexColorToRGBA } from '../shared/color';
-import { zoomTransition } from '../shared/animations';
 
 @Component({
   selector: '[app-network-view-node]',
   templateUrl: './network-view-node.component.html',
-  styleUrls: ['./network-view-node.component.scss'],
-  animations: [zoomTransition()]
+  styleUrls: ['./network-view-node.component.scss']
 })
 export class NetworkViewNodeComponent implements OnInit {
-  @HostBinding('@zoomTransition')
   @Input() category: Category;
   @Input() numTotal: number;
   @Input() options: NodeOptions;
@@ -104,5 +101,4 @@ export class NetworkViewNodeComponent implements OnInit {
       ${this.scale(scale)}
     `;
   }
-
 }

@@ -4,20 +4,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { fadeTransition, zoomTransition } from '../shared/animations';
+import { fadeTransition } from '../shared/animations';
 import { NodeOptions } from '../node-options';
 
 @Component({
   selector: 'app-category-network-view',
   templateUrl: './category-network-view.component.html',
   styleUrls: ['./category-network-view.component.scss'],
-  animations: [fadeTransition(), zoomTransition()]
+  animations: [fadeTransition()]
 })
 export class CategoryNetworkViewComponent implements OnInit {
   @HostBinding('@fadeTransition')
   isDataLoaded = false;
-
-  @HostBinding('@zoomTransition')
   categoryId: number;
   category: Category;
   allCategories: Category[];

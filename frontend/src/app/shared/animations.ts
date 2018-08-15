@@ -7,7 +7,8 @@ import {
   style,
   transition,
   trigger,
-  AnimationTriggerMetadata
+  AnimationTriggerMetadata,
+  state
 } from '@angular/animations';
 
 const easing = '0.5s ease-in-out';
@@ -54,20 +55,33 @@ export function slideTransition(): AnimationTriggerMetadata {
 }
 
 export function zoomTransition(): AnimationTriggerMetadata {
+  const normal = { opacity: 1, transform: 'translateX(0) scale(1)' };
+  const zoomedOut = { opacity: 0, transform: 'translateX(0) scale(0)' };
+  const zoomedIn = { opacity: 0, transform: 'translateX(0) scale(100)' };
   return trigger('zoomTransition', [
-    transition('* <=> *', [
-      query(':enter, :leave',
-        style({ position: 'fixed', transform: 'scale(1)' }), optional),
-      group([
-        query(':enter', [
-          style({ transform: 'scale(100)', opacity: 0 }),
-          animate(easing, style({ transform: 'scale(1)', opacity: 1 }))
-        ], optional),
-        query(':leave', [
-          style({ transform: 'scale(1)', opacity: 1 }),
-          animate(easing, style({ transform: 'scale(100)', opacity: 0 }))
-        ], optional),
+
+    // Zoom in
+    transition(':increment', group([
+      query(':enter', [
+        style(zoomedOut),
+        animate(easing, style(normal))
+      ]),
+      query(':leave', [
+        style(normal),
+        animate(easing, style(zoomedIn))
       ])
-    ])
+    ])),
+
+    // Zoom out
+    transition(':decrement', group([
+      query(':enter', [
+        style(zoomedIn),
+        animate(easing, style(normal))
+      ]),
+      query(':leave', [
+        style(normal),
+        animate(easing, style(zoomedOut))
+      ])
+    ]))
   ]);
 }
