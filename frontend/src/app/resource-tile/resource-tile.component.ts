@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Resource } from '../resource';
+import { Institution } from '../institution';
 
 @Component({
   selector: 'app-resource-tile',
@@ -15,7 +16,7 @@ export class ResourceTileComponent implements OnInit {
   ngOnInit() {
   }
 
-  goResource($event, resource) {
+  goResource($event, resource: Resource) {
     $event.preventDefault();
     this.router.navigate(['resource', resource.id]);
   }

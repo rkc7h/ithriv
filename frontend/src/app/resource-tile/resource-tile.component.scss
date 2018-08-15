@@ -28,6 +28,8 @@ $icon-size: 50px;
 
 mat-card {
   cursor: pointer;
+  min-height: 256px;
+  max-height: 256px;
 
   &:hover {
     outline: 1px solid mat-color($ithriv-primary, 200, 1);
@@ -39,16 +41,17 @@ mat-card {
     background-color: mat-color($ithriv-accent, 100, 1);
   }
 
-  div.icon-with-content {
+  .icon-with-content {
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
 
-    div.type-icon {
+    .type-icon {
       width: $icon-size + 20px;
       height: $icon-size + 20px;
       background-color: #999;
       border-radius: 25%;
+      margin-right: $padding-size;
 
       mat-icon {
         color: white;
@@ -59,6 +62,17 @@ mat-card {
         padding: 10px;
       }
     }
+
+    .institution {
+      text-align: center;
+      margin-top: $padding-size;
+      margin-right: $padding-size;
+
+      img {
+        max-width: $icon-size;
+        max-height: $icon-size;
+      }
+    }
   }
 }
 
@@ -66,18 +80,18 @@ mat-card-title, mat-card-title.mat-card-title {
   font-weight: 900;
   margin: 0 0 5px 0;
   padding: 0 0 10px 0;
-  height: $base-font-size * 2;
-  min-height: $base-font-size * 2;
-  max-height: $base-font-size * 2;
+  // height: $base-font-size * 2;
+  // min-height: $base-font-size * 2;
+  // max-height: $base-font-size * 2;
   overflow: hidden;
 }
 
 mat-card-content {
   overflow: hidden;
   margin-left: 8px;
-  height: $base-font-size * 4;
-  min-height: $base-font-size * 4;
-  max-height: $base-font-size * 4;
+  // height: $base-font-size * 4;
+  // min-height: $base-font-size * 4;
+  // max-height: $base-font-size * 4;
 }
 
 mat-card-actions {
@@ -89,18 +103,6 @@ mat-card-actions {
     position: absolute;
     bottom: $base-font-size;
     right: $base-font-size;
-  }
-
-  .institution {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    left: 0px;
-    text-align: center;
-    margin: $base-font-size;
-    img {
-      max-height: $base-font-size * 3;
-    }
   }
 }
 
