@@ -20,6 +20,28 @@ export class ResourceTileComponent implements OnInit {
     this.router.navigate(['resource', resource.id]);
   }
 
+  categoryColor(resource: Resource): string {
+    console.log('resource', resource);
+
+    if (resource && resource.resource_categories) {
+      const numCategories = resource.resource_categories.length;
+
+      if (numCategories > 0) {
+        const percent = 100 / numCategories;
+        const colors = resource.resource_categories.map((rc, i) => {
+          return `
+          ${rc.category.color} ${i * percent}%,
+          ${rc.category.color} ${(i + 1) * percent}%
+        `;
+        });
+
+        return `linear-gradient(to right,${colors.join(',')})`;
+      }
+    }
+
+    return 'linear-gradient(to right, #999 0%, #999 100%)';
+  }
+
   truncateWords(str: string, numWords: number) {
     const maxChars = 36 * 3;
     const allWords = str.split(' ');

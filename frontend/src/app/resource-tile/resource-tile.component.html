@@ -1,19 +1,26 @@
 <mat-card class="resource">
+  <div
+    class="category-color"
+    [ngStyle]="{'background-image': categoryColor(resource)}"
+  ></div>
 
   <div class="icon-with-content">
     <div class="type-icon">
-      <mat-icon svgIcon="ithriv_{{resource.type.icon.id}}" matTooltip="{{resource.type.name}}"></mat-icon>
+      <mat-icon
+        svgIcon="ithriv_{{resource.type.icon.id}}"
+        matTooltip="{{resource.type.name}}"
+      ></mat-icon>
     </div>
     <div>
       <mat-card-header (click)="goResource($event, resource)">
-      <mat-card-title>{{resource.name}}</mat-card-title>
-      <app-approved-badge [resource]="resource"></app-approved-badge>
-    </mat-card-header>
-    <mat-card-content (click)="goResource($event, resource)">
-      <p>
-        {{truncateWords(resource.description, 15)}}
-      </p>
-    </mat-card-content>
+        <mat-card-title>{{resource.name}}</mat-card-title>
+        <app-approved-badge [resource]="resource"></app-approved-badge>
+      </mat-card-header>
+      <mat-card-content (click)="goResource($event, resource)">
+        <p>
+          {{truncateWords(resource.description, 15)}}
+        </p>
+      </mat-card-content>
     </div>
   </div>
   <mat-card-actions>
@@ -22,6 +29,9 @@
       <img src="/assets/institutions/{{resource.institution.name}}.png"/>
     </div>
     -->
-    <app-favorite-resource-button [resource]="resource" matTooltip="Add to Favorites"></app-favorite-resource-button>
+    <app-favorite-resource-button
+      [resource]="resource"
+      matTooltip="Add to Favorites"
+    ></app-favorite-resource-button>
   </mat-card-actions>
 </mat-card>

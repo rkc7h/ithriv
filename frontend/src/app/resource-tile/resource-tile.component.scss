@@ -6,11 +6,24 @@
 @include ithriv-theme($uva-theme);
 
 $base-font-size: 16px;
+$padding-size: 20px;
+$border-top-size: 10px;
 $icon-size: 50px;
 .resource {
-  border-top: 4px solid mat-color($uva-accent, 500);
   margin: 0px;
-  padding: 1em;
+  padding: $padding-size;
+  padding-top: $border-top-size + $padding-size;
+  position: relative;
+
+  .category-color {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $border-top-size;
+    background-size: 100% $border-top-size;
+    background-repeat:no-repeat;
+  }
 }
 
 mat-card {
@@ -34,7 +47,8 @@ mat-card {
     div.type-icon {
       width: $icon-size + 20px;
       height: $icon-size + 20px;
-      background-color: mat-color($ithriv-accent, 500, 1);
+      background-color: #999;
+      border-radius: 25%;
 
       mat-icon {
         color: white;
@@ -42,7 +56,6 @@ mat-card {
         width: $icon-size;
         height: $icon-size;
         font-size: $icon-size;
-        border-radius: 50%;
         padding: 10px;
       }
     }
