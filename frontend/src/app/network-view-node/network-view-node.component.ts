@@ -45,10 +45,11 @@ export class NetworkViewNodeComponent implements OnInit {
     return `translate(${x}, ${y})`;
   }
 
-  translateUnrotate() {
+  translateAndScale() {
+    const scale = this.category.hover ? 1.1 : 1;
     return `
       ${this.translate(this.options.x, this.options.y)}
-      ${this.rotate(-this.options.angle)}
+      ${this.scale(scale)}
     `;
   }
 

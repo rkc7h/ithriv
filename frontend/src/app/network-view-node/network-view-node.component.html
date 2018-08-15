@@ -1,4 +1,9 @@
-<svg:g *ngIf="options.relationship === 'root'">
+<svg:g
+  *ngIf="options.relationship === 'root'"
+  (mouseover)="category.hover=true"
+  (mouseout)="category.hover=false"
+  [attr.transform]="translateAndScale()"
+>
   <svg:rect
     stroke="white"
     fill="white"
@@ -48,11 +53,16 @@
     />
 </svg:g>
 
-<svg:g *ngIf="options.relationship === 'parent'">
+<svg:g
+  *ngIf="options.relationship === 'parent'"
+  (mouseover)="category.hover=true"
+  (mouseout)="category.hover=false"
+  [attr.transform]="translateAndScale()"
+>
   <svg:rect
     fill="white"
     stroke="white"
-    [attr.x]="options.x"
+    [attr.x]="0"
     [attr.y]="0"
     [attr.width]="options.radius * 2"
     [attr.height]="options.radius + options.titleHeight"
@@ -60,7 +70,7 @@
   <svg:rect
     [attr.fill]="categoryColor(category.color, 0.1)"
     [attr.stroke]="categoryColor(category.color, 0.1)"
-    [attr.x]="options.x"
+    [attr.x]="0"
     [attr.y]="0"
     [attr.width]="options.radius * 2"
     [attr.height]="options.radius + options.titleHeight"
@@ -68,7 +78,7 @@
   <svg:rect
     fill="none"
     stroke="url(#linear)"
-    [attr.x]="options.x + strokeWidth"
+    [attr.x]="strokeWidth"
     [attr.y]="strokeWidth"
     [attr.width]="(options.radius - strokeWidth) * 2"
     [attr.height]="options.radius + options.titleHeight - strokeWidth * 2"
@@ -76,7 +86,7 @@
   />
   <svg:text
     fill="black"
-    [attr.x]="options.x + options.radius"
+    [attr.x]="options.radius"
     [attr.y]="options.radius + options.titleHeight / 2"
     text-anchor="middle"
   >{{category.name}}</text>
@@ -140,7 +150,7 @@
     *ngIf="category.level === 1"
     [inlineSVG]="category.icon.url"
     [attr.fill]="category.color"
-    [attr.transform]="translateIcon(category)"
+    [attr.transform]="translateIcon()"
   >
   </svg:g>
   <svg:text *ngIf="category.level > 0"
@@ -165,22 +175,17 @@
   *ngIf="options.relationship === 'sibling'"
   class="sibling-node"
 >
-  <svg:line
-    [attr.x1]="options.px"
-    [attr.y1]="options.py"
-    [attr.x2]="options.x"
-    [attr.y2]="options.y"
-    [attr.stroke]="category.color"
-  />
   <svg:g
-    [attr.transform]="translateUnrotate()"
+    [attr.transform]="translateAndScale()"
     (click)="goCategory(category)"
+    (mouseover)="category.hover=true"
+    (mouseout)="category.hover=false"
   >
     <svg:circle
       [attr.cx]="0"
       [attr.cy]="0"
       [attr.r]="options.radius"
-      [attr.fill]="'white'"
+      [attr.fill]="category.hover ? category.color : 'white'"
       [attr.stroke]="category.color"
     />
     <svg:g
@@ -189,14 +194,19 @@
       [attr.x]="0"
       [attr.y]="0"
       [attr.fill]="category.hover ? 'white' : category.color"
-      [attr.transform]="translate(-iconSize, -iconSize) + ' scale(2)'"
+      [attr.transform]="translate(-iconSize, -iconSize) + ' ' + scale(2)"
     />
   </svg:g>
 </svg:g>
 
-<svg:g *ngIf="options.relationship === 'child'">
+<svg:g
+  *ngIf="options.relationship === 'child'"
+  (mouseover)="category.hover=true"
+  (mouseout)="category.hover=false"
+  [attr.transform]="translateAndScale()"
+>
   <svg:circle
-    [attr.cx]="options.x"
+    [attr.cx]="0"
     cy="0"
     [attr.r]="options.radius"
     [attr.stroke]="category.color"
@@ -204,7 +214,7 @@
   />
   <svg:image
     *ngIf="category.level === 0"
-    [attr.x]="options.x - nodeImageSize('node')/2"
+    [attr.x]="-nodeImageSize('node')/2"
     [attr.y]="-nodeImageSize('node')/2"
     [attr.width]="nodeImageSize('node')"
     [attr.height]="nodeImageSize('node')"
@@ -226,30 +236,22 @@
   >
     <svg:tspan
       *ngFor="let word of words(category.name); let j = index"
-      [attr.x]="options.x"
+      [attr.x]="0"
       [attr.y]="fontSize * j"
       class="category-name"
     >{{word}}</svg:tspan>
     <svg:tspan
       *ngIf="(category.level === 2)"
-      [attr.x]="options.x"
+      [attr.x]="0"
       [attr.y]="fontSize * words(category.name).length + fontSize"
     >{{category.resource_count || 0}} resources</svg:tspan>
   </svg:text>
 </svg:g>
 
 <svg:g *ngIf="options.relationship === 'grandchild'">
-  <svg:line
-    x1="0"
-    y1="0"
-    [attr.x2]="options.x"
-    y2="0"
-    [attr.stroke]="category.color"
-    [ngStyle]="{'stroke-width': strokeWidth}"
-  />
   <svg:circle
     [attr.cx]="options.x"
-    cy="0"
+    [attr.cy]="options.y"
     [attr.r]="options.radius"
     [attr.stroke]="category.color"
     fill="white"

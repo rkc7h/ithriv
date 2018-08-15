@@ -5,6 +5,7 @@ import { Category } from '../category';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { routerTransition, zoomTransition } from '../shared/router.animations';
+import { NodeOptions } from '../node-options';
 
 @Component({
   selector: 'app-category-network-view',
@@ -24,9 +25,10 @@ export class CategoryNetworkViewComponent implements OnInit {
   layoutWidth = 982;
   layoutHeight = 982;
   navRadius = 40;
-  selfRadius = 90;
-  parentRadius = 70;
-  nodeRadius = 70;
+  selfRadius = 100;
+  parentRadius = 80;
+  nodeRadius = 80;
+  nodeSpacing = 60;
   nodeChildRadius = 15;
   rootNodeAngle = 35;
   selfTitleHeight = 40;
@@ -71,9 +73,9 @@ export class CategoryNetworkViewComponent implements OnInit {
   ngOnInit() {
   }
 
-  private rotateChildDegrees(i: number, numTotal: number, rotateMultiplier = 1) {
+  private rotateChildDegrees(i: number, numTotal: number, angleMultiplier = 1) {
     if (numTotal > 0) {
-      return (i * 360 / numTotal) + (this.rootNodeAngle * rotateMultiplier);
+      return (i * 360 / numTotal) + (this.rootNodeAngle * angleMultiplier);
     }
 
     return 0;
@@ -81,8 +83,8 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   rotateChild(i: number, numTotal: number, mode: string) {
     if (numTotal > 0) {
-      const rotateMultiplier = (mode === 'siblings') ? -2 : 1;
-      return `rotate(${this.rotateChildDegrees(i, numTotal, rotateMultiplier)})`;
+      const angleMultiplier = (mode === 'siblings') ? -2 : 1;
+      return `rotate(${this.rotateChildDegrees(i, numTotal, angleMultiplier)})`;
     }
   }
 
@@ -90,8 +92,8 @@ export class CategoryNetworkViewComponent implements OnInit {
     if (this.category.children.length > 0) {
       const scale = c.hover ? 1.1 : 1;
       const offset = (this.nodeLineLength(c, i) + this.nodeRadius) * scale;
-      const rotateMultiplier = (mode === 'siblings') ? -2 : 1;
-      return `rotate(${-this.rotateChildDegrees(i, numTotal, rotateMultiplier)}, ${offset}, 0) scale(${scale})`;
+      const angleMultiplier = (mode === 'siblings') ? -2 : 1;
+      return `rotate(${-this.rotateChildDegrees(i, numTotal, angleMultiplier)}, ${offset}, 0) scale(${scale})`;
     }
   }
 
@@ -99,21 +101,25 @@ export class CategoryNetworkViewComponent implements OnInit {
     return node.level < this.category.level;
   }
 
-  categoryNodes(category: Category) {
-    if (category.parent) {
-      return [category.parent].concat(category.children);
-    } else if (category.children && (category.children.length > 0)) {
-      return category.children;
+  categoryNodes(category: Category, noParent: boolean): Category[] {
+    const nodes = (category.parent && !noParent) ? [category.parent].concat(category.children) : category.children;
+    const multiplier = noParent ? 0.5 : 1;
+
+    if (nodes && nodes.length > 0) {
+      return nodes.map((n, i) => {
+        n.options = new NodeOptions(this.nodeCoords(n, i, nodes.length, multiplier));
+        return n;
+      });
     } else {
       return [];
     }
   }
 
-  nodeLineLength(node: Category, i: number) {
+  nodeLineLength(node: Category, i: number, multiplier = 1) {
     if (this.isParentNode(node) && (i === 0)) {
-      return this.selfRadius + this.nodeRadius * 2;
+      return multiplier * (this.selfRadius + this.nodeRadius * 2 + this.nodeSpacing);
     } else {
-      return this.selfRadius + this.nodeRadius;
+      return multiplier * (this.selfRadius + this.nodeRadius + this.nodeSpacing);
     }
   }
 
@@ -129,9 +135,13 @@ export class CategoryNetworkViewComponent implements OnInit {
     return hexColorToRGBA(hexColor, alpha);
   }
 
+  translate(x = 0, y = 0) {
+    return `translate(${x}, ${y})`;
+  }
+
   translateByIndex(i: number) {
     const numNodes = this.allCategories.length;
-    return `translate(${-(numNodes - i) * this.nodeRadius * 2}, ${this.nodeRadius})`;
+    return this.translate(-(numNodes - i) * this.nodeRadius * 2, this.nodeRadius);
   }
 
   translateTo(s: string, node: Category, i: number) {
@@ -139,9 +149,9 @@ export class CategoryNetworkViewComponent implements OnInit {
       case 'origin':
         return `translate(0, 0)`;
       case 'top-right':
-        return `translate(${this.layoutWidth / 2}, ${-this.layoutHeight / 2})`;
+        return this.translate(this.layoutWidth / 2, -this.layoutHeight / 2);
       case 'node':
-        return `translate(${this.nodeLineLength(node, i) + this.nodeRadius})`;
+        return this.translate(this.nodeLineLength(node, i) + this.nodeRadius, 0);
       default:
         break;
     }
@@ -161,16 +171,43 @@ export class CategoryNetworkViewComponent implements OnInit {
 
     for (const rootCat of this.allCategories) {
       if (node.id === rootCat.id) {
-        for (const sib of rootCat.children) {
+        rootCat.children.forEach(sib => {
           if (sib.id === this.category.id) {
             sibs.push(sib);
           } else {
             sibs.unshift(sib);
           }
-        }
+        });
       }
     }
 
-    return sibs;
+    const radiusMultiplier = 0.6;
+    const angleMultiplier = -sibs.length / 2.5;
+
+    return sibs.map((sib, i) => {
+      sib.options = new NodeOptions(this.nodeCoords(sib, i, sibs.length, radiusMultiplier, angleMultiplier));
+      return sib;
+    });
+  }
+
+  nodeCoords(node: Category, i: number, numTotal: number, radiusMultiplier = 1, angleMultiplier = 1): NodeOptions {
+    const r = this.nodeLineLength(node, i, radiusMultiplier);
+    const angle = this.rotateChildDegrees(i, numTotal, angleMultiplier);
+    return this.calcCoords(angle, r);
+  }
+
+  // Get x,y coordinates of a point at given angle on a circle of radius r.
+  calcCoords(angle = 0, r = 0): NodeOptions {
+
+    // Convert degrees to radians
+    const theta = angle * Math.PI / 180;
+
+    // x is adjacent, r is hypoteneuse
+    const x = Math.cos(theta) * r;
+
+    // y is opposite, r is hypoteneuse
+    const y = Math.sin(theta) * r;
+
+    return new NodeOptions({ x: x, y: y });
   }
 }

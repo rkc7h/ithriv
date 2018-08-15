@@ -1,5 +1,6 @@
 import { Links } from './links';
 import { Icon } from './icon';
+import { NodeOptions } from './node-options';
 
 export interface Category {
   brief_description?: string;
@@ -15,6 +16,9 @@ export interface Category {
   parent_id?: number;
   parent?: Category;
   _links?: Links;
-  hover?: boolean;
   resource_count?: number;
+
+  // Presentation options
+  options?: NodeOptions;
+  hover?: boolean;
 }
