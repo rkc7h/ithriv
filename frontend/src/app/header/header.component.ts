@@ -45,11 +45,6 @@ export class HeaderComponent {
     });
   }
 
-  goDashboard($event) {
-    $event.preventDefault();
-    this.router.navigate(['dashboard']);
-  }
-
   goHome($event) {
     $event.preventDefault();
     this.router.navigate(['']);

@@ -4,7 +4,6 @@ import { BrowseComponent } from '../browse/browse.component';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 import { CategoryNetworkViewComponent } from '../category-network-view/category-network-view.component';
 import { CategoryComponent } from '../category/category.component';
-import { DashboardComponent } from "../dashboard/dashboard.component";
 import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
 import { HomeComponent } from "../home/home.component";
 import { LoginComponent } from '../login/login.component';
@@ -19,7 +18,6 @@ import { SessionRedirectComponent } from '../session-redirect/session-redirect.c
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, data: { title: 'Welcome to iThriv' } },
-  { path: 'dashboard', component: DashboardComponent, data: { title: 'MyThriv Workspace' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
   { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
   { path: 'register', component: LoginComponent, data: { title: 'Sign up for iThriv', hideHeader: true } },
