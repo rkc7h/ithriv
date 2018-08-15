@@ -17,72 +17,17 @@
   <app-category-tile *ngFor="let category of categories" [category]="category"></app-category-tile>
 </div>
 
-<mat-sidenav-container fxLayout="row" fxLayout.xs="column">
-  <mat-sidenav #sidenav class="sidenav">
-    <h2>
-      <span>Filters</span>
-      <div class="spacer"></div>
-      <button mat-icon-button (click)="sidenav.close()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </h2>
-    <div class="spacer"></div>
-    <mat-accordion>
-      <mat-expansion-panel *ngFor="let facet of resourceQuery.facets">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            {{facet.field}}
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-list>
-          <mat-list-item *ngFor="let count of facet.facetCounts" (click)="addFilter(facet.field, count.category)">
-            {{count.category}}
-            <div class="spacer"></div>
-            {{count.hit_count}}
-          </mat-list-item>
-        </mat-list>
-      </mat-expansion-panel>
-    </mat-accordion>
-  </mat-sidenav>
+<h1 class="mat-h1 page-title">myThriv Workspace</h1>
 
-  <ul class="applied-filters">
-    <li *ngIf="!sidenav.opened">
-      <button mat-icon-button (click)="sidenav.open()">
-        <i class="material-icons">add_circle_outline</i>
-      </button>
-      Add a filter
-    </li>
-    <li *ngIf="resourceQuery.query">
-      <button mat-icon-button (click)="updateQuery()">
-        <i class="material-icons">remove_circle_outline</i>
-      </button>
-      Search: {{resourceQuery.query}}
-    </li>
-
-    <li *ngFor="let filter of resourceQuery.filters">
-      <button mat-icon-button (click)="removeFilter(filter)">
-        <i class="material-icons">remove_circle_outline</i>
-      </button>
-      {{filter.field}} : {{filter.value}}
-    </li>
-  </ul>
-
-  <mat-tab-group mat-stretch-tabs dynamicHeight>
-    <mat-tab label="
-              Resources available to {{getUserName()}}
-              ({{getResources(getInstitutionId()).length}})
-            ">
-      <div class="example-small-box mat-elevation-z4">
-        <app-resource-list [resources]="getResources(getInstitutionId())" infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="300"
-          (scrolled)="onScroll()"></app-resource-list>
-      </div>
-    </mat-tab>
-    <mat-tab label="View all in category ({{getResources().length}})">
-      <div class="example-large-box mat-elevation-z4">
-        <app-resource-list [resources]="getResources()" infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="300"
-          (scrolled)="onScroll()"></app-resource-list>
-      </div>
-    </mat-tab>
-  </mat-tab-group>
-</mat-sidenav-container>
-
+<mat-tab-group mat-stretch-tabs dynamicHeight backgroundColor="primary">
+  <mat-tab label="Recently Updated Resources">
+    <div class="example-small-box mat-elevation-z4">
+      <app-resource-list [resources]="resources"></app-resource-list>
+    </div>
+  </mat-tab>
+  <mat-tab label="My Favorite Resources">
+    <div class="example-large-box mat-elevation-z4">
+      <app-favorite-resource-list></app-favorite-resource-list>
+    </div>
+  </mat-tab>
+</mat-tab-group>
