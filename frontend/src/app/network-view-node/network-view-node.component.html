@@ -174,13 +174,10 @@
 <svg:g
   *ngIf="options.relationship === 'sibling'"
   class="sibling-node"
+  (mouseover)="category.hover=true"
+  (mouseout)="category.hover=false"
 >
-  <svg:g
-    [attr.transform]="translateAndScale()"
-    (click)="goCategory(category)"
-    (mouseover)="category.hover=true"
-    (mouseout)="category.hover=false"
-  >
+  <svg:g [attr.transform]="translateAndScale()">
     <svg:circle
       [attr.cx]="0"
       [attr.cy]="0"

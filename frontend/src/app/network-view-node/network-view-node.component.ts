@@ -1,4 +1,4 @@
-import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
 import { NodeOptions } from '../node-options';
@@ -20,14 +20,6 @@ export class NetworkViewNodeComponent implements OnInit {
   constructor(private router: Router) { }
 
   ngOnInit() {
-  }
-
-  goCategory(c: Category) {
-    if (c.level === 2) {
-      this.router.navigate(['category', c.id]);
-    } else {
-      this.router.navigate(['category', c.id, 'network']);
-    }
   }
 
   rotate(angle: number) {

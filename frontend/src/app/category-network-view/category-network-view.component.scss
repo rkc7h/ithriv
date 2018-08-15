@@ -1,8 +1,84 @@
+#network-graph-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
 line, circle, rect {
   stroke-width: 4px;
   transition: 300ms ease transform;
 }
 
-g.node {
-  transition: 300ms ease transform;
+g[app-network-view-node] {
+  transition: 500ms ease transform, 500ms ease opacity;
+}
+
+.zoom-in-exit [app-network-view-node],
+.zoom-in-exit line {
+  animation: zoomInAndFadeOut 1s;
+}
+
+.zoom-in-enter [app-network-view-node],
+.zoom-in-enter line {
+  animation: zoomInAndFadeIn 1s;
+}
+
+.zoom-out-exit [app-network-view-node],
+.zoom-out-exit line {
+  animation: zoomInAndFadeOut 1s;
+}
+
+.zoom-out-enter [app-network-view-node],
+.zoom-out-enter line {
+  animation: zoomInAndFadeIn 1s;
+}
+
+@keyframes zoomInAndFadeOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(10);
+    opacity: 0;
+  }
+}
+
+@keyframes zoomInAndFadeIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomOutAndFadeOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes zoomOutAndFadeIn {
+  from {
+    transform: scale(10);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

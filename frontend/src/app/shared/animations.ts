@@ -17,6 +17,10 @@ const show = style({ opacity: 1 });
 const transitionOut = [show, animate(easing, hide)];
 const transitionIn = [hide, animate(easing, show)];
 const optional = { optional: true };
+const normal = style({ opacity: 1, transform: 'scale(1)' });
+const zoomedOut = style({ opacity: 0, transform: 'scale(0)' });
+const zoomedIn = style({ opacity: 0, transform: 'scale(5)' });
+const fadedOut = style({ opacity: 0, transform: 'scale(1)' });
 
 export function fadeTransition(): AnimationTriggerMetadata {
   return trigger('fadeTransition', [
@@ -55,33 +59,18 @@ export function slideTransition(): AnimationTriggerMetadata {
 }
 
 export function zoomTransition(): AnimationTriggerMetadata {
-  const normal = { opacity: 1, transform: 'translateX(0) scale(1)' };
-  const zoomedOut = { opacity: 0, transform: 'translateX(0) scale(0)' };
-  const zoomedIn = { opacity: 0, transform: 'translateX(0) scale(100)' };
   return trigger('zoomTransition', [
-
-    // Zoom in
-    transition(':increment', group([
-      query(':enter', [
-        style(zoomedOut),
-        animate(easing, style(normal))
-      ]),
-      query(':leave', [
-        style(normal),
-        animate(easing, style(zoomedIn))
-      ])
-    ])),
-
-    // Zoom out
-    transition(':decrement', group([
-      query(':enter', [
-        style(zoomedIn),
-        animate(easing, style(normal))
-      ]),
-      query(':leave', [
-        style(normal),
-        animate(easing, style(zoomedOut))
-      ])
-    ]))
+    state('default', normal),
+    state('zoomIn', normal),
+    state('zoomOut', normal),
+    transition('* => default', [
+      animate(easing, fadedOut)
+    ]),
+    transition('* => zoomIn', [
+      animate(easing, zoomedOut)
+    ]),
+    transition('* => zoomOut', [
+      animate(easing, zoomedIn)
+    ])
   ]);
 }

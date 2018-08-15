@@ -2,20 +2,25 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
+import { NodeOptions } from '../node-options';
+import { fadeTransition, zoomTransition } from '../shared/animations';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { fadeTransition } from '../shared/animations';
-import { NodeOptions } from '../node-options';
 
 @Component({
   selector: 'app-category-network-view',
   templateUrl: './category-network-view.component.html',
   styleUrls: ['./category-network-view.component.scss'],
-  animations: [fadeTransition()]
+  animations: [fadeTransition(), zoomTransition()]
 })
 export class CategoryNetworkViewComponent implements OnInit {
   @HostBinding('@fadeTransition')
   isDataLoaded = false;
+
+  @HostBinding('@zoomTransition')
+  transitionState = 'default';
+  zoomClass = '';
+
   categoryId: number;
   category: Category;
   allCategories: Category[];
@@ -63,6 +68,7 @@ export class CategoryNetworkViewComponent implements OnInit {
         // Set page title
         const currentTitle = this.titleService.getTitle();
         this.titleService.setTitle(`${currentTitle} - ${this.category.name}`);
+        this.zoomClass = (this.zoomClass === 'zoom-in-exit') ? 'zoom-in-enter' : 'zoom-out-enter';
         this.isDataLoaded = true;
       }
     );
@@ -122,6 +128,12 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   goCategory(c: Category) {
+    if (c.level === this.category.level) {
+      this.transitionState = 'default';
+    } else {
+      this.transitionState = (c.level > this.category.level) ? 'zoomOut' : 'zoomIn';
+    }
+
     if (c.level === 2) {
       this.router.navigate(['category', c.id]);
     } else {
@@ -211,5 +223,13 @@ export class CategoryNetworkViewComponent implements OnInit {
     const y = Math.sin(theta) * r;
 
     return new NodeOptions({ x: x, y: y });
+  }
+
+  getTransitionState() {
+    return this.transitionState;
+  }
+
+  setZoomClass(node: Category) {
+    return (node.level > this.category.level) ? 'zoom-in-exit' : 'zoom-out-exit';
   }
 }
