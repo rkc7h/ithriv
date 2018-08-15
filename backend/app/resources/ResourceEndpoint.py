@@ -49,7 +49,7 @@ class ResourceListEndpoint(flask_restful.Resource):
 
     def get(self):
         schema = ThrivResourceSchema(many=True)
-        resources = db.session.query(ThrivResource).all()
+        resources = db.session.query(ThrivResource).order_by(ThrivResource.last_updated.desc()).all()
         return schema.dump(resources)
 
     def post(self):
