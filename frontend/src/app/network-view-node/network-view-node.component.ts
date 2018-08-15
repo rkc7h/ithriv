@@ -72,10 +72,18 @@ export class NetworkViewNodeComponent implements OnInit {
   words(str: string) {
     return str.trim()
       .replace('  ', ' ')
-      .replace(/ to /i, '_to ')
-      .replace(/ and /i, '_& ')
+      .replace(/ of /i, ' of_')
+      .replace(/ for /i, ' for_')
+      .replace(/ to /i, ' to_')
+      .replace(/ and /i, ' &_')
       .split(' ')
-      .map(s => s.replace('_&', ' &').replace('_to', ' to'));
+      .map(s => {
+        return s
+          .replace('of_', 'of ')
+          .replace('for_', 'for ')
+          .replace('to_', 'to ')
+          .replace('&_', '& ');
+      });
   }
 
   translateText(c: Category) {

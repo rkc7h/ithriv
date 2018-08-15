@@ -45,29 +45,6 @@
       </linearGradient>
     </defs>
 
-    <!-- TOP-LEVEL NODES -->
-    <g
-      [attr.transform]="translateTo('top-right')"
-      class="top-level"
-    >
-      <g
-        app-network-view-node
-        *ngFor="let node of allCategories; let i = index"
-        [attr.transform]="translateByIndex(i)"
-        (click)="goCategory(node)"
-        [ngStyle]="{'opacity': isSelectedCategory(node) ? 0.1 : 1}"
-        [category]="node"
-        [options]="{
-          relationship: 'root',
-          x: 0,
-          y: 0,
-          radius: navRadius,
-          angle: 0,
-          titleHeight: parentTitleHeight
-        }"
-      />
-    </g>
-
     <g [attr.transform]="translateTo('origin')">
 
       <!-- PARENT & CHILD NODES -->
@@ -185,5 +162,29 @@
         }"
       />
     </g>
+
+    <!-- TOP-LEVEL NODES -->
+    <g
+      [attr.transform]="translateTo('top-left')"
+      class="top-level"
+    >
+      <g
+        app-network-view-node
+        *ngFor="let node of allCategories; let i = index"
+        [attr.transform]="translateByIndex(i)"
+        (click)="goCategory(node)"
+        [ngStyle]="{'opacity': isSelectedCategory(node) ? 0.1 : 1}"
+        [category]="node"
+        [options]="{
+          relationship: 'root',
+          x: 0,
+          y: 0,
+          radius: navRadius,
+          angle: 0,
+          titleHeight: parentTitleHeight
+        }"
+      />
+    </g>
+
   </svg>
 </div>

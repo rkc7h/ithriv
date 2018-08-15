@@ -26,8 +26,8 @@ export class CategoryNetworkViewComponent implements OnInit {
   layoutHeight = 982;
   navRadius = 40;
   selfRadius = 100;
-  parentRadius = 80;
-  nodeRadius = 80;
+  parentRadius = 75;
+  nodeRadius = 75;
   nodeSpacing = 60;
   nodeChildRadius = 15;
   rootNodeAngle = 35;
@@ -103,7 +103,7 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   categoryNodes(category: Category, noParent: boolean): Category[] {
     const nodes = (category.parent && !noParent) ? [category.parent].concat(category.children) : category.children;
-    const multiplier = noParent ? 0.5 : 1;
+    const multiplier = noParent ? 0.44 : 1;
 
     if (nodes && nodes.length > 0) {
       return nodes.map((n, i) => {
@@ -140,14 +140,18 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   translateByIndex(i: number) {
-    const numNodes = this.allCategories.length;
-    return this.translate(-(numNodes - i) * this.nodeRadius * 2, this.nodeRadius);
+    const padding = this.nodeSpacing / 2;
+    const xOffset = padding + i * (this.navRadius * 2 + this.nodeSpacing);
+    const yOffset = this.navRadius + padding;
+    return this.translate(xOffset, yOffset);
   }
 
   translateTo(s: string, node: Category, i: number) {
     switch (s) {
       case 'origin':
         return `translate(0, 0)`;
+      case 'top-left':
+        return this.translate(-this.layoutWidth / 2, -this.layoutHeight / 2);
       case 'top-right':
         return this.translate(this.layoutWidth / 2, -this.layoutHeight / 2);
       case 'node':
