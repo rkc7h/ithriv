@@ -81,6 +81,8 @@ import { SearchComponent } from './search/search.component';
 import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
+import { UserAdminComponent } from './user-admin/user-admin.component';
+import { IsAdminDirective } from './is-admin.directive';
 
 @NgModule({
   declarations: [
@@ -123,7 +125,9 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
     ResourceTileComponent,
     SearchComponent,
     SessionRedirectComponent,
-    TreeSelectComponent
+    TreeSelectComponent,
+    UserAdminComponent,
+    IsAdminDirective
   ],
   imports: [
     AppRoutingModule,
