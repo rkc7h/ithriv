@@ -1,7 +1,7 @@
 import flask_restful
 from flask import request
 from marshmallow import ValidationError
-from sqlalchemy import exists
+from sqlalchemy import exists, or_
 from sqlalchemy.exc import IntegrityError
 
 from app import RestException, db, email_service, auth
@@ -49,8 +49,15 @@ class UserListEndpoint(flask_restful.Resource):
     @auth.login_required
     @requires_roles('Admin')
     def get(self):
-        models = db.session.query(User).all()
-        return self.usersSchema.dump(models)
+        args = request.args
+        page = eval(args["pageNumber"]) if ("pageNumber" in args) else 1
+        per_page = eval(args["pageSize"]) if ("pageSize" in args) else 20
+        query = db.session.query(User)
+        if "filter" in args:
+            f = '%' + args["filter"] + '%'
+            query = query.filter(or_(User.email.ilike(f), User.display_name.ilike(f), User.uid.ilike(f)))
+        page = query.paginate(page=page, per_page=per_page, error_out=False)
+        return self.usersSchema.dump(page.items)
 
     @auth.login_required
     @requires_roles('Admin')
