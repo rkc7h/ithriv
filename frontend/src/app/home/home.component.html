@@ -13,7 +13,8 @@
   </div>
 </div>
 
-<div id="tiles" class="mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="45px" fxLayoutAlign="center">
+<div id="tiles"  fxLayout="row wrap"
+     fxLayoutGap="45px grid" fxLayoutAlign="center">
   <app-category-tile *ngFor="let category of categories" [category]="category"></app-category-tile>
 </div>
 
