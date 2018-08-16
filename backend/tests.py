@@ -598,6 +598,23 @@ class TestCase(unittest.TestCase):
         self.assertEquals(r.id, response[0]["id"])
         self.assertEquals(r.description, response[0]["resource"]["description"])
 
+    def test_get_resource_by_category_includes_category_details(self):
+        c = self.construct_category(name="c1")
+        c2 = self.construct_category(name="c2")
+        r = self.construct_resource()
+        cr = ResourceCategory(resource=r, category=c)
+        cr2 = ResourceCategory(resource=r, category=c2)
+        db.session.add_all([cr, cr2]);
+        db.session.commit();
+        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(r.id, response[0]["id"])
+        self.assertEquals(2, len(response[0]["resource"]["resource_categories"]))
+        self.assertEquals("c1", response[0]["resource"]["resource_categories"][0]["category"]["name"])
+
+
+
     def test_category_resource_count(self):
         c = self.construct_category()
         r = self.construct_resource()

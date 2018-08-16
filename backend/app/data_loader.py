@@ -77,13 +77,20 @@ class DataLoader:
             header = next(reader, None)  # use headers to set availability
             for row in reader:
                 id = eval(row[0])
+                icon = db.session.query(Icon).filter(Icon.id == id).first()
+                if icon is None:
+                    icon = Icon(id=id, name=row[1])
                 path = "./example_data/icons/%s" % row[2]
                 extension = path.rsplit('.', 1)[1].lower()
                 mime_type = self.mime.from_file(path)
                 data = open(path, 'rb')
-                icon = Icon(id=id, name=row[1])
                 icon.url = file_server.save_icon(data, icon, extension, mime_type)
                 db.session.add(icon)
+
+                type = self.get_type_by_name(row[3])
+                if type:
+                    type.icon = icon
+                    db.session.add(type)
         db.session.commit()
 
     def load_categories(self):
@@ -192,9 +199,9 @@ class DataLoader:
         db.session.query(Availability).delete()
         db.session.query(Favorite).delete()
         db.session.query(ThrivResource).delete()
-        db.session.query(ThrivInstitution).delete()
         db.session.query(ThrivType).delete()
         db.session.query(Category).delete()
         db.session.query(EmailLog).delete()
         db.session.query(User).delete()
+        db.session.query(ThrivInstitution).delete()
         db.session.commit()
