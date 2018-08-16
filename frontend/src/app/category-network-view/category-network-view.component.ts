@@ -1,23 +1,18 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { NodeOptions } from '../node-options';
-import { fadeTransition, zoomTransition } from '../shared/animations';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-category-network-view',
   templateUrl: './category-network-view.component.html',
-  styleUrls: ['./category-network-view.component.scss'],
-  animations: [fadeTransition(), zoomTransition()]
+  styleUrls: ['./category-network-view.component.scss']
 })
 export class CategoryNetworkViewComponent implements OnInit {
-  @HostBinding('@fadeTransition')
   isDataLoaded = false;
-
-  @HostBinding('@zoomTransition')
   transitionState = 'default';
   transitionClass = '';
 
@@ -238,7 +233,7 @@ export class CategoryNetworkViewComponent implements OnInit {
   setTransitionClass(nextNode: Category, nodes: Category[]) {
     if (nextNode.level > this.category.level) {
       this.transitionClass = 'zoom-in-exit';
-    } else if (nextNode.level > this.category.level) {
+    } else if (nextNode.level < this.category.level) {
       this.transitionClass = 'zoom-out-exit';
     } else {
       let currentIndex: number;
