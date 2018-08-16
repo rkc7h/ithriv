@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { ResourceQuery } from '../resource-query';
 import { Filter, ResourceQuery } from '../resource-query';
 import { fadeTransition } from '../shared/animations';
 

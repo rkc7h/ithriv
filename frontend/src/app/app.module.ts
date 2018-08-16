@@ -128,7 +128,7 @@ import { IsAdminDirective } from './is-admin.directive';
     SearchComponent,
     SessionRedirectComponent,
     TreeSelectComponent,
-    NetworkViewNodeComponent
+    NetworkViewNodeComponent,
     UserAdminComponent,
     IsAdminDirective
   ],
