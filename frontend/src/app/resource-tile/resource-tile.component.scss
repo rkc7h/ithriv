@@ -28,8 +28,6 @@ $icon-size: 50px;
 
 mat-card {
   cursor: pointer;
-  min-height: 256px;
-  max-height: 256px;
 
   &:hover {
     outline: 1px solid mat-color($ithriv-primary, 200, 1);
