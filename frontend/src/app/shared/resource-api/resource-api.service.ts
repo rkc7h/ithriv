@@ -196,6 +196,12 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** getResources */
+  getResources(): Observable<Resource> {
+    return this.httpClient.get<Resource>(this.apiRoot + this.endpoints.resourceList)
+      .pipe(catchError(this.handleError));
+  }
+
   /** getResourceCategories */
   getResourceCategories(resource: Resource): Observable<ResourceCategory[]> {
     const url = this.endpoints.categoryByResource.replace('<resource_id>', resource.id.toString());

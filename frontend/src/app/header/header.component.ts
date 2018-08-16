@@ -55,11 +55,6 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  goDashboard($event) {
-    $event.preventDefault();
-    this.router.navigate(['dashboard']);
-  }
-
   goHome($event) {
     $event.preventDefault();
     this.router.navigate(['']);

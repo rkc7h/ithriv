@@ -1128,3 +1128,19 @@ class TestCase(unittest.TestCase):
         query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'desc', 'pageNumber': '1', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals("Oscar the Grouch", response['items'][0]['display_name'])
+
+    def test_resource_list_limits_to_10_by_default(self):
+        for i in range(20):
+            self.construct_resource()
+        rv = self.app.get('/api/resource', follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        result = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(10, len(result))
+
+        rv = self.app.get('/api/resource', follow_redirects=True,
+                          query_string={'limit':'5'},
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        result = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(5, len(result))

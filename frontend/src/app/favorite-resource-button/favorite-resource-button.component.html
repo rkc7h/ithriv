@@ -6,7 +6,7 @@
     </button>
   </div>
   <div *ngIf="!userFavorite()" class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
-    <button mat-mini-fab (click)="addFavorite();$event.stopPropagation()" aria-label="Add Favorite">
+    <button (click)="addFavorite();$event.stopPropagation()" aria-label="Add Favorite">
       <img src="/assets/favorite_outline_star.svg" />
     </button>
   </div>
