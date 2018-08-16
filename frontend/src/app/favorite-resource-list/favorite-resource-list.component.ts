@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { Resource } from '../resource';
+import {User} from '../user';
 
 @Component({
   selector: 'app-favorite-resource-list',
@@ -10,6 +11,7 @@ import { Resource } from '../resource';
 export class FavoriteResourceListComponent implements OnInit {
 
   resources: Resource[];
+  session: User;
 
   constructor(
     private api: ResourceApiService,
@@ -27,14 +29,11 @@ export class FavoriteResourceListComponent implements OnInit {
     );
   }
 
-  getSession() {
-    this.api.getSession().subscribe(user => {
-      return user;
-    });
-  }
-
   ngOnInit() {
       this.getFavoriteResources();
+      this.api.getSession().subscribe(user => {
+        this.session = user;
+      });
   }
 
 }
