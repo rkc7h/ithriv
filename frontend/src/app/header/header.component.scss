@@ -56,8 +56,8 @@
       }
 
       &.logo-horizontal {
-        height: 104px;
-        max-height: 104px;
+        height: 40px;
+        max-height: 40px;
         vertical-align: middle;
 
         @media screen and (max-width: 720px) {
@@ -86,10 +86,22 @@
   .navigation, .secondary-nav {
     background: white;
 
-    img.logomark {
-      height: 24px;
-      max-height: 24px;
-      vertical-align: middle;
+    img {
+      &.logomark {
+        height: 24px;
+        max-height: 24px;
+        vertical-align: middle;
+      }
+
+      &.logo-horizontal {
+        height: 40px;
+        max-height: 40px;
+        vertical-align: middle;
+
+        @media screen and (max-width: 720px) {
+          height: 40px;
+        }
+      }
     }
 
     h1 {

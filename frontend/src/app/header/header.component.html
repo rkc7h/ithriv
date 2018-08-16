@@ -1,73 +1,116 @@
-<mat-toolbar *ngIf="!hideHeader" class="mat-toolbar-tools">
+<mat-toolbar
+  *ngIf="!hideHeader"
+  class="mat-toolbar-tools"
+>
   <mat-toolbar-row class="menubar">
     <span class="fill-remaining-space"></span>
-    <!--
-    <button mat-button *ngIf="!getSession()" (click)="goRegister($event)">
-      <mat-icon>person_add</mat-icon>
-      Register
-    </button>
-    <mat-divider [vertical]="true"></mat-divider>
-    -->
-    <button mat-button *appIsAdmin (click)="goUserAdmin($event)">
+    <button
+      mat-button
+      *appIsAdmin
+      (click)="goUserAdmin($event)"
+    >
       <mat-icon>person_add</mat-icon>
       User Administration
     </button>
     <mat-divider [vertical]="true"></mat-divider>
-    <button mat-button *ngIf="!session" (click)="goLogin($event)">
+    <button
+      mat-button
+      *ngIf="!session"
+      (click)="goLogin($event)"
+    >
       <mat-icon>account_circle</mat-icon>
       Log in
     </button>
-    <button mat-button *ngIf="session" (click)="goProfile($event)">
+    <button
+      mat-button
+      *ngIf="session"
+      (click)="goProfile($event)"
+    >
       <mat-icon>account_circle</mat-icon>
       {{session.display_name}}
     </button>
-    <button mat-button *ngIf="session" (click)="goLogout($event)">
+    <button
+      mat-button
+      *ngIf="session"
+      (click)="goLogout($event)"
+    >
       <mat-icon>exit_to_app</mat-icon>
       Log Out
     </button>
   </mat-toolbar-row>
 
-  <mat-toolbar-row *ngIf="isHome" fxLayout="row wrap" fxLayoutAlign="space-around center" class="logo">
+  <mat-toolbar-row
+    fxLayout="row wrap"
+    fxLayoutAlign="space-around center"
+    class="logo"
+  >
     <h1>
-      <a href="#" (click)="goHome($event)" aria-label="Go Home">
-        <img src="/assets/logo/ithriv-logomark.png" alt="iThriv" class="logomark" /> Research Concierge Portal
+      <a
+        href="#"
+        (click)="goHome($event)"
+        aria-label="Go Home"
+      >
+        <img
+          src="/assets/logo/ithriv-logomark.png"
+          alt="iThriv"
+          class="logomark"
+        /> Research Concierge Portal
       </a>
     </h1>
     <span class="fill-remaining-space"></span>
-    <a href="#" (click)="goHome($event)" aria-label="Go Home">
-      <img src="/assets/logo/ithriv-logo.png" alt="iThriv" class="logo-horizontal" />
-    </a>
-  </mat-toolbar-row>
-
-  <mat-toolbar-row *ngIf="!isHome" fxLayout="row wrap" fxLayoutAlign="space-around center" class="navigation">
-    <a href="#" (click)="goHome($event)" aria-label="Go Home">
-      <img src="/assets/logo/ithriv-logomark.png" alt="iThriv" class="logomark" /> Research Concierge Portal
-    </a>
-    <span class="fill-remaining-space"></span>
-    <button mat-button *ngIf="session" (click)="goHome($event)">
-      <mat-icon>dashboard</mat-icon>
-      Dashboard
-    </button>
-    <button mat-button (click)="goSearch($event)">
+    <button
+      mat-button
+      color="primary"
+      (click)="goSearch($event)"
+    >
       <mat-icon>search</mat-icon>
       Search
     </button>
-    <button mat-button>
+    <button
+      *ngIf="session"
+      mat-button
+      color="primary"
+    >
       <mat-icon>help</mat-icon>
       Request a Consult
     </button>
+    <a
+      href="#"
+      (click)="goHome($event)"
+      aria-label="Go Home"
+    >
+      <img
+        src="/assets/logo/ithriv-logo.png"
+        alt="iThriv"
+        class="logo-horizontal"
+      />
+    </a>
   </mat-toolbar-row>
 
-  <mat-toolbar-row *ngIf="!isHome" fxLayout="row wrap" fxLayoutAlign="space-around center" class="secondary-nav">
+  <mat-toolbar-row
+    fxLayout="row wrap"
+    fxLayoutAlign="space-around center"
+    class="secondary-nav"
+  >
     <h1>Find Resources</h1>
     <span class="fill-remaining-space"></span>
     <ng-container *ngIf="!isResourceView">
       Change View:
       <mat-button-toggle-group>
-        <button mat-button (click)="viewMode(false)" [disabled]="!isNetworkView" matTooltip="View category/resource listing">
+        <button
+          mat-button
+          (click)="viewMode(false)"
+          [disabled]="!isNetworkView"
+          matTooltip="View category/resource listing"
+        >
           <mat-icon>view_list</mat-icon>
         </button>
-        <button mat-button (click)="viewMode(true)" [disabled]="isNetworkView" matTooltip="View network graph of category relationships">
+        <button
+          mat-button
+          (click)="viewMode(true)"
+          [disabled]="isNetworkView"
+          matTooltip="View network graph of category relationships"
+        >
           <mat-icon>device_hub</mat-icon>
         </button>
       </mat-button-toggle-group>
