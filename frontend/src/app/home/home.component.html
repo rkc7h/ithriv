@@ -2,7 +2,7 @@
   <div fxFlex="75%">
     <form class="search-box" [formGroup]="searchForm" (ngSubmit)="goSearch()">
       <mat-form-field appearance="outline">
-        <input matInput #query type="search" [formControl]="searchBox" placeholder="Search" value="{{resourceQuery.query}}">
+        <input matInput #query type="search" [formControl]="searchBox" placeholder="Search">
         <mat-icon matSuffix (click)="goSearch()">search</mat-icon>
         <mat-hint class="mat-h3">
           Need help?

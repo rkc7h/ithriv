@@ -44,11 +44,6 @@ export class HomeComponent implements OnInit {
         this.resources = resources;
       }
     );
-
-    this.route.params.subscribe(params => {
-      const query = ('query' in params ? params['query'] : '');
-      this.resourceQuery = {query: query, filters: [], facets: [], total: 0, size: 20, start: 0, resources: []};
-    });
   }
 
 
