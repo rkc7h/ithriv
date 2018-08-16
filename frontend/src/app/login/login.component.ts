@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, HostBinding, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { routerTransition } from '../shared/router.animations';
+import { fadeTransition } from '../shared/animations';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  animations: [routerTransition()]
+  animations: [fadeTransition()]
 })
 export class LoginComponent implements OnInit {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   title: string;
   selectedTabIndex = 0;
 

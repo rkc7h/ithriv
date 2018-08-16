@@ -83,6 +83,7 @@ import { SearchComponent } from './search/search.component';
 import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
+import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
 import { IsAdminDirective } from './is-admin.directive';
 
@@ -127,6 +128,7 @@ import { IsAdminDirective } from './is-admin.directive';
     SearchComponent,
     SessionRedirectComponent,
     TreeSelectComponent,
+    NetworkViewNodeComponent
     UserAdminComponent,
     IsAdminDirective
   ],

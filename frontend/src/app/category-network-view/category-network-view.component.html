@@ -1,96 +1,194 @@
-<div *ngIf="isDataLoaded" style="position: relative; width: 100%; height: 100%;" class="mat-typography">
-  <svg *ngIf="category" [attr.viewBox]="viewBoxDimensions()" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+<div
+  style="position: relative; width: 100%; height: 100%;"
+  class="mat-typography"
+>
+  <svg
+    *ngIf="category"
+    [attr.viewBox]="viewBoxDimensions()"
+    xmlns="http://www.w3.org/2000/svg"
+    id="network-graph-container"
+  >
     <defs>
-      <linearGradient id="linear" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" [ngStyle]="{'stop-color': categoryColor(category.color, 0)}" />
-        <stop offset="100%" [ngStyle]="{'stop-color': categoryColor(category.color, 1)}" />
+      <linearGradient
+        id="linear"
+        x1="0%"
+        y1="0%"
+        x2="0%"
+        y2="100%"
+      >
+        <stop
+          offset="0%"
+          [ngStyle]="{'stop-color': categoryColor(category.color, 0)}"
+        />
+        <stop
+          offset="100%"
+          [ngStyle]="{'stop-color': categoryColor(category.color, 1)}"
+        />
       </linearGradient>
-      <linearGradient *ngFor="let node of allCategories" [attr.id]="'linear-' + node.id" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" [ngStyle]="{'stop-color': categoryColor(node.color, 0)}" />
-        <stop offset="100%" [ngStyle]="{'stop-color': categoryColor(node.color, 1)}" />
+      <linearGradient
+        *ngFor="let node of allCategories"
+        [attr.id]="'linear-' + node.id"
+        x1="0%"
+        y1="0%"
+        x2="0%"
+        y2="100%"
+      >
+        <stop
+          offset="0%"
+          [ngStyle]="{'stop-color': categoryColor(node.color, 0)}"
+        />
+        <stop
+          offset="100%"
+          [ngStyle]="{'stop-color': categoryColor(node.color, 1)}"
+        />
       </linearGradient>
     </defs>
 
-    <!-- TOP-LEVEL NODES -->
-    <g [attr.transform]="translateTo('top-right')" class="top-level">
-      <g *ngFor="let node of allCategories; let i = index" [attr.transform]="translateByIndex(i)" (click)="goCategory(node)" [ngStyle]="{'opacity': isSelectedCategory(node) ? 0.1 : 1}">
-        <rect stroke="white" fill="white" [attr.x]="0" [attr.y]="0" [attr.width]="navRadius * 2" [attr.height]="navRadius + parentTitleHeight"
-        />
-        <rect [attr.stroke]="categoryColor(node.color, 0.1)" [attr.fill]="categoryColor(node.color, 0.1)" [attr.x]="0" [attr.y]="0"
-          [attr.width]="navRadius * 2" [attr.height]="navRadius + parentTitleHeight" />
-        <rect [attr.stroke]="nodeGradient(node)" fill="none" [attr.x]="strokeWidth" [attr.y]="strokeWidth" [attr.width]="navRadius * 2 - strokeWidth * 2"
-          [attr.height]="navRadius + parentTitleHeight - strokeWidth * 2" [ngStyle]="{'stroke-width': 1}" />
-        <text fill="black" [attr.x]="navRadius" [attr.y]="navRadius + parentTitleHeight / 2" text-anchor="middle">{{node.name}}</text>
-        <circle [attr.cx]="navRadius" cy="0" [attr.r]="navRadius" [attr.stroke]="node.color" fill="white" />
-        <image [attr.x]="strokeWidth + strokeWidth/2" [attr.y]="-nodeImageSize('nav')/2" [attr.width]="nodeImageSize('nav')" [attr.height]="nodeImageSize('nav')"
-          [attr.href]="nodeImagePath(node)" class="clip-circle" preserveAspectRatio="xMidYMid slice" />
-      </g>
-    </g>
-
-    <g [attr.transform]="translateTo('origin')">
+    <g
+      id="category-network-graph"
+      [attr.transform]="translateTo('origin')"
+      [ngClass]="transitionClass"
+    >
 
       <!-- PARENT & CHILD NODES -->
-      <g *ngFor="let node of categoryNodes(category); let i = index" [attr.transform]="rotateChild(i, categoryNodes(category).length)"
-        (click)="goCategory(node)" (mouseover)="node.hover=true" (mouseout)="node.hover=false">
-        <line x1="0" y1="0" [attr.transform]="node.hover ? 'scale(1.1)' : 'scale(1)'" [attr.x2]="nodeLineLength(node, i)" y2="0"
-          [attr.stroke]="category.color" />
-        <g class="node" [attr.transform]="unrotateChild(node, i, categoryNodes(category).length)">
+      <g *ngFor="let node of categoryNodes(category); let i = index">
+        <!-- LINE CONNECTING TO CHILD NODE / PARENT NODE -->
+        <line
+          x1="0"
+          y1="0"
+          [attr.x2]="node.options.x"
+          [attr.y2]="node.options.y"
+          [attr.stroke]="category.color"
+        />
+        <g
+          class="node"
+          [attr.transform]="translate(node.options.x, node.options.y)"
+        >
 
           <!-- GRANDCHILD NODES -->
-          <g [attr.transform]="translateTo('node', node, i)">
-            <g *ngFor="let nodeChild of node.children; let j = index" [attr.transform]="rotateChild(j, node.children.length)">
-              <line x1="0" y1="0" [attr.x2]="nodeRadius + nodeChildRadius * 2" y2="0" [attr.stroke]="node.color" [ngStyle]="{'stroke-width': strokeWidth}"
-              />
-              <circle [attr.cx]="nodeRadius + nodeChildRadius * 2" cy="0" [attr.r]="nodeChildRadius" [attr.stroke]="node.color" fill="white"
-              />
-            </g>
+          <g *ngFor="let nodeChild of categoryNodes(node, true); let j = index">
+            <line
+              [attr.x1]="0"
+              [attr.y1]="0"
+              [attr.x2]="nodeChild.options.x"
+              [attr.y2]="nodeChild.options.y"
+              [attr.stroke]="category.color"
+              [ngStyle]="{'stroke-width': strokeWidth}"
+            />
+            <g
+              app-network-view-node
+              [category]="nodeChild"
+              [numTotal]="node.children.length"
+              [options]="{
+                relationship: 'grandchild',
+                x: nodeChild.options.x,
+                y: nodeChild.options.y,
+                radius: nodeChildRadius
+              }"
+              (click)="goCategory(nodeChild); setTransitionClass(nodeChild, node.children)"
+            />
           </g>
 
           <g *ngIf="isParentNode(node) && (node.level === 0)">
-            <rect fill="white" stroke="white" [attr.x]="nodeLineLength(node, i)" [attr.y]="0" [attr.width]="nodeRadius * 2" [attr.height]="nodeRadius + parentTitleHeight"
+
+            <!-- SIBLING NODES -->
+            <g
+              *ngFor="let sibling of siblings(node); let k = index"
+              class="sibling"
+            >
+              <svg:line
+                *ngIf="sibling.id !== category.id"
+                [attr.x1]="0"
+                [attr.y1]="0"
+                [attr.x2]="sibling.options.x"
+                [attr.y2]="sibling.options.y"
+                [attr.stroke]="category.color"
+              />
+              <g
+                app-network-view-node
+                *ngIf="sibling.id !== category.id"
+                [category]="sibling"
+                [numTotal]="siblings(node).length"
+                [options]="{
+                  relationship: 'sibling',
+                  x: sibling.options.x,
+                  y: sibling.options.y,
+                  radius: nodeRadius/2
+                }"
+                (click)="goCategory(sibling); setTransitionClass(sibling, siblings(node))"
+              />
+            </g>
+
+            <!-- PARENT NODE -->
+            <g
+              app-network-view-node
+              [category]="node"
+              [options]="{
+                relationship: 'parent',
+                x: nodeLineLength(node, i),
+                y: 0,
+                radius: nodeRadius,
+                angle: 0,
+                titleHeight: parentTitleHeight
+              }"
+              (click)="goCategory(node); setTransitionClass(node, allCategories)"
             />
-            <rect [attr.fill]="categoryColor(category.color, 0.1)" [attr.stroke]="categoryColor(category.color, 0.1)" [attr.x]="nodeLineLength(node, i)"
-              [attr.y]="0" [attr.width]="nodeRadius * 2" [attr.height]="nodeRadius + parentTitleHeight" />
-            <rect fill="none" stroke="url(#linear)" [attr.x]="nodeLineLength(node, i) + strokeWidth" [attr.y]="strokeWidth" [attr.width]="(nodeRadius - strokeWidth) * 2"
-              [attr.height]="nodeRadius + parentTitleHeight - strokeWidth * 2" [ngStyle]="{'stroke-width': 1}" />
-            <text fill="black" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="nodeRadius + parentTitleHeight / 2" text-anchor="middle">{{node.name}}</text>
           </g>
 
-          <circle [attr.cx]="nodeLineLength(node, i) + nodeRadius" cy="0" [attr.r]="nodeRadius" [attr.stroke]="category.color" [attr.fill]="node.hover ? category.color : 'white'"
+          <!-- CHILD NODE -->
+          <g
+            app-network-view-node
+            [category]="node"
+            [options]="{
+              relationship: 'child',
+              x: 0,
+              y: 0,
+              radius: nodeRadius,
+              angle: 0,
+              titleHeight: parentTitleHeight
+            }"
+            (click)="goCategory(node); setTransitionClass(node, categoryNodes(node))"
           />
-          <image *ngIf="node.level === 0" [attr.x]="nodeLineLength(node, i) + nodeRadius - nodeImageSize('node')/2" [attr.y]="-nodeImageSize('node')/2"
-            [attr.width]="nodeImageSize('node')" [attr.height]="nodeImageSize('node')" [attr.href]="nodeImagePath(node)" class="clip-circle"
-            preserveAspectRatio="xMidYMid slice" />
-          <g *ngIf="node.level === 1" [inlineSVG]="node.icon.url" [attr.transform]="translateIcon(node, i)" [attr.fill]="node.hover ? 'white' : node.color"></g>
-          <text *ngIf="node.level > 0" text-anchor="middle" [attr.transform]="translateText(node)" [attr.fill]="node.hover ? 'white' : 'black'">
-            <tspan *ngFor="let word of words(node.name); let j = index" [attr.x]="nodeLineLength(node, i) + nodeRadius" [attr.y]="fontSize * j"
-              class="category-name">{{word}}</tspan>
-            <tspan *ngIf="(node.level === 2)" [attr.x]="nodeLineLength(node, words(node.name).length) + nodeRadius" [attr.y]="fontSize * words(node.name).length + fontSize">{{numResources(node)}} resources</tspan>
-          </text>
         </g>
       </g>
 
       <!-- SELF -->
-      <g id="self-node">
-        <g *ngIf="category.level === 0">
-          <rect stroke="white" fill="white" [attr.x]="-selfRadius" [attr.y]="0" [attr.width]="selfRadius * 2" [attr.height]="selfRadius + selfTitleHeight"
-          />
-          <rect [attr.stroke]="categoryColor(category.color, 0.1)" [attr.fill]="categoryColor(category.color, 0.1)" [attr.x]="-selfRadius"
-            [attr.y]="0" [attr.width]="selfRadius * 2" [attr.height]="selfRadius + selfTitleHeight" />
-          <rect stroke="url(#linear)" fill="none" [attr.x]="-selfRadius + strokeWidth" [attr.y]="strokeWidth" [attr.width]="selfRadius * 2 - strokeWidth * 2"
-            [attr.height]="selfRadius + selfTitleHeight - strokeWidth * 2" [ngStyle]="{'stroke-width': 1}" />
-          <text fill="black" [attr.x]="0" [attr.y]="selfRadius + selfTitleHeight / 2" text-anchor="middle">{{category.name}}</text>
-        </g>
-        <circle cx="0" cy="0" [attr.r]="selfRadius" [attr.stroke]="category.color" fill="white" />
-        <image *ngIf="category.level === 0" [attr.x]="-nodeImageSize('self')/2" [attr.y]="-nodeImageSize('self')/2" [attr.width]="nodeImageSize('self')"
-          [attr.height]="nodeImageSize('self')" [attr.href]="nodeImagePath(category)" class="clip-circle" preserveAspectRatio="xMidYMid slice"
-        />
-        <g *ngIf="category.level === 1" [inlineSVG]="category.icon.url" [attr.fill]="category.color" [attr.transform]="translateIcon(category)"></g>
-        <text *ngIf="category.level > 0" text-anchor="middle" [attr.transform]="translateText(category)">
-          <tspan *ngFor="let word of words(category.name); let j = index" x="0" [attr.y]="fontSize * j" class="category-name">{{word}}</tspan>
-          <tspan *ngIf="category.level === 2" [attr.x]="0" [attr.y]="fontSize * words(category.name).length + fontSize">{{numResources(category)}} resources</tspan>
-        </text>
-      </g>
+      <g
+        app-network-view-node
+        [category]="category"
+        [options]="{
+          relationship: 'self',
+          x: 0,
+          y: 0,
+          radius: selfRadius,
+          angle: 0,
+          titleHeight: selfTitleHeight
+        }"
+      />
     </g>
+
+    <!-- TOP-LEVEL NODES -->
+    <g
+      [attr.transform]="translateTo('top-left')"
+      class="top-level"
+    >
+      <g
+        app-network-view-node
+        *ngFor="let node of allCategories; let i = index"
+        [attr.transform]="translateByIndex(i)"
+        (click)="goCategory(node); setTransitionClass(node, allCategories)"
+        [ngStyle]="{'opacity': isSelectedCategory(node) ? 0.1 : 1}"
+        [category]="node"
+        [options]="{
+          relationship: 'root',
+          x: 0,
+          y: 0,
+          radius: navRadius,
+          angle: 0,
+          titleHeight: parentTitleHeight
+        }"
+      />
+    </g>
+
   </svg>
 </div>

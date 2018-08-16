@@ -5,17 +5,19 @@ import { Category } from '../category';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ResourceQuery } from '../resource-query';
-import { routerTransition } from '../shared/router.animations';
+import { Filter, ResourceQuery } from '../resource-query';
+import { fadeTransition } from '../shared/animations';
+
 import { User } from '../user';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  animations: [routerTransition()],
+  animations: [fadeTransition()],
 })
 export class HomeComponent implements OnInit {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   @Input() resourceQuery: ResourceQuery;
 
   searchForm: FormGroup;

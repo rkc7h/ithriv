@@ -1,19 +1,19 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
-import {ActivationStart, NavigationEnd, Router, ActivationEnd, ActivatedRoute} from '@angular/router';
-import {environment} from '../../environments/environment';
-import {ResourceApiService} from '../shared/resource-api/resource-api.service';
-import {routerTransition} from '../shared/router.animations';
+import { Component, HostBinding, OnInit } from '@angular/core';
+import { ActivationStart, NavigationEnd, Router, ActivationEnd, ActivatedRoute } from '@angular/router';
+import { environment } from '../../environments/environment';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { fadeTransition } from '../shared/animations';
 import {User} from '../user';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  animations: [routerTransition()]
+  animations: [fadeTransition()]
 })
 
 export class HeaderComponent implements OnInit {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   title: string;
   isHome = false;
   login_url = environment.api + '/api/login';

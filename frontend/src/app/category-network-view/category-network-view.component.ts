@@ -1,33 +1,31 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
+import { NodeOptions } from '../node-options';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
-import { User } from '../user';
 
 @Component({
   selector: 'app-category-network-view',
   templateUrl: './category-network-view.component.html',
-  styleUrls: ['./category-network-view.component.scss'],
-  animations: [routerTransition()],
+  styleUrls: ['./category-network-view.component.scss']
 })
 export class CategoryNetworkViewComponent implements OnInit {
-  @HostBinding('@routerTransition')
   isDataLoaded = false;
+  transitionClass = '';
+
   categoryId: number;
   category: Category;
   allCategories: Category[];
-  user: User;
-  resourceCounts = {};
 
   layoutWidth = 982;
-  layoutHeight = 982; // 642;
+  layoutHeight = 982;
   navRadius = 40;
-  selfRadius = 90;
-  parentRadius = 70;
-  nodeRadius = 70;
+  selfRadius = 100;
+  parentRadius = 75;
+  nodeRadius = 75;
+  nodeSpacing = 60;
   nodeChildRadius = 15;
   rootNodeAngle = 35;
   selfTitleHeight = 40;
@@ -42,20 +40,21 @@ export class CategoryNetworkViewComponent implements OnInit {
     private api: ResourceApiService,
     private titleService: Title
   ) {
-
     this.route.params.subscribe(params => {
+      this.isDataLoaded = false;
       this.categoryId = params['category'];
       this.loadRootCategories();
-      this.loadCategory(this.categoryId);
     });
   }
 
   loadRootCategories() {
-    this.api.getCategories().subscribe(cats => this.allCategories = cats);
+    this.api.getCategories().subscribe(cats => {
+      this.allCategories = cats;
+      this.loadCategory(this.categoryId);
+    });
   }
 
   loadCategory(categoryId: Number) {
-    this.isDataLoaded = false;
     this.api.getCategory(categoryId).subscribe(
       (category) => {
         this.category = category;
@@ -63,49 +62,42 @@ export class CategoryNetworkViewComponent implements OnInit {
         // Set page title
         const currentTitle = this.titleService.getTitle();
         this.titleService.setTitle(`${currentTitle} - ${this.category.name}`);
-        this.loadCategoryResources(category);
+
+        if (this.transitionClass) {
+          this.transitionClass = this.transitionClass.replace('exit', 'enter');
+        } else {
+          this.transitionClass = 'fade-enter';
+        }
+
+        this.isDataLoaded = true;
       }
     );
-  }
-
-  loadCategoryResources(c: Category) {
-    if (c.level === 1) {
-      c.children.forEach(child => {
-        this.resourceCounts[child.id] = 0;
-
-        this.api.getCategoryResources(child).subscribe(resources => {
-          resources.forEach(i => {
-            const currentNum = this.resourceCounts[child.id];
-            this.resourceCounts[child.id] = isFinite(currentNum) ? currentNum + 1 : 0;
-          });
-        });
-      });
-    }
-    this.isDataLoaded = true;
   }
 
   ngOnInit() {
   }
 
-  private rotateChildDegrees(i: number, numTotal: number) {
+  private rotateChildDegrees(i: number, numTotal: number, angleMultiplier = 1) {
     if (numTotal > 0) {
-      return i * 360 / numTotal + this.rootNodeAngle;
+      return (i * 360 / numTotal) + (this.rootNodeAngle * angleMultiplier);
     }
 
     return 0;
   }
 
-  rotateChild(i: number, numTotal: number) {
+  rotateChild(i: number, numTotal: number, mode: string) {
     if (numTotal > 0) {
-      return `rotate(${this.rotateChildDegrees(i, numTotal)})`;
+      const angleMultiplier = (mode === 'siblings') ? -2 : 1;
+      return `rotate(${this.rotateChildDegrees(i, numTotal, angleMultiplier)})`;
     }
   }
 
-  unrotateChild(c: Category, i: number, numTotal: number) {
+  unrotateChild(c: Category, i: number, numTotal: number, mode: string) {
     if (this.category.children.length > 0) {
       const scale = c.hover ? 1.1 : 1;
       const offset = (this.nodeLineLength(c, i) + this.nodeRadius) * scale;
-      return `rotate(${-this.rotateChildDegrees(i, numTotal)}, ${offset}, 0) scale(${scale})`;
+      const angleMultiplier = (mode === 'siblings') ? -2 : 1;
+      return `rotate(${-this.rotateChildDegrees(i, numTotal, angleMultiplier)}, ${offset}, 0) scale(${scale})`;
     }
   }
 
@@ -113,39 +105,26 @@ export class CategoryNetworkViewComponent implements OnInit {
     return node.level < this.category.level;
   }
 
-  categoryNodes(category: Category) {
-    if (category.parent) {
-      return [category.parent].concat(category.children);
-    } else if (category.children && (category.children.length > 0)) {
-      return category.children;
+  categoryNodes(category: Category, noParent: boolean): Category[] {
+    const nodes = (category.parent && !noParent) ? [category.parent].concat(category.children) : category.children;
+    const multiplier = noParent ? 0.44 : 1;
+
+    if (nodes && nodes.length > 0) {
+      return nodes.map((n, i) => {
+        n.options = new NodeOptions(this.nodeCoords(n, i, nodes.length, multiplier));
+        return n;
+      });
     } else {
       return [];
     }
   }
 
-  nodeLineLength(node: Category, i: number) {
+  nodeLineLength(node: Category, i: number, multiplier = 1) {
     if (this.isParentNode(node) && (i === 0)) {
-      return this.selfRadius + this.nodeRadius * 2;
+      return multiplier * (this.selfRadius + this.nodeRadius * 2 + this.nodeSpacing);
     } else {
-      return this.selfRadius + this.nodeRadius;
+      return multiplier * (this.selfRadius + this.nodeRadius + this.nodeSpacing);
     }
-  }
-
-  childPosX(i: number) {
-    return 20 * (i + 1);
-  }
-
-  childPosY(i: number) {
-    return 20 * (i + 1);
-  }
-
-  words(str: string) {
-    return str.trim()
-      .replace('  ', ' ')
-      .replace(/ to /i, '_to ')
-      .replace(/ and /i, '_& ')
-      .split(' ')
-      .map(s => s.replace('_&', ' &').replace('_to', ' to'));
   }
 
   goCategory(c: Category) {
@@ -156,67 +135,33 @@ export class CategoryNetworkViewComponent implements OnInit {
     }
   }
 
-  backgroundImage(c: Category) {
-    return `url('/assets/browse/${c.image}')`;
-  }
-
-  nodeImageSize(mode: string) {
-    const key = mode + 'Radius';
-
-    if (this.hasOwnProperty(key)) {
-      return (this[key] - this.strokeWidth) * 2 - this.strokeWidth;
-    }
-  }
-
-  nodeImagePath(c: Category) {
-    return `/assets/browse/${c.image}`;
-  }
-
-  nodeIconUrl(c: Category) {
-    const url = c && c.icon && c.icon.url;
-    if (url) {
-      return `url('${url}')`;
-    }
-  }
-
   categoryColor(hexColor: string, alpha = 1) {
     return hexColorToRGBA(hexColor, alpha);
   }
 
+  translate(x = 0, y = 0) {
+    return `translate(${x}, ${y})`;
+  }
+
   translateByIndex(i: number) {
-    const numNodes = this.allCategories.length;
-    return `translate(${-(numNodes - i) * this.nodeRadius * 2}, ${this.nodeRadius})`;
+    const padding = this.nodeSpacing / 2;
+    const xOffset = padding + i * (this.navRadius * 2 + this.nodeSpacing);
+    const yOffset = this.navRadius + padding;
+    return this.translate(xOffset, yOffset);
   }
 
   translateTo(s: string, node: Category, i: number) {
     switch (s) {
       case 'origin':
         return `translate(0, 0)`;
+      case 'top-left':
+        return this.translate(-this.layoutWidth / 2, -this.layoutHeight / 2);
       case 'top-right':
-        return `translate(${this.layoutWidth / 2}, ${-this.layoutHeight / 2})`;
+        return this.translate(this.layoutWidth / 2, -this.layoutHeight / 2);
       case 'node':
-        return `translate(${this.nodeLineLength(node, i) + this.nodeRadius})`;
+        return this.translate(this.nodeLineLength(node, i) + this.nodeRadius, 0);
       default:
         break;
-    }
-  }
-
-  translateIcon(c: Category, i: number) {
-    if (isFinite(i)) {
-      const xOffset = this.nodeLineLength(c, i) + this.nodeRadius - this.iconSize;
-      const yOffset = -(this.nodeRadius - this.iconSize / 2);
-      return `translate(${xOffset}, ${yOffset}) scale(2)`;
-    } else {
-      return `translate(-${this.iconSize * 2}, -${this.iconSize * 3}) scale(4)`;
-    }
-  }
-
-  translateText(c: Category) {
-    const scale = (this.category.id === c.id) ? 2 : 1;
-    if (c.level === 1) {
-      return `translate(0, ${this.iconSize * scale})`;
-    } else {
-      return `translate(0, -${this.fontSize})`;
     }
   }
 
@@ -229,13 +174,75 @@ export class CategoryNetworkViewComponent implements OnInit {
     if (this.category.parent && (node.id === this.category.parent.id)) { return true; }
   }
 
-  nodeGradient(node: Category) {
-    return `url(#linear-${node.id})`;
+  siblings(node: Category): Category[] {
+    const sibs: Category[] = [];
+
+    for (const rootCat of this.allCategories) {
+      if (node.id === rootCat.id) {
+        rootCat.children.forEach(sib => {
+          if (sib.id === this.category.id) {
+            sibs.push(sib);
+          } else {
+            sibs.unshift(sib);
+          }
+        });
+      }
+    }
+
+    const radiusMultiplier = 0.6;
+    const angleMultiplier = -sibs.length / 2.5;
+
+    return sibs.map((sib, i) => {
+      sib.options = new NodeOptions(this.nodeCoords(sib, i, sibs.length, radiusMultiplier, angleMultiplier));
+      return sib;
+    });
   }
 
-  numResources(node: Category) {
-    if (this.resourceCounts.hasOwnProperty(node.id)) {
-      return this.resourceCounts[node.id];
+  nodeCoords(node: Category, i: number, numTotal: number, radiusMultiplier = 1, angleMultiplier = 1): NodeOptions {
+    const r = this.nodeLineLength(node, i, radiusMultiplier);
+    const angle = this.rotateChildDegrees(i, numTotal, angleMultiplier);
+    return this.calcCoords(angle, r);
+  }
+
+  // Get x,y coordinates of a point at given angle on a circle of radius r.
+  calcCoords(angle = 0, r = 0): NodeOptions {
+
+    // Convert degrees to radians
+    const theta = angle * Math.PI / 180;
+
+    // x is adjacent, r is hypoteneuse
+    const x = Math.cos(theta) * r;
+
+    // y is opposite, r is hypoteneuse
+    const y = Math.sin(theta) * r;
+
+    return new NodeOptions({ x: x, y: y });
+  }
+
+  setTransitionClass(nextNode: Category, nodes: Category[]) {
+    if (nextNode.level > this.category.level) {
+      this.transitionClass = 'zoom-in-exit';
+    } else if (nextNode.level < this.category.level) {
+      this.transitionClass = 'zoom-out-exit';
+    } else {
+      let currentIndex: number;
+      let nextIndex: number;
+
+      nodes.forEach((n, i) => {
+        if (n.id === this.category.id) {
+          currentIndex = i;
+        } else if (n.id === nextNode.id) {
+          nextIndex = i;
+        }
+      });
+
+      if (nextIndex < currentIndex) {
+        this.transitionClass = 'slide-right-exit';
+      } else if (currentIndex < nextIndex) {
+        this.transitionClass = 'slide-left-exit';
+      } else {
+        this.transitionClass = 'fade-exit';
+      }
     }
   }
 }

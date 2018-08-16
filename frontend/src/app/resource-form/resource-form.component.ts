@@ -8,18 +8,18 @@ import { FormField } from '../form-field';
 import { Resource } from '../resource';
 import { ResourceCategory } from '../resource-category';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
+import { fadeTransition } from '../shared/animations';
 import { ValidateUrl } from '../shared/validators/url.validator';
-import {Availability} from '../availability';
+import { Availability } from '../availability';
 
 @Component({
   selector: 'app-resource-form',
   templateUrl: './resource-form.component.html',
   styleUrls: ['./resource-form.component.scss'],
-  animations: [routerTransition()]
+  animations: [fadeTransition()]
 })
 export class ResourceFormComponent implements OnInit {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   allCategories: Category[] = [];
   resourceCategories: ResourceCategory[] = [];
   createNew = false;
@@ -370,10 +370,10 @@ export class ResourceFormComponent implements OnInit {
 
     for (const key in controls) {
       if (controls.hasOwnProperty(key) && controls[key].value) {
-        selectedCategories.push({resource_id: this.resource.id, category_id: parseInt(key, 10) });
+        selectedCategories.push({ resource_id: this.resource.id, category_id: parseInt(key, 10) });
       }
     }
-    this.api.updateResourceCategories(this.resource, selectedCategories).subscribe( e => {
+    this.api.updateResourceCategories(this.resource, selectedCategories).subscribe(e => {
       this.closeIfComplete();
     });
   }
@@ -381,9 +381,9 @@ export class ResourceFormComponent implements OnInit {
   updateAvailabilities() {
     const availabilities: Availability[] = [];
     for (const value of this.fields['availabilities.institution_id'].formControl.value || []) {
-        availabilities.push({resource_id: this.resource.id, institution_id: value, available: true});
+      availabilities.push({ resource_id: this.resource.id, institution_id: value, available: true });
     }
-    this.api.updateResourceAvailability(this.resource, availabilities).subscribe( e => {
+    this.api.updateResourceAvailability(this.resource, availabilities).subscribe(e => {
       this.closeIfComplete();
     });
   }

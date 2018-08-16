@@ -3,16 +3,16 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
+import { fadeTransition } from '../shared/animations';
 
 @Component({
   selector: 'app-browse',
   templateUrl: './browse.component.html',
   styleUrls: ['./browse.component.scss'],
-  animations: [routerTransition()],
+  animations: [fadeTransition()],
 })
 export class BrowseComponent implements OnInit {
-  @HostBinding('@routerTransition')
+  @HostBinding('@fadeTransition')
   category: Category;
   categoryId = 1;
   isDataLoaded = false;
