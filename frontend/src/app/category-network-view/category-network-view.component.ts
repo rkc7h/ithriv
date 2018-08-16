@@ -1,18 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { NodeOptions } from '../node-options';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { zoomTransition } from '../shared/animations';
 
 @Component({
   selector: 'app-category-network-view',
   templateUrl: './category-network-view.component.html',
-  styleUrls: ['./category-network-view.component.scss']
+  styleUrls: ['./category-network-view.component.scss'],
+  animations: [zoomTransition()]
 })
 export class CategoryNetworkViewComponent implements OnInit {
   isDataLoaded = false;
+
+  // @HostBinding('@zoomTransition')
   transitionClass = '';
 
   categoryId: number;
@@ -58,6 +62,17 @@ export class CategoryNetworkViewComponent implements OnInit {
     this.api.getCategory(categoryId).subscribe(
       (category) => {
         this.category = category;
+
+        this.route.queryParams.subscribe(queryParams => {
+          if (queryParams.hasOwnProperty('from')) {
+            const fromLevel = parseInt(queryParams.from, 10);
+            if (this.category.level > fromLevel) {
+              this.transitionClass = 'zoom-in-enter';
+            } else if (this.category.level < fromLevel) {
+              this.transitionClass = 'zoom-out-enter';
+            }
+          }
+        });
 
         // Set page title
         const currentTitle = this.titleService.getTitle();
@@ -129,9 +144,9 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   goCategory(c: Category) {
     if (c.level === 2) {
-      this.router.navigate(['category', c.id]);
+      this.router.navigate(['category', c.id], { queryParams: { from: this.category.level } });
     } else {
-      this.router.navigate(['category', c.id, 'network']);
+      this.router.navigate(['category', c.id, 'network'], { queryParams: { from: this.category.level } });
     }
   }
 

@@ -1,21 +1,24 @@
-import {Component, OnInit} from '@angular/core';
-import {Title} from '@angular/platform-browser';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Category} from '../category';
-import {CategoryResource} from '../category-resource';
-import {hexColorToRGBA} from '../shared/color';
-import {ResourceApiService} from '../shared/resource-api/resource-api.service';
-import {User} from '../user';
+import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Category } from '../category';
+import { CategoryResource } from '../category-resource';
+import { zoomTransition } from '../shared/animations';
+import { hexColorToRGBA } from '../shared/color';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { User } from '../user';
 
 @Component({
   selector: 'app-category',
   templateUrl: './category.component.html',
-  styleUrls: ['./category.component.scss']
+  styleUrls: ['./category.component.scss'],
+  animations: [zoomTransition()]
 })
 export class CategoryComponent implements OnInit {
   categoryId: number;
   category: Category;
   categoryResources: CategoryResource[];
+  transitionClass = '';
   isDataLoaded = false;
   publicId: number;
   user: User;
@@ -52,6 +55,7 @@ export class CategoryComponent implements OnInit {
     this.api.getCategoryResources(this.category).subscribe(
       (categoryResources) => {
         this.categoryResources = categoryResources;
+        this.transitionClass = 'zoom-in-enter';
         this.isDataLoaded = true;
       }
     );
@@ -100,10 +104,12 @@ export class CategoryComponent implements OnInit {
 
   goMode($event, category: Category) {
     $event.preventDefault();
+    this.transitionClass = 'zoom-out-exit';
+
     if (category.level === 0) {
-      this.router.navigate(['browse', category.id]);
+      this.router.navigate(['browse', category.id], { queryParams: { from: this.category.level } });
     } else if (category.level === 1) {
-      this.router.navigate(['category', category.id, 'network']);
+      this.router.navigate(['category', category.id, 'network'], { queryParams: { from: this.category.level } });
     }
   }
 
