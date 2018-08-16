@@ -87,6 +87,7 @@
                 radius: nodeChildRadius
               }"
               (click)="goCategory(nodeChild); setTransitionClass(nodeChild, node.children)"
+              [matTooltip]="nodeChild.name"
             />
           </g>
 
@@ -117,6 +118,7 @@
                   radius: nodeRadius/2
                 }"
                 (click)="goCategory(sibling); setTransitionClass(sibling, siblings(node))"
+                [matTooltip]="sibling.name"
               />
             </g>
 
@@ -126,7 +128,7 @@
               [category]="node"
               [options]="{
                 relationship: 'parent',
-                x: nodeLineLength(node, i),
+                x: 0,
                 y: 0,
                 radius: nodeRadius,
                 angle: 0,
