@@ -13,7 +13,6 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 })
 export class CategoryNetworkViewComponent implements OnInit {
   isDataLoaded = false;
-  transitionState = 'default';
   transitionClass = '';
 
   categoryId: number;
@@ -129,12 +128,6 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   goCategory(c: Category) {
-    if (c.level === this.category.level) {
-      this.transitionState = 'default';
-    } else {
-      this.transitionState = (c.level > this.category.level) ? 'zoomOut' : 'zoomIn';
-    }
-
     if (c.level === 2) {
       this.router.navigate(['category', c.id]);
     } else {
@@ -224,10 +217,6 @@ export class CategoryNetworkViewComponent implements OnInit {
     const y = Math.sin(theta) * r;
 
     return new NodeOptions({ x: x, y: y });
-  }
-
-  getTransitionState() {
-    return this.transitionState;
   }
 
   setTransitionClass(nextNode: Category, nodes: Category[]) {
