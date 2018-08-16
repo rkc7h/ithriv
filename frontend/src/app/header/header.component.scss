@@ -3,9 +3,7 @@
 @import '../../ithriv_material';
 @include ithriv-theme($ithriv-theme);
 
-.mat-toolbar {
-  color: white;
-
+mat-toolbar {
   mat-toolbar-row {
     a {
       text-decoration: none;
@@ -26,6 +24,7 @@
   }
 
   .menubar {
+    color: white;
     height: 30px;
     font-size: 12px;
     background-color: mat-color($ithriv-primary, 900, 1.0);
@@ -42,6 +41,13 @@
       max-height: 48px;
       padding-top: 16px;
       padding-bottom: 16px;
+    }
+
+    button.mat-stroked-button {
+      border-width: 1px;
+      border-style: solid;
+      border-color: mat-color($ithriv-primary, 800, 1.0);
+      color: mat-color($ithriv-primary, 800, 1.0);
     }
 
     img {

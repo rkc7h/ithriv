@@ -42,6 +42,7 @@
   <mat-toolbar-row
     fxLayout="row wrap"
     fxLayoutAlign="space-around center"
+    fxLayoutGap="20px"
     class="logo"
   >
     <h1>
@@ -59,8 +60,7 @@
     </h1>
     <span class="fill-remaining-space"></span>
     <button
-      mat-button
-      color="primary"
+      mat-stroked-button
       (click)="goSearch($event)"
     >
       <mat-icon>search</mat-icon>
@@ -68,8 +68,7 @@
     </button>
     <button
       *ngIf="session"
-      mat-button
-      color="primary"
+      mat-stroked-button
     >
       <mat-icon>help</mat-icon>
       Request a Consult
@@ -99,19 +98,21 @@
       <mat-button-toggle-group>
         <button
           mat-button
-          (click)="viewMode(false)"
-          [disabled]="!isNetworkView"
-          matTooltip="View category/resource listing"
-        >
-          <mat-icon>view_list</mat-icon>
-        </button>
-        <button
-          mat-button
           (click)="viewMode(true)"
           [disabled]="isNetworkView"
           matTooltip="View network graph of category relationships"
+          color="primary"
         >
           <mat-icon>device_hub</mat-icon>
+        </button>
+        <button
+          mat-button
+          (click)="viewMode(false)"
+          [disabled]="!isNetworkView"
+          matTooltip="View category/resource listing"
+          color="primary"
+        >
+          <mat-icon>view_list</mat-icon>
         </button>
       </mat-button-toggle-group>
     </ng-container>
