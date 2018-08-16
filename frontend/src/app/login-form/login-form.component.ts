@@ -1,5 +1,5 @@
-import {Component, EventEmitter, HostBinding, OnInit} from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {Component, EventEmitter, HostBinding} from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
@@ -89,8 +89,9 @@ export class LoginFormComponent {
     this.api.login(this.fields['email'].formControl.value,
                     this.fields['password'].formControl.value,
                     this.emailToken).subscribe(token => {
-       this.api.openSession(token['token']);
-       this.router.navigate(['']);
+       this.api.openSession(token['token']).subscribe(user => {
+         this.router.navigate(['']);
+       });
     }, error1 => {
                       if (error1) {
                         this.errorEmitter.emit(error1);

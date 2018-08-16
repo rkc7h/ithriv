@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
-import { User } from "../user";
-import { ResourceApiService } from "../shared/resource-api/resource-api.service";
+import { User } from '../user';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,7 +57,7 @@ export class ProfileComponent implements OnInit {
     this.loadForm();
     this.user = { id: null, display_name: this.fields.display_name.formControl.value,
       email: this.fields.email.formControl.value, institution_id: this.fields.institution_id.formControl.value,
-      password: this.fields.password.formControl.value };
+      password: this.fields.password.formControl.value, role: 'User' };
   }
 
   ngOnInit() {

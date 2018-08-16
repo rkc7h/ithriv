@@ -1,25 +1,27 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
-import { Availability } from '../../availability';
-import { Category } from '../../category';
-import { CategoryResource } from '../../category-resource';
-import { Icon } from '../../icon';
-import { Institution } from '../../institution';
-import { Resource } from '../../resource';
-import { ResourceCategory } from '../../resource-category';
-import { ResourceQuery } from '../../resource-query';
-import { ResourceType } from '../../resourceType';
-import { User } from '../../user';
-import { Favorite } from '../../favorite';
+import {HttpClient, HttpErrorResponse, HttpParams} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable, throwError} from 'rxjs';
+import {catchError} from 'rxjs/operators';
+import {environment} from '../../../environments/environment';
+import {Availability} from '../../availability';
+import {Category} from '../../category';
+import {CategoryResource} from '../../category-resource';
+import {Icon} from '../../icon';
+import {Institution} from '../../institution';
+import {Resource} from '../../resource';
+import {ResourceCategory} from '../../resource-category';
+import {ResourceQuery} from '../../resource-query';
+import {ResourceType} from '../../resourceType';
+import {User} from '../../user';
+import {Favorite} from '../../favorite';
+import {Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
+import {UserSearchResults} from '../../user-search-results';
 
 @Injectable()
 export class ResourceApiService {
 
   apiRoot = environment.api;
-  token: string;
 
   // REST endpoints
   endpoints = {
@@ -52,53 +54,56 @@ export class ResourceApiService {
     session: '/api/session'
   };
 
-  session: User;  // The current user is always directly accessible via this variable.
+  private hasSession: boolean;
+  private sessionSubject = new BehaviorSubject<User>(null);
 
   constructor(private httpClient: HttpClient) {
-    if (localStorage.getItem('token')) {
-      // todo:  Notify user if their token expired.
-      this._getSession().subscribe(s => {
-        this.session = s;
-      });
-    }
+    this.getSession().subscribe();  // Try to set up the session when starting up.
   }
 
-  openSession(token: string, callback?: Function) {
-    localStorage.setItem('token', token);
-    this._getSession().subscribe(s => {
-      this.session = s;
-      if (callback) {
-        callback(this.session);
-      }
+  public getSession(): Observable<User> {
+    if (!this.hasSession && localStorage.getItem('token')) {
+      this._fetchSession();
+    }
+    return this.sessionSubject.asObservable();
+  }
+
+  public _fetchSession(): void {
+    this.httpClient.get<User>(this.apiRoot + this.endpoints.session).subscribe(user => {
+      this.hasSession = true;
+      this.sessionSubject.next(user);
+    }, (error) => {
+      localStorage.removeItem('token');
+      this.hasSession = false;
+      this.sessionSubject.error(error);
     });
+  }
+
+  openSession(token: string): Observable<User> {
+    localStorage.setItem('token', token);
+    return this.getSession();
+  }
+
+  /** Logging out */
+  closeSession(): Observable<User> {
+    this.httpClient.delete<User>(this.apiRoot + this.endpoints.session).subscribe(x => {
+        localStorage.removeItem('token');
+        this.hasSession = false;
+        this.sessionSubject.next(null);
+      }, (error) => {
+        localStorage.removeItem('token');
+        this.hasSession = false;
+        this.sessionSubject.error(error);
+    });
+    return this.sessionSubject.asObservable();
   }
 
   /** loginUser - An alternative to single sign on, allow users to log into the system with a user name and password.
    * email_token is not required, only send this if user is logging in for the first time
    * after an email verification link. */
   login(email: string, password: string, email_token = ''): Observable<any> {
-    const options = { email: email, password: password, email_token: email_token };
+    const options = {email: email, password: password, email_token: email_token};
     return this.httpClient.post(this.apiRoot + this.endpoints.login_password, options)
-      .pipe(catchError(this.handleError));
-  }
-
-  closeSession(callback: Function) {
-    this._deleteSession().subscribe(s => {
-      this.session = null;
-      callback(this.session);
-    });
-    localStorage.removeItem('token');
-  }
-
-  /** Get current users information, if logged in */
-  _getSession(): Observable<User> {
-    return this.httpClient.get<User>(this.apiRoot + this.endpoints.session)
-      .pipe(catchError(this.handleError));
-  }
-
-  /** Logging out */
-  _deleteSession(): Observable<any> {
-    return this.httpClient.delete<User>(this.apiRoot + this.endpoints.session)
       .pipe(catchError(this.handleError));
   }
 
@@ -115,6 +120,10 @@ export class ResourceApiService {
         `Code was: ${JSON.stringify(error.error.code)}, ` +
         `Message was: ${JSON.stringify(error.error.message)}`);
       message = error.error.message;
+      // If this was a 401 error, re-verify they have a valid session.
+      if (error.error.code === 401) {
+        this._fetchSession();
+      }
     }
     // return an observable with a user-facing error message
     // FIXME: Log all error messages to Google Analytics
@@ -187,6 +196,12 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** getResources */
+  getResources(): Observable<Resource> {
+    return this.httpClient.get<Resource>(this.apiRoot + this.endpoints.resourceList)
+      .pipe(catchError(this.handleError));
+  }
+
   /** getResourceCategories */
   getResourceCategories(resource: Resource): Observable<ResourceCategory[]> {
     const url = this.endpoints.categoryByResource.replace('<resource_id>', resource.id.toString());
@@ -219,7 +234,7 @@ export class ResourceApiService {
 
   /** linkResourceAndCategory */
   linkResourceAndCategory(resource: Resource, category: Category): Observable<any> {
-    const options = { resource_id: resource.id, category_id: category.id };
+    const options = {resource_id: resource.id, category_id: category.id};
     return this.httpClient.post<ResourceCategory>(this.apiRoot + this.endpoints.resourceCategoryList, options)
       .pipe(catchError(this.handleError));
   }
@@ -238,7 +253,7 @@ export class ResourceApiService {
 
   /** addFavorite */
   addFavorite(user: User, resource: Resource): Observable<any> {
-    const options = { resource_id: resource.id, user_id: user.id };
+    const options = {resource_id: resource.id, user_id: user.id};
     return this.httpClient.post<Favorite>(this.apiRoot + this.endpoints.favoriteList, options)
       .pipe(catchError(this.handleError));
   }
@@ -270,6 +285,12 @@ export class ResourceApiService {
   /** deleteUser */
   deleteUser(user: User): Observable<any> {
     return this.httpClient.delete<User>(this.apiRoot + user._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  findUsers(filter = '', sort = 'display_name', sortOrder = 'asc', pageNumber = 0, pageSize = 3): Observable<UserSearchResults> {
+    const search_data = {filter: filter, sort: sort, sortOrder: sortOrder, pageNumber: String(pageNumber), pageSize: String(pageSize)};
+    return this.httpClient.get<UserSearchResults>(this.apiRoot + this.endpoints.userList, {params: search_data})
       .pipe(catchError(this.handleError));
   }
 

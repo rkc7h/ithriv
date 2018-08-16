@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Category } from '../category';
-import { CategoryResource } from '../category-resource';
-import { hexColorToRGBA } from '../shared/color';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { User } from '../user';
+import {Component, OnInit} from '@angular/core';
+import {Title} from '@angular/platform-browser';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Category} from '../category';
+import {CategoryResource} from '../category-resource';
+import {hexColorToRGBA} from '../shared/color';
+import {ResourceApiService} from '../shared/resource-api/resource-api.service';
+import {User} from '../user';
 
 @Component({
   selector: 'app-category',
@@ -58,8 +58,8 @@ export class CategoryComponent implements OnInit {
   }
 
   loadUser() {
-    this.api._getSession().subscribe(s => {
-      this.user = s;
+    this.api.getSession().subscribe(user => {
+      this.user = user;
     });
   }
 

@@ -75,7 +75,7 @@ export class RegisterFormComponent  {
     this.iThrivForm.loadForm();
     this.user = { id: null, display_name: this.fields.display_name.formControl.value,
       email: this.fields.email.formControl.value, institution_id: this.fields.institution_id.formControl.value,
-      password: this.fields.password.formControl.value };
+      password: this.fields.password.formControl.value, role: 'User' };
   }
 
   getFields() {

@@ -16,7 +16,7 @@ export class SessionRedirectComponent {
     private router: Router) {
 
     this.route.params.subscribe(params => {
-      api.openSession(params['token'], session => {
+      api.openSession(params['token']).subscribe(session => {
         this.router.navigate(['']);
       });
     });

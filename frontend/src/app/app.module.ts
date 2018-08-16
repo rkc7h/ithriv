@@ -21,13 +21,16 @@ import {
   MatListModule,
   MatMenuModule,
   MatNativeDateModule,
+  MatPaginatorModule,
   MatProgressSpinnerModule,
   MatRadioModule,
   MatSelectModule,
   MatSidenavModule,
   MatSlideToggleModule,
   MatSnackBarModule,
+  MatSortModule,
   MatStepperModule,
+  MatTableModule,
   MatTabsModule,
   MatToolbarModule,
   MatTooltipModule,
@@ -53,7 +56,6 @@ import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryNetworkViewComponent } from './category-network-view/category-network-view.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
 import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
@@ -82,6 +84,8 @@ import { SessionRedirectComponent } from './session-redirect/session-redirect.co
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
+import { UserAdminComponent } from './user-admin/user-admin.component';
+import { IsAdminDirective } from './is-admin.directive';
 
 @NgModule({
   declarations: [
@@ -95,7 +99,6 @@ import { NetworkViewNodeComponent } from './network-view-node/network-view-node.
     CategoryFormComponent,
     CategoryNetworkViewComponent,
     CategoryTileComponent,
-    DashboardComponent,
     EditCategoryButtonComponent,
     EditResourceButtonComponent,
     FavoriteResourceButtonComponent,
@@ -126,6 +129,8 @@ import { NetworkViewNodeComponent } from './network-view-node/network-view-node.
     SessionRedirectComponent,
     TreeSelectComponent,
     NetworkViewNodeComponent
+    UserAdminComponent,
+    IsAdminDirective
   ],
   imports: [
     AppRoutingModule,
@@ -164,6 +169,10 @@ import { NetworkViewNodeComponent } from './network-view-node/network-view-node.
     MatSnackBarModule,
     MatStepperModule,
     MatTabsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,

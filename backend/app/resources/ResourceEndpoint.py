@@ -48,8 +48,11 @@ class ResourceEndpoint(flask_restful.Resource):
 class ResourceListEndpoint(flask_restful.Resource):
 
     def get(self):
+        args = request.args
+        limit = eval(args["limit"]) if ("limit" in args) else 10
         schema = ThrivResourceSchema(many=True)
-        resources = db.session.query(ThrivResource).all()
+        resources = db.session.query(ThrivResource).order_by(ThrivResource.last_updated.desc()).limit(limit).all()
+
         return schema.dump(resources)
 
     def post(self):

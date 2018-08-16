@@ -598,6 +598,23 @@ class TestCase(unittest.TestCase):
         self.assertEquals(r.id, response[0]["id"])
         self.assertEquals(r.description, response[0]["resource"]["description"])
 
+    def test_get_resource_by_category_includes_category_details(self):
+        c = self.construct_category(name="c1")
+        c2 = self.construct_category(name="c2")
+        r = self.construct_resource()
+        cr = ResourceCategory(resource=r, category=c)
+        cr2 = ResourceCategory(resource=r, category=c2)
+        db.session.add_all([cr, cr2]);
+        db.session.commit();
+        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(r.id, response[0]["id"])
+        self.assertEquals(2, len(response[0]["resource"]["resource_categories"]))
+        self.assertEquals("c1", response[0]["resource"]["resource_categories"][0]["category"]["name"])
+
+
+
     def test_category_resource_count(self):
         c = self.construct_category()
         r = self.construct_resource()
@@ -1041,3 +1058,89 @@ class TestCase(unittest.TestCase):
         )
         self.assertSuccess(response)
         return json.loads(response.data.decode())
+
+    def searchUsers(self, query):
+        '''Executes a query, returning the resulting search results object.'''
+        rv = self.app.get('/api/user', query_string=query, follow_redirects=True,
+                           content_type="application/json", headers=self.logged_in_headers())
+        self.assertSuccess(rv)
+        return json.loads(rv.get_data(as_text=True))
+
+    def createTestUsers(self):
+        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
+        u3 = User(id=3, uid="stuff123", display_name="Elmo", email="elmo@sesamestreet.com")
+        db.session.add_all([u1, u2, u3])
+        db.session.commit()
+
+    def test_find_users_respects_pageSize(self):
+        self.createTestUsers()
+
+        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '1'}
+        response = self.searchUsers(query)
+        self.assertEquals(1, len(response['items']))
+
+        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '2'}
+        response = self.searchUsers(query)
+        self.assertEquals(2, len(response['items']))
+
+    def test_find_users_respects_pageNumber(self):
+        self.createTestUsers();
+        self.assertEquals(3, len(db.session.query(User).all()));
+
+        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '2'}
+        response = self.searchUsers(query)
+        self.assertEquals(2, len(response['items']))
+        self.assertEquals(3, response['total'])
+
+        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '2', 'pageSize': '2'}
+        response = self.searchUsers(query)
+        self.assertEquals(1, len(response['items']))
+
+        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '3', 'pageSize': '2'}
+        response = self.searchUsers(query)
+        self.assertEquals(0, len(response['items']))
+
+    def test_find_users_respects_filter(self):
+        self.createTestUsers()
+        query = {'filter': 'big', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        response = self.searchUsers(query)
+        self.assertEquals(1, len(response['items']))
+
+        query = {'filter': 'Grouch', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        response = self.searchUsers(query)
+        self.assertEquals(1, len(response['items']))
+
+        query = {'filter': '123', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        response = self.searchUsers(query)
+        self.assertEquals(1, len(response['items']))
+
+        query = {'filter': 'Ididnputthisinthedata', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        response = self.searchUsers(query)
+        self.assertEquals(0, len(response['items']))
+
+    def test_find_users_orders_results(self):
+        self.createTestUsers()
+        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        response = self.searchUsers(query)
+        self.assertEquals("Big Bird", response['items'][0]['display_name'])
+
+        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'desc', 'pageNumber': '1', 'pageSize': '20'}
+        response = self.searchUsers(query)
+        self.assertEquals("Oscar the Grouch", response['items'][0]['display_name'])
+
+    def test_resource_list_limits_to_10_by_default(self):
+        for i in range(20):
+            self.construct_resource()
+        rv = self.app.get('/api/resource', follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        result = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(10, len(result))
+
+        rv = self.app.get('/api/resource', follow_redirects=True,
+                          query_string={'limit':'5'},
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        result = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(5, len(result))

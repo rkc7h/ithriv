@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Favorite } from '../favorite';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import {User} from '../user';
 
 @Component({
   selector: 'app-favorite-resource-button',
@@ -11,21 +12,21 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 export class FavoriteResourceButtonComponent implements OnInit {
   @Input() resource: Resource;
   favorite: Favorite;
+  user: User;
 
   constructor(
     private api: ResourceApiService
   ) { }
 
   ngOnInit() {
-  }
-
-  getSession() {
-    return this.api.session;
+    this.api.getSession().subscribe(user => {
+      this.user = user;
+    });
   }
 
   userFavorite() {
     for (const f of this.resource.favorites) {
-      if (f.user_id === this.api.session.id) {
+      if (f.user_id === this.user.id) {
         return true;
       }
     }
@@ -33,7 +34,7 @@ export class FavoriteResourceButtonComponent implements OnInit {
   }
 
   addFavorite() {
-    this.api.addFavorite(this.api.session, this.resource).subscribe(f => {
+    this.api.addFavorite(this.user, this.resource).subscribe(f => {
       this.favorite = f;
       this.resource.favorites.push(this.favorite);
     });
@@ -41,7 +42,7 @@ export class FavoriteResourceButtonComponent implements OnInit {
 
   deleteFavorite() {
     for (const f of this.resource.favorites) {
-      if (f.user_id === this.api.session.id) {
+      if (f.user_id === this.user.id) {
         this.favorite = f;
       }
     }

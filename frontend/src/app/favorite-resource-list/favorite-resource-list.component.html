@@ -1,4 +1,6 @@
 <div *ngIf="getSession()">
-  <h1 class="mat-h1 page-title">Favorite Resources</h1>
   <app-resource-list [resources]="resources"></app-resource-list>
+</div>
+<div *ngIf="!getSession()">
+  <h2>Please log in to see your favorite resources</h2>
 </div>

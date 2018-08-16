@@ -1,21 +1,27 @@
 <mat-toolbar *ngIf="!hideHeader" class="mat-toolbar-tools">
   <mat-toolbar-row class="menubar">
     <span class="fill-remaining-space"></span>
+    <!--
     <button mat-button *ngIf="!getSession()" (click)="goRegister($event)">
       <mat-icon>person_add</mat-icon>
       Register
     </button>
     <mat-divider [vertical]="true"></mat-divider>
-
-    <button mat-button *ngIf="!getSession()" (click)="goLogin($event)">
+    -->
+    <button mat-button *appIsAdmin (click)="goUserAdmin($event)">
+      <mat-icon>person_add</mat-icon>
+      User Administration
+    </button>
+    <mat-divider [vertical]="true"></mat-divider>
+    <button mat-button *ngIf="!session" (click)="goLogin($event)">
       <mat-icon>account_circle</mat-icon>
       Log in
     </button>
-    <button mat-button *ngIf="getSession()" (click)="goProfile($event)">
+    <button mat-button *ngIf="session" (click)="goProfile($event)">
       <mat-icon>account_circle</mat-icon>
-      {{getSession().display_name}}
+      {{session.display_name}}
     </button>
-    <button mat-button *ngIf="getSession()" (click)="goLogout($event)">
+    <button mat-button *ngIf="session" (click)="goLogout($event)">
       <mat-icon>exit_to_app</mat-icon>
       Log Out
     </button>
@@ -38,7 +44,7 @@
       <img src="/assets/logo/ithriv-logomark.png" alt="iThriv" class="logomark" /> Research Concierge Portal
     </a>
     <span class="fill-remaining-space"></span>
-    <button mat-button *ngIf="getSession()" (click)="goDashboard($event)">
+    <button mat-button *ngIf="session" (click)="goHome($event)">
       <mat-icon>dashboard</mat-icon>
       Dashboard
     </button>
