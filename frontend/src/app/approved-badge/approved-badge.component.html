@@ -1,4 +1,4 @@
-<div *ngIf="getSession()" class="ribbon ribbon-top-right">
+<div *appIsAdmin class="ribbon ribbon-top-right">
   <span *ngIf="resource.approved === 'Approved'" class="approved">Approved</span>
   <span *ngIf="resource.approved === 'Unapproved'">Unapproved</span>
 </div>

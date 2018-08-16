@@ -1,8 +1,9 @@
-import { Component, HostBinding } from '@angular/core';
-import { ActivationStart, NavigationEnd, Router, ActivationEnd, ActivatedRoute } from '@angular/router';
-import { environment } from '../../environments/environment';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { routerTransition } from '../shared/router.animations';
+import {Component, HostBinding, OnInit} from '@angular/core';
+import {ActivationStart, NavigationEnd, Router, ActivationEnd, ActivatedRoute} from '@angular/router';
+import {environment} from '../../environments/environment';
+import {ResourceApiService} from '../shared/resource-api/resource-api.service';
+import {routerTransition} from '../shared/router.animations';
+import {User} from '../user';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,7 @@ import { routerTransition } from '../shared/router.animations';
   animations: [routerTransition()]
 })
 
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   @HostBinding('@routerTransition')
   title: string;
   isHome = false;
@@ -20,6 +21,7 @@ export class HeaderComponent {
   categoryId: string;
   isResourceView = false;
   isNetworkView = false;
+  session: User;
 
   constructor(
     private router: Router,
@@ -42,6 +44,14 @@ export class HeaderComponent {
         this.isResourceView = /^\/resource\//.test(e.url);
         this.isNetworkView = /network$/.test(e.url);
       }
+    });
+  }
+
+  ngOnInit() {
+    this.api.getSession().subscribe(user => {
+      this.session = user;
+    }, error1 => {
+      this.session = null;
     });
   }
 
@@ -70,6 +80,11 @@ export class HeaderComponent {
     this.router.navigate(['register']);
   }
 
+  goUserAdmin($event) {
+    $event.preventDefault();
+    this.router.navigate(['admin/users']);
+  }
+
   goSearch($event) {
     $event.preventDefault();
     this.router.navigate(['search']);
@@ -77,13 +92,7 @@ export class HeaderComponent {
 
   goLogout($event) {
     $event.preventDefault();
-    this.api.closeSession(session => {
-      this.router.navigate(['']);
-    });
-  }
-
-  getSession() {
-    return this.api.session;
+    this.api.closeSession().subscribe();
   }
 
   viewMode(network = false) {
@@ -92,8 +101,12 @@ export class HeaderComponent {
         // Go up the hierarchy to the Level 1 or 0 parent for this category
         this.api.getCategory(parseInt(this.categoryId, 10)).subscribe(c => {
           let catId: number;
-          if (c.level === 2) { catId = c.parent.id; }
-          if (c.level <= 1) { catId = c.id; }
+          if (c.level === 2) {
+            catId = c.parent.id;
+          }
+          if (c.level <= 1) {
+            catId = c.id;
+          }
           this.router.navigate(['category', catId.toString(), 'network']);
         });
 
@@ -101,9 +114,15 @@ export class HeaderComponent {
         // Go up the hierarchy to the Level 0 parent for this category
         this.api.getCategory(parseInt(this.categoryId, 10)).subscribe(c => {
           let catId: number;
-          if (c.level === 0) { catId = c.id; }
-          if (c.level === 1) { catId = c.parent.id; }
-          if (c.level === 2) { catId = c.parent.parent.id; }
+          if (c.level === 0) {
+            catId = c.id;
+          }
+          if (c.level === 1) {
+            catId = c.parent.id;
+          }
+          if (c.level === 2) {
+            catId = c.parent.parent.id;
+          }
           this.router.navigate(['browse', catId.toString()]);
         });
       }

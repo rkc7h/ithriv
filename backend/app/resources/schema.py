@@ -1,4 +1,5 @@
 from flask_marshmallow.sqla import ModelSchema
+from flask_sqlalchemy import Pagination
 from marshmallow import fields, post_load
 from app import ma
 from app.model.availability import Availability
@@ -224,3 +225,10 @@ class UserSchema(ModelSchema):
         'self': ma.URLFor('api.userendpoint', id='<id>'),
         'favorites': ma.UrlFor('api.userfavoriteendpoint'),
     })
+
+
+class UserSearchSchema(ma.Schema):
+    pages = fields.Integer()
+    total = fields.Integer()
+    items = ma.List(ma.Nested(UserSchema))
+
