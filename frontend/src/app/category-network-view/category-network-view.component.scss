@@ -1,3 +1,6 @@
+$easeDuration: 1s;
+$animationDuration: 1s;
+
 #network-graph-container {
   position: absolute;
   left: 0;
@@ -8,76 +11,139 @@
 
 line, circle, rect {
   stroke-width: 4px;
-  transition: 300ms ease transform;
+  transition: $easeDuration ease transform;
 }
 
 g[app-network-view-node] {
-  transition: 500ms ease transform, 500ms ease opacity;
+  transition: $easeDuration ease transform, $easeDuration ease opacity;
 }
 
-.zoom-in-exit [app-network-view-node],
-.zoom-in-exit line {
-  animation: zoomInAndFadeOut 1s;
+// ANIMATIONS
+.fade-exit          { animation: fadeExit ease-in-out $animationDuration; }
+.fade-enter         { animation: fadeEnter ease-in-out $animationDuration; }
+.slide-left-exit    { animation: slideLeftExit ease-in-out $animationDuration; }
+.slide-left-enter   { animation: slideLeftEnter ease-in-out $animationDuration; }
+.slide-right-exit   { animation: slideRightExit ease-in-out $animationDuration; }
+.slide-right-enter  { animation: slideRightEnter ease-in-out $animationDuration; }
+.zoom-in-exit       { animation: zoomInExit ease-in-out $animationDuration; }
+.zoom-in-enter      { animation: zoomInEnter ease-in-out $animationDuration; }
+.zoom-out-exit      { animation: zoomOutExit ease-in-out $animationDuration; }
+.zoom-out-enter     { animation: zoomOutEnter ease-in-out $animationDuration; }
+
+@keyframes fadeExit {
+  0% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+
+  50%, 100% {
+    transform: translateX(0) scale(1);
+    opacity: 0;
+  }
 }
 
-.zoom-in-enter [app-network-view-node],
-.zoom-in-enter line {
-  animation: zoomInAndFadeIn 1s;
+@keyframes fadeEnter {
+  0% {
+    transform: translateX(0) scale(1);
+    opacity: 0;
+  }
+
+  50%, 100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes slideLeftExit {
+  0% {
+    transform: translateX(0%) scale(1);
+    opacity: 1;
+  }
+
+  50%, 100% {
+    transform: translateX(-100%) scale(1);
+    opacity: 0;
+  }
 }
 
-.zoom-out-exit [app-network-view-node],
-.zoom-out-exit line {
-  animation: zoomInAndFadeOut 1s;
+@keyframes slideLeftEnter {
+  0% {
+    transform: translateX(100%) scale(1);
+    opacity: 0;
+  }
+
+  50%, 100% {
+    transform: translateX(0%) scale(1);
+    opacity: 1;
+  }
 }
 
-.zoom-out-enter [app-network-view-node],
-.zoom-out-enter line {
-  animation: zoomInAndFadeIn 1s;
+@keyframes slideRightExit {
+  0% {
+    transform: translateX(0%) scale(1);
+    opacity: 1;
+  }
+
+  50%, 100% {
+    transform: translateX(100%) scale(1);
+    opacity: 0;
+  }
 }
 
-@keyframes zoomInAndFadeOut {
-  from {
+@keyframes slideRightEnter {
+  0% {
+    transform: translateX(-100%) scale(1);
+    opacity: 0;
+  }
+
+  50%, 100% {
+    transform: translateX(0%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomInExit {
+  0% {
     transform: scale(1);
     opacity: 1;
   }
 
-  to {
+  50%, 100% {
     transform: scale(10);
     opacity: 0;
   }
 }
 
-@keyframes zoomInAndFadeIn {
-  from {
+@keyframes zoomInEnter {
+  0% {
     transform: scale(0);
     opacity: 0;
   }
 
-  to {
+  50%, 100% {
     transform: scale(1);
     opacity: 1;
   }
 }
 
-@keyframes zoomOutAndFadeOut {
-  from {
+@keyframes zoomOutExit {
+  0% {
     transform: scale(1);
     opacity: 1;
   }
 
-  to {
+  50%, 100% {
     transform: scale(0);
     opacity: 0;
   }
 }
 
-@keyframes zoomOutAndFadeIn {
-  from {
-    transform: scale(10);
+@keyframes zoomOutEnter {
+  0% {
+    transform: scale(5);
     opacity: 0;
   }
 
-  to {
+  50%, 100% {
     transform: scale(1);
     opacity: 1;
   }

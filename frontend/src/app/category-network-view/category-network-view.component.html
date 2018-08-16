@@ -47,12 +47,7 @@
     <g
       id="category-network-graph"
       [attr.transform]="translateTo('origin')"
-      [ngClass]="{
-        'zoom-in-exit': zoomClass === 'zoom-in-exit',
-        'zoom-in-enter': zoomClass === 'zoom-in-enter',
-        'zoom-out-exit': zoomClass === 'zoom-out-exit',
-        'zoom-out-enter': zoomClass === 'zoom-out-enter'
-      }"
+      [ngClass]="transitionClass"
     >
 
       <!-- PARENT & CHILD NODES -->
@@ -90,7 +85,7 @@
                 y: nodeChild.options.y,
                 radius: nodeChildRadius
               }"
-              (click)="goCategory(nodeChild); zoomClass=setZoomClass(node)"
+              (click)="goCategory(nodeChild); setTransitionClass(nodeChild, node.children)"
             />
           </g>
 
@@ -120,7 +115,7 @@
                   y: sibling.options.y,
                   radius: nodeRadius/2
                 }"
-                (click)="goCategory(sibling); zoomClass=setZoomClass(sibling)"
+                (click)="goCategory(sibling); setTransitionClass(sibling, siblings(node))"
               />
             </g>
 
@@ -136,7 +131,7 @@
                 angle: 0,
                 titleHeight: parentTitleHeight
               }"
-              (click)="goCategory(node); zoomClass=setZoomClass(node)"
+              (click)="goCategory(node); setTransitionClass(node, categoryNodes(category))"
             />
           </g>
 
@@ -152,7 +147,7 @@
               angle: 0,
               titleHeight: parentTitleHeight
             }"
-            (click)="goCategory(node); zoomClass=setZoomClass(node)"
+            (click)="goCategory(node); setTransitionClass(node, categoryNodes(node))"
           />
         </g>
       </g>
@@ -181,7 +176,7 @@
         app-network-view-node
         *ngFor="let node of allCategories; let i = index"
         [attr.transform]="translateByIndex(i)"
-        (click)="goCategory(node); zoomClass=setZoomClass(node)"
+        (click)="goCategory(node); setTransitionClass(node, allCategories)"
         [ngStyle]="{'opacity': isSelectedCategory(node) ? 0.1 : 1}"
         [category]="node"
         [options]="{

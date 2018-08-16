@@ -19,7 +19,7 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   @HostBinding('@zoomTransition')
   transitionState = 'default';
-  zoomClass = '';
+  transitionClass = '';
 
   categoryId: number;
   category: Category;
@@ -68,7 +68,13 @@ export class CategoryNetworkViewComponent implements OnInit {
         // Set page title
         const currentTitle = this.titleService.getTitle();
         this.titleService.setTitle(`${currentTitle} - ${this.category.name}`);
-        this.zoomClass = (this.zoomClass === 'zoom-in-exit') ? 'zoom-in-enter' : 'zoom-out-enter';
+
+        if (this.transitionClass) {
+          this.transitionClass = this.transitionClass.replace('exit', 'enter');
+        } else {
+          this.transitionClass = 'fade-enter';
+        }
+
         this.isDataLoaded = true;
       }
     );
@@ -229,7 +235,30 @@ export class CategoryNetworkViewComponent implements OnInit {
     return this.transitionState;
   }
 
-  setZoomClass(node: Category) {
-    return (node.level > this.category.level) ? 'zoom-in-exit' : 'zoom-out-exit';
+  setTransitionClass(nextNode: Category, nodes: Category[]) {
+    if (nextNode.level > this.category.level) {
+      this.transitionClass = 'zoom-in-exit';
+    } else if (nextNode.level > this.category.level) {
+      this.transitionClass = 'zoom-out-exit';
+    } else {
+      let currentIndex: number;
+      let nextIndex: number;
+
+      nodes.forEach((n, i) => {
+        if (n.id === this.category.id) {
+          currentIndex = i;
+        } else if (n.id === nextNode.id) {
+          nextIndex = i;
+        }
+      });
+
+      if (nextIndex < currentIndex) {
+        this.transitionClass = 'slide-right-exit';
+      } else if (currentIndex < nextIndex) {
+        this.transitionClass = 'slide-left-exit';
+      } else {
+        this.transitionClass = 'fade-exit';
+      }
+    }
   }
 }
