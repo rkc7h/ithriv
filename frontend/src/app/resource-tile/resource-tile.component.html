@@ -1,17 +1,41 @@
 <mat-card class="resource">
-  <mat-card-header (click)="goResource($event, resource)">
-    <mat-card-title>{{resource.name}}</mat-card-title>
-    <app-approved-badge [resource]="resource"></app-approved-badge>
-  </mat-card-header>
-  <mat-card-content (click)="goResource($event, resource)">
-    <p>
-      {{truncateWords(resource.description, 15)}}
-    </p>
-  </mat-card-content>
-  <mat-card-actions>
-    <div class="institution" (click)="goResource($event, resource)">
-      <img src="/assets/institutions/{{resource.institution.name}}.png" />
+  <div
+    class="category-color"
+    [ngStyle]="{'background-image': categoryColor(resource)}"
+  ></div>
+
+  <div class="icon-with-content">
+    <div>
+      <div class="type-icon">
+        <mat-icon
+          svgIcon="ithriv_{{resource.type.icon.id}}"
+          matTooltip="{{resource.type.name}}"
+        ></mat-icon>
+      </div>
+      <div
+        class="institution"
+        matTooltip="{{resource.institution.name}}"
+      >
+        <img src="/assets/institutions/{{resource.institution.name}}.png" />
+      </div>
     </div>
-    <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
+
+    <div>
+      <mat-card-header (click)="goResource($event, resource)">
+        <mat-card-title>{{resource.name}}</mat-card-title>
+        <app-approved-badge [resource]="resource"></app-approved-badge>
+      </mat-card-header>
+      <mat-card-content (click)="goResource($event, resource)">
+        <p>
+          {{truncateWords(resource.description, 20)}}
+        </p>
+      </mat-card-content>
+    </div>
+  </div>
+  <mat-card-actions>
+    <app-favorite-resource-button
+      [resource]="resource"
+      matTooltip="Add to Favorites"
+    ></app-favorite-resource-button>
   </mat-card-actions>
 </mat-card>

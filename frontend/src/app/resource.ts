@@ -1,8 +1,9 @@
 import { Availability } from './availability';
+import { Favorite } from './favorite';
 import { Institution } from './institution';
 import { Links } from './links';
 import { ResourceType } from './resourceType';
-import { Favorite } from './favorite';
+import { ResourceCategory } from './resource-category';
 
 export interface Resource {
   id: number;
@@ -23,4 +24,5 @@ export interface Resource {
   institution?: Institution;
   type?: ResourceType;
   _links?: Links;
+  resource_categories?: ResourceCategory[];
 }

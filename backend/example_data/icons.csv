@@ -1,22 +1,33 @@
-id,name,local_file
-100,Administrative Tools,admin_tools.svg
-101,Ancillary Services,ancillary_service.svg
-102,Center,center.svg
-103,Certificate,certificate.svg
-104,Clinical Translational,clinical_translational.svg
-105,Communicate,communicate.svg
-106,Community,community.svg
-107,Data Management,data_management.svg
-108,Data Science,data_science.svg
-109,Design,design.svg
-110,Facility,facility.svg
-111,Funding,funding.svg
-112,Grant,grant.svg
-113,Logistics,logistics.svg
-114,Management,management.svg
-115,Participate,participate.svg
-116,Regulations,regulations.svg
-117,Check List,research_reg.svg
-118,Special Topics,special_topic.svg
-119,Training,training.svg
-120,Writing,writing.svg
+id,name,local_file,type
+100,Administrative Tools,admin_tools.svg,
+101,Ancillary Services,ancillary_service.svg,
+102,Center,center.svg,
+103,Certificate,certificate.svg,
+104,Clinical Translational,clinical_translational.svg,
+105,Communicate,communicate.svg,
+106,Community,community.svg,
+107,Data Management,data_management.svg,
+108,Data Science,data_science.svg,
+109,Design,design.svg,
+110,Facility,facility.svg,
+111,Funding,funding.svg,
+112,Grant,grant.svg,
+113,Logistics,logistics.svg,
+114,Management,management.svg,
+115,Participate,participate.svg,
+116,Regulations,regulations.svg,
+117,Check List,research_reg.svg,
+118,Special Topics,special_topic.svg,
+119,Training,training.svg,
+120,Writing,writing.svg,
+200,Administration Type,type/administration.svg,Administration
+201,Analytics Type,type/analytics.svg,Info/Analytics
+202,Center Type,type/center_type.svg,Center or Initiative
+203,Education Type,type/education.svg,Education
+204,Funding Type,type/funding.svg,Funding Resource
+205,Health Type,type/health.svg,Health System 
+206,Other Facitlity Type,type/other_facility.svg,Other Facility
+207,Regulations Type,type/regulations.svg,Regulatory and Compliance
+208,Research Type,type/research.svg,Research Facility
+209,Research Cores Type,type/research_cores.svg,Research Cores and Labs
+210,Research Resource Type,type/research_resource.svg,Research Resource

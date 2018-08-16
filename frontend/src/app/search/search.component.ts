@@ -84,7 +84,7 @@ export class SearchComponent implements OnInit {
   }
 
   loadUser() {
-    this.api._getSession().subscribe(s => {
+    this.api.getSession().subscribe(s => {
       this.user = s;
     });
   }

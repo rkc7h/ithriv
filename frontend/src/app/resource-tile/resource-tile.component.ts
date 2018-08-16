@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Resource } from '../resource';
+import { Institution } from '../institution';
 
 @Component({
   selector: 'app-resource-tile',
@@ -15,9 +16,31 @@ export class ResourceTileComponent implements OnInit {
   ngOnInit() {
   }
 
-  goResource($event, resource) {
+  goResource($event, resource: Resource) {
     $event.preventDefault();
     this.router.navigate(['resource', resource.id]);
+  }
+
+  categoryColor(resource: Resource): string {
+    console.log('resource', resource);
+
+    if (resource && resource.resource_categories) {
+      const numCategories = resource.resource_categories.length;
+
+      if (numCategories > 0) {
+        const percent = 100 / numCategories;
+        const colors = resource.resource_categories.map((rc, i) => {
+          return `
+          ${rc.category.color} ${i * percent}%,
+          ${rc.category.color} ${(i + 1) * percent}%
+        `;
+        });
+
+        return `linear-gradient(to right,${colors.join(',')})`;
+      }
+    }
+
+    return 'linear-gradient(to right, #999 0%, #999 100%)';
   }
 
   truncateWords(str: string, numWords: number) {
