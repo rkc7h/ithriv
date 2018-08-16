@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Category } from '../category';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 import { MatDialog } from '@angular/material';
-import {ResourceApiService} from "../shared/resource-api/resource-api.service";
 
 @Component({
   selector: 'app-add-category-button',
@@ -13,8 +12,7 @@ export class AddCategoryButtonComponent implements OnInit {
   @Input() category: Category;
 
   constructor(
-    private dialog: MatDialog,
-    private api: ResourceApiService
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -25,9 +23,4 @@ export class AddCategoryButtonComponent implements OnInit {
       data: { 'parent_category': this.category }
     });
   }
-
-  getSession() {
-    return this.api.session;
-  }
-
 }

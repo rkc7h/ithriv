@@ -1,13 +1,13 @@
 import flask_restful
-from flask import request
+from flask import request, app
 from marshmallow import ValidationError
-from sqlalchemy import exists
+from sqlalchemy import exists, or_, func
 from sqlalchemy.exc import IntegrityError
 
 from app import RestException, db, email_service, auth
 from app.model.email_log import EmailLog
 from app.model.user import User
-from app.resources.schema import UserSchema
+from app.resources.schema import UserSchema, UserSearchSchema
 from app.wrappers import requires_roles
 
 
@@ -45,12 +45,23 @@ class UserListEndpoint(flask_restful.Resource):
 
     usersSchema = UserSchema(many=True)
     userSchema = UserSchema()
+    searchSchema = UserSearchSchema()
 
     @auth.login_required
     @requires_roles('Admin')
     def get(self):
-        models = db.session.query(User).all()
-        return self.usersSchema.dump(models)
+        args = request.args
+        page = eval(args["pageNumber"]) if ("pageNumber" in args) else 1
+        per_page = eval(args["pageSize"]) if ("pageSize" in args) else 20
+        sort_column = args["sort"] if ("sort" in args) else "display_name"
+        sort_order = args["sortOrder"] if ("sortOrder" in args) else "asc"
+        query = db.session.query(User)
+        if "filter" in args:
+            f = '%' + args["filter"] + '%'
+            query = query.filter(or_(User.email.ilike(f), User.display_name.ilike(f), User.uid.ilike(f)))
+        query = query.order_by("%s %s" % (sort_column, sort_order))
+        page = query.paginate(page=page, per_page=per_page, error_out=False)
+        return self.searchSchema.dump(page)
 
     @auth.login_required
     @requires_roles('Admin')
@@ -77,3 +88,4 @@ class UserListEndpoint(flask_restful.Resource):
         log = EmailLog(user_id=user.id, type="confirm_email", tracking_code=tracking_code)
         db.session.add(log)
         db.session.commit()
+
