@@ -197,3 +197,19 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
   }
 }
 
+.mat-tab-label {
+  background-color: white;
+
+  .mat-tab-label-content {
+    color: mat-color($ithriv-primary, 800, 1.0);
+  }
+
+  &.mat-tab-label-active {
+  background-color: mat-color($ithriv-primary, 800, 1.0);
+
+    .mat-tab-label-content {
+      color: white;
+    }
+  }
+}
+
