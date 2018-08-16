@@ -1,14 +1,21 @@
-<mat-card class="resource">
+<mat-card
+  class="resource"
+  *ngIf="resource && resource.id"
+  (click)="goResource($event, resource)"
+>
   <div
     class="category-color"
-    [ngStyle]="{'background-image': categoryColor(resource)}"
+    [appCategoryColorBorder]="resource"
   ></div>
 
   <div class="icon-with-content">
     <div>
-      <div class="type-icon">
+      <div
+        class="type-icon"
+        *ngIf="typeIconId(resource)"
+      >
         <mat-icon
-          svgIcon="ithriv_{{resource.type.icon.id}}"
+          svgIcon="ithriv_{{typeIconId(resource)}}"
           matTooltip="{{resource.type.name}}"
         ></mat-icon>
       </div>

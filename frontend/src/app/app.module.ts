@@ -86,6 +86,7 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
 import { IsAdminDirective } from './is-admin.directive';
+import { CategoryColorBorderDirective } from './category-color-border.directive';
 
 @NgModule({
   declarations: [
@@ -130,7 +131,8 @@ import { IsAdminDirective } from './is-admin.directive';
     TreeSelectComponent,
     NetworkViewNodeComponent,
     UserAdminComponent,
-    IsAdminDirective
+    IsAdminDirective,
+    CategoryColorBorderDirective
   ],
   imports: [
     AppRoutingModule,

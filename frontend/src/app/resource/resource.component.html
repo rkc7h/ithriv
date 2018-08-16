@@ -3,6 +3,10 @@
   [@zoomTransition]="transitionState"
 >
   <div
+    class="category-color"
+    [appCategoryColorBorder]="resource"
+  ></div>
+  <div
     *ngIf="resource"
     fxLayout="row"
     fxLayout.xs="column"
