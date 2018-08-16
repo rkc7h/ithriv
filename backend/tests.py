@@ -1061,11 +1061,11 @@ class TestCase(unittest.TestCase):
 
         query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '1'}
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response))
+        self.assertEquals(1, len(response['items']))
 
         query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '2'}
         response = self.searchUsers(query)
-        self.assertEquals(2, len(response))
+        self.assertEquals(2, len(response['items']))
 
     def test_find_users_respects_pageNumber(self):
         self.createTestUsers();
@@ -1073,30 +1073,41 @@ class TestCase(unittest.TestCase):
 
         query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '2'}
         response = self.searchUsers(query)
-        self.assertEquals(2, len(response))
+        self.assertEquals(2, len(response['items']))
+        self.assertEquals(3, response['total'])
 
         query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '2', 'pageSize': '2'}
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response))
+        self.assertEquals(1, len(response['items']))
 
         query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '3', 'pageSize': '2'}
         response = self.searchUsers(query)
-        self.assertEquals(0, len(response))
+        self.assertEquals(0, len(response['items']))
 
     def test_find_users_respects_filter(self):
         self.createTestUsers()
         query = {'filter': 'big', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response))
+        self.assertEquals(1, len(response['items']))
 
         query = {'filter': 'Grouch', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response))
+        self.assertEquals(1, len(response['items']))
 
         query = {'filter': '123', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response))
+        self.assertEquals(1, len(response['items']))
 
         query = {'filter': 'Ididnputthisinthedata', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals(0, len(response))
+        self.assertEquals(0, len(response['items']))
+
+    def test_find_users_orders_results(self):
+        self.createTestUsers()
+        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        response = self.searchUsers(query)
+        self.assertEquals("Big Bird", response['items'][0]['display_name'])
+
+        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'desc', 'pageNumber': '1', 'pageSize': '20'}
+        response = self.searchUsers(query)
+        self.assertEquals("Oscar the Grouch", response['items'][0]['display_name'])

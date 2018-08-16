@@ -1,4 +1,4 @@
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
@@ -16,6 +16,7 @@ import {User} from '../../user';
 import {Favorite} from '../../favorite';
 import {Subject} from 'rxjs';
 import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
+import {UserSearchResults} from '../../user-search-results';
 
 @Injectable()
 export class ResourceApiService {
@@ -278,6 +279,12 @@ export class ResourceApiService {
   /** deleteUser */
   deleteUser(user: User): Observable<any> {
     return this.httpClient.delete<User>(this.apiRoot + user._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  findUsers(filter = '', sort = 'display_name', sortOrder = 'asc', pageNumber = 0, pageSize = 3): Observable<UserSearchResults> {
+    const search_data = {filter: filter, sort: sort, sortOrder: sortOrder, pageNumber: String(pageNumber), pageSize: String(pageSize)};
+    return this.httpClient.get<UserSearchResults>(this.apiRoot + this.endpoints.userList, {params: search_data})
       .pipe(catchError(this.handleError));
   }
 
