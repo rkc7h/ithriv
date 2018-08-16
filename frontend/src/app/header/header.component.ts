@@ -3,7 +3,7 @@ import { ActivationStart, NavigationEnd, Router, ActivationEnd, ActivatedRoute }
 import { environment } from '../../environments/environment';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { fadeTransition } from '../shared/animations';
-import {User} from '../user';
+import { User } from '../user';
 
 @Component({
   selector: 'app-header',
@@ -42,7 +42,7 @@ export class HeaderComponent implements OnInit {
       if (e instanceof NavigationEnd) {
         this.isHome = ['/', '/search'].includes(e.url);
         this.isResourceView = /^\/resource\//.test(e.url);
-        this.isNetworkView = /network$/.test(e.url);
+        this.isNetworkView = /network/.test(e.url);
       }
     });
   }
