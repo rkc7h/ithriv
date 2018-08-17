@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit {
   hideHeader = false;
   categoryId: string;
   isResourceView = false;
-  isNetworkView = false;
+  isNetworkView: boolean;
   session: User;
 
   constructor(
@@ -42,9 +42,10 @@ export class HeaderComponent implements OnInit {
       if (e instanceof NavigationEnd) {
         this.isHome = ['/', '/search'].includes(e.url);
         this.isResourceView = /^\/resource\//.test(e.url);
-        this.isNetworkView = /network/.test(e.url);
       }
     });
+
+    this.isNetworkView = this.getIsNetworkView();
   }
 
   ngOnInit() {
@@ -90,9 +91,26 @@ export class HeaderComponent implements OnInit {
     this.api.closeSession().subscribe();
   }
 
-  viewMode(network = false) {
+  getIsNetworkView() {
+    const viewPrefs = this.api.getViewPreferences();
+
+    if (viewPrefs && viewPrefs.hasOwnProperty('isNetworkView')) {
+      return viewPrefs.isNetworkView;
+    } else {
+      return this.setIsNetworkView();
+    }
+  }
+
+  setIsNetworkView(network = true) {
+    this.api.updateViewPreferences({ isNetworkView: network });
+    return network;
+  }
+
+  viewMode(isNetworkView: boolean) {
+    this.isNetworkView = this.setIsNetworkView(isNetworkView);
+
     if (this.categoryId) {
-      if (network) {
+      if (this.isNetworkView) {
         // Go up the hierarchy to the Level 1 or 0 parent for this category
         this.api.getCategory(parseInt(this.categoryId, 10)).subscribe(c => {
           let catId: number;
@@ -108,17 +126,18 @@ export class HeaderComponent implements OnInit {
       } else {
         // Go up the hierarchy to the Level 0 parent for this category
         this.api.getCategory(parseInt(this.categoryId, 10)).subscribe(c => {
-          let catId: number;
-          if (c.level === 0) {
-            catId = c.id;
-          }
-          if (c.level === 1) {
-            catId = c.parent.id;
-          }
           if (c.level === 2) {
-            catId = c.parent.parent.id;
+            this.router.navigate(['category', c.id.toString()]);
+          } else {
+            let catId: number;
+
+            if (c.level === 0) {
+              catId = c.id;
+            } else if (c.level === 1) {
+              catId = c.parent.id;
+            }
+            this.router.navigate(['browse', catId.toString()]);
           }
-          this.router.navigate(['browse', catId.toString()]);
         });
       }
     }

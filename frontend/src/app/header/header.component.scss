@@ -121,6 +121,18 @@ mat-toolbar {
 
   .secondary-nav {
     @include mat-elevation(1);
+
+    mat-button-toggle-group {
+      mat-button-toggle {
+        color: mat-color($ithriv-primary, 800, 1.0);
+        background-color: #CCC;
+
+        &.mat-button-toggle-checked {
+          color: white;
+          background-color: mat-color($ithriv-primary, 800, 1.0);
+        }
+      }
+    }
   }
 
 }

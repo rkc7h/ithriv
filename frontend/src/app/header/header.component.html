@@ -89,31 +89,32 @@
   <mat-toolbar-row
     fxLayout="row wrap"
     fxLayoutAlign="space-around center"
+    fxLayoutGap="20px"
     class="secondary-nav"
   >
     <h1>Find Resources</h1>
     <span class="fill-remaining-space"></span>
-    <ng-container *ngIf="!isResourceView">
-      Change View:
-      <mat-button-toggle-group>
-        <button
-          mat-button
-          (click)="viewMode(true)"
-          [disabled]="isNetworkView"
+    <ng-container>
+      <div>Change View:</div>
+      <mat-button-toggle-group #group="matButtonToggleGroup">
+        <mat-button-toggle
+          (click)="viewMode(group.value)"
+          [value]="true"
           matTooltip="View network graph of category relationships"
           color="primary"
+          [checked]="isNetworkView"
         >
           <mat-icon>device_hub</mat-icon>
-        </button>
-        <button
-          mat-button
-          (click)="viewMode(false)"
-          [disabled]="!isNetworkView"
+        </mat-button-toggle>
+        <mat-button-toggle
+          (click)="viewMode(group.value)"
+          [value]="false"
           matTooltip="View category/resource listing"
           color="primary"
+          [checked]="!isNetworkView"
         >
           <mat-icon>view_list</mat-icon>
-        </button>
+        </mat-button-toggle>
       </mat-button-toggle-group>
     </ng-container>
   </mat-toolbar-row>
