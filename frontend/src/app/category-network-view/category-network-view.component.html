@@ -2,6 +2,13 @@
   style="position: relative; width: 100%; height: 100%;"
   class="mat-typography"
 >
+  <h1
+    *ngIf="!category"
+    [@zoomTransition]="'delay-fade-enter'"
+  >
+    Select from the categories below to browse translational health resources. You can change to another mode at any time during
+    your browsing.
+  </h1>
   <svg
     *ngIf="category || allCategories"
     [attr.viewBox]="viewBoxDimensions()"
