@@ -1,4 +1,5 @@
 import { Links } from './links';
+import {Institution} from './institution';
 
 export interface User {
   id: number;
@@ -8,5 +9,6 @@ export interface User {
   password?: string;
   role: string;
   institution_id?: number;
+  institution?: Institution;
   _links?: Links;
 }

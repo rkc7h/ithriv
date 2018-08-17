@@ -16,6 +16,7 @@ export class ResetPasswordComponent {
   passwordForm: FormGroup = new FormGroup({});
   formState = 'form';
   errorMessage = '';
+  linkFromConfirmEmail = false;
 
   fields = {
     password: new FormField({

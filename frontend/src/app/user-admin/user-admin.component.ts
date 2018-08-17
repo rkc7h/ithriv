@@ -5,6 +5,8 @@ import {MatPaginator, MatSort} from '@angular/material';
 import {debounceTime, distinctUntilChanged, tap} from 'rxjs/operators';
 import {merge} from 'rxjs/internal/observable/merge';
 import {fromEvent} from 'rxjs/internal/observable/fromEvent';
+import {ActivatedRoute, Router} from '@angular/router';
+import {CategoryFormComponent} from '../category-form/category-form.component';
 
 @Component({
   selector: 'app-user-admin',
@@ -14,14 +16,15 @@ import {fromEvent} from 'rxjs/internal/observable/fromEvent';
 export class UserAdminComponent implements OnInit, AfterViewInit {
 
   dataSource: UserDataSource;
-  displayedColumns = ['uid', 'display_name', 'role', 'email'];
+  displayedColumns = ['uid', 'display_name', 'role', 'email', 'institution'];
   default_page_size = 10;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('input') input: ElementRef;
 
-  constructor(private api: ResourceApiService) { }
+  constructor(private api: ResourceApiService,
+              private router: Router) { }
 
   ngOnInit() {
     this.dataSource = new UserDataSource(this.api);
@@ -30,7 +33,12 @@ export class UserAdminComponent implements OnInit, AfterViewInit {
   }
 
   onRowClicked(row) {
-    console.log('Row Clicked:', row);
+    console.log('User Clicked:', row['id']);
+    this.router.navigate(['admin/users', row['id']]);
+  }
+
+  openAdd() {
+    this.router.navigate(['admin/new_user']);
   }
 
   ngAfterViewInit() {

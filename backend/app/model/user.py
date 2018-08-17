@@ -17,6 +17,7 @@ class User(db.Model):
     role = db.Column(db.String(), default='User')
     email_verified = db.Column(db.Boolean, nullable=False, default=False)
     institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
+    institution = db.relationship('ThrivInstitution')
 
     @hybrid_property
     def password(self):

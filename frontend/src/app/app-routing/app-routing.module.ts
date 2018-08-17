@@ -18,7 +18,9 @@ import { UserAdminComponent } from '../user-admin/user-admin.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'admin/new_user', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
   { path: 'admin/users', component: UserAdminComponent, data: { title: 'User Administration' } },
+  { path: 'admin/users/:id', component: ProfileComponent, data: { title: 'User Administration - Edit User' } },
   { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
   { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
