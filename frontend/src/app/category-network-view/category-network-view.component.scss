@@ -1,6 +1,10 @@
 $easeDuration: 300ms;
 $animationDuration: 750ms;
 
+h1 {
+  text-align: center;
+}
+
 #network-graph-container {
   position: absolute;
   left: 0;
@@ -14,7 +18,7 @@ line, circle, rect {
   transition: $easeDuration ease transform;
 }
 
-g[app-network-view-node] {
+g[app-network-view-node], g.top-level {
   transition: $easeDuration ease transform, $easeDuration ease opacity;
 }
 

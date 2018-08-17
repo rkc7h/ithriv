@@ -140,6 +140,12 @@ export class HeaderComponent implements OnInit {
           }
         });
       }
+    } else {
+      if (this.isNetworkView) {
+        this.router.navigate(['network']);
+      } else {
+        this.router.navigate(['home']);
+      }
     }
   }
 }

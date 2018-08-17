@@ -3,7 +3,7 @@
   class="mat-typography"
 >
   <svg
-    *ngIf="category"
+    *ngIf="category || allCategories"
     [attr.viewBox]="viewBoxDimensions()"
     xmlns="http://www.w3.org/2000/svg"
     id="network-graph-container"
@@ -15,6 +15,7 @@
         y1="0%"
         x2="0%"
         y2="100%"
+        *ngIf="category"
       >
         <stop
           offset="0%"
@@ -45,6 +46,7 @@
     </defs>
 
     <g
+      *ngIf="category"
       id="category-network-graph"
       [attr.transform]="translateTo('origin')"
       [ngClass]="transitionClass"
@@ -172,26 +174,27 @@
 
     <!-- TOP-LEVEL NODES -->
     <g
-      [attr.transform]="translateTo('top-left')"
+      [attr.transform]="translateTo('top-left') + ' ' + (category ? '' : 'scale(2.23)')"
       class="top-level"
     >
-      <g
-        app-network-view-node
-        *ngFor="let node of allCategories; let i = index"
-        [attr.transform]="translateByIndex(i)"
-        (click)="goCategory(node); setTransitionClass(node, allCategories)"
-        [ngStyle]="{'opacity': isSelectedCategory(node) ? 0.1 : 1}"
-        [category]="node"
-        [options]="{
-          relationship: 'root',
-          x: 0,
-          y: 0,
-          radius: navRadius,
-          angle: 0,
-          titleHeight: parentTitleHeight
-        }"
-      />
+      <g [@zoomTransition]="category ? 'fade-enter' : transitionClass">
+        <g
+          app-network-view-node
+          *ngFor="let node of allCategories; let i = index"
+          [attr.transform]="translateByIndex(i, category ? 1 : 0.5)"
+          (click)="goCategory(node); setTransitionClass(node, allCategories)"
+          [ngStyle]="{'opacity': isSelectedCategory(node) ? 0.2 : 1}"
+          [category]="node"
+          [options]="{
+                relationship: 'root',
+                x: 0,
+                y: 0,
+                radius: navRadius,
+                angle: 0,
+                titleHeight: parentTitleHeight
+              }"
+        />
+      </g>
     </g>
-
   </svg>
 </div>
