@@ -1,39 +1,104 @@
-<div id="browse" class="mat-typography">
-  <div class="header" *ngIf="isDataLoaded">
+<div
+  id="browse"
+  class="mat-typography"
+>
+  <div
+    class="header"
+    *ngIf="isDataLoaded"
+  >
     <h1 class="mat-display-1">
-      <mat-icon *ngIf="category.icon" svgIcon="{{categoryIcon(category)}}"></mat-icon>
+      <mat-icon
+        *ngIf="category.icon"
+        svgIcon="{{categoryIcon(category)}}"
+      ></mat-icon>
       {{category.name}}
-      <app-edit-category-button [category]="category" (updatedCategory)="updateCategory($event)"></app-edit-category-button>
-      <app-add-category-button [category]="category" (updatedCategory)="addCategory($event)"></app-add-category-button>
+      <app-edit-category-button
+        [category]="category"
+        (updatedCategory)="updateCategory($event)"
+      ></app-edit-category-button>
+      <app-add-category-button
+        [category]="category"
+        (updatedCategory)="addCategory($event)"
+      ></app-add-category-button>
     </h1>
     <markdown>{{category.description || dummyText.category}}</markdown>
-    <div class="bg-img" [ngStyle]="{'background-image': headerImage()}"></div>
-    <div class="gradient-overlay" [appGradientBackground]='category.color'></div>
+    <div
+      class="bg-img"
+      [ngStyle]="{'background-image': headerImage()}"
+    ></div>
+    <div
+      class="gradient-overlay"
+      [appGradientBackground]='category.color'
+    ></div>
   </div>
 
   <div *ngIf="isDataLoaded">
-    <section *ngFor="let c of category.children" class="sub-category" [ngStyle]="{'border-top-color': c.color}">
+    <section
+      *ngFor="let c of category.children"
+      class="sub-category"
+      [ngStyle]="{'border-top-color': c.color}"
+    >
       <div>
-        <mat-icon *ngIf="c.icon" class="cat-icon-2" svgIcon="{{categoryIcon(c)}}" [ngStyle]="c.hover ? {'background-color': c.color, 'border-color': c.color} : {'color': c.color, 'border-color': c.color}"
-          (mouseover)="c.hover=true" (mouseleave)="c.hover=false" (click)="goNetworkView(c)"></mat-icon>
+        <mat-icon
+          *ngIf="c.icon"
+          class="cat-icon-2"
+          svgIcon="{{categoryIcon(c)}}"
+          [ngStyle]="c.hover ? {'background-color': c.color, 'border-color': c.color} : {'color': c.color, 'border-color': c.color}"
+      
+          (mouseover)="c.hover=true"
+          (mouseleave)="c.hover=false"
+          (click)="goCategory($event, c)"
+        ></mat-icon>
         <h2>{{c.name}}</h2>
       </div>
-      <app-edit-category-button [category]="c" [parent]="category" (updatedCategory)="updateCategory($event)"></app-edit-category-button>
-      <app-add-category-button [category]="c" (updatedCategory)="addCategory($event)"></app-add-category-button>
+      <app-edit-category-button
+        [category]="c"
+        [parent]="category"
+        (updatedCategory)="updateCategory($event)"
+      ></app-edit-category-button>
+      <app-add-category-button
+        [category]="c"
+        (updatedCategory)="addCategory($event)"
+      ></app-add-category-button>
       <markdown>{{c.description || dummyText.c}}</markdown>
 
-      <div class="sub-categories container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0px grid" fxLayoutAlign="center">
-        <mat-card *ngFor="let sc of c.children" class="sub-sub-category" fxFlex="30%">
-          <mat-card-header (click)="goCategory($event, sc.id)">
-            <div mat-card-avatar *ngIf="sc.icon">
-              <mat-icon class="cat-icon-3" svgIcon="{{categoryIcon(sc)}}" [ngStyle]="{'background-color': sc.color}"></mat-icon>
+      <div
+        class="sub-categories container"
+        fxLayout="row wrap"
+        fxLayout.xs="column"
+        fxLayoutGap="0px grid"
+        fxLayoutAlign="center"
+      >
+        <mat-card
+          *ngFor="let sc of c.children"
+          class="sub-sub-category"
+          fxFlex="30%"
+        >
+          <mat-card-header (click)="goCategory($event, sc)">
+            <div
+              mat-card-avatar
+              *ngIf="sc.icon"
+            >
+              <mat-icon
+                class="cat-icon-3"
+                svgIcon="{{categoryIcon(sc)}}"
+                [ngStyle]="{'background-color': sc.color}"
+              ></mat-icon>
             </div>
             <mat-card-title>{{sc.name}}</mat-card-title>
             <mat-card-subtitle>
               <markdown>{{sc.brief_description || dummyText.sc}}</markdown>
             </mat-card-subtitle>
           </mat-card-header>
-          <app-edit-category-button [category]="sc" [parent]="c" (updatedCategory)="updateCategory($event)"></app-edit-category-button>
+          <mat-card-content></mat-card-content>
+          <mat-card-footer>
+            <p [ngStyle]="{'color': sc.color}">{{sc.resource_count || 0}} resources</p>
+          </mat-card-footer>
+          <app-edit-category-button
+            [category]="sc"
+            [parent]="c"
+            (updatedCategory)="updateCategory($event)"
+          ></app-edit-category-button>
         </mat-card>
       </div>
     </section>

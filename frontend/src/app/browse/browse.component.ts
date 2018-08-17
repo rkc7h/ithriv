@@ -66,13 +66,17 @@ export class BrowseComponent implements OnInit {
     );
   }
 
-  goCategory($event, category) {
+  goCategory($event, category: Category) {
     $event.preventDefault();
-    this.router.navigate(['category', category]);
-  }
 
-  goNetworkView(category: Category) {
-    this.router.navigate(['category', category.id, 'network']);
+    if (category.level === 2) {
+      this.router.navigate(['category', category.id]);
+    } else if (this.api.getViewPreferences().isNetworkView) {
+      this.router.navigate(['category', category.id, 'network']);
+    } else {
+      const id = (category.level === 1) ? category.parent.id : category.id;
+      this.router.navigate(['browse', id]);
+    }
   }
 
   updateCategory(category) {
