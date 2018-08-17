@@ -62,6 +62,8 @@ export function slideTransition(): AnimationTriggerMetadata {
 
 export function zoomTransition(): AnimationTriggerMetadata {
   return trigger('zoomTransition', [
+    state('delay-fade-enter', normal),
+    state('delay-fade-exit', normal),
     state('fade-enter', normal),
     state('fade-exit', normal),
     state('zoom-in-enter', normal),
@@ -74,6 +76,16 @@ export function zoomTransition(): AnimationTriggerMetadata {
     state('slide-left-exit', normal),
     transition('* => void', [
       animate(easing, hide)
+    ]),
+    transition('* => delay-fade-enter', [
+      fadedOut,
+      animate('1.5s ease-in-out', fadedOut),
+      animate(easing, normal)
+    ]),
+    transition('* => delay-fade-exit', [
+      normal,
+      animate('1.5s ease-in-out', normal),
+      animate(easing, fadedOut)
     ]),
     transition('* => fade-enter', [
       fadedOut,
