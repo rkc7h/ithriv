@@ -4,9 +4,6 @@
       <app-login-services></app-login-services>
       <h3 style="text-align: center">or</h3>
     </div>
-    <div *ngIf="linkFromConfirmEmail">
-      <h3>Thank you for confirming your email address. Please log in below to continue.</h3>
-    </div>
     <form
       [formGroup]="loginForm"
       (ngSubmit)="onSubmit()"
