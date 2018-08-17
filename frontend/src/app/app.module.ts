@@ -52,6 +52,7 @@ import { ApprovedBadgeComponent } from './approved-badge/approved-badge.componen
 import { AuthInterceptor } from './AuthInterceptor';
 import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
+import { CategoryColorBorderDirective } from './category-color-border.directive';
 import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryNetworkViewComponent } from './category-network-view/category-network-view.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
@@ -67,9 +68,12 @@ import { GradientBackgroundDirective } from './gradient-background.directive';
 import { GradientBorderDirective } from './gradient-border.directive';
 import { HeaderComponent } from './header/header.component';
 import { HomeComponent } from './home/home.component';
+import { IsAdminDirective } from './is-admin.directive';
 import { LoginFormComponent } from './login-form/login-form.component';
+import { LoginServicesComponent } from './login-services/login-services.component';
 import { LoginComponent } from './login/login.component';
 import { LogoComponent } from './logo/logo.component';
+import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ProfileComponent } from './profile/profile.component';
 import { RegisterFormComponent } from './register-form/register-form.component';
@@ -83,10 +87,7 @@ import { SearchComponent } from './search/search.component';
 import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
-import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
-import { IsAdminDirective } from './is-admin.directive';
-import { CategoryColorBorderDirective } from './category-color-border.directive';
 
 @NgModule({
   declarations: [
@@ -132,7 +133,8 @@ import { CategoryColorBorderDirective } from './category-color-border.directive'
     NetworkViewNodeComponent,
     UserAdminComponent,
     IsAdminDirective,
-    CategoryColorBorderDirective
+    CategoryColorBorderDirective,
+    LoginServicesComponent
   ],
   imports: [
     AppRoutingModule,
