@@ -1,6 +1,10 @@
 <div *ngIf="session">
   <app-resource-list [resources]="resources"></app-resource-list>
 </div>
-<div *ngIf="!session">
-  <h2>Please log in to see your favorite resources</h2>
+<div
+  *ngIf="!session"
+  class="please-log-in"
+>
+  <h2>Please log in to see your favorite resources.</h2>
+  <app-login-services></app-login-services>
 </div>

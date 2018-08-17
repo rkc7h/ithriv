@@ -73,8 +73,9 @@
           *ngFor="let sc of c.children"
           class="sub-sub-category"
           fxFlex="30%"
+          (click)="goCategory($event, sc)"
         >
-          <mat-card-header (click)="goCategory($event, sc)">
+          <mat-card-header>
             <div
               mat-card-avatar
               *ngIf="sc.icon"

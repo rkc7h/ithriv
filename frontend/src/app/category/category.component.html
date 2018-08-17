@@ -73,17 +73,22 @@
           [ngStyle]="{'background-color': category.color}"
         >
           <mat-tab label="
-                Resources available to {{getUserName()}}
-                ({{getResources(getInstitutionId()).length}})
-              ">
-            <div class="example-small-box mat-elevation-z4">
-              <app-resource-list [resources]="getResources(getInstitutionId())"></app-resource-list>
+            Resources available to {{getUserName()}}
+            ({{getResources(getInstitutionId()).length}})
+          ">
+            <app-resource-list *ngIf="getResources(getInstitutionId()).length > 0"
+              [resources]="getResources(getInstitutionId())"
+            ></app-resource-list>
+            <div
+              *ngIf="getResources(getInstitutionId()).length === 0"
+              class="please-log-in"
+            >
+              <h2>Please log in to view resources associated with your institution.</h2>
+              <app-login-services></app-login-services>
             </div>
           </mat-tab>
           <mat-tab label="View all in category ({{getAllResources().length}})">
-            <div class="example-large-box mat-elevation-z4">
-              <app-resource-list [resources]="getAllResources()"></app-resource-list>
-            </div>
+            <app-resource-list [resources]="getAllResources()"></app-resource-list>
           </mat-tab>
         </mat-tab-group>
       </div>

@@ -1,24 +1,7 @@
 <mat-card>
   <mat-card-content>
     <div *ngIf="!linkFromConfirmEmail">
-      <div
-        class="login-service"
-        fxLayout="row wrap"
-        fxLayoutGap="10px"
-        fxLayoutAlign="center center"
-      >
-        <button
-          *ngFor="let s of loginServices"
-          mat-stroked-button
-          (click)="goLoginService(s)"
-          [ngStyle]="{
-            'border-color': s.color
-          }"
-          class="service-logo"
-        >
-          <img [src]="s.image">
-        </button>
-      </div>
+      <app-login-services></app-login-services>
       <h3 style="text-align: center">or</h3>
     </div>
     <div *ngIf="linkFromConfirmEmail">
