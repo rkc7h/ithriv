@@ -144,7 +144,7 @@ export class HeaderComponent implements OnInit {
       if (this.isNetworkView) {
         this.router.navigate(['network']);
       } else {
-        this.router.navigate(['home']);
+        this.router.navigate(['browse']);
       }
     }
   }
