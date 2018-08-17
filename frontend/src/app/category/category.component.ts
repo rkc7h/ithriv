@@ -102,14 +102,17 @@ export class CategoryComponent implements OnInit {
   ngOnInit() {
   }
 
-  goMode($event, category: Category) {
+  goCategory($event, category: Category) {
     $event.preventDefault();
     this.transitionClass = 'zoom-out-exit';
 
-    if (category.level === 0) {
-      this.router.navigate(['browse', category.id], { queryParams: { from: this.category.level } });
-    } else if (category.level === 1) {
+    if (category.level === 2) {
+      this.router.navigate(['category', category.id], { queryParams: { from: this.category.level } });
+    } else if (this.api.getViewPreferences().isNetworkView) {
       this.router.navigate(['category', category.id, 'network'], { queryParams: { from: this.category.level } });
+    } else {
+      const id = (category.level === 1) ? category.parent.id : category.id;
+      this.router.navigate(['browse', id], { queryParams: { from: this.category.level } });
     }
   }
 

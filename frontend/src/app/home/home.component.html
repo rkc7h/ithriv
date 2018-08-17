@@ -39,6 +39,7 @@
   <app-category-tile
     *ngFor="let category of categories"
     [category]="category"
+    (click)="goCategory(category)"
   ></app-category-tile>
 </div>
 

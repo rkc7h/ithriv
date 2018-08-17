@@ -18,10 +18,11 @@
       <app-category-tile
         [category]="category.parent.parent"
         [fromCategory]="category"
+        (click)="goCategory($event, category.parent.parent)"
       ></app-category-tile>
       <div
         class="breadcrumb breadcrumb-parent"
-        (click)="goMode($event, category.parent)"
+        (click)="goCategory($event, category.parent)"
         [ngStyle]="category.parent.hover ? {'background-color': category.color, 'border-color': category.color, 'color': 'white'} : {'color': category.color, 'border-color': category.color}"
     
         (mouseover)="category.parent.hover=true"
@@ -29,7 +30,7 @@
       >
         <a
           href="#"
-          (click)="goMode($event, category.parent)"
+          (click)="goCategory($event, category.parent)"
         >
           <mat-icon
             svgIcon="ithriv_{{category.parent.icon_id}}"
@@ -69,6 +70,7 @@
         <mat-tab-group
           mat-stretch-tabs
           dynamicHeight
+          [ngStyle]="{'background-color': category.color}"
         >
           <mat-tab label="
                 Resources available to {{getUserName()}}

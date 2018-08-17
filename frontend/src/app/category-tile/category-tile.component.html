@@ -2,19 +2,16 @@
   class="breadcrumb breadcrumb-root"
   (mouseover)="category.hover=true"
   (mouseout)="category.hover=false"
-  (click)="goBrowse($event, category)"
   [ngStyle]="{'box-shadow': category.hover ? 'none' : '0px 0px 20px 5px white', 'border-color': category.color, 'background-image': categoryImageURL()}"
 ></div>
 <div
   class="mat-typography breadcrumb-root-title"
   (mouseover)="category.hover=true"
   (mouseout)="category.hover=false"
-  (click)="goBrowse($event, category)"
   [ngStyle]="{'background-color': category.hover ? category.color : categoryColorLight(), 'border-color': category.hover ? category.color : categoryColorLight()}"
 >
   <a
     href="#"
-    (click)="goBrowse($event, category)"
     [appGradientBorder]="category.color"
     [ngStyle]="{'color': category.hover ? 'white' : 'black'}"
   >{{category.name}}</a>
