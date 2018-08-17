@@ -23,7 +23,6 @@ export class LoginFormComponent {
   loginServices: LoginService[] = [];
   errorEmitter = new EventEmitter<string>();
   errorMatcher = new ErrorMatcher();
-  linkFromConfirmEmail = false;
   loginForm: FormGroup = new FormGroup({});
   fields = {
     email: new FormField({
@@ -46,12 +45,6 @@ export class LoginFormComponent {
     private api: ResourceApiService,
     private router: Router
   ) {
-    this.route.params.subscribe(params => {
-      if ('email_token' in params) {
-        this.emailToken = params['email_token'];
-        this.linkFromConfirmEmail = true;
-      }
-    });
     this.loadServices();
     this.iThrivForm.loadForm();
   }

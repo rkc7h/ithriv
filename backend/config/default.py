@@ -42,7 +42,6 @@ SSO_ATTRIBUTE_MAP = {
 API_URL = "http://localhost:5000"
 SITE_URL = "http://localhost:4200"
 FRONTEND_AUTH_CALLBACK = SITE_URL + "/#/session"
-FRONTEND_EMAIL_CONFIRM = SITE_URL + "/#/login/"
 FRONTEND_EMAIL_RESET = SITE_URL + "/#/reset_password/"
 SSO_LOGIN_URL = '/api/login'
 
@@ -54,3 +53,4 @@ MAIL_USERNAME = "YOUR-MAILTRIP-NAME - Copy these lines to your instance/config! 
 MAIL_PASSWORD = "YOUR-MAILTRIP-PASSWORD - Copy these lines to your instance/config! edit there."
 MAIL_DEFAULT_SENDER='someaddress@fake.com'
 MAIL_DEFAULT_USER='someaddress@fake.com'
+MAIL_TIMEOUT = 10

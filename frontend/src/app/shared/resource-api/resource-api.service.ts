@@ -270,6 +270,12 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** retrieve a user */
+  getUser(id: number): Observable<User> {
+    return this.httpClient.get<User>(this.apiRoot + this.endpoints.userList + '/' + id)
+      .pipe(catchError(this.handleError));
+  }
+
   /** updateUser */
   updateUser(user: User): Observable<User> {
     return this.httpClient.put<User>(this.apiRoot + user._links.self, user)

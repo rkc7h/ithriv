@@ -1,11 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, EventEmitter} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { User } from '../user';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import {IThrivForm} from '../shared/IThrivForm';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,10 +15,11 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-  login_url = environment.api + '/api/login';
-  error: string;
+  errorEmitter = new EventEmitter<string>();
+  submitEmitter = new EventEmitter<boolean>();
   errorMatcher = new ErrorMatcher();
   profileForm: FormGroup = new FormGroup({});
+  createNew = true;  // If false, we are editing an existing user;
   user: User;
   errorMessage = '';
   fields = {
@@ -42,63 +44,80 @@ export class ProfileComponent implements OnInit {
       fieldsetId: 'institution_prefs',
       fieldsetLabel: 'Institutions'
     }),
-    password: new FormField({
+    role: new FormField({
       formControl: new FormControl(),
       required: true,
-      placeholder: 'Current Password',
-      type: 'password',
+      placeholder: 'Role',
+      type: 'select',
+      selectOptions: ['User', 'Admin'],
+      fieldsetId: 'role',
+      fieldsetLabel: 'Role'
     }),
   };
+  iThrivForm = new IThrivForm(this.fields, this.profileForm);
 
   constructor(
     private api: ResourceApiService,
+    private route: ActivatedRoute,
     private router: Router
   ) {
-    this.loadForm();
+    this.iThrivForm.loadForm();
+
     this.user = { id: null, display_name: this.fields.display_name.formControl.value,
-      email: this.fields.email.formControl.value, institution_id: this.fields.institution_id.formControl.value,
-      password: this.fields.password.formControl.value, role: 'User' };
+      email: this.fields.email.formControl.value, institution_id: this.fields.institution_id.formControl.value, role: 'User' };
+    this.iThrivForm.setObjectToEdit(this.user);
+
+    this.route.params.subscribe(params => {
+      if ('id' in params) {
+        api.getUser(params['id']).subscribe(user => {
+          this.user = user;
+          this.createNew = false;
+          this.iThrivForm.setObjectToEdit(this.user);
+        });
+      }
+    });
   }
 
   ngOnInit() {
   }
 
   getFields() {
-    const fields = [];
-
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        fields.push(this.fields[fieldName]);
-      }
-    }
-
-    return fields;
-  }
-
-  loadForm() {
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        const field = this.fields[fieldName];
-        const validators = [];
-
-        if (field.required) {
-          validators.push(Validators.required);
-        }
-
-        if (field.type === 'email') {
-          validators.push(Validators.email);
-        }
-
-        this.profileForm.addControl(fieldName, field.formControl);
-      }
-    }
+    return this.iThrivForm.getFields();
   }
 
   onSubmit() {
-    window.location.href = this.login_url;
+    this.iThrivForm.validate();
+    if (!this.profileForm.valid) { return; }
+    this.iThrivForm.updateObject(this.user);
+    this.submitEmitter.emit(true);
+    if (this.createNew) {
+      this.api.addUser(this.user).subscribe( user => {
+        this.router.navigate(['admin/users']);
+        this.submitEmitter.emit(false);
+      }, error1 => {
+        if (error1) {
+          this.errorEmitter.emit(error1);
+        } else {
+          this.errorEmitter.emit('An unexpected error occured.  Please contact support.');
+        }
+        this.submitEmitter.emit(false);
+      });
+    } else {
+      this.api.updateUser(this.user).subscribe(user => {
+        this.router.navigate(['admin/users']);
+        this.submitEmitter.emit(false);
+      }, error1 => {
+        if (error1) {
+          this.errorEmitter.emit(error1);
+        } else {
+          this.errorEmitter.emit('An unexpected error occured.  Please contact support.');
+        }
+        this.submitEmitter.emit(false);
+      });
+    }
   }
 
   onCancel() {
-    this.router.navigate(['']);
+    this.router.navigate(['admin/users']);
   }
 }

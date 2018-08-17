@@ -25,7 +25,6 @@ const routes: Routes = [
   { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },
   { path: 'reset_password/:email_token', component: ResetPasswordComponent,
             data: { title: 'Reset your iThriv password', hideHeader: true } },
-  { path: 'profile', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
   { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
   { path: 'search', component: SearchComponent, data: { title: 'Search' } },
   { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
@@ -38,6 +37,8 @@ const routes: Routes = [
   { path: 'resource/add/:category', component: ResourceFormComponent, data: { title: 'Add Resource' } },
   { path: 'session/:token', component: SessionRedirectComponent, data: { title: 'Logging in...' } },
   { path: 'admin/users', component: UserAdminComponent, data: { title: 'User Administration' } },
+  { path: 'admin/users/:id', component: ProfileComponent, data: { title: 'User Administration - Edit User' } },
+  { path: 'admin/new_user', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
   { path: '**', component: NotFoundComponent }
 ];
 

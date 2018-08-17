@@ -1,3 +1,8 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
 .userList {
   text-align: center;
   margin: 0 auto;
@@ -31,4 +36,17 @@
 
 .spinner-container mat-spinner {
   margin: 130px auto 0 auto;
+}
+
+mat-row:hover {
+  cursor: pointer;
+  background: mat-color($ithriv-accent, 100, 1.0);
+}
+
+.mat-column-uid {
+  flex: 0 0 100px;
+}
+
+.mat-column-role {
+  flex: 0 0 100px;
 }

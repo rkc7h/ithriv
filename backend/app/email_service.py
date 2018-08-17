@@ -19,21 +19,16 @@ class EmailService():
         return str(uuid.uuid4())[:16]
 
     def email_server(self):
-        server_details = '%s:%s' % (self.app.config['MAIL_SERVER'],
-                                    self.app.config['MAIL_PORT'])
-        print("Connecting to: " + server_details)
-        server = smtplib.SMTP(server_details)
-
+        server = smtplib.SMTP(host=self.app.config['MAIL_SERVER'],
+                              port=self.app.config['MAIL_PORT'],
+                              timeout=self.app.config['MAIL_TIMEOUT'])
         server.ehlo()
-        if (self.app.config['MAIL_USE_TLS']):
+        if self.app.config['MAIL_USE_TLS']:
             server.starttls()
-
-        if (self.app.config['MAIL_USERNAME']):
+        if self.app.config['MAIL_USERNAME']:
             server.login(self.app.config['MAIL_USERNAME'],
                          self.app.config['MAIL_PASSWORD'])
-
         return server
-
 
     def send_email(self, subject, recipients, text_body, html_body, sender=None, ical=None):
         msgRoot = MIMEMultipart('related')
@@ -67,21 +62,17 @@ class EmailService():
             TEST_MESSAGES.append(msgRoot)
             return
 
-        if (self.app.config['DEVELOPMENT']):
-            print("DEVELOP:  Sending All emails to " + self.app.config['MAIL_DEFAULT_USER'])
-            recipients = [self.app.config['MAIL_DEFAULT_USER']]
-
         server = self.email_server()
         server.sendmail(sender, recipients, msgRoot.as_bytes())
         server.quit()
 
     def confirm_email(self, user):
         ts = URLSafeTimedSerializer(self.app.config["SECRET_KEY"])
-        token = ts.dumps(user.email, salt='email-confirm-key')
+        token = ts.dumps(user.email, salt='email-reset-key')
         tracking_code = self.tracking_code()
 
         subject = "iThriv: Confirm Email"
-        confirm_url = self.app.config['FRONTEND_EMAIL_CONFIRM'] + token
+        confirm_url = self.app.config['FRONTEND_EMAIL_RESET'] + token
         logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
         text_body = render_template("confirm_email.txt",
                                     user=user, confirm_url=confirm_url,

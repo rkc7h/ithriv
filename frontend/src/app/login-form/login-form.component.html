@@ -1,6 +1,5 @@
 <mat-card>
   <mat-card-content>
-    <div *ngIf="!linkFromConfirmEmail">
     <div *ngFor="let s of loginServices" class="login-service" >
       <button mat-stroked-button (click)="goLoginService(s)" [ngStyle]="{
               'border-color': s.color,
@@ -13,10 +12,6 @@
       </button>
     </div>
       <h3 style="text-align: center">or</h3>
-    </div>
-    <div *ngIf="linkFromConfirmEmail">
-      <h3>Thank you for confirming your email address.  Please log in below to continue.</h3>
-    </div>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
         [field]="field" [formGroup]="loginForm" [errorMatcher]="errorMatcher"></app-form-field>
