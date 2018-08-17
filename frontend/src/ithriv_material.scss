@@ -3,7 +3,6 @@
 @import '../node_modules/@angular/material/theming';
 @include mat-core();
 
-
 $mat-blue: (
   50 : #F1F5F7, // Modified, was #e0e6ed
   100 : #b3c1d3,
@@ -195,21 +194,24 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
     text-decoration: none;
     color: mat-color($ithriv-primary, 800, 1.0);
   }
-}
 
-.mat-tab-label {
-  background-color: white;
-
-  .mat-tab-label-content {
-    color: mat-color($ithriv-primary, 800, 1.0);
-  }
-
-  &.mat-tab-label-active {
-  background-color: mat-color($ithriv-primary, 800, 1.0);
+  .mat-tab-label {
+    background-color: white;
 
     .mat-tab-label-content {
-      color: white;
+      color: black;
+    }
+
+    &.mat-tab-label-active {
+    background-color: transparent;
+
+      .mat-tab-label-content {
+        color: white;
+      }
     }
   }
-}
 
+  .mat-tab-body-content {
+    background-color: mat-color($primary, 50);
+  }
+}
