@@ -14,6 +14,7 @@ import { fadeTransition } from '../shared/animations';
 export class BrowseComponent implements OnInit {
   @HostBinding('@fadeTransition')
   category: Category;
+  allCategories: Category[];
   categoryId = 1;
   isDataLoaded = false;
   dummyText = {
@@ -43,8 +44,12 @@ export class BrowseComponent implements OnInit {
   ) {
 
     this.route.params.subscribe(params => {
-      this.categoryId = params['category'];
-      this.loadCategory(this.categoryId);
+      if (params && params.hasOwnProperty('category')) {
+        this.categoryId = params['category'];
+        this.loadCategory(this.categoryId);
+      } else {
+        this.loadAllCategories();
+      }
     });
   }
 
@@ -64,6 +69,13 @@ export class BrowseComponent implements OnInit {
         this.titleService.setTitle(`${currentTitle} - ${this.category.name}`);
       }
     );
+  }
+
+  loadAllCategories() {
+    this.api.getCategories().subscribe(cats => {
+      this.allCategories = cats;
+      this.isDataLoaded = true;
+    });
   }
 
   goCategory($event, category: Category) {
@@ -95,8 +107,8 @@ export class BrowseComponent implements OnInit {
   ngOnInit() {
   }
 
-  headerImage() {
-    return `url('assets/browse/${this.category.image}')`;
+  headerImage(category) {
+    return `url('assets/browse/${category.image}')`;
   }
 
   headerGradient() {
@@ -107,6 +119,15 @@ export class BrowseComponent implements OnInit {
     if (c.icon) {
       return `ithriv_${c.icon_id}`;
     }
+  }
+
+  gerunding(word: string) {
+    return (
+      word[0].toUpperCase() +
+      word.slice(1)
+        .toLowerCase()
+        .replace(/e$/, '') + 'ing'
+    );
   }
 
 }

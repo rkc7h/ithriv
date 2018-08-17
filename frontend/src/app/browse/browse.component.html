@@ -1,11 +1,46 @@
 <div
-  id="browse"
+  id="browse-top-level"
   class="mat-typography"
+  *ngIf="isDataLoaded && !category"
 >
   <div
     class="header"
-    *ngIf="isDataLoaded"
+    *ngFor="let rootCategory of allCategories"
+    (click)="goCategory($event, rootCategory)"
   >
+    <h1 class="mat-display-1">
+      <mat-icon
+        *ngIf="rootCategory.icon"
+        svgIcon="{{categoryIcon(rootCategory)}}"
+      ></mat-icon>
+      {{rootCategory.name}}
+      <app-edit-category-button
+        [category]="rootCategory"
+        (updatedCategory)="updateCategory($event)"
+      ></app-edit-category-button>
+      <app-add-category-button
+        [category]="rootCategory"
+        (updatedCategory)="addCategory($event)"
+      ></app-add-category-button>
+    </h1>
+    <markdown [ngStyle]="{'color': 'white'}">{{rootCategory.brief_description || dummyText.category}}</markdown>
+    <button mat-raised-button>Start {{gerunding(rootCategory.name)}}</button>
+    <div
+      class="bg-img"
+      [ngStyle]="{'background-image': headerImage(rootCategory)}"
+    ></div>
+    <div
+      class="gradient-overlay"
+      [appGradientBackground]='rootCategory.color'
+    ></div>
+  </div>
+</div>
+<div
+  id="browse"
+  class="mat-typography"
+  *ngIf="isDataLoaded && category"
+>
+  <div class="header">
     <h1 class="mat-display-1">
       <mat-icon
         *ngIf="category.icon"
@@ -24,7 +59,7 @@
     <markdown>{{category.description || dummyText.category}}</markdown>
     <div
       class="bg-img"
-      [ngStyle]="{'background-image': headerImage()}"
+      [ngStyle]="{'background-image': headerImage(category)}"
     ></div>
     <div
       class="gradient-overlay"
@@ -32,7 +67,7 @@
     ></div>
   </div>
 
-  <div *ngIf="isDataLoaded">
+  <div>
     <section
       *ngFor="let c of category.children"
       class="sub-category"
