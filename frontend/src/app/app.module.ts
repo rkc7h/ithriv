@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -42,6 +42,7 @@ import { CovalentTextEditorModule } from '@covalent/text-editor';
 import { InlineSVGModule } from 'ng-inline-svg';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { DeviceDetectorModule } from 'ngx-device-detector';
+import { FileDropModule } from 'ngx-file-drop';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MarkdownModule } from 'ngx-markdown';
 import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
@@ -88,6 +89,7 @@ import { SessionRedirectComponent } from './session-redirect/session-redirect.co
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 
 @NgModule({
   declarations: [
@@ -134,7 +136,8 @@ import { UserAdminComponent } from './user-admin/user-admin.component';
     SearchComponent,
     SessionRedirectComponent,
     TreeSelectComponent,
-    UserAdminComponent
+    UserAdminComponent,
+    FileUploadComponent
   ],
   imports: [
     AppRoutingModule,
@@ -144,6 +147,7 @@ import { UserAdminComponent } from './user-admin/user-admin.component';
     CommonModule,
     CovalentTextEditorModule,
     DeviceDetectorModule.forRoot(),
+    FileDropModule,
     FlexLayoutModule,
     HttpClientModule,
     InfiniteScrollModule,

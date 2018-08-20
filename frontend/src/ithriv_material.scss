@@ -213,4 +213,36 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
   .mat-tab-body-content {
     background-color: mat-color($primary, 50);
   }
+
+  file-drop {
+    #fileQueueContainer {
+      width: 400px;
+    }
+
+    .file-upload {
+      background-color: #DDDDDD;
+      border: 1px solid #DDDDDD;
+      border-radius: 50%;
+      height: 400px;
+      width: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+
+      #dropZoneInstructions {
+        color: #999999;
+        text-align: center;
+
+        mat-icon {
+          font-size: 128px;
+          width: 128px;
+          height: 128px;
+        }
+      }
+    }
+  }
+
+
 }
+
