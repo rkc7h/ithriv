@@ -9,6 +9,7 @@ import {CategoryResource} from '../../category-resource';
 import {Icon} from '../../icon';
 import {Institution} from '../../institution';
 import {Resource} from '../../resource';
+import {ResourceAttachment} from '../../resource-attachment';
 import {ResourceCategory} from '../../resource-category';
 import {ResourceQuery} from '../../resource-query';
 import {ResourceType} from '../../resourceType';
@@ -42,6 +43,9 @@ export class ResourceApiService {
     availability: '/api/availability/<id>',
     resourceCategoryList: '/api/resource_category',
     resourceCategory: '/api/resource_category/<id>',
+    resourceAttachment: '/api/resource/attachment/<id>',
+    resourceAttachmentList: '/api/resource/attachment',
+    attachmentByResource: '/api/resource/<resource_id>/attachment',
     iconList: '/api/icon',
     icon: '/api/icon/<id>',
     favoriteList: '/api/favorite',
@@ -248,6 +252,42 @@ export class ResourceApiService {
   /** deleteResource */
   deleteResource(resource: Resource): Observable<any> {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getResourceAttachments */
+  getResourceAttachments(): Observable<ResourceAttachment[]> {
+    return this.httpClient.get<ResourceAttachment[]>(this.apiRoot + this.endpoints.resourceAttachmentList)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getResourceAttachment */
+  getResourceAttachment(id: Number): Observable<ResourceAttachment> {
+    return this.httpClient.get<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${id}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getAttachmentsByResources */
+  getAttachmentsByResources(resource: Resource): Observable<ResourceAttachment[]> {
+    return this.httpClient.get<ResourceAttachment[]>(this.apiRoot + resource._links.attachments)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** updateResourceAttachment */
+  updateResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
+    return this.httpClient.put<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${attachment.id}`, attachment)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** addResourceAttachment */
+  addResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
+    return this.httpClient.post<ResourceAttachment>(this.apiRoot + this.endpoints.resourceAttachmentList, attachment)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** deleteResourceAttachment */
+  deleteResourceAttachment(attachment: ResourceAttachment): Observable<any> {
+    return this.httpClient.delete<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${attachment.id}`)
       .pipe(catchError(this.handleError));
   }
 
