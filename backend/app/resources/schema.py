@@ -7,6 +7,7 @@ from app.model.category import Category
 from app.model.icon import Icon
 from app.model.institution import ThrivInstitution
 from app.model.resource import ThrivResource
+from app.model.resource_attachment import ResourceAttachment
 from app.model.resource_category import ResourceCategory
 from app.model.search import Filter, Search
 from app.model.type import ThrivType
@@ -81,12 +82,18 @@ class CategoriesOnResourceSchema(ModelSchema):
     })
 
 
+class ResourceAttachmentSchema(ModelSchema):
+    class Meta:
+        model = ResourceAttachment
+        fields = ('id', 'name', 'url')
+
+
 class ThrivResourceSchema(ModelSchema):
     class Meta:
         model = ThrivResource
         fields = ('id', 'name', 'description', 'last_updated', 'owner',
                   'website', 'cost', 'institution_id', 'type_id', 'type',
-                  'institution', 'availabilities', 'approved',
+                  'institution', 'availabilities', 'approved', 'attachments',
                   'contact_email', 'contact_phone', 'contact_notes',
                   '_links', 'favorites', 'favorite_count', 'resource_categories')
     id = fields.Integer(required=False, allow_none=True)
@@ -106,18 +113,17 @@ class ThrivResourceSchema(ModelSchema):
     availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
     favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
     resource_categories = fields.Nested(CategoriesOnResourceSchema(), many=True, dump_only=True)
+    attachments = fields.Nested(ResourceAttachmentSchema(), many=True, dump_only=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.resourceendpoint', id='<id>'),
         'collection': ma.URLFor('api.resourcelistendpoint'),
         'institution': ma.UrlFor('api.institutionendpoint', id='<institution_id>'),
         'type': ma.UrlFor('api.typeendpoint', id='<type_id>'),
         'categories': ma.UrlFor('api.categorybyresourceendpoint', resource_id='<id>'),
-        'availability': ma.UrlFor('api.resourceavailabilityendpoint', resource_id='<id>')
+        'availability': ma.UrlFor('api.resourceavailabilityendpoint', resource_id='<id>'),
+        'attachments': ma.UrlFor('api.resourceattachmentlistendpoint', resource_id='<id>')
     },
         dump_only=True)
-
-
-
 
 
 class CategorySchema(ModelSchema):
