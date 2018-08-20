@@ -53,14 +53,6 @@ class ResourceAttachmentListEndpoint(flask_restful.Resource):
         request_data = request.get_json()
         try:
             load_result = self.attachmentSchema.load(request_data).data
-            if 'attachment' in request.files:
-                file = request.files.get('attachment')
-                load_result.url = file_server.save_resource_attachment(file, load_result, file.content_type)
-            else:
-                json_data = request.get_json()
-                load_result, errors = self.attachmentSchema.load(json_data, instance=load_result)
-                if errors:
-                    raise RestException(RestException.INVALID_OBJECT, details=errors)
             db.session.add(load_result)
             db.session.commit()
             return self.attachmentSchema.dump(load_result)
