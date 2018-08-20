@@ -636,8 +636,17 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/resource', data=json.dumps(ThrivResourceSchema().dump(resource).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(attachment.id, response["attachments"][0]["id"])
-        self.assertEquals("Cool Places", response["attachments"][0]["name"])
+        self.assertEqual(attachment.id, response["attachments"][0]["id"])
+        self.assertEqual("Cool Places", response["attachments"][0]["name"])
+
+    def test_remove_attachment_from_resource(self):
+        self.test_add_resource_attachment()
+        rv = self.app.delete('/api/resource/attachment/%i' % 1)
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/resource/%i/category' % 1, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(0, len(response))
 
     def test_get_resource_by_category(self):
         c = self.construct_category()
