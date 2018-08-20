@@ -29,7 +29,7 @@ class ResourceAttachmentEndpoint(flask_restful.Resource):
         updated = attachment
         if 'attachment' in request.files:
             file = request.files.get('attachment')
-            updated.url = file_server.save_attachment(file, attachment, file.content_type)
+            updated.url = file_server.save_resource_attachment(file, attachment, file.content_type)
         else:
             json_data = request.get_json()
             updated, errors = self.schema.load(json_data, instance=attachment)
@@ -47,15 +47,32 @@ class ResourceAttachmentListEndpoint(flask_restful.Resource):
 
     def get(self):
         attachments = db.session.query(ResourceAttachment).all()
-        return self.attachmentSchema.dump(attachments, many=True)
+        return self.attachmentsSchema.dump(attachments)
 
     def post(self):
         request_data = request.get_json()
         try:
             load_result = self.attachmentSchema.load(request_data).data
+            if 'attachment' in request.files:
+                file = request.files.get('attachment')
+                load_result.url = file_server.save_resource_attachment(file, load_result, file.content_type)
+            else:
+                json_data = request.get_json()
+                load_result, errors = self.attachmentSchema.load(json_data, instance=load_result)
+                if errors:
+                    raise RestException(RestException.INVALID_OBJECT, details=errors)
             db.session.add(load_result)
             db.session.commit()
             return self.attachmentSchema.dump(load_result)
         except ValidationError:
             raise RestException(RestException.INVALID_OBJECT,
                                 details=load_result.errors)
+
+
+class AttachmentByResourceEndpoint(flask_restful.Resource):
+
+    schema = ResourceAttachmentSchema(many=True)
+
+    def get(self, resource_id):
+        attachments = db.session.query(ResourceAttachment).filter_by(resource_id=resource_id).all()
+        return self.schema.dump(attachments)

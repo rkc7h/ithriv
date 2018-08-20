@@ -10,12 +10,13 @@ import string
 from app.email_service import TEST_MESSAGES
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
-from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema, UserSchema
+from app.resources.schema import ThrivResourceSchema, CategorySchema, IconSchema, ThrivTypeSchema, UserSchema, ResourceAttachmentSchema
 import unittest
 import json
 from app.model.availability import Availability
 from app.model.category import Category
 from app.model.resource import ThrivResource
+from app.model.resource_attachment import ResourceAttachment
 from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
 from app.model.icon import Icon
@@ -585,6 +586,59 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(3, len(response))
 
+    def test_list_resource_attachments(self):
+        r = self.construct_resource()
+        ra1 = ResourceAttachment(name="Happy Coconuts", resource_id=r.id)
+        ra2 = ResourceAttachment(name="Fly on Strings", resource_id=r.id)
+        ra3 = ResourceAttachment(name="Between two Swallows", resource_id=r.id)
+        ra4 = ResourceAttachment(name="otherwise unladen", resource_id=r.id)
+        db.session.add_all([ra1, ra2, ra3, ra4])
+        db.session.commit()
+        rv = self.app.get('/api/resource/%i/attachment' % r.id, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(4, len(response))
+
+    def test_update_resource_attachments(self):
+        r = self.construct_resource()
+        ra = ResourceAttachment(name="Happy Coconuts", resource_id=r.id)
+        db.session.add(ra)
+        db.session.commit()
+        ra.name = "Happier Coconuts"
+        rv = self.app.put('/api/resource/attachment/%i' % ra.id, data=json.dumps(ResourceAttachmentSchema().dump(ra).data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals("Happier Coconuts", response["name"])
+
+    def test_upload_resource_attachments(self):
+        resource = self.construct_resource()
+        ra = {'name': 'Happy Coconuts', 'resource_id': resource.id}
+        rv = self.app.post('/api/resource/attachment', data=json.dumps(ResourceAttachmentSchema().dump(ra).data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        attachment_id = response["id"]
+
+        rv = self.app.put('/api/resource/attachment/%i' % attachment_id,
+                          data=dict(
+                              attachment=(BytesIO(b"hi everyone"), 'test.svg'),
+                          ))
+        self.assertSuccess(rv)
+        data = json.loads(rv.get_data(as_text=True))
+        self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/resource/attachment/%i.pdf" % attachment_id, data["url"])
+
+    def test_add_resource_attachment(self):
+        resource = self.construct_resource()
+        db.session.add(resource)
+        attachment = ResourceAttachment(name="Cool Places", resource_id=resource.id)
+        db.session.add(attachment)
+        db.session.commit()
+        attachment.resource_id = resource.id
+        rv = self.app.post('/api/resource', data=json.dumps(ThrivResourceSchema().dump(resource).data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEquals(attachment.id, response["attachments"][0]["id"])
+        self.assertEquals("Cool Places", response["attachments"][0]["name"])
+
     def test_get_resource_by_category(self):
         c = self.construct_category()
         r = self.construct_resource()
@@ -612,8 +666,6 @@ class TestCase(unittest.TestCase):
         self.assertEquals(r.id, response[0]["id"])
         self.assertEquals(2, len(response[0]["resource"]["resource_categories"]))
         self.assertEquals("c1", response[0]["resource"]["resource_categories"][0]["category"]["name"])
-
-
 
     def test_category_resource_count(self):
         c = self.construct_category()
