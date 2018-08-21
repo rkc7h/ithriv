@@ -1,19 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { NodeOptions } from '../node-options';
 import { hexColorToRGBA } from '../shared/color';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { zoomTransition } from '../shared/animations';
 
 @Component({
   selector: 'app-category-network-view',
   templateUrl: './category-network-view.component.html',
-  styleUrls: ['./category-network-view.component.scss']
+  styleUrls: ['./category-network-view.component.scss'],
+  animations: [zoomTransition()]
 })
 export class CategoryNetworkViewComponent implements OnInit {
   isDataLoaded = false;
-  transitionClass = '';
+
+  // @HostBinding('@zoomTransition')
+  transitionClass = 'fade-enter';
 
   categoryId: number;
   category: Category;
@@ -42,7 +46,10 @@ export class CategoryNetworkViewComponent implements OnInit {
   ) {
     this.route.params.subscribe(params => {
       this.isDataLoaded = false;
-      this.categoryId = params['category'];
+
+      if (params && params.hasOwnProperty('category')) {
+        this.categoryId = params.category;
+      }
       this.loadRootCategories();
     });
   }
@@ -50,7 +57,13 @@ export class CategoryNetworkViewComponent implements OnInit {
   loadRootCategories() {
     this.api.getCategories().subscribe(cats => {
       this.allCategories = cats;
-      this.loadCategory(this.categoryId);
+
+      if (this.categoryId) {
+        this.loadCategory(this.categoryId);
+      } else {
+        this.isDataLoaded = true;
+        this.transitionClass = 'fade-enter';
+      }
     });
   }
 
@@ -58,6 +71,17 @@ export class CategoryNetworkViewComponent implements OnInit {
     this.api.getCategory(categoryId).subscribe(
       (category) => {
         this.category = category;
+
+        this.route.queryParams.subscribe(queryParams => {
+          if (queryParams.hasOwnProperty('from')) {
+            const fromLevel = parseInt(queryParams.from, 10);
+            if (this.category.level > fromLevel) {
+              this.transitionClass = 'zoom-in-enter';
+            } else if (this.category.level < fromLevel) {
+              this.transitionClass = 'zoom-out-enter';
+            }
+          }
+        });
 
         // Set page title
         const currentTitle = this.titleService.getTitle();
@@ -128,10 +152,11 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   goCategory(c: Category) {
+    const fromLevel = this.category ? this.category.level : 0;
     if (c.level === 2) {
-      this.router.navigate(['category', c.id]);
+      this.router.navigate(['category', c.id], { queryParams: { from: fromLevel } });
     } else {
-      this.router.navigate(['category', c.id, 'network']);
+      this.router.navigate(['category', c.id, 'network'], { queryParams: { from: fromLevel } });
     }
   }
 
@@ -143,23 +168,24 @@ export class CategoryNetworkViewComponent implements OnInit {
     return `translate(${x}, ${y})`;
   }
 
-  translateByIndex(i: number) {
-    const padding = this.nodeSpacing / 2;
-    const xOffset = padding + i * (this.navRadius * 2 + this.nodeSpacing);
+  translateByIndex(i: number, spaceMultiplier = 1) {
+    const padding = this.nodeSpacing / 2 * spaceMultiplier;
+    const xOffset = padding + i * (this.navRadius * 2 + this.nodeSpacing * spaceMultiplier);
     const yOffset = this.navRadius + padding;
     return this.translate(xOffset, yOffset);
   }
 
   translateTo(s: string, node: Category, i: number) {
+    const yOffset = this.category ? 0 : 100;
     switch (s) {
       case 'origin':
-        return `translate(0, 0)`;
+        return `translate(0, ${yOffset})`;
       case 'top-left':
-        return this.translate(-this.layoutWidth / 2, -this.layoutHeight / 2);
+        return this.translate(-this.layoutWidth / 2, -this.layoutHeight / 2 + yOffset);
       case 'top-right':
-        return this.translate(this.layoutWidth / 2, -this.layoutHeight / 2);
+        return this.translate(this.layoutWidth / 2, -this.layoutHeight / 2 + yOffset);
       case 'node':
-        return this.translate(this.nodeLineLength(node, i) + this.nodeRadius, 0);
+        return this.translate(this.nodeLineLength(node, i) + this.nodeRadius, yOffset);
       default:
         break;
     }
@@ -170,8 +196,14 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   isSelectedCategory(node: Category) {
-    if (node.id === this.category.id) { return true; }
-    if (this.category.parent && (node.id === this.category.parent.id)) { return true; }
+    console.log('=== isSelectedCategory ===');
+    console.log('node', node);
+
+
+    if (this.category) {
+      if (node.id === this.category.id) { return true; }
+      if (this.category.parent && (node.id === this.category.parent.id)) { return true; }
+    }
   }
 
   siblings(node: Category): Category[] {

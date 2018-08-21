@@ -14,31 +14,35 @@ import { ResourceFormComponent } from '../resource-form/resource-form.component'
 import { ResourceComponent } from '../resource/resource.component';
 import { SearchComponent } from '../search/search.component';
 import { SessionRedirectComponent } from '../session-redirect/session-redirect.component';
-import {UserAdminComponent} from '../user-admin/user-admin.component';
+import { UserAdminComponent } from '../user-admin/user-admin.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'admin/new_user', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
+  { path: 'admin/users', component: UserAdminComponent, data: { title: 'User Administration' } },
+  { path: 'admin/users/:id', component: ProfileComponent, data: { title: 'User Administration - Edit User' } },
+  { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
+  { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
+  { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
+  { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
+  { path: 'category/:category/network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
+  { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },
   { path: 'home', component: HomeComponent, data: { title: 'Welcome to iThriv' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
   { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
+  { path: 'network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
+  { path: 'profile', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
   { path: 'register', component: LoginComponent, data: { title: 'Sign up for iThriv', hideHeader: true } },
-  { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },
-  { path: 'reset_password/:email_token', component: ResetPasswordComponent,
-            data: { title: 'Reset your iThriv password', hideHeader: true } },
-  { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
-  { path: 'search', component: SearchComponent, data: { title: 'Search' } },
-  { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
-  { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
-  { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
-  { path: 'category/:category/network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
-  { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
+  {
+    path: 'reset_password/:email_token', component: ResetPasswordComponent,
+    data: { title: 'Reset your iThriv password', hideHeader: true }
+  },
   { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
   { path: 'resource/:resource/edit', component: ResourceFormComponent, data: { title: 'Edit Resource' } },
   { path: 'resource/add/:category', component: ResourceFormComponent, data: { title: 'Add Resource' } },
+  { path: 'search', component: SearchComponent, data: { title: 'Search' } },
+  { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
   { path: 'session/:token', component: SessionRedirectComponent, data: { title: 'Logging in...' } },
-  { path: 'admin/users', component: UserAdminComponent, data: { title: 'User Administration' } },
-  { path: 'admin/users/:id', component: ProfileComponent, data: { title: 'User Administration - Edit User' } },
-  { path: 'admin/new_user', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
   { path: '**', component: NotFoundComponent }
 ];
 

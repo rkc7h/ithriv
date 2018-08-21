@@ -1,9 +1,30 @@
-<div class="mat-typography resource">
-  <div *ngIf="resource" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1em" fxLayoutAlign="center">
+<div
+  class="mat-typography resource"
+  [@zoomTransition]="transitionState"
+>
+  <div
+    class="category-color"
+    [appCategoryColorBorder]="resource"
+  ></div>
+  <div
+    *ngIf="resource"
+    fxLayout="row"
+    fxLayout.xs="column"
+    fxLayoutWrap
+    fxLayoutGap="1em"
+    fxLayoutAlign="center"
+  >
     <div fxFlex="75%">
       <h1 class="mat-display-2">{{resource.name}}</h1>
       <markdown>{{resource.description}}</markdown>
-      <div class="container" fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="center" fxLayoutGap="10px" fxLayoutGap.xs="0">
+      <div
+        class="container"
+        fxLayout="row wrap"
+        fxLayout.xs="column"
+        fxLayoutAlign="center"
+        fxLayoutGap="10px"
+        fxLayoutGap.xs="0"
+      >
         <img src="/assets/institutions/{{resource.institution.name}}.png" />
       </div>
     </div>
@@ -16,15 +37,28 @@
         <mat-list dense>
           <mat-list-item *ngIf="resource.type">
             <h4 mat-line>Type</h4>
-            <a mat-line href="#" (click)="goResourceType($event)">{{resource.type.name}}</a>
+            <a
+              mat-line
+              href="#"
+              (click)="goResourceType($event)"
+            >{{resource.type.name}}</a>
           </mat-list-item>
           <mat-list-item *ngIf="resource.institution">
             <h4 mat-line>Home Institution</h4>
-            <a mat-line href="#" (click)="goInstitution($event, resource.institution)">{{resource.institution.name}}</a>
+            <a
+              mat-line
+              href="#"
+              (click)="goInstitution($event, resource.institution)"
+            >{{resource.institution.name}}</a>
           </mat-list-item>
           <mat-list-item *ngIf="resource.availabilities">
             <h4 mat-line>Institutions with access</h4>
-            <a *ngFor="let institution of getAvailableInstitutions()" mat-line href="#" (click)="goInstitution($event, institution)">{{institution.name}}</a>
+            <a
+              *ngFor="let institution of getAvailableInstitutions()"
+              mat-line
+              href="#"
+              (click)="goInstitution($event, institution)"
+            >{{institution.name}}</a>
           </mat-list-item>
           <mat-list-item *ngIf="resource.cost">
             <h4 mat-line>Cost Type</h4>
@@ -32,21 +66,39 @@
           </mat-list-item>
           <mat-list-item *ngIf="resource.contact_notes || resource.contact_email || resource.contact_phone">
             <h4 mat-line>Contact</h4>
-            <p mat-line *ngIf="resource.contact_notes">{{resource.contact_notes}}</p>
-            <p mat-line *ngIf="resource.contact_email">
+            <p
+              mat-line
+              *ngIf="resource.contact_notes"
+            >{{resource.contact_notes}}</p>
+            <p
+              mat-line
+              *ngIf="resource.contact_email"
+            >
               <a href="mailto://{{resource.contact_email}}">{{resource.contact_email}}</a>
             </p>
-            <p mat-line *ngIf="resource.contact_phone">{{resource.contact_phone}}</p>
+            <p
+              mat-line
+              *ngIf="resource.contact_phone"
+            >{{resource.contact_phone}}</p>
           </mat-list-item>
           <mat-list-item *ngIf="categories">
             <h4 mat-line>Categories</h4>
-            <a *ngFor="let rc of categories" mat-line href="#" (click)="goCategory($event, rc.category)">{{rc.category.name}}</a>
+            <a
+              *ngFor="let rc of categories"
+              mat-line
+              href="#"
+              (click)="goCategory($event, rc.category)"
+            >{{rc.category.name}}</a>
           </mat-list-item>
           <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
         </mat-list>
       </mat-card-content>
       <mat-card-actions>
-        <button *ngIf="resource.website" mat-button (click)="goWebsite($event)">VISIT WEBSITE</button>
+        <button
+          *ngIf="resource.website"
+          mat-button
+          (click)="goWebsite($event)"
+        >VISIT WEBSITE</button>
         <div fxFlex></div>
         <app-edit-resource-button [resource]="resource"></app-edit-resource-button>
       </mat-card-actions>

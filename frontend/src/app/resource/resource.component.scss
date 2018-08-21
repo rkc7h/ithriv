@@ -5,8 +5,18 @@
 
 
 .resource {
-  border-top: 4px solid mat-color($uva-accent, 500);
   padding: 2em;
+  position: relative;
+
+  .category-color {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background-size: 100% 10px;
+    background-repeat:no-repeat;
+  }
 
   h1 {
     color: mat-color($ithriv-primary, 800, 1.0);

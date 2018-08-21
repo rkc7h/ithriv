@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Favorite } from '../favorite';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import {User} from '../user';
+import { User } from '../user';
 
 @Component({
   selector: 'app-favorite-resource-button',
@@ -52,5 +52,23 @@ export class FavoriteResourceButtonComponent implements OnInit {
         this.resource.favorites.splice(index, 1);
       }
     });
+  }
+
+  handleClick($event) {
+    $event.preventDefault();
+    $event.stopPropagation();
+    if (this.userFavorite()) {
+      this.deleteFavorite();
+    } else {
+      this.addFavorite();
+    }
+  }
+
+  instructions(): string {
+    if (this.userFavorite()) {
+      return 'Delete Resource from Favorites';
+    } else {
+      return 'Add Resource to Favorites';
+    }
   }
 }

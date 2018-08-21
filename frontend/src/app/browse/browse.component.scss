@@ -3,162 +3,193 @@
 @import '../../ithriv_material';
 @include ithriv-theme($ithriv-theme);
 
-.header {
-  height: 200px;
-  min-height: 200px;
-  max-height: 200px;
-  margin: 0 0 0 0 ;
-  padding: 20px 0 0 20px;
-  color: #fff;
-  position: relative;
-
-  .bg-img {
-    content: '';
-  	position: absolute;
-  	top: 0;
-  	right: 0;
-  	bottom: 0;
-    left: 0;
-    background-size: 50% auto;
-    background-repeat: no-repeat;
-    background-position: right center;
-    z-index: -2;
-  }
-
-  .gradient-overlay {
-    content: '';
-  	position: absolute;
-  	top: 0;
-  	right: 0;
-  	bottom: 0;
-    left: 0;
-    z-index: -1;
-  }
-
-  h1.mat-display-1 {
-    padding: 0;
-    margin: 0;
-    text-transform: capitalize;
-    background-color: transparent;
+#browse-top-level, #browse {
+  .header {
+    height: 200px;
+    min-height: 200px;
+    max-height: 200px;
+    margin: 0 0 0 0 ;
+    padding: 20px 0 0 20px;
     color: white;
-    z-index: 100;
-    font-weight: bolder;
-    max-width: 400px;
     position: relative;
+
+    .bg-img {
+      content: '';
+    	position: absolute;
+    	top: 0;
+    	right: 0;
+    	bottom: 0;
+      left: 0;
+      background-size: 50% auto;
+      background-repeat: no-repeat;
+      background-position: right center;
+      z-index: -2;
+    }
+
+    .gradient-overlay {
+      content: '';
+    	position: absolute;
+    	top: 0;
+    	right: 0;
+    	bottom: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    h1.mat-display-1 {
+      padding: 0;
+      margin: 0;
+      text-transform: capitalize;
+      background-color: transparent;
+      color: white;
+      z-index: 100;
+      font-weight: bolder;
+      max-width: 400px;
+      position: relative;
+
+      app-edit-category-button {
+        position: absolute;
+        top: -12px;
+        right: 50px;
+      }
+
+      app-add-category-button {
+        position: absolute;
+        top: -12px;
+        right: 0px;
+      }
+    }
+
+    markdown, markdown p {
+      max-width: 400px;
+      color: white;
+      z-index: 100;
+    }
+  }
+}
+
+#browse-top-level {
+  .header {
+    height: 140px;
+    min-height: 140px;
+    max-height: 140px;
+    padding: 2em;
+    margin-bottom: 2em;
+    cursor: pointer;
+  }
+}
+
+#browse {
+  mat-icon.cat-icon-2 {
+    border-width: 6px;
+    border-style: solid;
+    background: #FFF;
+    width: 60px;
+    height: 60px;
+    font-size: 60px;
+    border-radius: 50%;
+    padding: 10px;
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    cursor: pointer;
+
+    &:hover {
+      fill: #FFF;
+    }
+  }
+
+  mat-icon.cat-icon-3 {
+    background-color: #FFF;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #FFF;
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    border-radius: 4px;
+    padding: 10px;
+  }
+
+  .sub-category {
+    border-top-width: 6px;
+    border-top-style: solid;
+    margin: 3em;
+    padding-bottom: 1.5em;
+    background-color: #EEEEEE;
+    position: relative;
+    border-radius: 2px;
+    @include mat-elevation(1);
+
+    & > h1 {
+      font-weight: bolder;
+    }
 
     app-edit-category-button {
       position: absolute;
-      top: -12px;
-      right: 50px;
+      top: 6px;
+      right: 120px;
     }
 
     app-add-category-button {
       position: absolute;
-      top: -12px;
-      right: 0px;
-    }
-  }
-}
-
-#browse .header markdown {
-  max-width: 400px;
-  color: #fff;
-  z-index: 100;
-}
-
-mat-icon.cat-icon-2 {
-  border-width: 6px;
-  border-style: solid;
-  background: #FFF;
-  width: 60px;
-  height: 60px;
-  font-size: 60px;
-  border-radius: 50%;
-  padding: 10px;
-  position: absolute;
-  top: -30px;
-  right: -30px;
-  cursor: pointer;
-
-  &:hover {
-    fill: #FFF;
-  }
-}
-
-mat-icon.cat-icon-3 {
-  background-color: #FFF;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  color: #FFF;
-  width: 40px;
-  height: 40px;
-  font-size: 40px;
-  border-radius: 4px;
-  padding: 10px;
-}
-
-.sub-category {
-  border-top-width: 6px;
-  border-top-style: solid;
-  margin: 3em;
-  padding-bottom: 1.5em;
-  background-color: #EEEEEE;
-  position: relative;
-  border-radius: 2px;
-  @include mat-elevation(1);
-
-  & > h1 {
-    font-weight: bolder;
-  }
-
-  app-edit-category-button {
-    position: absolute;
-    top: 6px;
-    right: 120px;
-  }
-
-  app-add-category-button {
-    position: absolute;
-    top: 6px;
-    right: 70px;
-  }
-}
-
-mat-card.sub-sub-category {
-  min-height: 90px;
-  cursor: pointer;
-  margin: 10px;
-
-  &:hover {
-    outline: 1px solid mat-color($ithriv-primary, 200, 1);
-    background-color: mat-color($ithriv-primary, 100, 1);
-  }
-
-  &:active {
-    outline: 1px solid mat-color($ithriv-accent, 200, 1);
-    background-color: mat-color($ithriv-accent, 100, 1);
-  }
-
-  mat-card-header {
-    padding: 1em;
-
-    mat-card-title {
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    div.mat-card-avatar {
-      width: 60px;
-      height: 60px;
-      font-size: 60px;
+      top: 6px;
+      right: 70px;
     }
   }
 
-  app-edit-category-button {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-  }
+  mat-card.sub-sub-category {
+    display:flex;
+    flex-direction: column;
+    cursor: pointer;
+    margin: 10px;
+    position: relative;
 
+    &:hover {
+      outline: 1px solid mat-color($ithriv-primary, 200, 1);
+      background-color: mat-color($ithriv-primary, 100, 1);
+    }
+
+    &:active {
+      outline: 1px solid mat-color($ithriv-accent, 200, 1);
+      background-color: mat-color($ithriv-accent, 100, 1);
+    }
+
+    mat-card-header {
+      padding: 1em;
+      display: flex;
+      flex-direction: row;
+      flex-shrink: 0;
+
+      mat-card-title {
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      div.mat-card-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 60px;
+      }
+    }
+
+    mat-card-content {
+      flex-grow: 1;
+      overflow: auto;
+    }
+
+    mat-card-footer {
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      padding: 32px 46px;
+    }
+
+    app-edit-category-button {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+    }
+  }
 }

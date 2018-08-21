@@ -1,21 +1,31 @@
-<div class="container mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10px" fxLayoutAlign="center center">
+<div
+  class="container mat-typography"
+  fxLayout="row"
+  fxLayout.xs="column"
+  fxLayoutWrap
+  fxLayoutGap="10px"
+  fxLayoutAlign="center center"
+>
   <div fxFlex="50%">
     <app-logo></app-logo>
-    <mat-tab-group mat-stretch-tabs dynamicHeight [selectedIndex]="selectedTabIndex">
+    <mat-tab-group
+      mat-stretch-tabs
+      dynamicHeight
+      [selectedIndex]="selectedTabIndex"
+    >
       <mat-tab label="Log in">
         <app-login-form></app-login-form>
       </mat-tab>
-      <mat-tab  label="Help">
+      <mat-tab label="Help">
         <div class="help">
-          <p>Most features available on the iThriv portal do not currently require an account.  Just
-          select your institution when prompted, and we will provide you with lists of resources
-          that are specific to you.</p>
-          <p>We are working with partnering institutions to enable single-signon authentication
-          for users across a number of institutions.  Over time more and more features will become
-          available, and logging into the system will be more important.</p>
-          <p>Please contact <a href="mailto:support@ithriv.org">Support@IThriv.org</a> if you would
-            like additional information.</p>
-        </div>        <!--
+          <p>Most features available on the iThriv portal do not currently require an account. Just select your institution
+            when prompted, and we will provide you with lists of resources that are specific to you.</p>
+          <p>We are working with partnering institutions to enable single-signon authentication for users across a number
+            of institutions. Over time more and more features will become available, and logging into the system will be
+            more important.</p>
+          <p>Please contact <a href="mailto:support@ithriv.org">Support@IThriv.org</a> if you would like additional information.</p>
+        </div>
+        <!--
         <app-register-form></app-register-form>
         -->
       </mat-tab>
