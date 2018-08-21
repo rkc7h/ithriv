@@ -3,9 +3,7 @@
 @import '../../ithriv_material';
 @include ithriv-theme($ithriv-theme);
 
-.mat-toolbar {
-  color: white;
-
+mat-toolbar {
   mat-toolbar-row {
     a {
       text-decoration: none;
@@ -26,6 +24,7 @@
   }
 
   .menubar {
+    color: white;
     height: 30px;
     font-size: 12px;
     background-color: mat-color($ithriv-primary, 900, 1.0);
@@ -44,6 +43,13 @@
       padding-bottom: 16px;
     }
 
+    button.mat-stroked-button {
+      border-width: 1px;
+      border-style: solid;
+      border-color: mat-color($ithriv-primary, 800, 1.0);
+      color: mat-color($ithriv-primary, 800, 1.0);
+    }
+
     img {
       &.logomark {
         height: 48px;
@@ -56,8 +62,8 @@
       }
 
       &.logo-horizontal {
-        height: 104px;
-        max-height: 104px;
+        height: 40px;
+        max-height: 40px;
         vertical-align: middle;
 
         @media screen and (max-width: 720px) {
@@ -86,10 +92,22 @@
   .navigation, .secondary-nav {
     background: white;
 
-    img.logomark {
-      height: 24px;
-      max-height: 24px;
-      vertical-align: middle;
+    img {
+      &.logomark {
+        height: 24px;
+        max-height: 24px;
+        vertical-align: middle;
+      }
+
+      &.logo-horizontal {
+        height: 40px;
+        max-height: 40px;
+        vertical-align: middle;
+
+        @media screen and (max-width: 720px) {
+          height: 40px;
+        }
+      }
     }
 
     h1 {
@@ -103,6 +121,18 @@
 
   .secondary-nav {
     @include mat-elevation(1);
+
+    mat-button-toggle-group {
+      mat-button-toggle {
+        color: mat-color($ithriv-primary, 800, 1.0);
+        background-color: #CCC;
+
+        &.mat-button-toggle-checked {
+          color: white;
+          background-color: mat-color($ithriv-primary, 800, 1.0);
+        }
+      }
+    }
   }
 
 }

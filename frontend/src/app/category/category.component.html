@@ -1,43 +1,98 @@
-<div *ngIf="isDataLoaded" fxLayout="column" class="container mat-typography" fxLayoutGap="20px">
-  <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="20px">
-    <div *ngIf="category.parent && category.parent.icon_id" class="breadcrumbs" fxFlex="calc(15% - 20px)">
-      <app-category-tile [category]="category.parent.parent"></app-category-tile>
-      <div class="breadcrumb breadcrumb-parent" (click)="goMode($event, category.parent)" [ngStyle]="category.parent.hover ? {'background-color': category.color, 'border-color': category.color, 'color': 'white'} : {'color': category.color, 'border-color': category.color}"
-        (mouseover)="category.parent.hover=true" (mouseleave)="category.parent.hover=false">
-        <a href="#" (click)="goMode($event, category.parent)">
-          <mat-icon svgIcon="ithriv_{{category.parent.icon_id}}" [ngStyle]="{'color': category.color}"></mat-icon>
+<div
+  *ngIf="isDataLoaded"
+  fxLayout="column"
+  class="container mat-typography"
+  fxLayoutGap="20px"
+  [@zoomTransition]="transitionClass"
+>
+  <div
+    fxLayout="row wrap"
+    fxLayoutAlign="start start"
+    fxLayoutGap="20px"
+  >
+    <div
+      *ngIf="category.parent && category.parent.icon_id"
+      class="breadcrumbs"
+      fxFlex="calc(15% - 20px)"
+    >
+      <app-category-tile
+        [category]="category.parent.parent"
+        [fromCategory]="category"
+        (click)="goCategory($event, category.parent.parent)"
+      ></app-category-tile>
+      <div
+        class="breadcrumb breadcrumb-parent"
+        (click)="goCategory($event, category.parent)"
+        [ngStyle]="category.parent.hover ? {'background-color': category.color, 'border-color': category.color, 'color': 'white'} : {'color': category.color, 'border-color': category.color}"
+    
+        (mouseover)="category.parent.hover=true"
+        (mouseleave)="category.parent.hover=false"
+      >
+        <a
+          href="#"
+          (click)="goCategory($event, category.parent)"
+        >
+          <mat-icon
+            svgIcon="ithriv_{{category.parent.icon_id}}"
+            [ngStyle]="{'color': category.color}"
+          ></mat-icon>
         </a>
       </div>
-      <div class="breadcrumb breadcrumb-self" [ngStyle]="{'border-color': category.color}">
+      <div
+        class="breadcrumb breadcrumb-self"
+        [ngStyle]="{'border-color': category.color}"
+      >
         <div class="breadcrumb-self-name">
           {{category.name}}
         </div>
       </div>
     </div>
 
-    <div class="content" fxFlex="calc(85% - 20px)">
+    <div
+      class="content"
+      fxFlex="calc(85% - 20px)"
+    >
       <div fxLayout="column">
-        <h1 class="mat-display-2" [ngStyle]="{'color': category.color}">
+        <h1
+          class="mat-display-2"
+          [ngStyle]="{'color': category.color}"
+        >
           {{category.name}}
         </h1>
         <p>{{category.description}}</p>
         <div fxFlex></div>
         <app-add-resource-button [category]="category"></app-add-resource-button>
       </div>
-      <div *ngIf="getResources()" class="resources">
-        <mat-tab-group mat-stretch-tabs dynamicHeight>
+      <div
+        *ngIf="getResources()"
+        class="resources"
+      >
+        <mat-tab-group
+          mat-stretch-tabs
+          dynamicHeight
+          [ngStyle]="{'background-color': category.color}"
+        >
           <mat-tab label="
-                Resources available to {{getUserName()}}
-                ({{getResources(getInstitutionId()).length}})
-              ">
-            <div class="example-small-box mat-elevation-z4">
-              <app-resource-list [resources]="getResources(getInstitutionId())"></app-resource-list>
+            Resources available to {{getUserName()}}
+            ({{getResources(getInstitutionId()).length}})
+          ">
+            <app-resource-list *ngIf="getResources(getInstitutionId()).length > 0"
+              [resources]="getResources(getInstitutionId())"
+            ></app-resource-list>
+            <div
+              *ngIf="getResources(getInstitutionId()).length === 0"
+              class="please-log-in"
+            >
+              <h2>Please log in to view resources associated with your institution.</h2>
+              <app-login-services></app-login-services>
+              <p>
+                Select your institution to view resources in this category that you have direct access to. To view all resources listed across
+                iTHRIV institutions, select the "View all in category" tab.
+              </p>
             </div>
           </mat-tab>
           <mat-tab label="View all in category ({{getAllResources().length}})">
-            <div class="example-large-box mat-elevation-z4">
-              <app-resource-list [resources]="getAllResources()"></app-resource-list>
-            </div>
+            <app-resource-list [resources]="getAllResources()"></app-resource-list>
           </mat-tab>
         </mat-tab-group>
       </div>

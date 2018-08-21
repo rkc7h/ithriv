@@ -3,7 +3,6 @@
 @import '../node_modules/@angular/material/theming';
 @include mat-core();
 
-
 $mat-blue: (
   50 : #F1F5F7, // Modified, was #e0e6ed
   100 : #b3c1d3,
@@ -134,7 +133,6 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
   }
 
   p {
-    color: #666;
     font-weight: 400;
     max-width: 600px;
   }
@@ -195,5 +193,56 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
     text-decoration: none;
     color: mat-color($ithriv-primary, 800, 1.0);
   }
+
+  .mat-tab-label {
+    background-color: white;
+
+    .mat-tab-label-content {
+      color: black;
+    }
+
+    &.mat-tab-label-active {
+    background-color: transparent;
+
+      .mat-tab-label-content {
+        color: white;
+      }
+    }
+  }
+
+  .mat-tab-body-content {
+    background-color: mat-color($primary, 50);
+  }
+
+  file-drop {
+    #fileQueueContainer {
+      width: 400px;
+    }
+
+    .file-upload {
+      background-color: #DDDDDD;
+      border: 1px solid #DDDDDD;
+      border-radius: 50%;
+      height: 400px;
+      width: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+
+      #dropZoneInstructions {
+        color: #999999;
+        text-align: center;
+
+        mat-icon {
+          font-size: 128px;
+          width: 128px;
+          height: 128px;
+        }
+      }
+    }
+  }
+
+
 }
 

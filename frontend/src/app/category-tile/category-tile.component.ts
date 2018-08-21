@@ -13,6 +13,7 @@ import { hexColorToRGBA } from '../shared/color';
 export class CategoryTileComponent implements OnInit {
   @HostBinding('@fadeTransition')
   @Input() category: Category;
+  @Input() fromCategory: Category;
 
   constructor(private router: Router) { }
 
@@ -21,7 +22,11 @@ export class CategoryTileComponent implements OnInit {
 
   goBrowse($event, category) {
     $event.preventDefault();
-    this.router.navigate(['category', category.id, 'network']);
+    if (this.fromCategory) {
+      this.router.navigate(['category', category.id, 'network'], { queryParams: { from: this.fromCategory.level } });
+    } else {
+      this.router.navigate(['category', category.id, 'network']);
+    }
   }
 
   categoryImageURL() {
