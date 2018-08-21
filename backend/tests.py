@@ -286,9 +286,11 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["_links"]["collection"], '/api/resource')
 
     def test_user_resources_list(self):
+        # Testing that the resource owner is correctly split with ; , or spaces between email addresses
         self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com")
         self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
-        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
+        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com, bigbird@sesamestreet.com")
+        self.construct_resource(name="Snuffy's Balloon Collection", owner="oscar@sesamestreet.com bigbird@sesamestreet.com")
         u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
         u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
 
@@ -299,13 +301,13 @@ class TestCase(unittest.TestCase):
                           headers=self.logged_in_headers(user=u1), follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(2, len(response))
+        self.assertEqual(3, len(response))
 
         rv = self.app.get('/api/session/resource', content_type="application/json",
                           headers=self.logged_in_headers(user=u2), follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(3, len(response))
+        self.assertEqual(4, len(response))
 
         # Testing to see that user-owned resources are not viewable when logged out
         rv = self.app.get('/api/session/resource', content_type="application/json")

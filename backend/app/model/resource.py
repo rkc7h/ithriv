@@ -1,4 +1,5 @@
 import datetime
+import re
 from app.model.availability import Availability
 from app.model.favorite import Favorite
 from app import db
@@ -29,3 +30,6 @@ class ThrivResource(db.Model):
 
     def favorite_count(self):
         return len(self.favorites)
+
+    def owners(self):
+        return re.split('; |, | ', self.owner)

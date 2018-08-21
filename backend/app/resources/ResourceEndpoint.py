@@ -76,7 +76,6 @@ class UserResourceEndpoint(flask_restful.Resource):
         resources = []
         all_resources = db.session.query(ThrivResource).all()
         for r in all_resources:
-            owners = r.owner.split("; ")
-            if g.user.email in owners:
+            if g.user.email in r.owners():
                 resources.append(r)
         return schema.dump(resources)
