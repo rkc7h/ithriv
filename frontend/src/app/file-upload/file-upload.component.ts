@@ -1,14 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { UploadEvent, UploadFile, FileSystemDirectoryEntry, FileSystemFileEntry } from 'ngx-file-drop';
+import { UploadEvent, UploadFile, FileSystemDirectoryEntry, FileSystemFileEntry, FileSystemEntry } from 'ngx-file-drop';
+import { zoomTransition } from '../shared/animations';
 
 @Component({
   selector: 'app-file-upload',
   templateUrl: './file-upload.component.html',
-  styleUrls: ['./file-upload.component.scss']
+  styleUrls: ['./file-upload.component.scss'],
+  animations: [zoomTransition()]
 })
 export class FileUploadComponent implements OnInit {
-
   files: UploadFile[] = [];
+  fileEntries: FileSystemEntry[] = [];
+  fileBlobs: File[] = [];
+  dataSource: File[] = [];
+  displayedColumns: string[] = ['name', 'type', 'size', 'lastModifiedDate'];
+  dropZoneHover = false;
 
   constructor() { }
 
@@ -16,16 +22,20 @@ export class FileUploadComponent implements OnInit {
   }
 
   dropped($event: UploadEvent) {
+    this.dataSource = [];
     this.files = $event.files;
+
     for (const droppedFile of $event.files) {
 
       // Is it a file?
       if (droppedFile.fileEntry.isFile) {
         const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
-        fileEntry.file((file: File) => {
+        this.fileEntries.push(fileEntry);
 
-          // Here you can access the real file
-          console.log(droppedFile.relativePath, file);
+        fileEntry.file((file: File) => {
+          if (this.fileBlobs.filter(f => f.name === file.name).length === 0) {
+            this.fileBlobs.push(file);
+          }
 
           /**
           // You could upload it like this:
@@ -43,6 +53,8 @@ export class FileUploadComponent implements OnInit {
           })
           **/
 
+
+          this.dataSource = this.fileBlobs;
         });
       } else {
         // It was a directory (empty directories are added, otherwise only files)
@@ -53,10 +65,50 @@ export class FileUploadComponent implements OnInit {
   }
 
   fileOver($event) {
-    console.log($event);
+    this.dropZoneHover = true;
   }
 
   fileLeave($event) {
-    console.log($event);
+    this.dropZoneHover = false;
+  }
+
+  formatSize(bytes: number, decimalPlaces = 2): string {
+    const sizes = ['KB', 'MB', 'GB', 'TB'];
+    const factor = Math.pow(10, decimalPlaces);
+
+    for (let i = 0; i < sizes.length; i++) {
+      const divisor = Math.pow(10, (3 * (i + 1)));
+      const nextDivisor = Math.pow(10, (3 * (i + 2)));
+
+      if (bytes < nextDivisor) {
+        return `${Math.round(bytes / divisor * factor) / factor} ${sizes[i]}`;
+      }
+    }
+  }
+
+  formatDate(d: Date): string {
+    return `
+      ${d.getFullYear()}/${d.getMonth()}/${d.getDay()}
+      ${d.getHours()}:${d.getMinutes()}
+    `;
+  }
+
+  truncate(s: string, maxLength = 20): string {
+    if (s.length > (maxLength - 3)) {
+      return s.slice(0, maxLength) + '...';
+    } else {
+      return s;
+    }
+  }
+
+  fileIcon(file: File): string {
+    const s = file.type || file.name;
+    const nameArray = s.toLowerCase().split(file.type ? '/' : '.');
+
+    if (nameArray.length > 0) {
+      return `/assets/filetypes/${nameArray[nameArray.length - 1]}.svg`;
+    } else {
+      return `/assets/filetypes/unknown.svg`;
+    }
   }
 }
