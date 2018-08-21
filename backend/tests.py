@@ -285,6 +285,32 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["_links"]["self"], '/api/resource/1')
         self.assertEqual(response["_links"]["collection"], '/api/resource')
 
+    def test_user_resources_list(self):
+        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com")
+        self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
+        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
+        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
+
+        db.session.commit()
+
+        # Testing that the correct amount of user-owned resources show up for the correct user
+        rv = self.app.get('/api/session/resource', content_type="application/json",
+                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(2, len(response))
+
+        rv = self.app.get('/api/session/resource', content_type="application/json",
+                          headers=self.logged_in_headers(user=u2), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(3, len(response))
+
+        # Testing to see that user-owned resources are not viewable when logged out
+        rv = self.app.get('/api/session/resource', content_type="application/json")
+        self.assertEqual(401, rv.status_code)
+
     def test_category_has_links(self):
         self.construct_category()
         rv = self.app.get('/api/category/1',

@@ -241,6 +241,7 @@ class UserSchema(ModelSchema):
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.userendpoint', id='<id>'),
         'favorites': ma.UrlFor('api.userfavoriteendpoint'),
+        'resources': ma.UrlFor('api.userresourceendpoint'),
     })
 
 
