@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -42,6 +42,7 @@ import { CovalentTextEditorModule } from '@covalent/text-editor';
 import { InlineSVGModule } from 'ng-inline-svg';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { DeviceDetectorModule } from 'ngx-device-detector';
+import { FileDropModule } from 'ngx-file-drop';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MarkdownModule } from 'ngx-markdown';
 import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
@@ -52,6 +53,7 @@ import { ApprovedBadgeComponent } from './approved-badge/approved-badge.componen
 import { AuthInterceptor } from './AuthInterceptor';
 import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
+import { CategoryColorBorderDirective } from './category-color-border.directive';
 import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryNetworkViewComponent } from './category-network-view/category-network-view.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
@@ -60,6 +62,7 @@ import { EditCategoryButtonComponent } from './edit-category-button/edit-categor
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
 import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
 import { FavoriteResourceListComponent } from './favorite-resource-list/favorite-resource-list.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
 import { FormFieldComponent } from './form-field/form-field.component';
@@ -67,9 +70,12 @@ import { GradientBackgroundDirective } from './gradient-background.directive';
 import { GradientBorderDirective } from './gradient-border.directive';
 import { HeaderComponent } from './header/header.component';
 import { HomeComponent } from './home/home.component';
+import { IsAdminDirective } from './is-admin.directive';
 import { LoginFormComponent } from './login-form/login-form.component';
+import { LoginServicesComponent } from './login-services/login-services.component';
 import { LoginComponent } from './login/login.component';
 import { LogoComponent } from './logo/logo.component';
+import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ProfileComponent } from './profile/profile.component';
 import { RegisterFormComponent } from './register-form/register-form.component';
@@ -83,10 +89,8 @@ import { SearchComponent } from './search/search.component';
 import { SessionRedirectComponent } from './session-redirect/session-redirect.component';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
-import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
 import { UserResourceListComponent } from './user-resource-list/user-resource-list.component';
-import { IsAdminDirective } from './is-admin.directive';
 
 @NgModule({
   declarations: [
@@ -96,6 +100,7 @@ import { IsAdminDirective } from './is-admin.directive';
     ApprovedBadgeComponent,
     AvailabilityComponent,
     BrowseComponent,
+    CategoryColorBorderDirective,
     CategoryComponent,
     CategoryFormComponent,
     CategoryNetworkViewComponent,
@@ -106,6 +111,7 @@ import { IsAdminDirective } from './is-admin.directive';
     FavoriteResourceButtonComponent,
     FavoriteResourceListComponent,
     FavoriteResourceListComponent,
+    FileUploadComponent,
     ForgotPasswordComponent,
     FormFieldComponent,
     FormFieldLabelComponent,
@@ -114,9 +120,12 @@ import { IsAdminDirective } from './is-admin.directive';
     GradientBorderDirective,
     HeaderComponent,
     HomeComponent,
+    IsAdminDirective,
     LoginComponent,
     LoginFormComponent,
+    LoginServicesComponent,
     LogoComponent,
+    NetworkViewNodeComponent,
     NotFoundComponent,
     ProfileComponent,
     RegisterFormComponent,
@@ -129,10 +138,8 @@ import { IsAdminDirective } from './is-admin.directive';
     SearchComponent,
     SessionRedirectComponent,
     TreeSelectComponent,
-    NetworkViewNodeComponent,
     UserAdminComponent,
-    UserResourceListComponent,
-    IsAdminDirective
+    UserResourceListComponent
   ],
   imports: [
     AppRoutingModule,
@@ -142,6 +149,7 @@ import { IsAdminDirective } from './is-admin.directive';
     CommonModule,
     CovalentTextEditorModule,
     DeviceDetectorModule.forRoot(),
+    FileDropModule,
     FlexLayoutModule,
     HttpClientModule,
     InfiniteScrollModule,
@@ -163,18 +171,18 @@ import { IsAdminDirective } from './is-admin.directive';
     MatListModule,
     MatMenuModule,
     MatNativeDateModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
     MatProgressSpinnerModule,
     MatRadioModule,
     MatSelectModule,
     MatSidenavModule,
     MatSlideToggleModule,
     MatSnackBarModule,
-    MatStepperModule,
-    MatTabsModule,
-    MatTableModule,
-    MatPaginatorModule,
     MatSortModule,
-    MatProgressSpinnerModule,
+    MatStepperModule,
+    MatTableModule,
+    MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,

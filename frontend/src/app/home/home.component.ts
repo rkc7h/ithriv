@@ -64,4 +64,16 @@ export class HomeComponent implements OnInit {
   goSearch() {
     this.router.navigate(['search', this.searchBox.value]);
   }
+
+  goCategory(category: Category) {
+    const viewPrefs = this.api.getViewPreferences();
+    const isNetworkView = viewPrefs && viewPrefs.hasOwnProperty('isNetworkView') ? viewPrefs.isNetworkView : true;
+    const catId = category.id.toString();
+
+    if (isNetworkView) {
+      this.router.navigate(['category', catId, 'network']);
+    } else {
+      this.router.navigate(['browse', catId]);
+    }
+  }
 }

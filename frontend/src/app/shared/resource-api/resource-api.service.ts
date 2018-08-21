@@ -1,22 +1,23 @@
-import {HttpClient, HttpErrorResponse, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Observable, throwError} from 'rxjs';
-import {catchError} from 'rxjs/operators';
-import {environment} from '../../../environments/environment';
-import {Availability} from '../../availability';
-import {Category} from '../../category';
-import {CategoryResource} from '../../category-resource';
-import {Icon} from '../../icon';
-import {Institution} from '../../institution';
-import {Resource} from '../../resource';
-import {ResourceCategory} from '../../resource-category';
-import {ResourceQuery} from '../../resource-query';
-import {ResourceType} from '../../resourceType';
-import {User} from '../../user';
-import {Favorite} from '../../favorite';
-import {Subject} from 'rxjs';
-import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
-import {UserSearchResults} from '../../user-search-results';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { catchError } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+import { Availability } from '../../availability';
+import { Category } from '../../category';
+import { CategoryResource } from '../../category-resource';
+import { Favorite } from '../../favorite';
+import { Icon } from '../../icon';
+import { Institution } from '../../institution';
+import { Resource } from '../../resource';
+import { ResourceCategory } from '../../resource-category';
+import { ResourceQuery } from '../../resource-query';
+import { ResourceType } from '../../resourceType';
+import { User } from '../../user';
+import { UserSearchResults } from '../../user-search-results';
+import { ViewPreferences } from '../../view-preferences';
 
 @Injectable()
 export class ResourceApiService {
@@ -88,13 +89,13 @@ export class ResourceApiService {
   /** Logging out */
   closeSession(): Observable<User> {
     this.httpClient.delete<User>(this.apiRoot + this.endpoints.session).subscribe(x => {
-        localStorage.removeItem('token');
-        this.hasSession = false;
-        this.sessionSubject.next(null);
-      }, (error) => {
-        localStorage.removeItem('token');
-        this.hasSession = false;
-        this.sessionSubject.error(error);
+      localStorage.removeItem('token');
+      this.hasSession = false;
+      this.sessionSubject.next(null);
+    }, (error) => {
+      localStorage.removeItem('token');
+      this.hasSession = false;
+      this.sessionSubject.error(error);
     });
     return this.sessionSubject.asObservable();
   }
@@ -103,7 +104,7 @@ export class ResourceApiService {
    * email_token is not required, only send this if user is logging in for the first time
    * after an email verification link. */
   login(email: string, password: string, email_token = ''): Observable<any> {
-    const options = {email: email, password: password, email_token: email_token};
+    const options = { email: email, password: password, email_token: email_token };
     return this.httpClient.post(this.apiRoot + this.endpoints.login_password, options)
       .pipe(catchError(this.handleError));
   }
@@ -129,6 +130,23 @@ export class ResourceApiService {
     // return an observable with a user-facing error message
     // FIXME: Log all error messages to Google Analytics
     return throwError(message);
+  }
+
+  /** updateViewPreferences */
+  updateViewPreferences(preferences: ViewPreferences) {
+    localStorage.setItem('viewPreferences', JSON.stringify(preferences));
+  }
+
+  /** getViewPreferences */
+  getViewPreferences(): ViewPreferences {
+    const viewPrefs = JSON.parse(localStorage.getItem('viewPreferences'));
+    if (viewPrefs) {
+      return viewPrefs;
+    } else {
+      // Initialize view preferences
+      this.updateViewPreferences({ isNetworkView: true });
+      return this.getViewPreferences();
+    }
   }
 
   /** searchResources */
@@ -235,7 +253,7 @@ export class ResourceApiService {
 
   /** linkResourceAndCategory */
   linkResourceAndCategory(resource: Resource, category: Category): Observable<any> {
-    const options = {resource_id: resource.id, category_id: category.id};
+    const options = { resource_id: resource.id, category_id: category.id };
     return this.httpClient.post<ResourceCategory>(this.apiRoot + this.endpoints.resourceCategoryList, options)
       .pipe(catchError(this.handleError));
   }
@@ -260,7 +278,7 @@ export class ResourceApiService {
 
   /** addFavorite */
   addFavorite(user: User, resource: Resource): Observable<any> {
-    const options = {resource_id: resource.id, user_id: user.id};
+    const options = { resource_id: resource.id, user_id: user.id };
     return this.httpClient.post<Favorite>(this.apiRoot + this.endpoints.favoriteList, options)
       .pipe(catchError(this.handleError));
   }
@@ -302,21 +320,21 @@ export class ResourceApiService {
   }
 
   findUsers(filter = '', sort = 'display_name', sortOrder = 'asc', pageNumber = 0, pageSize = 3): Observable<UserSearchResults> {
-    const search_data = {filter: filter, sort: sort, sortOrder: sortOrder, pageNumber: String(pageNumber), pageSize: String(pageSize)};
-    return this.httpClient.get<UserSearchResults>(this.apiRoot + this.endpoints.userList, {params: search_data})
+    const search_data = { filter: filter, sort: sort, sortOrder: sortOrder, pageNumber: String(pageNumber), pageSize: String(pageSize) };
+    return this.httpClient.get<UserSearchResults>(this.apiRoot + this.endpoints.userList, { params: search_data })
       .pipe(catchError(this.handleError));
   }
 
   /** Reset password */
   sendResetPasswordEmail(email: String): Observable<any> {
-    const email_data = {email: email};
+    const email_data = { email: email };
     return this.httpClient.post<any>(this.apiRoot + this.endpoints.forgot_password, email_data)
       .pipe(catchError(this.handleError));
   }
 
   /** Reset password */
   resetPassword(newPassword: string, email_token: string): Observable<string> {
-    const reset = {password: newPassword, email_token: email_token};
+    const reset = { password: newPassword, email_token: email_token };
     return this.httpClient.post<string>(this.apiRoot + this.endpoints.reset_password, reset)
       .pipe(catchError(this.handleError));
   }

@@ -1,24 +1,24 @@
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
-import { Component, Input, OnInit, HostBinding } from '@angular/core';
-import { Resource } from '../resource';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { fadeTransition } from '../shared/animations';
 import { Institution } from '../institution';
+import { Resource } from '../resource';
 import { ResourceCategory } from '../resource-category';
+import { fadeTransition, zoomTransition } from '../shared/animations';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-resource',
   templateUrl: './resource.component.html',
   styleUrls: ['./resource.component.scss'],
-  animations: [fadeTransition()]
+  animations: [zoomTransition()]
 })
 export class ResourceComponent implements OnInit {
-  @HostBinding('@fadeTransition')
   resourceId: number;
   @Input() resource: Resource;
   @Input() categories: ResourceCategory[];
 
+  transitionState = '';
   isDataLoaded = false;
 
   constructor(
@@ -50,6 +50,7 @@ export class ResourceComponent implements OnInit {
       .subscribe(rcs => {
         console.log('Loaded Categories:', rcs);
         this.categories = rcs;
+        this.transitionState = 'zoom-in-enter';
         this.isDataLoaded = true;
       });
   }

@@ -1,6 +1,10 @@
 $easeDuration: 300ms;
 $animationDuration: 750ms;
 
+h1 {
+  text-align: center;
+}
+
 #network-graph-container {
   position: absolute;
   left: 0;
@@ -14,21 +18,21 @@ line, circle, rect {
   transition: $easeDuration ease transform;
 }
 
-g[app-network-view-node] {
+g[app-network-view-node], g.top-level {
   transition: $easeDuration ease transform, $easeDuration ease opacity;
 }
 
 // ANIMATIONS
-.fade-exit          { animation: fadeExit ease-in-out $animationDuration; }
-.fade-enter         { animation: fadeEnter ease-in-out $animationDuration; }
-.slide-left-exit    { animation: slideLeftExit ease-in-out $animationDuration; }
-.slide-left-enter   { animation: slideLeftEnter ease-in-out $animationDuration; }
-.slide-right-exit   { animation: slideRightExit ease-in-out $animationDuration; }
-.slide-right-enter  { animation: slideRightEnter ease-in-out $animationDuration; }
-.zoom-in-exit       { animation: zoomInExit ease-in-out $animationDuration; }
-.zoom-in-enter      { animation: zoomInEnter ease-in-out $animationDuration; }
-.zoom-out-exit      { animation: zoomOutExit ease-in-out $animationDuration; }
-.zoom-out-enter     { animation: zoomOutEnter ease-in-out $animationDuration; }
+// .fade-exit          { animation: fadeExit ease-in-out $animationDuration; }
+// .fade-enter         { animation: fadeEnter ease-in-out $animationDuration; }
+// .slide-left-exit    { animation: slideLeftExit ease-in-out $animationDuration; }
+// .slide-left-enter   { animation: slideLeftEnter ease-in-out $animationDuration; }
+// .slide-right-exit   { animation: slideRightExit ease-in-out $animationDuration; }
+// .slide-right-enter  { animation: slideRightEnter ease-in-out $animationDuration; }
+// .zoom-in-exit       { animation: zoomInExit ease-in-out $animationDuration; }
+// .zoom-in-enter      { animation: zoomInEnter ease-in-out $animationDuration; }
+// .zoom-out-exit      { animation: zoomOutExit ease-in-out $animationDuration; }
+// .zoom-out-enter     { animation: zoomOutEnter ease-in-out $animationDuration; }
 
 @keyframes fadeExit {
   0% {
