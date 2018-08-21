@@ -116,6 +116,9 @@ $ithriv-accent: mat-palette($mat-orange);
 $ithriv-warn: mat-palette($mat-deep-orange);
 $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
 
+$easeDuration: 300ms;
+$animationDuration: 750ms;
+
 @include angular-material-theme($uva-theme);
 @include angular-material-theme($ithriv-theme);
 
@@ -214,35 +217,45 @@ $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
     background-color: mat-color($primary, 50);
   }
 
-  file-drop {
-    #fileQueueContainer {
-      width: 400px;
-    }
-
-    .file-upload {
-      background-color: #DDDDDD;
-      border: 1px solid #DDDDDD;
-      border-radius: 50%;
-      height: 400px;
-      width: 400px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-
-      #dropZoneInstructions {
-        color: #999999;
+  #fileUpload {
+    file-drop {
+      .file-upload {
+        transition: 750ms ease background-color, 750ms ease border;
+        background-color: #DDDDDD;
+        border: 1px solid #DDDDDD;
+        border-radius: 50%;
+        height: 400px;
+        width: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-align: center;
 
-        mat-icon {
-          font-size: 128px;
-          width: 128px;
-          height: 128px;
+        #dropZoneInstructions {
+          color: #999999;
+          text-align: center;
+
+          mat-icon {
+            font-size: 128px;
+            width: 128px;
+            height: 128px;
+          }
         }
+      }
+
+      #fileQueueContainer {
+        width: 100%;
+      }
+    }
+
+    &.hover file-drop .file-upload {
+      background-color: mat-color($ithriv-primary, 800, 1.0);
+      border: 1px solid mat-color($ithriv-primary, 800, 1.0);
+
+      #dropZoneInstructions {
+        color: white;
       }
     }
   }
-
-
 }
 
