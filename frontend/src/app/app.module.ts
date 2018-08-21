@@ -85,6 +85,7 @@ import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
+import { UserResourceListComponent } from './user-resource-list/user-resource-list.component';
 import { IsAdminDirective } from './is-admin.directive';
 
 @NgModule({
@@ -130,6 +131,7 @@ import { IsAdminDirective } from './is-admin.directive';
     TreeSelectComponent,
     NetworkViewNodeComponent,
     UserAdminComponent,
+    UserResourceListComponent,
     IsAdminDirective
   ],
   imports: [
