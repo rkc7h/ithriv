@@ -44,9 +44,9 @@ export class ResourceApiService {
     availability: '/api/availability/<id>',
     resourceCategoryList: '/api/resource_category',
     resourceCategory: '/api/resource_category/<id>',
-    resourceAttachment: '/api/resource/attachment/<id>',
-    resourceAttachmentList: '/api/resource/attachment',
-    attachmentByResource: '/api/resource/<resource_id>/attachment',
+    resourceAttachment: '/api/resource/attachment/<id>', // One attachment
+    resourceAttachmentList: '/api/resource/attachment', // All attachments on every resource
+    attachmentByResource: '/api/resource/<resource_id>/attachment', // All attachments for given resource
     iconList: '/api/icon',
     icon: '/api/icon/<id>',
     favoriteList: '/api/favorite',
@@ -298,8 +298,15 @@ export class ResourceApiService {
   }
 
   /** addResourceAttachment */
-  addResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
-    return this.httpClient.post<ResourceAttachment>(this.apiRoot + this.endpoints.resourceAttachmentList, attachment)
+  addResourceAttachment(resourceId: string, filenames: string[]): Observable<ResourceAttachment[]> {
+    const url = this.endpoints.attachmentByResource.replace('<id>', resourceId);
+    return this.httpClient.post<ResourceAttachment[]>(this.apiRoot + url, filenames)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** addResourceAttachmentFile */
+  addResourceAttachmentFile(attachment: ResourceAttachment, file: File): Observable<ResourceAttachment> {
+    return this.httpClient.post<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${attachment.id}`, file)
       .pipe(catchError(this.handleError));
   }
 
