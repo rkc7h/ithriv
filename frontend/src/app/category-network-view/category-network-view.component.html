@@ -4,7 +4,6 @@
 >
   <h1
     *ngIf="!category"
-    [@zoomTransition]="'delay-fade-enter'"
   >
     Select from the categories below to browse translational health resources. You can change to another mode at any time during
     your browsing.
@@ -57,7 +56,6 @@
       id="category-network-graph"
       [attr.transform]="translateTo('origin')"
       [ngClass]="transitionClass"
-      [@zoomTransition]="transitionClass"
     >
 
       <!-- PARENT & CHILD NODES -->
@@ -88,6 +86,7 @@
             <g
               app-network-view-node
               [category]="nodeChild"
+              [state]="getState(nodeChild)"
               [numTotal]="node.children.length"
               [options]="{
                 relationship: 'grandchild',
@@ -95,7 +94,7 @@
                 y: nodeChild.options.y,
                 radius: nodeChildRadius
               }"
-              (click)="goCategory(nodeChild); setTransitionClass(nodeChild, node.children)"
+              (click)="selectCategory(nodeChild); setTransitionClass(nodeChild, node.children)"
               [matTooltip]="nodeChild.name"
             />
           </g>
@@ -119,6 +118,7 @@
                 app-network-view-node
                 *ngIf="sibling.id !== category.id"
                 [category]="sibling"
+                [state]="getState(sibling)"
                 [numTotal]="siblings(node).length"
                 [options]="{
                   relationship: 'sibling',
@@ -126,7 +126,7 @@
                   y: sibling.options.y,
                   radius: nodeRadius/2
                 }"
-                (click)="goCategory(sibling); setTransitionClass(sibling, siblings(node))"
+                (click)="selectCategory(sibling); setTransitionClass(sibling, siblings(node))"
                 [matTooltip]="sibling.name"
               />
             </g>
@@ -135,6 +135,7 @@
             <g
               app-network-view-node
               [category]="node"
+              [state]="getState(node)"
               [options]="{
                 relationship: 'parent',
                 x: 0,
@@ -143,7 +144,7 @@
                 angle: 0,
                 titleHeight: parentTitleHeight
               }"
-              (click)="goCategory(node); setTransitionClass(node, allCategories)"
+              (click)="selectCategory(node); setTransitionClass(node, allCategories)"
             />
           </g>
 
@@ -151,6 +152,7 @@
           <g
             app-network-view-node
             [category]="node"
+            [state]="getState(node)"
             [options]="{
               relationship: 'child',
               x: 0,
@@ -159,7 +161,7 @@
               angle: 0,
               titleHeight: parentTitleHeight
             }"
-            (click)="goCategory(node); setTransitionClass(node, categoryNodes(node))"
+            (click)="selectCategory(node); setTransitionClass(node, categoryNodes(node))"
           />
         </g>
       </g>
@@ -168,6 +170,7 @@
       <g
         app-network-view-node
         [category]="category"
+        [state]="getState(category)"
         [options]="{
           relationship: 'self',
           x: 0,
@@ -184,10 +187,11 @@
       [attr.transform]="translateTo('top-left') + ' ' + (category ? '' : 'scale(2.23)')"
       class="top-level"
     >
-      <g [@zoomTransition]="category ? 'fade-enter' : transitionClass">
+      <g>
         <g
           app-network-view-node
           *ngFor="let node of allCategories; let i = index"
+          [state]="getState(node)"
           [attr.transform]="translateByIndex(i, category ? 1 : 0.5)"
           (click)="goCategory(node); setTransitionClass(node, allCategories)"
           [ngStyle]="{'opacity': isSelectedCategory(node) ? 0.2 : 1}"

@@ -1,18 +1,21 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit, Output} from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
 import { NodeOptions } from '../node-options';
 import { hexColorToRGBA } from '../shared/color';
+import {selectTransition} from '../network/animations';
 
 @Component({
   selector: '[app-network-view-node]',
   templateUrl: './network-view-node.component.html',
-  styleUrls: ['./network-view-node.component.scss']
+  styleUrls: ['./network-view-node.component.scss'],
+  animations: [selectTransition()]
 })
 export class NetworkViewNodeComponent implements OnInit {
   @Input() category: Category;
   @Input() numTotal: number;
   @Input() options: NodeOptions;
+  @Input() state: String;
   strokeWidth = 4;
   iconSize = 24;
   fontSize = 16;
@@ -20,6 +23,11 @@ export class NetworkViewNodeComponent implements OnInit {
   constructor(private router: Router) { }
 
   ngOnInit() {
+    console.log("The category is " + this.category)
+  }
+
+  animatedLog() {
+    console.log("Animation call back occured.");
   }
 
   rotate(angle: number) {
