@@ -27,8 +27,8 @@ class ResourceAttachmentEndpoint(flask_restful.Resource):
         if attachment is None:
             raise RestException(RestException.NOT_FOUND)
         updated = attachment
-        if 'attachment' in request.files:
-            file = request.files.get('attachment')
+        if 'file' in request.files:
+            file = request.files.get('file')
             updated.url = file_server.save_resource_attachment(file, attachment, file.content_type)
         else:
             json_data = request.get_json()
@@ -68,3 +68,18 @@ class AttachmentByResourceEndpoint(flask_restful.Resource):
     def get(self, resource_id):
         attachments = db.session.query(ResourceAttachment).filter_by(resource_id=resource_id).all()
         return self.schema.dump(attachments)
+
+    def post(self, resource_id):
+        request_data = request.get_json()
+        try:
+            if 'filenames' in request_data:
+                new_attachments = []
+                for file in request_data['filenames']:
+                    new_attachment = ResourceAttachment(name=file, resource_id=resource_id)
+                    db.session.add(new_attachment)
+                    new_attachments.append(new_attachment)
+                db.session.commit()
+                return self.schema.dump(new_attachments)
+        except ValidationError:
+            raise RestException(RestException.INVALID_OBJECT,
+                                details=new_attachment.errors)

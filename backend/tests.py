@@ -620,30 +620,25 @@ class TestCase(unittest.TestCase):
 
         rv = self.app.put('/api/resource/attachment/%i' % attachment_id,
                           data=dict(
-                              attachment=(BytesIO(b"hi everyone"), 'test.svg'),
+                              file=(BytesIO(b"hi everyone"), 'test.svg'),
                           ))
         self.assertSuccess(rv)
         data = json.loads(rv.get_data(as_text=True))
         self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/resource/attachment/%i.pdf" % attachment_id, data["url"])
 
-    def test_add_resource_attachment(self):
+    def test_add_resource_attachments(self):
         resource = self.construct_resource()
-        db.session.add(resource)
-        attachment = ResourceAttachment(name="Cool Places", resource_id=resource.id)
-        db.session.add(attachment)
-        db.session.commit()
-        attachment.resource_id = resource.id
-        rv = self.app.post('/api/resource', data=json.dumps(ThrivResourceSchema().dump(resource).data), content_type="application/json")
+        data = {'filenames': ['Sappy Songs', 'my_dissertation.docx', 'vbihwlt8865']}
+        rv = self.app.post('/api/resource/%i/attachment' % resource.id, data=json.dumps(data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(attachment.id, response["attachments"][0]["id"])
-        self.assertEqual("Cool Places", response["attachments"][0]["name"])
+        self.assertEqual(3, len(response))
 
     def test_remove_attachment_from_resource(self):
         self.test_add_resource_attachment()
         rv = self.app.delete('/api/resource/attachment/%i' % 1)
         self.assertSuccess(rv)
-        rv = self.app.get('/api/resource/%i/category' % 1, content_type="application/json")
+        rv = self.app.get('/api/resource/%i/attachment' % 1, content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(0, len(response))
