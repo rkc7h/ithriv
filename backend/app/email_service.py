@@ -58,7 +58,7 @@ class EmailService():
             msgRoot.attach(ical_atch)
 
         if 'TESTING' in self.app.config and self.app.config['TESTING']:
-            print("TEST:  Recording Emails, not sending - %s" % subject)
+            print("TEST:  Recording Emails, not sending - %s - to:%s" % (subject, recipients))
             TEST_MESSAGES.append(msgRoot)
             return
 
@@ -122,6 +122,6 @@ class EmailService():
                                     user=user, request_data=request_data, logo_url=logo_url, tracking_code=tracking_code)
 
         self.send_email(subject,
-                        recipients=[user.email], text_body=text_body, html_body=html_body)
+                        recipients=[self.app.config['MAIL_CONSULT_RECIPIENT']], text_body=text_body, html_body=html_body)
 
         return tracking_code
