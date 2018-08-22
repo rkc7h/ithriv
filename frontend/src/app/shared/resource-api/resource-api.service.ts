@@ -300,12 +300,8 @@ export class ResourceApiService {
   /** addResourceAttachment */
   addResourceAttachment(resourceId: Number, filenames: string[]): Observable<ResourceAttachment[]> {
     const url = this.endpoints.attachmentByResource.replace('<resource_id>', resourceId.toString());
-
-    console.log('resourceId', resourceId);
-    console.log('this.apiRoot + url', this.apiRoot + url);
-    console.log('filenames', filenames);
-
-    return this.httpClient.post<ResourceAttachment[]>(this.apiRoot + url, filenames)
+    const options = { filenames: filenames };
+    return this.httpClient.post<ResourceAttachment[]>(this.apiRoot + url, options)
       .pipe(catchError(this.handleError));
   }
 
