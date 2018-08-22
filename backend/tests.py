@@ -43,10 +43,14 @@ class TestCase(unittest.TestCase):
         self.ctx.pop()
 
     def assertSuccess(self, rv):
-        data = json.loads(rv.get_data(as_text=True))
-        self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
-                        "BAD Response: %i. \n %s" %
-                        (rv.status_code, json.dumps(data)))
+        try:
+            data = json.loads(rv.get_data(as_text=True))
+            self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
+                            "BAD Response: %i. \n %s" %
+                            (rv.status_code, json.dumps(data)))
+        except:
+            self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
+                            "BAD Response: %i." % rv.status_code)
 
     def randomString(self):
         char_set = string.ascii_uppercase + string.digits
@@ -1026,12 +1030,13 @@ class TestCase(unittest.TestCase):
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
 
-    def reset_password_sends_email(self):
+    def test_forgot_password_sends_email(self):
+        user = self.test_create_user_with_password()
         message_count = len(TEST_MESSAGES)
         data = {
-            "email": "tyrion@got.com"
+            "email": user.email
         }
-        rv = self.app.post('/api/reset_password', data=json.dumps(data), content_type="application/json")
+        rv = self.app.post('/api/forgot_password', data=json.dumps(data), content_type="application/json")
         self.assertSuccess(rv)
         self.assertGreater(len(TEST_MESSAGES), message_count)
         self.assertEqual("iThriv: Password Reset Email", self.decode(TEST_MESSAGES[-1]['subject']))
