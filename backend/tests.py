@@ -635,13 +635,13 @@ class TestCase(unittest.TestCase):
         self.assertEqual(3, len(response))
 
     def test_remove_attachment_from_resource(self):
-        self.test_add_resource_attachment()
+        self.test_add_resource_attachments()
         rv = self.app.delete('/api/resource/attachment/%i' % 1)
         self.assertSuccess(rv)
         rv = self.app.get('/api/resource/%i/attachment' % 1, content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(0, len(response))
+        self.assertEqual(2, len(response))
 
     def test_get_resource_by_category(self):
         c = self.construct_category()
