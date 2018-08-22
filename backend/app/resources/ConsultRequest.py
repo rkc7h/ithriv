@@ -1,17 +1,16 @@
 # Consult Request
 # *****************************
 
-from app import sso, app, RestException, db, auth, email_service
+from app import db, auth, email_service
 from app.model.email_log import EmailLog
 from app.model.user import User
-from flask import jsonify, redirect, g, request, Blueprint
+from flask import request, Blueprint
 
 consult_blueprint = Blueprint('consult', __name__, url_prefix='/api')
 
-# ourapp/views.py
-
 
 @consult_blueprint.route('/consult_request', methods=["GET", "POST"])
+@auth.login_required
 def consult_request():
     request_data = request.get_json()
     user_id = request_data['user_id']

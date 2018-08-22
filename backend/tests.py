@@ -1052,7 +1052,8 @@ class TestCase(unittest.TestCase):
             "user_id": user.id
         }
         # ...And a second email requesting the consult:
-        rv = self.app.post('/api/consult_request', data=json.dumps(data), content_type="application/json")
+        rv = self.app.post('/api/consult_request', data=json.dumps(data), headers=self.logged_in_headers(),
+                           content_type="application/json")
         self.assertSuccess(rv)
         self.assertGreater(len(TEST_MESSAGES), message_count)
         self.assertEqual("iThriv: Consult Request", self.decode(TEST_MESSAGES[-1]['subject']))
