@@ -32,4 +32,5 @@ class ThrivResource(db.Model):
         return len(self.favorites)
 
     def owners(self):
-        return re.split('; |, | ', self.owner)
+        if self.owner:
+            return re.split('; |, | ', self.owner)
