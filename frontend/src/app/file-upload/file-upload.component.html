@@ -6,8 +6,8 @@
       <h3>Drop files here to attach them to this resource</h3>
     </span>
   </file-drop>
-  <div id="fileQueueContainer" *ngIf="fileBlobs.length > 0" [@zoomTransition]="dataSource.length > 0 ? 'fade-enter' : 'fade-exit'">
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <div id="fileQueueContainer" *ngIf="updateFilesEmitter | async" [@zoomTransition]="field.files.length > 0 ? 'fade-enter' : 'fade-exit'">
+    <table mat-table [dataSource]="field.files" class="mat-elevation-z8">
       <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef>Type</th>
         <td mat-cell *matCellDef="let file">

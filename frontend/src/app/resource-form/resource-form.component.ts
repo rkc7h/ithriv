@@ -11,6 +11,8 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 import { fadeTransition } from '../shared/animations';
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { Availability } from '../availability';
+import { ResourceAttachment } from '../resource-attachment';
+import { switchMap, map, mergeMap, mergeAll } from 'rxjs/operators';
 
 @Component({
   selector: 'app-resource-form',
@@ -31,6 +33,7 @@ export class ResourceFormComponent implements OnInit {
   resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
   savesInAction = 0;
+  files = {};
 
   // Field groupings
   fieldsets: Fieldset[] = [];
@@ -153,6 +156,13 @@ export class ResourceFormComponent implements OnInit {
         'Approved',
         'Unapproved'
       ]
+    }),
+    attachments: new FormField({
+      formControl: new FormControl(),
+      files: [],
+      required: false,
+      placeholder: 'Attachments',
+      type: 'files'
     }),
   };
 
@@ -287,17 +297,19 @@ export class ResourceFormComponent implements OnInit {
           this.resourceForm.addControl(fieldName, this.fields.categories.formGroup);
           this.isDataLoaded = true;
         } else {
-          field.formControl.setValidators(validators);
+          if (field.formControl) {
+            field.formControl.setValidators(validators);
 
-          if (fieldName === 'availabilities.institution_id') {
-            const selectedInstitutions = this.resource.availabilities.filter(av => av.available);
-            const selectedInstitutionIds = selectedInstitutions.map(i => i.institution_id);
-            field.formControl.patchValue(selectedInstitutionIds);
-          } else {
-            field.formControl.patchValue(this.resource[fieldName]);
+            if (fieldName === 'availabilities.institution_id') {
+              const selectedInstitutions = this.resource.availabilities.filter(av => av.available);
+              const selectedInstitutionIds = selectedInstitutions.map(i => i.institution_id);
+              field.formControl.patchValue(selectedInstitutionIds);
+            } else {
+              field.formControl.patchValue(this.resource[fieldName]);
+            }
+
+            this.resourceForm.addControl(fieldName, field.formControl);
           }
-
-          this.resourceForm.addControl(fieldName, field.formControl);
         }
       }
     }
@@ -323,7 +335,7 @@ export class ResourceFormComponent implements OnInit {
 
   closeIfComplete() {
     this.savesInAction--;
-    console.log("Total Saves in action:" + this.savesInAction)
+    console.log('Total Saves in action:', this.savesInAction);
     if (this.savesInAction === 0) {
       this.close();
     }
@@ -332,6 +344,9 @@ export class ResourceFormComponent implements OnInit {
   onSubmit($event) {
     $event.preventDefault();
     this.validate();
+
+    console.log('this.resourceForm', this.resourceForm);
+
 
     if (this.resourceForm.valid) {
       this.isDataLoaded = false;
@@ -342,22 +357,34 @@ export class ResourceFormComponent implements OnInit {
         }
       }
 
-      this.savesInAction = 3; // Assumes we'll have three api calls
-      if (this.createNew) {
-        this.api.addResource(this.resource).subscribe(r => {
-          this.resource = r;
-          this.updateCategories();
-          this.updateAvailabilities();
-          this.closeIfComplete();
-        });
+      const fnName = this.createNew ? 'addResource' : 'updateResource';
+
+      if (this.hasAttachments()) {
+        this.api[fnName](this.resource)
+          .pipe(
+            map(r => this.resource = r),
+            switchMap(() => this.updateAvailabilities()),
+            switchMap(() => this.updateAttachments()),
+            switchMap((ras = []) => ras.map(ra => this.updateAttachmentFiles(ra)))
+          )
+          .subscribe(
+            result => console.log('result', result),
+            error => console.error(error),
+            () => this.close()
+          );
       } else {
-        this.api.updateResource(this.resource).subscribe(r => {
-          this.resource = r;
-          this.updateCategories();
-          this.updateAvailabilities();
-          this.closeIfComplete();
-        });
+        this.api[fnName](this.resource)
+          .pipe(
+            map(r => this.resource = r),
+            switchMap(() => this.updateAvailabilities()),
+          )
+          .subscribe(
+            result => console.log('result', result),
+            error => console.error(error),
+            () => this.close()
+          );
       }
+
 
     } else {
       console.log('FORM NOT VALID');
@@ -373,19 +400,39 @@ export class ResourceFormComponent implements OnInit {
         selectedCategories.push({ resource_id: this.resource.id, category_id: parseInt(key, 10) });
       }
     }
-    this.api.updateResourceCategories(this.resource, selectedCategories).subscribe(e => {
-      this.closeIfComplete();
-    });
+    return this.api
+      .updateResourceCategories(this.resource, selectedCategories)
+      .toPromise();
   }
 
   updateAvailabilities() {
+    console.log('=== updateAvailabilities ===');
+
     const availabilities: Availability[] = [];
     for (const value of this.fields['availabilities.institution_id'].formControl.value || []) {
       availabilities.push({ resource_id: this.resource.id, institution_id: value, available: true });
     }
-    this.api.updateResourceAvailability(this.resource, availabilities).subscribe(e => {
-      this.closeIfComplete();
-    });
+    return this.api.updateResourceAvailability(this.resource, availabilities);
+  }
+
+  updateAttachments() {
+    console.log('=== updateAttachments ===');
+
+    if (this.hasAttachments()) {
+      this.fields.attachments.files.forEach(f => this.files[f.name] = f);
+
+      console.log('this.files', this.files);
+      const filenames = Object.keys(this.files);
+      console.log('filenames', filenames);
+
+      return this.api.addResourceAttachment(this.resource.id, filenames);
+    }
+  }
+
+  updateAttachmentFiles(ra: ResourceAttachment) {
+    console.log('=== updateAttachmentFiles ===');
+
+    return this.api.addResourceAttachmentFile(ra, this.files[ra.name]);
   }
 
   onCancel() {
@@ -416,6 +463,8 @@ export class ResourceFormComponent implements OnInit {
 
   // Go to resource screen
   close() {
+    console.log('=== close ===');
+
     if (this.resource && this.resource.id) {
       this.router.navigate(['resource', this.resource.id]);
     } else {
@@ -430,5 +479,21 @@ export class ResourceFormComponent implements OnInit {
         }
       });
     }
+  }
+
+  getFieldErrors(field: FormField) {
+    if (field.formControl) {
+      return field.formControl.errors;
+    } else if (field.formGroup) {
+      return field.formGroup.errors;
+    }
+  }
+
+  hasAttachments() {
+    return (
+      this.fields.attachments &&
+      this.fields.attachments.files &&
+      (this.fields.attachments.files.length > 0)
+    );
   }
 }

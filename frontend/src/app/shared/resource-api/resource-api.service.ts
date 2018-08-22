@@ -189,7 +189,7 @@ export class ResourceApiService {
   }
 
   /** deleteCategory */
-  deleteCategory(category: Category): Observable<any> {
+  deleteCategory(category: Category): Observable<Category> {
     return this.httpClient.delete<Category>(this.apiRoot + category._links.self)
       .pipe(catchError(this.handleError));
   }
@@ -243,7 +243,7 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
-  updateResourceAvailability(resource: Resource, avails: Availability[]) {
+  updateResourceAvailability(resource: Resource, avails: Availability[]): Observable<Availability> {
     return this.httpClient.post<Availability>(this.apiRoot + resource._links.availability, avails)
       .pipe(catchError(this.handleError));
   }
@@ -255,20 +255,20 @@ export class ResourceApiService {
   }
 
   /** linkResourceAndCategory */
-  linkResourceAndCategory(resource: Resource, category: Category): Observable<any> {
+  linkResourceAndCategory(resource: Resource, category: Category): Observable<ResourceCategory> {
     const options = { resource_id: resource.id, category_id: category.id };
     return this.httpClient.post<ResourceCategory>(this.apiRoot + this.endpoints.resourceCategoryList, options)
       .pipe(catchError(this.handleError));
   }
 
   /** unlinkResourceAndCategory */
-  unlinkResourceAndCategory(rc: ResourceCategory): Observable<any> {
+  unlinkResourceAndCategory(rc: ResourceCategory): Observable<ResourceCategory> {
     return this.httpClient.delete<ResourceCategory>(this.apiRoot + rc._links.self)
       .pipe(catchError(this.handleError));
   }
 
   /** deleteResource */
-  deleteResource(resource: Resource): Observable<any> {
+  deleteResource(resource: Resource): Observable<Resource> {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
       .pipe(catchError(this.handleError));
   }
@@ -298,8 +298,13 @@ export class ResourceApiService {
   }
 
   /** addResourceAttachment */
-  addResourceAttachment(resourceId: string, filenames: string[]): Observable<ResourceAttachment[]> {
-    const url = this.endpoints.attachmentByResource.replace('<id>', resourceId);
+  addResourceAttachment(resourceId: Number, filenames: string[]): Observable<ResourceAttachment[]> {
+    const url = this.endpoints.attachmentByResource.replace('<resource_id>', resourceId.toString());
+
+    console.log('resourceId', resourceId);
+    console.log('this.apiRoot + url', this.apiRoot + url);
+    console.log('filenames', filenames);
+
     return this.httpClient.post<ResourceAttachment[]>(this.apiRoot + url, filenames)
       .pipe(catchError(this.handleError));
   }
@@ -311,20 +316,20 @@ export class ResourceApiService {
   }
 
   /** deleteResourceAttachment */
-  deleteResourceAttachment(attachment: ResourceAttachment): Observable<any> {
+  deleteResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
     return this.httpClient.delete<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${attachment.id}`)
       .pipe(catchError(this.handleError));
   }
 
   /** addFavorite */
-  addFavorite(user: User, resource: Resource): Observable<any> {
+  addFavorite(user: User, resource: Resource): Observable<Favorite> {
     const options = { resource_id: resource.id, user_id: user.id };
     return this.httpClient.post<Favorite>(this.apiRoot + this.endpoints.favoriteList, options)
       .pipe(catchError(this.handleError));
   }
 
   /** deleteFavorite */
-  deleteFavorite(favorite: Favorite): Observable<any> {
+  deleteFavorite(favorite: Favorite): Observable<Favorite> {
     return this.httpClient.delete<Favorite>(this.apiRoot + favorite._links.self)
       .pipe(catchError(this.handleError));
   }
@@ -354,7 +359,7 @@ export class ResourceApiService {
   }
 
   /** deleteUser */
-  deleteUser(user: User): Observable<any> {
+  deleteUser(user: User): Observable<User> {
     return this.httpClient.delete<User>(this.apiRoot + user._links.self)
       .pipe(catchError(this.handleError));
   }

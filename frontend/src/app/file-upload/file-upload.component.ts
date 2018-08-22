@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { UploadEvent, UploadFile, FileSystemDirectoryEntry, FileSystemFileEntry, FileSystemEntry } from 'ngx-file-drop';
+import { Component, OnInit, Input, EventEmitter } from '@angular/core';
+import { UploadEvent, FileSystemDirectoryEntry, FileSystemFileEntry } from 'ngx-file-drop';
 import { zoomTransition } from '../shared/animations';
+import { FormField } from '../form-field';
 
 @Component({
   selector: 'app-file-upload',
@@ -9,59 +10,40 @@ import { zoomTransition } from '../shared/animations';
   animations: [zoomTransition()]
 })
 export class FileUploadComponent implements OnInit {
-  files: UploadFile[] = [];
-  fileEntries: FileSystemEntry[] = [];
-  fileBlobs: File[] = [];
-  dataSource: File[] = [];
+  @Input() field: FormField;
+  updateFilesEmitter = new EventEmitter<File[]>();
   displayedColumns: string[] = ['name', 'type', 'size', 'lastModifiedDate'];
   dropZoneHover = false;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
+    if (this.field && this.field.files && (this.field.files.length > 0)) {
+      this.updateFilesEmitter.emit(this.field.files);
+    }
   }
 
   dropped($event: UploadEvent) {
-    this.dataSource = [];
-    this.files = $event.files;
+    this.dropZoneHover = false;
 
-    for (const droppedFile of $event.files) {
-
+    $event.files.forEach((droppedFile, i) => {
       // Is it a file?
       if (droppedFile.fileEntry.isFile) {
         const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
-        this.fileEntries.push(fileEntry);
 
         fileEntry.file((file: File) => {
-          if (this.fileBlobs.filter(f => f.name === file.name).length === 0) {
-            this.fileBlobs.push(file);
+          if (this.field.files.filter(f => f.name === file.name).length === 0) {
+            this.field.files.push(file);
           }
 
-          /**
-          // You could upload it like this:
-          const formData = new FormData()
-          formData.append('logo', file, relativePath)
-
-          // Headers
-          const headers = new HttpHeaders({
-            'security-token': 'mytoken'
-          })
-
-          this.http.post('https://mybackend.com/api/upload/sanitize-and-save-logo', formData, { headers: headers, responseType: 'blob' })
-          .subscribe(data => {
-            // Sanitized logo returned from backend
-          })
-          **/
-
-
-          this.dataSource = this.fileBlobs;
+          // When we're done looping through the files, update UI
+          if (i === $event.files.length - 1) {
+            this.updateFilesEmitter.emit(this.field.files);
+          }
         });
-      } else {
-        // It was a directory (empty directories are added, otherwise only files)
-        const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
-        console.log(droppedFile.relativePath, fileEntry);
       }
-    }
+    });
   }
 
   fileOver($event) {
