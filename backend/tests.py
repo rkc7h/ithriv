@@ -1044,6 +1044,22 @@ class TestCase(unittest.TestCase):
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
 
+    def test_consult_request_sends_email(self):
+        # This test will send two emails. One confirming that the user is created:
+        user = self.test_create_user_with_password()
+        message_count = len(TEST_MESSAGES)
+        data = {
+            "user_id": user.id
+        }
+        # ...And a second email requesting the consult:
+        rv = self.app.post('/api/consult_request', data=json.dumps(data), content_type="application/json")
+        self.assertSuccess(rv)
+        self.assertGreater(len(TEST_MESSAGES), message_count)
+        self.assertEqual("iThriv: Consult Request", self.decode(TEST_MESSAGES[-1]['subject']))
+
+        logs = EmailLog.query.all()
+        self.assertIsNotNone(logs[-1].tracking_code)
+
     def test_get_current_participant(self):
         """ Test for the current participant status """
         # Create the user
