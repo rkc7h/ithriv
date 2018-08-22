@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  color: black;
+  font-weight: 900;
+  box-shadow: none;
+
+  svg {
+    flex: 1 1 auto;
+    circle {
+      transition: 1000ms ease-in-out cx, 1000ms ease-in-out cy;
+    }
+  }
+}

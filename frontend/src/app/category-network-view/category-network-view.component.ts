@@ -21,6 +21,7 @@ export class CategoryNetworkViewComponent implements OnInit {
 
   categoryId: number;
   category: Category;
+  selectedCategory: Category;
   allCategories: Category[];
 
   layoutWidth = 982;
@@ -160,6 +161,10 @@ export class CategoryNetworkViewComponent implements OnInit {
     }
   }
 
+  selectCategory(c: Category) {
+    this.selectedCategory = c;
+  }
+
   categoryColor(hexColor: string, alpha = 1) {
     return hexColorToRGBA(hexColor, alpha);
   }
@@ -196,13 +201,24 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   isSelectedCategory(node: Category) {
-    console.log('=== isSelectedCategory ===');
-    console.log('node', node);
-
-
     if (this.category) {
       if (node.id === this.category.id) { return true; }
       if (this.category.parent && (node.id === this.category.parent.id)) { return true; }
+    }
+  }
+
+  getState(node: Category) {
+    if (!this.selectedCategory) {
+      return 'secondary';
+    }
+    if (this.selectedCategory === node) {
+      return 'primary';
+    } else if (this.selectedCategory.parent === node) {
+      return 'secondary';
+    } else if (node.parent === this.selectedCategory) {
+      return 'secondary';
+    } else {
+      return 'tertiary';
     }
   }
 

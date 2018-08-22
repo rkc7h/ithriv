@@ -15,6 +15,7 @@ import { ResourceComponent } from '../resource/resource.component';
 import { SearchComponent } from '../search/search.component';
 import { SessionRedirectComponent } from '../session-redirect/session-redirect.component';
 import { UserAdminComponent } from '../user-admin/user-admin.component';
+import {GraphComponent} from '../network/graph/graph.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
   { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
   { path: 'network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
+  { path: 'network2', component: GraphComponent, data: { title: 'Category' } },
   { path: 'profile', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
   { path: 'register', component: LoginComponent, data: { title: 'Sign up for iThriv', hideHeader: true } },
   {
