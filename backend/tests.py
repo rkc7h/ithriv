@@ -624,7 +624,7 @@ class TestCase(unittest.TestCase):
                           ))
         self.assertSuccess(rv)
         data = json.loads(rv.get_data(as_text=True))
-        self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/resource/attachment/%i.pdf" % attachment_id, data["url"])
+        self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/resource/attachment/%i.svg" % attachment_id, data["url"])
 
     def test_add_resource_attachments(self):
         resource = self.construct_resource()

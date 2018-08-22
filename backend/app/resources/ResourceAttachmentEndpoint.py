@@ -29,7 +29,8 @@ class ResourceAttachmentEndpoint(flask_restful.Resource):
         updated = attachment
         if 'file' in request.files:
             file = request.files.get('file')
-            updated.url = file_server.save_resource_attachment(file, attachment, file.content_type)
+            extension = file.filename.rsplit('.', 1)[1].lower()
+            updated.url = file_server.save_resource_attachment(file, attachment, extension, file.content_type)
         else:
             json_data = request.get_json()
             updated, errors = self.schema.load(json_data, instance=attachment)
