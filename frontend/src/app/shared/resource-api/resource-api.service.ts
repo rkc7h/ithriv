@@ -306,7 +306,7 @@ export class ResourceApiService {
 
   /** addResourceAttachmentFile */
   addResourceAttachmentFile(attachment: ResourceAttachment, file: File): Observable<ResourceAttachment> {
-    return this.httpClient.post<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${attachment.id}`, file)
+    return this.httpClient.put<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${attachment.id}`, file)
       .pipe(catchError(this.handleError));
   }
 
