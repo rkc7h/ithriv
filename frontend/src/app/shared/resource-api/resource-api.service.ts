@@ -313,7 +313,7 @@ export class ResourceApiService {
 
     console.log('this.apiRoot + url', this.apiRoot + url);
 
-    return this.httpClient.put<ResourceAttachment>(this.apiRoot + url, { files: [{ file: file }] })
+    return this.httpClient.put<ResourceAttachment>(this.apiRoot + url, file)
       .pipe(catchError(this.handleError));
   }
 
