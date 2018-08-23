@@ -12,7 +12,8 @@ import { fadeTransition } from '../shared/animations';
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { Availability } from '../availability';
 import { ResourceAttachment } from '../resource-attachment';
-import { switchMap, map, mergeMap, mergeAll } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-resource-form',
@@ -169,7 +170,8 @@ export class ResourceFormComponent implements OnInit {
   constructor(
     private api: ResourceApiService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public snackBar: MatSnackBar
   ) {
     this.loadData();
   }
@@ -387,7 +389,47 @@ export class ResourceFormComponent implements OnInit {
 
 
     } else {
-      console.log('FORM NOT VALID');
+      const messages: string[] = [];
+
+      const controls = this.resourceForm.controls;
+      for (const fieldName in controls) {
+        if (controls.hasOwnProperty(fieldName)) {
+          console.log('fieldName', fieldName);
+          const errors = controls[fieldName].errors;
+          const label = this.fields[fieldName].placeholder;
+
+          for (const errorName in errors) {
+            if (errors.hasOwnProperty(errorName)) {
+              switch (errorName) {
+                case 'email':
+                  messages.push(`${label} is not a valid email address.`);
+                  break;
+                case 'maxlength':
+                  messages.push(`${label} is not long enough.`);
+                  break;
+                case 'minlength':
+                  messages.push(`${label} is too short.`);
+                  break;
+                case 'required':
+                  messages.push(`${label} is empty.`);
+                  break;
+                case 'url':
+                  messages.push(`${label} is not a valid URL.`);
+                  break;
+                default:
+                  messages.push(`${label} has an error.`);
+                  break;
+              }
+            }
+          }
+        }
+      }
+
+      const action = '';
+      const message = `Please double-check the following fields: ${messages.join(' ')}`;
+      this.snackBar.open(message, action, {
+        duration: 2000, panelClass: 'snackbar-warning'
+      });
     }
   }
 
@@ -406,8 +448,6 @@ export class ResourceFormComponent implements OnInit {
   }
 
   updateAvailabilities() {
-    console.log('=== updateAvailabilities ===');
-
     const availabilities: Availability[] = [];
     for (const value of this.fields['availabilities.institution_id'].formControl.value || []) {
       availabilities.push({ resource_id: this.resource.id, institution_id: value, available: true });
@@ -416,22 +456,14 @@ export class ResourceFormComponent implements OnInit {
   }
 
   updateAttachments() {
-    console.log('=== updateAttachments ===');
-
     if (this.hasAttachments()) {
       this.fields.attachments.files.forEach(f => this.files[f.name] = f);
-
-      console.log('this.files', this.files);
       const filenames = Object.keys(this.files);
-      console.log('filenames', filenames);
-
       return this.api.addResourceAttachment(this.resource.id, filenames);
     }
   }
 
   updateAttachmentFiles(ra: ResourceAttachment) {
-    console.log('=== updateAttachmentFiles ===');
-
     return this.api.addResourceAttachmentFile(ra, this.files[ra.name]);
   }
 
