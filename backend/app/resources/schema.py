@@ -229,7 +229,8 @@ class SearchSchema(ma.Schema):
 class UserSchema(ModelSchema):
     class Meta:
         model = User
-        fields = ('id', '_links', 'uid', 'display_name', 'email', 'role', 'institution_id', 'institution', 'password')
+        fields = ('id', '_links', 'uid', 'display_name', 'email', 'role', 'institution_id',
+                  'institution', 'password', 'institutional_role', 'division')
     password = fields.String(load_only=True)
     id = fields.Integer(required=False, allow_none=True)
     institution_id = fields.Integer(required=False, allow_none=True)

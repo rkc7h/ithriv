@@ -1,0 +1,10 @@
+Dear Research Concierge,
+
+{{ user.display_name }} just requested a consult with the following details:
+User Email: {{ user.email }}
+User Id: {{ user.uid }}
+User Institution: {{ user.institution }}
+User Institutional Role: {{ user.institutional_role }}
+User Division: {{ user.division }}
+Request Category: {{ request_data.request_category }}
+Request Text: {{ request_data.request_text }}
