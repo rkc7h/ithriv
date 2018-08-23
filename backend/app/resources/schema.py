@@ -88,7 +88,7 @@ class ThrivResourceSchema(ModelSchema):
                   'website', 'cost', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', 'approved',
                   'contact_email', 'contact_phone', 'contact_notes',
-                  '_links', 'favorites', 'favorite_count', 'resource_categories')
+                  '_links', 'favorites', 'favorite_count', 'resource_categories', 'owners')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
@@ -115,9 +115,6 @@ class ThrivResourceSchema(ModelSchema):
         'availability': ma.UrlFor('api.resourceavailabilityendpoint', resource_id='<id>')
     },
         dump_only=True)
-
-
-
 
 
 class CategorySchema(ModelSchema):
@@ -242,6 +239,7 @@ class UserSchema(ModelSchema):
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.userendpoint', id='<id>'),
         'favorites': ma.UrlFor('api.userfavoriteendpoint'),
+        'resources': ma.UrlFor('api.userresourceendpoint'),
     })
 
 

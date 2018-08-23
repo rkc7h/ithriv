@@ -48,6 +48,7 @@ export class ResourceApiService {
     favoriteList: '/api/favorite',
     favorite: '/api/favorite/<id>',
     userFavorites: '/api/session/favorite',
+    userResources: '/api/session/resource',
     userList: '/api/user',
     login_password: '/api/login_password',
     forgot_password: '/api/forgot_password',
@@ -267,6 +268,12 @@ export class ResourceApiService {
   /** deleteResource */
   deleteResource(resource: Resource): Observable<any> {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** get resources that the user owns */
+  getUserResources(): Observable<Resource[]> {
+    return this.httpClient.get<Resource[]>(this.apiRoot + this.endpoints.userResources)
       .pipe(catchError(this.handleError));
   }
 

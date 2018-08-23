@@ -63,6 +63,7 @@ import { EditCategoryButtonComponent } from './edit-category-button/edit-categor
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
 import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
 import { FavoriteResourceListComponent } from './favorite-resource-list/favorite-resource-list.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
 import { FormFieldComponent } from './form-field/form-field.component';
@@ -90,7 +91,7 @@ import { SessionRedirectComponent } from './session-redirect/session-redirect.co
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
-import { FileUploadComponent } from './file-upload/file-upload.component';
+import { UserResourceListComponent } from './user-resource-list/user-resource-list.component';
 
 @NgModule({
   declarations: [
@@ -112,6 +113,7 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
     FavoriteResourceButtonComponent,
     FavoriteResourceListComponent,
     FavoriteResourceListComponent,
+    FileUploadComponent,
     ForgotPasswordComponent,
     FormFieldComponent,
     FormFieldLabelComponent,
@@ -139,7 +141,7 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
     SessionRedirectComponent,
     TreeSelectComponent,
     UserAdminComponent,
-    FileUploadComponent
+    UserResourceListComponent
   ],
   imports: [
     AppRoutingModule,

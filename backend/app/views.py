@@ -7,7 +7,7 @@ from app.resources.Auth import auth_blueprint
 from app.resources.IconEndpoint import IconListEndpoint, IconEndpoint
 from app.resources.ResourceAndCategoryEndoint import ResourceByCategoryEndpoint, CategoryByResourceEndpoint, \
     ResourceCategoryEndpoint, ResourceCategoryListEndpoint
-from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint
+from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint, UserResourceEndpoint
 from app.resources.CategoryEndoint import CategoryListEndpoint, CategoryEndpoint
 from app.resources.AvailabilityEndpoint import AvailabilityEndpoint, AvailabilityListEndpoint, \
     ResourceAvailabilityEndpoint
@@ -78,3 +78,4 @@ api.add_resource(SessionEndpoint, '/session')
 api.add_resource(FavoriteListEndpoint, '/favorite')
 api.add_resource(FavoriteEndpoint, '/favorite/<id>')
 api.add_resource(UserFavoriteEndpoint, '/session/favorite')
+api.add_resource(UserResourceEndpoint, '/session/resource')
