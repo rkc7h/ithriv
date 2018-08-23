@@ -54,6 +54,9 @@ export class ConsultRequestFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.api.getSession().subscribe(user => {
+      this.user = user;
+    });
   }
 
   getFields() {
