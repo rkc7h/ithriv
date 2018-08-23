@@ -85,7 +85,7 @@ export class GraphComponent {
       radius = this.baseRadius * 1.5 + this.baseRadius * 1.5;
     } else if (state === 'tertiary') {
       radius = this.baseRadius + this.baseRadius * 0.35;
-    } else if (state === 'n-ary') {
+    } else if (state === 'nary') {
       radius = 0;
     }
     const angle = 360 / nodeCount * nodeIndex;
@@ -111,7 +111,7 @@ export class GraphComponent {
               this.selectedCategory.parent.id === node.parent.id) {
       return 'tertiary';
     } else {
-      return 'n-ary';
+      return 'nary';
     }
   }
 

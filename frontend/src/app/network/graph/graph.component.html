@@ -5,7 +5,6 @@
       [category]="category"
       [@circleState]="getState(category)"
       (click)="selectCategory(category)"
-      [class]="getState(category)"
       [options]="{
                 state: state,
                 relationship: 'root',
@@ -27,7 +26,6 @@
         [category]="child"
         [@circleState]="getState(child)"
         (click)="selectCategory(child)"
-        [class]="getState(child)"
         [options]="{
                 state: secondary,
                 relationship: 'child',
@@ -58,7 +56,6 @@
           [category]="grandChild"
           [@circleState]="getState(grandChild)"
           (click)="selectCategory(grandChild)"
-          [class]="getState(grandChild)"
           [options]="{
                   state: secondary,
                   relationship: 'child',

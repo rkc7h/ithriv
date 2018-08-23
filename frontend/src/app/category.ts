@@ -21,5 +21,5 @@ export interface Category {
   // Presentation options
   options?: NodeOptions;
   hover?: boolean;
-  previousState: string;
+  previousState?: String;
 }

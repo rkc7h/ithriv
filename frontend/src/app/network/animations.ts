@@ -23,8 +23,8 @@ export function selectTransition(): AnimationTriggerMetadata {
     state('tertiary',   style({
       transform: 'scale(0.25)'
     })),
-    state(' n-ary',   style({
-      transform: 'scale(0.1)'
+    state('nary',   style({
+      transform: 'scale(0)'
     })),
     transition('* => *', animate('600ms ease-in')),
   ]);
