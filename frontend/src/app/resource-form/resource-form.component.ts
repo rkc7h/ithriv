@@ -347,9 +347,6 @@ export class ResourceFormComponent implements OnInit {
     $event.preventDefault();
     this.validate();
 
-    console.log('this.resourceForm', this.resourceForm);
-
-
     if (this.resourceForm.valid) {
       this.isDataLoaded = false;
 
@@ -368,6 +365,7 @@ export class ResourceFormComponent implements OnInit {
         this.api[fnName](this.resource)
           .pipe(
             map(r => this.resource = r),
+            switchMap(() => this.updateCategories()),
             switchMap(() => this.updateAvailabilities()),
             switchMap(() => this.updateAttachments()),
             map(ras => {
@@ -383,11 +381,12 @@ export class ResourceFormComponent implements OnInit {
                 });
               });
             })
-        ).subscribe(result => console.log('result', result));
+          ).subscribe(result => console.log('result', result));
       } else {
         this.api[fnName](this.resource)
           .pipe(
             map(r => this.resource = r),
+            switchMap(() => this.updateCategories()),
             switchMap(() => this.updateAvailabilities()),
           )
           .subscribe(
@@ -396,15 +395,11 @@ export class ResourceFormComponent implements OnInit {
             () => this.close()
           );
       }
-
-
     } else {
       const messages: string[] = [];
-
       const controls = this.resourceForm.controls;
       for (const fieldName in controls) {
         if (controls.hasOwnProperty(fieldName)) {
-          console.log('fieldName', fieldName);
           const errors = controls[fieldName].errors;
           const label = this.fields[fieldName].placeholder;
 
@@ -452,9 +447,7 @@ export class ResourceFormComponent implements OnInit {
         selectedCategories.push({ resource_id: this.resource.id, category_id: parseInt(key, 10) });
       }
     }
-    return this.api
-      .updateResourceCategories(this.resource, selectedCategories)
-      .toPromise();
+    return this.api.updateResourceCategories(this.resource, selectedCategories);
   }
 
   updateAvailabilities() {
@@ -474,11 +467,7 @@ export class ResourceFormComponent implements OnInit {
   }
 
   updateAttachmentFiles(ra: ResourceAttachment) {
-    console.log('--- updateAttachmentFiles ---');
-
     const file: File = this.files[ra.name];
-    console.log('file', file);
-
     return this.api.addResourceAttachmentFile(ra, file);
   }
 
