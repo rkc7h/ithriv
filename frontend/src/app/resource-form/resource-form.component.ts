@@ -1,19 +1,19 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
+import { map, switchMap } from 'rxjs/operators';
+import { Availability } from '../availability';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
 import { Fieldset } from '../fieldset';
 import { FormField } from '../form-field';
 import { Resource } from '../resource';
-import { ResourceCategory } from '../resource-category';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { fadeTransition } from '../shared/animations';
-import { ValidateUrl } from '../shared/validators/url.validator';
-import { Availability } from '../availability';
 import { ResourceAttachment } from '../resource-attachment';
-import { switchMap, map, mergeMap } from 'rxjs/operators';
-import { MatSnackBar } from '@angular/material';
+import { ResourceCategory } from '../resource-category';
+import { fadeTransition } from '../shared/animations';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { ValidateUrl } from '../shared/validators/url.validator';
 
 @Component({
   selector: 'app-resource-form',
@@ -230,6 +230,22 @@ export class ResourceFormComponent implements OnInit {
       });
   }
 
+  loadResourceFiles() {
+    if (this.resource.attachments && (this.resource.attachments.length > 0)) {
+      this.fields.attachments.files = [];
+      this.resource.attachments.forEach(ra => {
+        if (ra.url) {
+          this.api
+            .getResourceAttachmentBlob(ra)
+            .subscribe(blob => {
+              this.fields.attachments.files.push(new File([blob], ra.name));
+              this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
+            });
+        }
+      });
+    }
+  }
+
   loadFieldsets() {
     this.fieldsets = [];
 
@@ -284,6 +300,10 @@ export class ResourceFormComponent implements OnInit {
           validators.push(ValidateUrl);
         }
 
+        if (fieldName === 'attachments') {
+          this.loadResourceFiles();
+        }
+
         if (fieldName === 'categories') {
           const selectedCatIds = this.resourceCategories.map(rc => rc.category.id);
           selectedCatIds.push(+this.category);
@@ -324,23 +344,7 @@ export class ResourceFormComponent implements OnInit {
   }
 
   getFields(): FormField[] {
-    const fields = [];
-
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        fields.push(this.fields[fieldName]);
-      }
-    }
-
-    return fields;
-  }
-
-  closeIfComplete() {
-    this.savesInAction--;
-    console.log('Total Saves in action:', this.savesInAction);
-    if (this.savesInAction === 0) {
-      this.close();
-    }
+    return Object.entries(this.fields).map(f => f[1]);
   }
 
   onSubmit($event) {

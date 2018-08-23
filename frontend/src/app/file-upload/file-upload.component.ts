@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, EventEmitter } from '@angular/core';
-import { UploadEvent, FileSystemDirectoryEntry, FileSystemFileEntry } from 'ngx-file-drop';
-import { zoomTransition } from '../shared/animations';
+import { Component, Input, OnInit } from '@angular/core';
+import { FileSystemFileEntry, UploadEvent } from 'ngx-file-drop';
+import { ReplaySubject } from 'rxjs';
 import { FormField } from '../form-field';
+import { zoomTransition } from '../shared/animations';
 
 @Component({
   selector: 'app-file-upload',
@@ -11,7 +12,7 @@ import { FormField } from '../form-field';
 })
 export class FileUploadComponent implements OnInit {
   @Input() field: FormField;
-  updateFilesEmitter = new EventEmitter<File[]>();
+  updateFilesSubject = new ReplaySubject<File[]>();
   displayedColumns: string[] = ['name', 'type', 'size', 'lastModifiedDate'];
   dropZoneHover = false;
 
@@ -20,8 +21,12 @@ export class FileUploadComponent implements OnInit {
 
   ngOnInit() {
     if (this.field && this.field.files && (this.field.files.length > 0)) {
-      this.updateFilesEmitter.emit(this.field.files);
+      this.updateFileList();
     }
+
+    this.field.formControl.valueChanges.subscribe(() => {
+      this.updateFileList();
+    });
   }
 
   dropped($event: UploadEvent) {
@@ -39,7 +44,7 @@ export class FileUploadComponent implements OnInit {
 
           // When we're done looping through the files, update UI
           if (i === $event.files.length - 1) {
-            this.updateFilesEmitter.emit(this.field.files);
+            this.updateFileList();
           }
         });
       }
@@ -92,5 +97,9 @@ export class FileUploadComponent implements OnInit {
     } else {
       return `/assets/filetypes/unknown.svg`;
     }
+  }
+
+  updateFileList() {
+    this.updateFilesSubject.next(this.field.files);
   }
 }

@@ -1,16 +1,15 @@
-import { Availability } from '../../availability';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+import { Availability } from '../../availability';
 import { Category } from '../../category';
 import { CategoryResource } from '../../category-resource';
 import { Favorite } from '../../favorite';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Icon } from '../../icon';
-import { Injectable } from '@angular/core';
 import { Institution } from '../../institution';
-import { Observable, throwError } from 'rxjs';
-import { Subject } from 'rxjs';
-import { environment } from '../../../environments/environment';
 import { Resource } from '../../resource';
 import { ResourceAttachment } from '../../resource-attachment';
 import { ResourceCategory } from '../../resource-category';
@@ -114,6 +113,9 @@ export class ResourceApiService {
 
   private handleError(error: HttpErrorResponse) {
     let message = 'Something bad happened; please try again later.';
+
+    console.error(error);
+
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error.message);
@@ -280,8 +282,8 @@ export class ResourceApiService {
   }
 
   /** getResourceAttachment */
-  getResourceAttachment(id: Number): Observable<ResourceAttachment> {
-    const url = this.endpoints.resourceAttachment.replace('<id>', id.toString());
+  getResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
+    const url = this.endpoints.resourceAttachment.replace('<id>', attachment.id.toString());
     return this.httpClient.get<ResourceAttachment>(this.apiRoot + url)
       .pipe(catchError(this.handleError));
   }
@@ -310,10 +312,25 @@ export class ResourceApiService {
   /** addResourceAttachmentFile */
   addResourceAttachmentFile(attachment: ResourceAttachment, file: File): Observable<ResourceAttachment> {
     const url = this.endpoints.resourceAttachment.replace('<id>', attachment.id.toString());
-
-    console.log('this.apiRoot + url', this.apiRoot + url);
-
     return this.httpClient.put<ResourceAttachment>(this.apiRoot + url, file)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getResourceAttachmentBlob */
+  getResourceAttachmentBlob(attachment: ResourceAttachment): Observable<Blob> {
+    console.log('attachment.url', attachment.url);
+    const options: {
+      headers?: HttpHeaders,
+      observe?: 'body',
+      params?: HttpParams,
+      reportProgress?: boolean,
+      responseType: 'json',
+      withCredentials?: boolean,
+    } = {
+      responseType: 'blob' as 'json'
+    };
+
+    return this.httpClient.get<Blob>(attachment.url, options)
       .pipe(catchError(this.handleError));
   }
 
