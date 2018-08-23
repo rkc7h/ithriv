@@ -44,10 +44,14 @@ class TestCase(unittest.TestCase):
         self.ctx.pop()
 
     def assertSuccess(self, rv):
-        data = json.loads(rv.get_data(as_text=True))
-        self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
-                        "BAD Response: %i. \n %s" %
-                        (rv.status_code, json.dumps(data)))
+        try:
+            data = json.loads(rv.get_data(as_text=True))
+            self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
+                            "BAD Response: %i. \n %s" %
+                            (rv.status_code, json.dumps(data)))
+        except:
+            self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
+                            "BAD Response: %i." % rv.status_code)
 
     def randomString(self):
         char_set = string.ascii_uppercase + string.digits
@@ -285,6 +289,34 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["_links"]["self"], '/api/resource/1')
         self.assertEqual(response["_links"]["collection"], '/api/resource')
+
+    def test_user_resources_list(self):
+        # Testing that the resource owner is correctly split with ; , or spaces between email addresses
+        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com")
+        self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
+        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com, bigbird@sesamestreet.com")
+        self.construct_resource(name="Snuffy's Balloon Collection", owner="oscar@sesamestreet.com bigbird@sesamestreet.com")
+        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
+
+        db.session.commit()
+
+        # Testing that the correct amount of user-owned resources show up for the correct user
+        rv = self.app.get('/api/session/resource', content_type="application/json",
+                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(3, len(response))
+
+        rv = self.app.get('/api/session/resource', content_type="application/json",
+                          headers=self.logged_in_headers(user=u2), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(4, len(response))
+
+        # Testing to see that user-owned resources are not viewable when logged out
+        rv = self.app.get('/api/session/resource', content_type="application/json")
+        self.assertEqual(401, rv.status_code)
 
     def test_category_has_links(self):
         self.construct_category()
@@ -1082,15 +1114,33 @@ class TestCase(unittest.TestCase):
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
 
-    def reset_password_sends_email(self):
+    def test_forgot_password_sends_email(self):
+        user = self.test_create_user_with_password()
         message_count = len(TEST_MESSAGES)
         data = {
-            "email": "tyrion@got.com"
+            "email": user.email
         }
-        rv = self.app.post('/api/reset_password', data=json.dumps(data), content_type="application/json")
+        rv = self.app.post('/api/forgot_password', data=json.dumps(data), content_type="application/json")
         self.assertSuccess(rv)
         self.assertGreater(len(TEST_MESSAGES), message_count)
         self.assertEqual("iThriv: Password Reset Email", self.decode(TEST_MESSAGES[-1]['subject']))
+
+        logs = EmailLog.query.all()
+        self.assertIsNotNone(logs[-1].tracking_code)
+
+    def test_consult_request_sends_email(self):
+        # This test will send two emails. One confirming that the user is created:
+        user = self.test_create_user_with_password()
+        message_count = len(TEST_MESSAGES)
+        data = {
+            "user_id": user.id
+        }
+        # ...And a second email requesting the consult:
+        rv = self.app.post('/api/consult_request', data=json.dumps(data), headers=self.logged_in_headers(),
+                           content_type="application/json")
+        self.assertSuccess(rv)
+        self.assertGreater(len(TEST_MESSAGES), message_count)
+        self.assertEqual("iThriv: Consult Request", self.decode(TEST_MESSAGES[-1]['subject']))
 
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)

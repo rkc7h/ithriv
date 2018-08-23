@@ -95,7 +95,7 @@ class ThrivResourceSchema(ModelSchema):
                   'website', 'cost', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', 'approved', 'attachments',
                   'contact_email', 'contact_phone', 'contact_notes',
-                  '_links', 'favorites', 'favorite_count', 'resource_categories')
+                  '_links', 'favorites', 'favorite_count', 'resource_categories', 'owners')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
@@ -238,7 +238,8 @@ class SearchSchema(ma.Schema):
 class UserSchema(ModelSchema):
     class Meta:
         model = User
-        fields = ('id', '_links', 'uid', 'display_name', 'email', 'role', 'institution_id', 'institution', 'password')
+        fields = ('id', '_links', 'uid', 'display_name', 'email', 'role', 'institution_id',
+                  'institution', 'password', 'institutional_role', 'division')
     password = fields.String(load_only=True)
     id = fields.Integer(required=False, allow_none=True)
     institution_id = fields.Integer(required=False, allow_none=True)
@@ -247,6 +248,7 @@ class UserSchema(ModelSchema):
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.userendpoint', id='<id>'),
         'favorites': ma.UrlFor('api.userfavoriteendpoint'),
+        'resources': ma.UrlFor('api.userresourceendpoint'),
     })
 
 

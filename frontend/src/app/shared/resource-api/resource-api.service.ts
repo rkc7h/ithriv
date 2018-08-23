@@ -51,10 +51,12 @@ export class ResourceApiService {
     favoriteList: '/api/favorite',
     favorite: '/api/favorite/<id>',
     userFavorites: '/api/session/favorite',
+    userResources: '/api/session/resource',
     userList: '/api/user',
     login_password: '/api/login_password',
     forgot_password: '/api/forgot_password',
     reset_password: '/api/reset_password',
+    consult_request: '/api/consult_request',
     session: '/api/session'
   };
 
@@ -341,6 +343,12 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** get resources that the user owns */
+  getUserResources(): Observable<Resource[]> {
+    return this.httpClient.get<Resource[]>(this.apiRoot + this.endpoints.userResources)
+      .pipe(catchError(this.handleError));
+  }
+
   /** addFavorite */
   addFavorite(user: User, resource: Resource): Observable<Favorite> {
     const options = { resource_id: resource.id, user_id: user.id };
@@ -404,6 +412,12 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** Request a Consult */
+  sendConsultRequestEmail(user: User, request_category: string, request_text: string): Observable<any> {
+    const request_data = { user_id: user.id, request_category: request_category, request_text: request_text };
+    return this.httpClient.post<any>(this.apiRoot + this.endpoints.consult_request, request_data)
+      .pipe(catchError(this.handleError));
+  }
 }
 
 

@@ -8,7 +8,7 @@ from app.resources.IconEndpoint import IconListEndpoint, IconEndpoint
 from app.resources.ResourceAndCategoryEndoint import ResourceByCategoryEndpoint, CategoryByResourceEndpoint, \
     ResourceCategoryEndpoint, ResourceCategoryListEndpoint
 from app.resources.ResourceAttachmentEndpoint import ResourceAttachmentEndpoint, ResourceAttachmentListEndpoint, AttachmentByResourceEndpoint
-from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint
+from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint, UserResourceEndpoint
 from app.resources.CategoryEndoint import CategoryListEndpoint, CategoryEndpoint
 from app.resources.AvailabilityEndpoint import AvailabilityEndpoint, AvailabilityListEndpoint, \
     ResourceAvailabilityEndpoint
@@ -16,6 +16,7 @@ from app.resources.InstitutionEndpoint import InstitutionEndpoint, InstitutionLi
 from app.resources.SearchEndpoint import SearchEndpoint
 from app.resources.SessionEndpoint import SessionEndpoint
 from app.resources.Tracking import tracking_blueprint
+from app.resources.ConsultRequest import consult_blueprint
 from app.resources.TypeEndpoint import TypeEndpoint, TypeListEndpoint
 from app.resources.UserEndpoint import UserEndpoint, UserListEndpoint
 from app.resources.FavoriteEndpoint import UserFavoriteEndpoint, FavoriteEndpoint, FavoriteListEndpoint
@@ -35,6 +36,7 @@ api = IThrivApi(api_blueprint)
 app.register_blueprint(api_blueprint)
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(tracking_blueprint)
+app.register_blueprint(consult_blueprint)
 
 parser = flask_restful.reqparse.RequestParser()
 parser.add_argument('resource')
@@ -80,3 +82,4 @@ api.add_resource(SessionEndpoint, '/session')
 api.add_resource(FavoriteListEndpoint, '/favorite')
 api.add_resource(FavoriteEndpoint, '/favorite/<id>')
 api.add_resource(UserFavoriteEndpoint, '/session/favorite')
+api.add_resource(UserResourceEndpoint, '/session/resource')

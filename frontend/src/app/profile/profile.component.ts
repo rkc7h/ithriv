@@ -98,7 +98,7 @@ export class ProfileComponent implements OnInit {
         if (error1) {
           this.errorEmitter.emit(error1);
         } else {
-          this.errorEmitter.emit('An unexpected error occured.  Please contact support.');
+          this.errorEmitter.emit('An unexpected error occurred.  Please contact support.');
         }
         this.submitEmitter.emit(false);
       });
@@ -110,7 +110,7 @@ export class ProfileComponent implements OnInit {
         if (error1) {
           this.errorEmitter.emit(error1);
         } else {
-          this.errorEmitter.emit('An unexpected error occured.  Please contact support.');
+          this.errorEmitter.emit('An unexpected error occurred.  Please contact support.');
         }
         this.submitEmitter.emit(false);
       });

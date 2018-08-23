@@ -4,10 +4,10 @@ from uuid import uuid4
 
 import boto3
 import flask_restful
-from flask import jsonify, request
+from flask import jsonify, request, g
 from marshmallow import ValidationError
 
-from app import app, RestException, db, elastic_index
+from app import app, RestException, db, elastic_index, auth
 from app.model.availability import Availability
 from app.model.resource_category import ResourceCategory
 from app.model.resource import ThrivResource
@@ -64,3 +64,18 @@ class ResourceListEndpoint(flask_restful.Resource):
         db.session.commit()
         elastic_index.add_resource(resource)
         return schema.dump(resource)
+
+
+class UserResourceEndpoint(flask_restful.Resource):
+    """Provides a way to get the resources owned by the current user."""
+    schema = ThrivResourceSchema()
+
+    @auth.login_required
+    def get(self):
+        schema = ThrivResourceSchema(many=True)
+        resources = []
+        all_resources = db.session.query(ThrivResource).all()
+        for r in all_resources:
+            if g.user.email in r.owners():
+                resources.append(r)
+        return schema.dump(resources)
