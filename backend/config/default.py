@@ -55,4 +55,4 @@ MAIL_DEFAULT_SENDER='someaddress@fake.com'
 MAIL_DEFAULT_USER='someaddress@fake.com'
 MAIL_TIMEOUT = 10
 
-MAIL_CONSULT_RECIPIENT = 'support@ithriv.com'
+MAIL_CONSULT_RECIPIENT = 'support@ithriv.org'
