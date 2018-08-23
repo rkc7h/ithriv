@@ -10,12 +10,12 @@
     {{ user.display_name }} just requested a consult with the following details:
 </p>
 
-<p>User Email: {{ user.email }}</p>
-<p>User Id: {{ user.uid }}</p>
-<p>User Institution: {{ user.institution }}</p>
-<p>User Institutional Role: {{ user.institutional_role }}</p>
-<p>User Division: {{ user.division }}</p>
-<p>User Request Category: {{ request_data.request_category }}</p>
-<p>User Request Text: {{ request_data.request_text }}</p>
+<p><b>Email:</b> {{ user.email }}</p>
+<p><b>User Id:</b> {{ user.uid }}</p>
+<p><b>User Institution:</b> {{ user.institution }}</p>
+<p><b>User Institutional Role:</b> {{ user.institutional_role }}</p>
+<p><b>User Division:</b> {{ user.division }}</p>
+<p><b>User Request Category:</b> {{ request_data.request_category }}</p>
+<p><b>User Request Text:</b> {{ request_data.request_text }}</p>
 <p></p>
 {% endblock %}
