@@ -13,7 +13,7 @@ import { zoomTransition } from '../shared/animations';
 export class FileUploadComponent implements OnInit {
   @Input() field: FormField;
   updateFilesSubject = new ReplaySubject<File[]>();
-  displayedColumns: string[] = ['name', 'type', 'size', 'lastModifiedDate'];
+  displayedColumns: string[] = ['name', 'type', 'size', 'lastModifiedDate', 'actions'];
   dropZoneHover = false;
 
   constructor() {
@@ -97,6 +97,11 @@ export class FileUploadComponent implements OnInit {
     } else {
       return `/assets/filetypes/unknown.svg`;
     }
+  }
+
+  removeFile(file: File) {
+    this.field.files = this.field.files.filter(f => file.name !== f.name);
+    this.updateFilesSubject.next(this.field.files);
   }
 
   updateFileList() {
