@@ -4,7 +4,7 @@ Dear Research Concierge,
 {{ user.email }}
 {{ user.uid }}
 {{ user.institution }}
-{{ user.role }}
+{{ user.institutional_role }}
 {{ user.division }}
 {{ request_data.request_category }}
 {{ request_data.request_text }}

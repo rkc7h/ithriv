@@ -13,9 +13,9 @@
 <p>{{ user.email }}</p>
 <p>{{ user.uid }}</p>
 <p>{{ user.institution }}</p>
-<!--<p>{{ user.role }}</p>-->
-<!--<p>{{ user.division }}</p>-->
-<p>{% request_data.request_category %}</p>
-<p>{% request_data.request_text %}</p>
+<p>{{ user.institutional_role }}</p>
+<p>{{ user.division }}</p>
+<p>{{ request_data.request_category }}</p>
+<p>{{ request_data.request_text }}</p>
 <p></p>
 {% endblock %}
