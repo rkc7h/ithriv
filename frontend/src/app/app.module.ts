@@ -58,6 +58,7 @@ import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryNetworkViewComponent } from './category-network-view/category-network-view.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
+import { ConsultRequestFormComponent } from './consult-request-form/consult-request-form.component';
 import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
 import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
@@ -104,6 +105,7 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
     CategoryFormComponent,
     CategoryNetworkViewComponent,
     CategoryTileComponent,
+    ConsultRequestFormComponent,
     EditCategoryButtonComponent,
     EditResourceButtonComponent,
     FavoriteResourceButtonComponent,

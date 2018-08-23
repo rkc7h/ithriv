@@ -69,6 +69,7 @@
     <button
       *ngIf="session"
       mat-stroked-button
+      (click)="goConsult($event)"
     >
       <mat-icon>help</mat-icon>
       Request a Consult
