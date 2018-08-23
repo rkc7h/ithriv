@@ -6,6 +6,7 @@ import { Resource } from '../resource';
 import { ResourceCategory } from '../resource-category';
 import { fadeTransition, zoomTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { ResourceAttachment } from '../resource-attachment';
 
 @Component({
   selector: 'app-resource',
@@ -91,4 +92,13 @@ export class ResourceComponent implements OnInit {
     window.open(this.resource.website, '_blank');
   }
 
+  fileIcon(attachment: ResourceAttachment): string {
+    const nameArray = attachment.name.toLowerCase().split('.');
+
+    if (nameArray.length > 0) {
+      return `/assets/filetypes/${nameArray[nameArray.length - 1]}.svg`;
+    } else {
+      return `/assets/filetypes/unknown.svg`;
+    }
+  }
 }

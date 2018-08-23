@@ -90,6 +90,16 @@
               (click)="goCategory($event, rc.category)"
             >{{rc.category.name}}</a>
           </mat-list-item>
+          <mat-list-item *ngIf="resource.attachments && (resource.attachments.length > 0)">
+            <h4 mat-line>Attachments</h4>
+            <a
+              *ngFor="let attachment of resource.attachments"
+              mat-line
+              [href]="attachment.url"
+            >
+              <img [src]="fileIcon(attachment)" /> {{attachment.name}}
+            </a>
+          </mat-list-item>
           <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
         </mat-list>
       </mat-card-content>
