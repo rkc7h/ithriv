@@ -281,7 +281,8 @@ export class ResourceApiService {
 
   /** getResourceAttachment */
   getResourceAttachment(id: Number): Observable<ResourceAttachment> {
-    return this.httpClient.get<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${id}`)
+    const url = this.endpoints.resourceAttachment.replace('<id>', id.toString());
+    return this.httpClient.get<ResourceAttachment>(this.apiRoot + url)
       .pipe(catchError(this.handleError));
   }
 
@@ -293,7 +294,8 @@ export class ResourceApiService {
 
   /** updateResourceAttachment */
   updateResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
-    return this.httpClient.put<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${attachment.id}`, attachment)
+    const url = this.endpoints.resourceAttachment.replace('<id>', attachment.id.toString());
+    return this.httpClient.put<ResourceAttachment>(this.apiRoot + url, attachment)
       .pipe(catchError(this.handleError));
   }
 
@@ -307,13 +309,18 @@ export class ResourceApiService {
 
   /** addResourceAttachmentFile */
   addResourceAttachmentFile(attachment: ResourceAttachment, file: File): Observable<ResourceAttachment> {
-    return this.httpClient.put<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${attachment.id}`, file)
+    const url = this.endpoints.resourceAttachment.replace('<id>', attachment.id.toString());
+
+    console.log('this.apiRoot + url', this.apiRoot + url);
+
+    return this.httpClient.put<ResourceAttachment>(this.apiRoot + url, { files: [{ file: file }] })
       .pipe(catchError(this.handleError));
   }
 
   /** deleteResourceAttachment */
   deleteResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
-    return this.httpClient.delete<ResourceAttachment>(`${this.apiRoot + this.endpoints.resourceAttachment}/${attachment.id}`)
+    const url = this.endpoints.resourceAttachment.replace('<id>', attachment.id.toString());
+    return this.httpClient.delete<ResourceAttachment>(this.apiRoot + url)
       .pipe(catchError(this.handleError));
   }
 

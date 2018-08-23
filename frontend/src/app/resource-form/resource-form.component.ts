@@ -367,10 +367,22 @@ export class ResourceFormComponent implements OnInit {
             map(r => this.resource = r),
             switchMap(() => this.updateAvailabilities()),
             switchMap(() => this.updateAttachments()),
-            switchMap((ras = []) => ras.map(ra => this.updateAttachmentFiles(ra)))
+            switchMap((ras = []) => {
+              console.log('ras', ras);
+              return ras.map(ra => {
+                console.log('ra', ra);
+                return this.updateAttachmentFiles(ra);
+              });
+            })
           )
           .subscribe(
-            result => console.log('result', result),
+            observable => {
+              console.log('observable', observable);
+
+              observable.subscribe(result => {
+                console.log('result', result);
+              });
+            },
             error => console.error(error),
             () => this.close()
           );
@@ -464,7 +476,12 @@ export class ResourceFormComponent implements OnInit {
   }
 
   updateAttachmentFiles(ra: ResourceAttachment) {
-    return this.api.addResourceAttachmentFile(ra, this.files[ra.name]);
+    console.log('--- updateAttachmentFiles ---');
+
+    const file: File = this.files[ra.name];
+    console.log('file', file);
+
+    return this.api.addResourceAttachmentFile(ra, file);
   }
 
   onCancel() {
