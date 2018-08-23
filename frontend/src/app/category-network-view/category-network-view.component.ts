@@ -197,6 +197,7 @@ export class CategoryNetworkViewComponent implements OnInit {
   }
 
   viewBoxDimensions() {
+
     return `${-this.layoutWidth / 2} ${-this.layoutHeight / 2} ${this.layoutWidth} ${this.layoutHeight}`;
   }
 
@@ -213,9 +214,11 @@ export class CategoryNetworkViewComponent implements OnInit {
     }
     if (this.selectedCategory === node) {
       return 'primary';
-    } else if (this.selectedCategory.parent === node) {
+    } else if (this.selectedCategory.parent && this.selectedCategory.parent.id === node.id) {
+      console.log("This is Secondary because it's the parent")
       return 'secondary';
-    } else if (node.parent === this.selectedCategory) {
+    } else if (node.parent && this.selectedCategory.id === node.parent.id) {
+      console.log("This is Secondary because it's the child")
       return 'secondary';
     } else {
       return 'tertiary';

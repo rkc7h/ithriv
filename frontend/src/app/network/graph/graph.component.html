@@ -1,31 +1,80 @@
-<p>Graph works</p>
-<button (click)="setState('primary')">Primary</button>
-<button (click)="setState('secondary')">Secondary</button>
-<button (click)="setState('tertiary')">Tertiary</button>
-<br/>
-<button (click)="setRelationship('root')">root</button>
-<button (click)="setRelationship('parent')">parent</button>
-<button (click)="setRelationship('self')">self</button>
-<button (click)="setRelationship('sibling')">sibling</button>
-<button (click)="setRelationship('child')">child</button>
-<button (click)="setRelationship('grandchild')">grandchild</button>
-
-<div class="container">
+<div class="container" *ngIf="category">
   <svg [attr.viewBox]="viewBoxDimensions()">
     <g
       app-network-view-node
       [category]="category"
-      [state]="state"
+      [@circleState]="getState(category)"
+      (click)="selectCategory(category)"
+      [class]="getState(category)"
       [options]="{
                 state: state,
-                relationship: relationship,
+                relationship: 'root',
                 x: 0,
                 y: 0,
-                radius: 200,
+                radius: baseRadius,
                 angle: 0,
                 titleHeight: 40
               }"
-    />
+    ></g>
+
+    <g
+      *ngFor="let child of category.children; let k = index"
+      class="sibling"
+      [attr.transform]="getPositionAsTransformation(category.children.length, k, getState(child))"
+    >
+      <g
+        app-network-view-node
+        [category]="child"
+        [@circleState]="getState(child)"
+        (click)="selectCategory(child)"
+        [class]="getState(child)"
+        [options]="{
+                state: secondary,
+                relationship: 'child',
+                x: 0,
+                y: 0,
+                radius: baseRadius,
+                angle: 0,
+                titleHeight: 40
+              }"
+      ></g>
+
+      <g
+        *ngFor="let grandChild of child.children; let k = index"
+        class="sibling"
+        [attr.transform]="getPositionAsTransformation(child.children.length, k, getState(grandChild))">
+        >
+        <!--
+        <animateTransform attributeName="transform"
+                          attributeType="XML"
+                          type="rotate"
+                          from="0 60 70"
+                          [attr.to]="'360 60 70'"
+                          dur="10s"
+                          repeatCount="indefinite"></animateTransform>
+        -->
+        <g
+          app-network-view-node
+          [category]="grandChild"
+          [@circleState]="getState(grandChild)"
+          (click)="selectCategory(grandChild)"
+          [class]="getState(grandChild)"
+          [options]="{
+                  state: secondary,
+                  relationship: 'child',
+                  x: 0,
+                  y: 0,
+                  radius: baseRadius,
+                  angle: 0,
+                  titleHeight: 40
+                }"
+        >
+        </g>
+      </g>
+
+
+    </g>
+
     -->
   </svg>
   <!--
