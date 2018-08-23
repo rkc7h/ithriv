@@ -20,3 +20,9 @@ class FileServer:
         path = "ithriv/icon/%s.%s" % (icon.id, file_extension)
         file_name = self._save_file(data, path, mime_type)
         return file_name
+
+    def save_resource_attachment(self, data, attachment, mime_type):
+        extension = attachment.name.rsplit('.', 1)[1].lower()
+        path = "ithriv/resource/attachment/%s.%s" % (attachment.id, extension)
+        file_name = self._save_file(data, path, mime_type)
+        return file_name

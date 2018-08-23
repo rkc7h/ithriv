@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 export class FormField {
   formControl?: FormControl;
   formGroup?: FormGroup;
+  files?: File[];
   required?: boolean;
   maxLength?: number;
   minLength?: number;

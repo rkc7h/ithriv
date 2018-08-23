@@ -7,6 +7,7 @@ from app.resources.Auth import auth_blueprint
 from app.resources.IconEndpoint import IconListEndpoint, IconEndpoint
 from app.resources.ResourceAndCategoryEndoint import ResourceByCategoryEndpoint, CategoryByResourceEndpoint, \
     ResourceCategoryEndpoint, ResourceCategoryListEndpoint
+from app.resources.ResourceAttachmentEndpoint import ResourceAttachmentEndpoint, ResourceAttachmentListEndpoint, AttachmentByResourceEndpoint
 from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint, UserResourceEndpoint
 from app.resources.CategoryEndoint import CategoryListEndpoint, CategoryEndpoint
 from app.resources.AvailabilityEndpoint import AvailabilityEndpoint, AvailabilityListEndpoint, \
@@ -56,6 +57,9 @@ def root():
 
 api.add_resource(ResourceListEndpoint, '/resource')
 api.add_resource(ResourceEndpoint, '/resource/<id>')
+api.add_resource(ResourceAttachmentListEndpoint, '/resource/attachment')
+api.add_resource(ResourceAttachmentEndpoint, '/resource/attachment/<id>')
+api.add_resource(AttachmentByResourceEndpoint, '/resource/<resource_id>/attachment')
 api.add_resource(CategoryByResourceEndpoint, '/resource/<resource_id>/category')
 api.add_resource(CategoryListEndpoint, '/category')
 api.add_resource(CategoryEndpoint, '/category/<id>')

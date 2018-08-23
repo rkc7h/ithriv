@@ -4,6 +4,7 @@ import { Institution } from './institution';
 import { Links } from './links';
 import { ResourceType } from './resourceType';
 import { ResourceCategory } from './resource-category';
+import { ResourceAttachment } from './resource-attachment';
 
 export interface Resource {
   id: number;
@@ -18,6 +19,7 @@ export interface Resource {
   type_id?: number;
   website?: string;
   approved?: string;
+  attachments?: ResourceAttachment[];
   last_updated?: string;
   favorites?: Favorite[];
   availabilities?: Availability[];

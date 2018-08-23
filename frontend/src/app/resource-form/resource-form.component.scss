@@ -37,3 +37,7 @@ fieldset {
     @include mat-elevation(1);
   }
 }
+
+::ng-deep snack-bar-container.snackbar-warning {
+  background-color: mat-color($ithriv-warn, default, 1);
+}
