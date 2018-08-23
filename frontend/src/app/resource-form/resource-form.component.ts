@@ -12,7 +12,7 @@ import { fadeTransition } from '../shared/animations';
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { Availability } from '../availability';
 import { ResourceAttachment } from '../resource-attachment';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, mergeMap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material';
 
 @Component({
@@ -362,30 +362,28 @@ export class ResourceFormComponent implements OnInit {
       const fnName = this.createNew ? 'addResource' : 'updateResource';
 
       if (this.hasAttachments()) {
+        const numAttachments = this.fields.attachments.files.length;
+        let numDone = 0;
+
         this.api[fnName](this.resource)
           .pipe(
             map(r => this.resource = r),
             switchMap(() => this.updateAvailabilities()),
             switchMap(() => this.updateAttachments()),
-            switchMap((ras = []) => {
-              console.log('ras', ras);
-              return ras.map(ra => {
-                console.log('ra', ra);
-                return this.updateAttachmentFiles(ra);
+            map(ras => {
+              ras.forEach(ra => {
+                this.updateAttachmentFiles(ra).subscribe(resourceAttachment => {
+                  numDone++;
+                  console.log('resourceAttachment updated:', resourceAttachment);
+                  console.log(`${numDone} of ${numAttachments} complete.`);
+
+                  if (numDone === numAttachments) {
+                    this.close();
+                  }
+                });
               });
             })
-          )
-          .subscribe(
-            observable => {
-              console.log('observable', observable);
-
-              observable.subscribe(result => {
-                console.log('result', result);
-              });
-            },
-            error => console.error(error),
-            () => this.close()
-          );
+        ).subscribe(result => console.log('result', result));
       } else {
         this.api[fnName](this.resource)
           .pipe(
