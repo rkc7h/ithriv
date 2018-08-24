@@ -633,27 +633,24 @@ class TestCase(unittest.TestCase):
 
     def test_update_resource_attachments(self):
         r = self.construct_resource()
-        ra = ResourceAttachment(name="Happy Coconuts", resource_id=r.id)
+        ra = ResourceAttachment(name="Happy_Coconuts.pdf", resource_id=r.id)
         db.session.add(ra)
         db.session.commit()
-        ra.name = "Happier Coconuts"
+        ra.name = "Happier_Coconuts.pdf"
         rv = self.app.put('/api/resource/attachment/%i' % ra.id, data=json.dumps(ResourceAttachmentSchema().dump(ra).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals("Happier Coconuts", response["name"])
+        self.assertEquals("Happier_Coconuts.pdf", response["name"])
 
     def test_upload_resource_attachments(self):
         resource = self.construct_resource()
-        ra = {'name': 'Happy Coconuts', 'resource_id': resource.id}
+        ra = {'name': 'test.svg', 'resource_id': resource.id}
         rv = self.app.post('/api/resource/attachment', data=json.dumps(ResourceAttachmentSchema().dump(ra).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         attachment_id = response["id"]
-
-        rv = self.app.put('/api/resource/attachment/%i' % attachment_id,
-                          data=dict(
-                              file=(BytesIO(b"hi everyone"), 'test.svg'),
-                          ))
+        file = (BytesIO(b"hi everyone"))
+        rv = self.app.put('/api/resource/attachment/%i' % attachment_id, data=file)
         self.assertSuccess(rv)
         data = json.loads(rv.get_data(as_text=True))
         self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/resource/attachment/%i.svg" % attachment_id, data["url"])
