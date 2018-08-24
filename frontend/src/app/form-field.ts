@@ -1,4 +1,5 @@
 import { FormControl, FormGroup } from '@angular/forms';
+import { FileAttachment } from './file-attachment';
 
 export class FormField {
   fieldsetId?: string;
@@ -15,9 +16,7 @@ export class FormField {
   type: string;
 
   // 'files' type
-  files?: File[] = [];
-  filesAdded?: File[] = [];
-  filesRemoved?: File[] = [];
+  attachments = new Map<number | string, FileAttachment>();
 
   // 'select' type can pull from a hard-coded list
   // or from API. If selectOptions is not provided,

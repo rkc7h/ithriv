@@ -3,6 +3,7 @@ import { FileSystemFileEntry, UploadEvent } from 'ngx-file-drop';
 import { ReplaySubject } from 'rxjs';
 import { FormField } from '../form-field';
 import { zoomTransition } from '../shared/animations';
+import { FileAttachment } from '../file-attachment';
 
 @Component({
   selector: 'app-file-upload',
@@ -12,7 +13,7 @@ import { zoomTransition } from '../shared/animations';
 })
 export class FileUploadComponent implements OnInit {
   @Input() field: FormField;
-  updateFilesSubject = new ReplaySubject<File[]>();
+  updateFilesSubject = new ReplaySubject<Map<number | string, FileAttachment>>();
   displayedColumns: string[] = ['name', 'type', 'size', 'lastModifiedDate', 'actions'];
   dropZoneHover = false;
 
@@ -20,7 +21,7 @@ export class FileUploadComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.field && this.field.files && (this.field.files.length > 0)) {
+    if (this.field && this.field.attachments && (this.field.attachments.size > 0)) {
       this.updateFileList();
     }
 
@@ -33,20 +34,9 @@ export class FileUploadComponent implements OnInit {
     this.dropZoneHover = false;
 
     $event.files.forEach((droppedFile, i) => {
-      // Is it a file?
       if (droppedFile.fileEntry.isFile) {
         const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
-
-        fileEntry.file((file: File) => {
-          if (this.field.files.filter(f => f.name === file.name).length === 0) {
-            this.field.files.push(file);
-          }
-
-          // When we're done looping through the files, update UI
-          if (i === $event.files.length - 1) {
-            this.updateFileList();
-          }
-        });
+        fileEntry.file(newFile => this.addFile(newFile));
       }
     });
   }
@@ -99,19 +89,42 @@ export class FileUploadComponent implements OnInit {
     }
   }
 
-  addFile(file: File) {
-    this.field.files.push(file);
-    this.field.filesAdded.push(file);
+  addFile(attachment: FileAttachment) {
+    if (this.field.attachments.has(attachment.name)) {
+      const old = this.field.attachments.get(attachment.name);
+      attachment.ref_id = old.ref_id;
+      attachment.description = old.description;
+      attachment.status = 'updated';
+      this.field.attachments.set(attachment.name, attachment);
+    } else {
+      attachment.status = 'added';
+      this.field.attachments.set(attachment.name, attachment);
+    }
+
     this.updateFileList();
   }
 
-  removeFile(file: File) {
-    this.field.files = this.field.files.filter(f => file.name !== f.name);
-    this.field.filesRemoved.push(file);
+  removeFile(attachment: FileAttachment) {
+    if (this.field.attachments.has(attachment.name)) {
+      const old = this.field.attachments.get(attachment.name);
+      attachment.ref_id = old.ref_id;
+      attachment.description = old.description;
+      attachment.status = 'updated';
+      this.field.attachments.set(attachment.name, attachment);
+    }
+
     this.updateFileList();
+  }
+
+  editFileAttachment(attachment: FileAttachment, options) {
+    attachment[options.key] = options.value;
+    if (attachment.status !== 'added') {
+      attachment.status = 'updated';
+    }
+    this.field.attachments.set(attachment.name, attachment);
   }
 
   updateFileList() {
-    this.updateFilesSubject.next(this.field.files);
+    this.updateFilesSubject.next(this.field.attachments);
   }
 }

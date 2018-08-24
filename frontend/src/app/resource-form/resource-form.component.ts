@@ -14,6 +14,7 @@ import { ResourceCategory } from '../resource-category';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ValidateUrl } from '../shared/validators/url.validator';
+import { FileAttachment } from '../file-attachment';
 
 @Component({
   selector: 'app-resource-form',
@@ -160,7 +161,7 @@ export class ResourceFormComponent implements OnInit {
     }),
     attachments: new FormField({
       formControl: new FormControl(),
-      files: [],
+      attachments: new Map<number | string, FileAttachment>(),
       required: false,
       placeholder: 'Attachments',
       type: 'files'
@@ -232,13 +233,14 @@ export class ResourceFormComponent implements OnInit {
 
   loadResourceFiles() {
     if (this.resource.attachments && (this.resource.attachments.length > 0)) {
-      this.fields.attachments.files = [];
       this.resource.attachments.forEach(ra => {
         if (ra.url) {
           this.api
             .getResourceAttachmentBlob(ra)
             .subscribe(blob => {
-              this.fields.attachments.files.push(new File([blob], ra.name));
+              const attachment = new File([blob], ra.name) as FileAttachment;
+              attachment.description = ra.description;
+              this.fields.attachments.attachments.set(ra.name, attachment);
               this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
             });
         }
@@ -363,7 +365,7 @@ export class ResourceFormComponent implements OnInit {
       const fnName = this.createNew ? 'addResource' : 'updateResource';
 
       if (this.hasAttachments()) {
-        const numAttachments = this.fields.attachments.files.length;
+        const numAttachments = this.fields.attachments.attachments.size;
         let numDone = 0;
 
         this.api[fnName](this.resource)
@@ -464,7 +466,11 @@ export class ResourceFormComponent implements OnInit {
 
   updateAttachments() {
     if (this.hasAttachments()) {
-      this.fields.attachments.files.forEach(f => this.files[f.name] = f);
+      this.fields.attachments.attachments.forEach(f => {
+        if (f.status === 'added') {
+          this.files[f.name] = f;
+        }
+      });
       const filenames = Object.keys(this.files);
       return this.api.addResourceAttachment(this.resource.id, filenames);
     }
@@ -532,8 +538,8 @@ export class ResourceFormComponent implements OnInit {
   hasAttachments() {
     return (
       this.fields.attachments &&
-      this.fields.attachments.files &&
-      (this.fields.attachments.files.length > 0)
+      this.fields.attachments.attachments &&
+      (this.fields.attachments.attachments.size > 0)
     );
   }
 }
