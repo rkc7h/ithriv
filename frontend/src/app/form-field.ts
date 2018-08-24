@@ -1,19 +1,23 @@
 import { FormControl, FormGroup } from '@angular/forms';
 
 export class FormField {
-  formControl?: FormControl;
-  formGroup?: FormGroup;
-  files?: File[];
-  required?: boolean;
-  maxLength?: number;
-  minLength?: number;
-  placeholder: string;
-  type: string;
-  options?: object;
-  showIcons = false;
-  multiSelect = false;
   fieldsetId?: string;
   fieldsetLabel?: string;
+  formControl?: FormControl;
+  formGroup?: FormGroup;
+  maxLength?: number;
+  minLength?: number;
+  multiSelect = false;
+  options?: object;
+  placeholder: string;
+  required?: boolean;
+  showIcons = false;
+  type: string;
+
+  // 'files' type
+  files?: File[] = [];
+  filesAdded?: File[] = [];
+  filesRemoved?: File[] = [];
 
   // 'select' type can pull from a hard-coded list
   // or from API. If selectOptions is not provided,

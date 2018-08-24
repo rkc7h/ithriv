@@ -99,9 +99,16 @@ export class FileUploadComponent implements OnInit {
     }
   }
 
+  addFile(file: File) {
+    this.field.files.push(file);
+    this.field.filesAdded.push(file);
+    this.updateFileList();
+  }
+
   removeFile(file: File) {
     this.field.files = this.field.files.filter(f => file.name !== f.name);
-    this.updateFilesSubject.next(this.field.files);
+    this.field.filesRemoved.push(file);
+    this.updateFileList();
   }
 
   updateFileList() {
