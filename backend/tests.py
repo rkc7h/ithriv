@@ -770,19 +770,33 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/resource/%i/category' % 1, content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(0, len(response))
+        self.assertEqual(0, len(response))
 
     def test_add_availability(self):
         r = self.construct_resource()
         institution = ThrivInstitution(id=1, name="Delmar's", description="autobody")
 
-        availability_data = {"resource_id": r.id, "institution_id": institution.id}
+        availability_data = {"resource_id": r.id, "institution_id": institution.id, "available": True}
 
         rv = self.app.post('/api/availability', data=json.dumps(availability_data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(institution.id, response["institution_id"])
-        self.assertEquals(r.id, response["resource_id"])
+        self.assertEqual(institution.id, response["institution_id"])
+        self.assertEqual(r.id, response["resource_id"])
+        self.assertEqual(True, response["available"])
+
+    def test_add_availability_via_resource(self):
+        r = self.construct_resource()
+        institution = ThrivInstitution(id=1, name="Delmar's", description="autobody")
+
+        availability_data = [{"resource_id": r.id, "institution_id": institution.id, "available": True}]
+
+        rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(institution.id, response[0]["institution_id"])
+        self.assertEqual(r.id, response[0]["resource_id"])
+        self.assertEqual(True, response[0]["available"])
 
     def test_remove_availability(self):
         self.test_add_availability()
