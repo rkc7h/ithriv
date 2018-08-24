@@ -290,7 +290,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["_links"]["self"], '/api/resource/1')
         self.assertEqual(response["_links"]["collection"], '/api/resource')
 
-    def test_user_resources_list(self):
+    def test_my_resources_list(self):
         # Testing that the resource owner is correctly split with ; , or spaces between email addresses
         self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com")
         self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
@@ -317,6 +317,48 @@ class TestCase(unittest.TestCase):
         # Testing to see that user-owned resources are not viewable when logged out
         rv = self.app.get('/api/session/resource', content_type="application/json")
         self.assertEqual(401, rv.status_code)
+
+    def test_user_view_resources_list(self):
+        # Testing that the resource owner is correctly split with ; , or spaces between email addresses
+        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com", approved="Approved")
+        self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com", approved="Approved")
+        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com", approved="Unapproved")
+        self.construct_resource(name="Snuffy's Balloon Collection", owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
+        u1 = User(id=1, uid='ogrouch', display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, uid='bbird', display_name="Big Bird", email="bigbird@sesamestreet.com")
+        u3 = User(id=3, uid='sgrover', display_name="Grover", email="grover@sesamestreet.com")
+        u4 = User(id=4, uid='maria', display_name="Maria", email="maria@sesamestreet.com", role="Admin")
+
+        db.session.commit()
+
+        # Testing that the correct amount of resources show up for the correct user
+        # Oscar should see all four resources -- the three he owns and the Approved one he doesn't
+        rv = self.app.get('/api/resource', content_type="application/json",
+                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(4, len(response))
+
+        # Bigbird should see the three resources he owns, and not the Unapproved one he doesn't
+        rv = self.app.get('/api/resource', content_type="application/json",
+                          headers=self.logged_in_headers(user=u2), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(3, len(response))
+
+        # Grover should see the two approved resources and nothing else
+        rv = self.app.get('/api/resource', content_type="application/json",
+                          headers=self.logged_in_headers(user=u3), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(2, len(response))
+
+        # Maria should see all the resources as an Admin
+        rv = self.app.get('/api/resource', content_type="application/json",
+                          headers=self.logged_in_headers(user=u4), follow_redirects=True)
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(4, len(response))
 
     def test_category_has_links(self):
         self.construct_category()
@@ -1019,7 +1061,10 @@ class TestCase(unittest.TestCase):
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
         participant = User.query.filter_by(uid=uid).first()
-        participant.role = "Admin"
+        if user:
+            participant.role = user.role
+        else:
+            participant.role = "Admin"
         db.session.add(participant)
         db.session.commit()
 
