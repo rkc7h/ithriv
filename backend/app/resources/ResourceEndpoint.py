@@ -21,6 +21,7 @@ class ResourceEndpoint(flask_restful.Resource):
         if resource is None: raise RestException(RestException.NOT_FOUND)
         return ThrivResourceSchema().dump(resource)
 
+    @auth.login_required
     def delete(self, id):
         resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
         try:
@@ -33,6 +34,7 @@ class ResourceEndpoint(flask_restful.Resource):
         db.session.commit()
         return None
 
+    @auth.login_required
     def put(self, id):
         request_data = request.get_json()
         instance = db.session.query(ThrivResource).filter_by(id=id).first()
@@ -51,10 +53,23 @@ class ResourceListEndpoint(flask_restful.Resource):
         args = request.args
         limit = eval(args["limit"]) if ("limit" in args) else 10
         schema = ThrivResourceSchema(many=True)
-        resources = db.session.query(ThrivResource).order_by(ThrivResource.last_updated.desc()).limit(limit).all()
+        if g.user is not None:
+            if g.user.role == "Admin":
+                resources = db.session.query(ThrivResource).order_by(ThrivResource.last_updated.desc()).limit(limit).all()
+            else:
+                resources = db.session.query(ThrivResource).filter(ThrivResource.approved == "Approved").limit(limit).all()
+                all_resources = db.session.query(ThrivResource).all()
+                for r in all_resources:
+                    if g.user.email in r.owners():
+                        resources.append(r)
+                resources.order_by(ThrivResource.last_updated.desc())
+        else:
+            resources = db.session.query(ThrivResource).filter(ThrivResource.approved == "Approved").order_by(
+                ThrivResource.last_updated.desc()).limit(limit).all()
 
         return schema.dump(resources)
 
+    @auth.login_required
     def post(self):
         schema = ThrivResourceSchema()
         request_data = request.get_json()
