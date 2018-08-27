@@ -16,7 +16,7 @@ export class FormField {
   type: string;
 
   // 'files' type
-  attachments = new Map<number | string, FileAttachment>();
+  attachments = new Map<string, FileAttachment>();
 
   // 'select' type can pull from a hard-coded list
   // or from API. If selectOptions is not provided,

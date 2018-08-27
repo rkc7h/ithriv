@@ -4,9 +4,10 @@ import { Category } from '../category';
 import { Institution } from '../institution';
 import { Resource } from '../resource';
 import { ResourceCategory } from '../resource-category';
-import { fadeTransition, zoomTransition } from '../shared/animations';
+import { zoomTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ResourceAttachment } from '../resource-attachment';
+import { FileAttachment } from '../file-attachment';
 
 @Component({
   selector: 'app-resource',
@@ -18,6 +19,7 @@ export class ResourceComponent implements OnInit {
   resourceId: number;
   @Input() resource: Resource;
   @Input() categories: ResourceCategory[];
+  attachments: FileAttachment[];
 
   transitionState = '';
   isDataLoaded = false;
@@ -56,6 +58,19 @@ export class ResourceComponent implements OnInit {
       });
   }
 
+  loadResourceAttachments(resource: Resource) {
+    resource.attachments.forEach(ra => {
+      this.api
+        .getFileAttachment(ra.attachment_id)
+        .subscribe(fa => {
+          console.log('Loaded Attachment:', fa);
+          this.attachments.push(fa);
+          this.transitionState = 'zoom-in-enter';
+          this.isDataLoaded = true;
+        });
+    });
+  }
+
   getAvailableInstitutions() {
     return this.resource
       .availabilities
@@ -92,7 +107,7 @@ export class ResourceComponent implements OnInit {
     window.open(this.resource.website, '_blank');
   }
 
-  fileIcon(attachment: ResourceAttachment): string {
+  fileIcon(attachment: FileAttachment): string {
     const nameArray = attachment.name.toLowerCase().split('.');
 
     if (nameArray.length > 0) {

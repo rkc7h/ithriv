@@ -4,6 +4,9 @@ import { ReplaySubject } from 'rxjs';
 import { FormField } from '../form-field';
 import { zoomTransition } from '../shared/animations';
 import { FileAttachment } from '../file-attachment';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { NgProgressComponent } from '@ngx-progressbar/core';
+import { ParallelHasher } from 'ts-md5/dist/parallel_hasher';
 
 @Component({
   selector: 'app-file-upload',
@@ -16,8 +19,9 @@ export class FileUploadComponent implements OnInit {
   updateFilesSubject = new ReplaySubject<Map<number | string, FileAttachment>>();
   displayedColumns: string[] = ['name', 'type', 'size', 'lastModifiedDate', 'actions'];
   dropZoneHover = false;
+  progress: NgProgressComponent;
 
-  constructor() {
+  constructor(private api: ResourceApiService) {
   }
 
   ngOnInit() {
@@ -90,26 +94,47 @@ export class FileUploadComponent implements OnInit {
   }
 
   addFile(attachment: FileAttachment) {
+
+    // Check for existing attachments
     if (this.field.attachments.has(attachment.name)) {
+
+      // Existing attachment. Copy all existing metadata to the new file.
       const old = this.field.attachments.get(attachment.name);
-      attachment.ref_id = old.ref_id;
-      attachment.description = old.description;
+      attachment.id = old.id;
+      attachment.display_name = old.display_name;
       attachment.status = 'updated';
       this.field.attachments.set(attachment.name, attachment);
     } else {
+
+      // New attachment.
       attachment.status = 'added';
       this.field.attachments.set(attachment.name, attachment);
     }
 
-    this.updateFileList();
+    const hasher = new ParallelHasher('/assets/md5_worker.js');
+    hasher.hash(attachment).then(md5 => {
+      attachment.md5 = md5;
+
+      // Upload changes to S3 immediately
+      this.api.addFileAttachment(attachment).subscribe(fa => {
+        console.log('fa', fa);
+
+        this.api
+          .addFileAttachmentBlob(attachment.id, fa, this.progress)
+          .subscribe(f => console.log('f', f));
+      });
+      this.updateFileList();
+
+    });
+
   }
 
   removeFile(attachment: FileAttachment) {
     if (this.field.attachments.has(attachment.name)) {
       const old = this.field.attachments.get(attachment.name);
-      attachment.ref_id = old.ref_id;
-      attachment.description = old.description;
-      attachment.status = 'updated';
+      attachment.id = old.id;
+      attachment.display_name = old.display_name;
+      attachment.status = 'removed';
       this.field.attachments.set(attachment.name, attachment);
     }
 
@@ -118,9 +143,13 @@ export class FileUploadComponent implements OnInit {
 
   editFileAttachment(attachment: FileAttachment, options) {
     attachment[options.key] = options.value;
+
+    // If this is not the first time the file has been added,
+    // set its status to 'updated'.
     if (attachment.status !== 'added') {
       attachment.status = 'updated';
     }
+
     this.field.attachments.set(attachment.name, attachment);
   }
 

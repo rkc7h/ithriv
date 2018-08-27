@@ -19,7 +19,7 @@
   <div
     id="fileQueueContainer"
     *ngIf="updateFilesSubject | async"
-    [@zoomTransition]="field.files.length > 0 ? 'fade-enter' : 'fade-exit'"
+    [@zoomTransition]="field.attachments.size > 0 ? 'fade-enter' : 'fade-exit'"
   >
     <table
       mat-table

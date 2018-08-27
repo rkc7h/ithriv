@@ -93,7 +93,7 @@
           <mat-list-item *ngIf="resource.attachments && (resource.attachments.length > 0)">
             <h4 mat-line>Attachments</h4>
             <a
-              *ngFor="let attachment of resource.attachments"
+              *ngFor="let attachment of attachments"
               mat-line
               [href]="attachment.url"
             >

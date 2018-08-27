@@ -39,6 +39,7 @@ import {
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CovalentTextEditorModule } from '@covalent/text-editor';
+import { NgProgressModule } from '@ngx-progressbar/core';
 import { InlineSVGModule } from 'ng-inline-svg';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { DeviceDetectorModule } from 'ngx-device-detector';
@@ -188,6 +189,7 @@ import { UserResourceListComponent } from './user-resource-list/user-resource-li
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
+    NgProgressModule.forRoot(),
     ReactiveFormsModule
   ],
   entryComponents: [

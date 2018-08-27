@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,6 +15,7 @@ import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { FileAttachment } from '../file-attachment';
+import { NgProgressComponent } from '@ngx-progressbar/core';
 
 @Component({
   selector: 'app-resource-form',
@@ -36,6 +37,8 @@ export class ResourceFormComponent implements OnInit {
   showConfirmDelete = false;
   savesInAction = 0;
   files = {};
+  progress: NgProgressComponent;
+  progressMessage: '';
 
   // Field groupings
   fieldsets: Fieldset[] = [];
@@ -234,15 +237,11 @@ export class ResourceFormComponent implements OnInit {
   loadResourceFiles() {
     if (this.resource.attachments && (this.resource.attachments.length > 0)) {
       this.resource.attachments.forEach(ra => {
-        if (ra.url) {
-          this.api
-            .getResourceAttachmentBlob(ra)
-            .subscribe(blob => {
-              const attachment = new File([blob], ra.name) as FileAttachment;
-              attachment.description = ra.description;
-              this.fields.attachments.attachments.set(ra.name, attachment);
-              this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
-            });
+        if (ra.attachment_id) {
+          this.api.getFileAttachment(ra.attachment_id).subscribe(fa => {
+            this.fields.attachments.attachments.set(fa.id.toString(), fa);
+            this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
+          });
         }
       });
     }
@@ -375,16 +374,14 @@ export class ResourceFormComponent implements OnInit {
             switchMap(() => this.updateAvailabilities()),
             switchMap(() => this.updateAttachments()),
             map(ras => {
-              ras.forEach(ra => {
-                this.updateAttachmentFiles(ra).subscribe(resourceAttachment => {
-                  numDone++;
-                  console.log('resourceAttachment updated:', resourceAttachment);
-                  console.log(`${numDone} of ${numAttachments} complete.`);
+              ras.subscribe(resourceAttachment => {
+                numDone++;
+                console.log('resourceAttachment updated:', resourceAttachment);
+                console.log(`${numDone} of ${numAttachments} complete.`);
 
-                  if (numDone === numAttachments) {
-                    this.close();
-                  }
-                });
+                if (numDone === numAttachments) {
+                  this.close();
+                }
               });
             })
           ).subscribe(result => console.log('result', result));
@@ -466,19 +463,19 @@ export class ResourceFormComponent implements OnInit {
 
   updateAttachments() {
     if (this.hasAttachments()) {
-      this.fields.attachments.attachments.forEach(f => {
-        if (f.status === 'added') {
-          this.files[f.name] = f;
-        }
-      });
-      const filenames = Object.keys(this.files);
-      return this.api.addResourceAttachment(this.resource.id, filenames);
+      const attachments = [];
+      this.fields.attachments.attachments.forEach(a => attachments.push(a));
+      return attachments.map(a => this.api.updateFileAttachment(a));
     }
   }
 
-  updateAttachmentFiles(ra: ResourceAttachment) {
-    const file: File = this.files[ra.name];
-    return this.api.addResourceAttachmentFile(ra, file);
+  uploadFileAttachment(attachment: FileAttachment) {
+    const file: File = this.files[attachment.name];
+    return this.api.addFileAttachmentBlob(attachment.id, file, this.progress);
+  }
+
+  updateAttachmentFiles(fa: FileAttachment) {
+    return this.api.linkResourceAndAttachment(this.resource, fa);
   }
 
   onCancel() {
