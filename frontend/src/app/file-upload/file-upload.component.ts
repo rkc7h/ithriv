@@ -94,34 +94,38 @@ export class FileUploadComponent implements OnInit {
   }
 
   addFile(attachment: FileAttachment) {
-
-    // Check for existing attachments
-    if (this.field.attachments.has(attachment.name)) {
-
-      // Existing attachment. Copy all existing metadata to the new file.
-      const old = this.field.attachments.get(attachment.name);
-      attachment.id = old.id;
-      attachment.display_name = old.display_name;
-      attachment.status = 'updated';
-      this.field.attachments.set(attachment.name, attachment);
-    } else {
-
-      // New attachment.
-      attachment.status = 'added';
-      this.field.attachments.set(attachment.name, attachment);
-    }
-
     const hasher = new ParallelHasher('/assets/md5_worker.js');
     hasher.hash(attachment).then(md5 => {
       attachment.md5 = md5;
 
+      const old = this.field.attachments.get(attachment.name);
+
+      // Check for existing attachments
+      if (old) {
+
+        // Existing attachment. Copy all existing metadata to the new file.
+        attachment.id = old.id;
+        attachment.display_name = old.display_name;
+        this.field.attachments.set(attachment.name, attachment);
+      } else {
+
+        // New attachment.
+        this.field.attachments.set(attachment.name, attachment);
+      }
+
+      const apiFn = old ? 'updateFileAttachment' : 'addFileAttachment';
+
       // Upload changes to S3 immediately
-      this.api.addFileAttachment(attachment).subscribe(fa => {
+      this.api[apiFn](attachment).subscribe(fa => {
         console.log('fa', fa);
 
-        this.api
-          .addFileAttachmentBlob(attachment.id, fa, this.progress)
-          .subscribe(f => console.log('f', f));
+        // Only upload the file blob if the bytes have changed.
+        const sameBlob = (old && (old.md5 === attachment.md5));
+        if (!sameBlob) {
+          this.api
+            .addFileAttachmentBlob(attachment.id, fa, this.progress)
+            .subscribe(f => console.log('f', f));
+        }
       });
       this.updateFileList();
 
