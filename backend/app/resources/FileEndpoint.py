@@ -49,10 +49,12 @@ class FileListEndpoint(flask_restful.Resource):
     filesSchema = FileSchema(many=True)
     fileSchema = FileSchema()
 
-    @auth.login_required
-    @requires_roles('Admin')
     def get(self):
-        files = db.session.query(UploadedFile).all()
+        args = request.args
+        query = db.session.query(UploadedFile)
+        if "md5" in args:
+            query = query.filter(UploadedFile.md5 == args["md5"])
+        files = query.all()
         return self.filesSchema.dump(files, many=True)
 
     def post(self):

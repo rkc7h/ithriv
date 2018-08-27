@@ -93,7 +93,7 @@ export class ResourceComponent implements OnInit {
   }
 
   fileIcon(attachment: ResourceAttachment): string {
-    const nameArray = attachment.name.toLowerCase().split('.');
+    const nameArray = attachment.file_name.toLowerCase().split('.');
 
     if (nameArray.length > 0) {
       return `/assets/filetypes/${nameArray[nameArray.length - 1]}.svg`;

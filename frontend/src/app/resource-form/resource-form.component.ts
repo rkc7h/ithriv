@@ -238,7 +238,7 @@ export class ResourceFormComponent implements OnInit {
           this.api
             .getResourceAttachmentBlob(ra)
             .subscribe(blob => {
-              this.fields.attachments.files.push(new File([blob], ra.name));
+              this.fields.attachments.files.push(new File([blob], ra.file_name));
               this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
             });
         }
@@ -471,7 +471,7 @@ export class ResourceFormComponent implements OnInit {
   }
 
   updateAttachmentFiles(ra: ResourceAttachment) {
-    const file: File = this.files[ra.name];
+    const file: File = this.files[ra.file_name];
     return this.api.addResourceAttachmentFile(ra, file);
   }
 

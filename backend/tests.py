@@ -665,6 +665,23 @@ class TestCase(unittest.TestCase):
         self.assertEqual(1, len(response['files']))
         self.assertEqual("happy_coconuts.svg", response['files'][0]['file_name'])
 
+    def addFile(self, file_name='happy_coconuts.svg', display_name='Happy Coconuts', md5="3399"):
+        file = UploadedFile(file_name=file_name, display_name=display_name,
+                                date_modified=datetime.datetime.now(),
+                            md5=md5)
+        rv = self.app.post('/api/file', data=json.dumps(FileSchema().dump(file).data), content_type="application/json")
+        return rv
+
+    def test_find_attachement_by_md5(self):
+        file = self.addFile()
+        file = self.addFile(md5='123412341234')
+        file = self.addFile(md5='666666666666', display_name="Lots a 6s")
+        rv = self.app.get('/api/file?md5=666666666666', content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(1, len(response))
+        self.assertEqual("Lots a 6s", response[0]['display_name'])
+
     def test_get_resource_by_category(self):
         c = self.construct_category()
         r = self.construct_resource()
