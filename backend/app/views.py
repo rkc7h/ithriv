@@ -4,10 +4,10 @@ import flask_restful
 from flask_restful import reqparse
 
 from app.resources.Auth import auth_blueprint
+from app.resources.FileEndpoint import FileListEndpoint, FileEndpoint
 from app.resources.IconEndpoint import IconListEndpoint, IconEndpoint
 from app.resources.ResourceAndCategoryEndoint import ResourceByCategoryEndpoint, CategoryByResourceEndpoint, \
     ResourceCategoryEndpoint, ResourceCategoryListEndpoint
-from app.resources.ResourceAttachmentEndpoint import ResourceAttachmentEndpoint, ResourceAttachmentListEndpoint, AttachmentByResourceEndpoint
 from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint, UserResourceEndpoint
 from app.resources.CategoryEndoint import CategoryListEndpoint, CategoryEndpoint
 from app.resources.AvailabilityEndpoint import AvailabilityEndpoint, AvailabilityListEndpoint, \
@@ -57,9 +57,6 @@ def root():
 
 api.add_resource(ResourceListEndpoint, '/resource')
 api.add_resource(ResourceEndpoint, '/resource/<id>')
-api.add_resource(ResourceAttachmentListEndpoint, '/resource/attachment')
-api.add_resource(ResourceAttachmentEndpoint, '/resource/attachment/<id>')
-api.add_resource(AttachmentByResourceEndpoint, '/resource/<resource_id>/attachment')
 api.add_resource(CategoryByResourceEndpoint, '/resource/<resource_id>/category')
 api.add_resource(CategoryListEndpoint, '/category')
 api.add_resource(CategoryEndpoint, '/category/<id>')
@@ -83,3 +80,9 @@ api.add_resource(FavoriteListEndpoint, '/favorite')
 api.add_resource(FavoriteEndpoint, '/favorite/<id>')
 api.add_resource(UserFavoriteEndpoint, '/session/favorite')
 api.add_resource(UserResourceEndpoint, '/session/resource')
+api.add_resource(FileEndpoint, '/file/<id>')
+api.add_resource(FileListEndpoint, '/file')
+
+#api.add_resource(ResourceAttachmentListEndpoint, '/resource/attachment')
+#api.add_resource(ResourceAttachmentEndpoint, '/resource/attachment/<id>')
+#api.add_resource(AttachmentByResourceEndpoint, '/resource/<resource_id>/attachment')

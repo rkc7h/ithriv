@@ -1,8 +1,11 @@
 # Set enivoronment variable to testing before loading.
+import datetime
 import os
 # IMPORTANT - Environment must be loaded before app, models, etc....
 import quopri
 import re
+
+from botocore.vendored import requests
 
 os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 import random
@@ -10,19 +13,21 @@ import string
 from app.email_service import TEST_MESSAGES
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
-from app.resources.schema import ThrivResourceSchema, CategorySchema, IconSchema, ThrivTypeSchema, UserSchema, ResourceAttachmentSchema
+from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema, UserSchema, \
+     FileSchema
 import unittest
 import json
 from app.model.availability import Availability
 from app.model.category import Category
 from app.model.resource import ThrivResource
-from app.model.resource_attachment import ResourceAttachment
 from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
 from app.model.icon import Icon
 from app.model.user import User
 from app.model.email_log import EmailLog
+from app.model.uploaded_file import UploadedFile
 from app import app, db, elastic_index
+
 
 
 class TestCase(unittest.TestCase):
@@ -190,8 +195,8 @@ class TestCase(unittest.TestCase):
     def test_category_basics(self):
         category = self.construct_category()
         rv = self.app.get('/api/category/1',
-                           follow_redirects=True,
-                           content_type="application/json")
+                          follow_redirects=True,
+                          content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["id"], 1)
@@ -618,62 +623,47 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(3, len(response))
 
-    def test_list_resource_attachments(self):
-        r = self.construct_resource()
-        ra1 = ResourceAttachment(name="Happy Coconuts", resource_id=r.id)
-        ra2 = ResourceAttachment(name="Fly on Strings", resource_id=r.id)
-        ra3 = ResourceAttachment(name="Between two Swallows", resource_id=r.id)
-        ra4 = ResourceAttachment(name="otherwise unladen", resource_id=r.id)
-        db.session.add_all([ra1, ra2, ra3, ra4])
-        db.session.commit()
-        rv = self.app.get('/api/resource/%i/attachment' % r.id, content_type="application/json")
+    def test_add_file(self):
+        file = UploadedFile(file_name='happy_coconuts.svg', display_name='Happy Coconuts',
+                                date_modified=datetime.datetime.now(),
+                            md5="3399")
+        rv = self.app.post('/api/file', data=json.dumps(FileSchema().dump(file).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(4, len(response))
-
-    def test_update_resource_attachments(self):
-        r = self.construct_resource()
-        ra = ResourceAttachment(name="Happy Coconuts", resource_id=r.id)
-        db.session.add(ra)
-        db.session.commit()
-        ra.name = "Happier Coconuts"
-        rv = self.app.put('/api/resource/attachment/%i' % ra.id, data=json.dumps(ResourceAttachmentSchema().dump(ra).data), content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals("Happier Coconuts", response["name"])
-
-    def test_upload_resource_attachments(self):
-        resource = self.construct_resource()
-        ra = {'name': 'Happy Coconuts', 'resource_id': resource.id}
-        rv = self.app.post('/api/resource/attachment', data=json.dumps(ResourceAttachmentSchema().dump(ra).data), content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        attachment_id = response["id"]
-
-        rv = self.app.put('/api/resource/attachment/%i' % attachment_id,
-                          data=dict(
-                              file=(BytesIO(b"hi everyone"), 'test.svg'),
-                          ))
+        file_id = response["id"]
+        raw_data = BytesIO(b"<svg xmlns=\"http://www.w3.org/2000/svg\"/>");
+        rv = self.app.put('/api/file/%i' % file_id,
+                          data=raw_data, content_type='image/svg')
         self.assertSuccess(rv)
         data = json.loads(rv.get_data(as_text=True))
-        self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/resource/attachment/%i.svg" % attachment_id, data["url"])
+        self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/resource/attachment/%i.svg" % file_id, data["url"])
+        self.assertEqual('happy_coconuts.svg', data['file_name'])
+        self.assertEqual('Happy Coconuts', data['display_name'])
+        self.assertIsNotNone(data['date_modified'])
+        self.assertEqual('image/svg', data['mime_type'])
+        self.assertEqual("3399", data['md5'])
+        return data
 
-    def test_add_resource_attachments(self):
-        resource = self.construct_resource()
-        data = {'filenames': ['Sappy Songs', 'my_dissertation.docx', 'vbihwlt8865']}
-        rv = self.app.post('/api/resource/%i/attachment' % resource.id, data=json.dumps(data), content_type="application/json")
+    def test_remove_file(self):
+        file_data = self.test_add_file();
+        response = requests.get(file_data['url'])
+        self.assertEquals(200, response.status_code)
+        rv = self.app.delete('/api/file/%i' % file_data['id'])
+        self.assertSuccess(rv)
+        response = requests.get(file_data['url'])
+        self.assertEquals(404, response.status_code)
+
+    def test_attach_file_to_resource(self):
+        r = self.construct_resource()
+        file = self.test_add_file()
+        file['resource_id'] = r.id
+        rv = self.app.put('/api/file/%i' % file['id'], data=json.dumps(file), content_type="application/json")
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/resource/%i' % r.id, content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(3, len(response))
-
-    def test_remove_attachment_from_resource(self):
-        self.test_add_resource_attachments()
-        rv = self.app.delete('/api/resource/attachment/%i' % 1)
-        self.assertSuccess(rv)
-        rv = self.app.get('/api/resource/%i/attachment' % 1, content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(2, len(response))
+        self.assertEqual(1, len(response['files']))
+        self.assertEqual("happy_coconuts.svg", response['files'][0]['file_name'])
 
     def test_get_resource_by_category(self):
         c = self.construct_category()
@@ -977,9 +967,9 @@ class TestCase(unittest.TestCase):
         icon_id = response["id"]
 
         rv = self.app.put('/api/icon/%i' % icon_id,
-            data=dict(
-                image=(BytesIO(b"hi everyone"), 'test.svg'),
-            ))
+                          data=dict(
+                              image=(BytesIO(b"hi everyone"), 'test.svg'),
+                          ))
         self.assertSuccess(rv)
         data = json.loads(rv.get_data(as_text=True))
         self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/icon/%i.svg" % icon_id, data["url"])
@@ -1160,15 +1150,15 @@ class TestCase(unittest.TestCase):
         response = self.app.get('/api/session', headers=dict(
             Authorization='Bearer ' +
                           user.encode_auth_token().decode()
-            )
         )
+                                )
         self.assertSuccess(response)
         return json.loads(response.data.decode())
 
     def searchUsers(self, query):
         '''Executes a query, returning the resulting search results object.'''
         rv = self.app.get('/api/user', query_string=query, follow_redirects=True,
-                           content_type="application/json", headers=self.logged_in_headers())
+                          content_type="application/json", headers=self.logged_in_headers())
         self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
 
