@@ -9,6 +9,7 @@ import random
 import string
 from app.email_service import TEST_MESSAGES
 from io import BytesIO
+from flask import g
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import ThrivResourceSchema, CategorySchema, IconSchema, ThrivTypeSchema, UserSchema, ResourceAttachmentSchema
 import unittest
@@ -322,16 +323,17 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/session/resource', content_type="application/json")
         self.assertEqual(401, rv.status_code)
 
-    def test_user_view_approved_resources_list(self):
-        # Testing that the resource owner is correctly split with ; , or spaces between email addresses
-        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com", approved="Approved")
-        self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com", approved="Approved")
+    def test_approved_resources_list_with_general_users(self):
+        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com",
+                                approved="Approved")
+        self.construct_resource(name="Slimy the worm's flying school",
+                                owner="oscar@sesamestreet.com; bigbird@sesamestreet.com", approved="Approved")
         self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com", approved="Unapproved")
-        self.construct_resource(name="Snuffy's Balloon Collection", owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
+        self.construct_resource(name="Snuffy's Balloon Collection",
+                                owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
         u1 = User(id=1, uid='ogrouch', display_name="Oscar the Grouch", email="oscar@sesamestreet.com", role="User")
         u2 = User(id=2, uid='bbird', display_name="Big Bird", email="bigbird@sesamestreet.com", role="User")
         u3 = User(id=3, uid='sgrover', display_name="Grover", email="grover@sesamestreet.com", role="User")
-        u4 = User(id=4, uid='maria', display_name="Maria", email="maria@sesamestreet.com", role="Admin")
 
         db.session.commit()
 
@@ -357,12 +359,35 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(2, len(response))
 
+    def test_approved_resources_list_with_admin_user(self):
+        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com",
+                                approved="Approved")
+        self.construct_resource(name="Slimy the worm's flying school",
+                                owner="oscar@sesamestreet.com; bigbird@sesamestreet.com", approved="Approved")
+        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com",
+                                approved="Unapproved")
+        self.construct_resource(name="Snuffy's Balloon Collection",
+                                owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
+        u1 = User(id=4, uid='maria', display_name="Maria", email="maria@sesamestreet.com", role="Admin")
+
+        db.session.commit()
+
         # Maria should see all the resources as an Admin
         rv = self.app.get('/api/resource', content_type="application/json",
-                          headers=self.logged_in_headers(user=u4), follow_redirects=True)
+                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(4, len(response))
+
+    def test_approved_resources_list_with_no_user(self):
+        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com",
+                                approved="Approved")
+        self.construct_resource(name="Slimy the worm's flying school",
+                                owner="oscar@sesamestreet.com; bigbird@sesamestreet.com", approved="Approved")
+        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com",
+                                approved="Unapproved")
+        self.construct_resource(name="Snuffy's Balloon Collection",
+                                owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
 
         # When there is no user logged in, they should only see the two approved resources
         rv = self.app.get('/api/resource', content_type="application/json")
@@ -563,7 +588,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(search_results["resources"]), 1)
 
         rv = self.app.delete('/api/resource/{}'.format(resource_id),
-                             content_type="application/json")
+                             content_type="application/json",
+                             headers=self.logged_in_headers(),
+                             follow_redirects=True)
         self.assertSuccess(rv)
 
         search_results = self.search(data)
@@ -1076,6 +1103,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
         participant = User.query.filter_by(uid=uid).first()
+        g.user = participant
         if user:
             participant.role = user.role
         else:
