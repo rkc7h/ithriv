@@ -53,21 +53,13 @@ class ResourceListEndpoint(flask_restful.Resource):
         args = request.args
         limit = eval(args["limit"]) if ("limit" in args) else 10
         schema = ThrivResourceSchema(many=True)
-        if g.user is not None:
-            if g.user.role == "Admin":
-                resources = db.session.query(ThrivResource).order_by(ThrivResource.last_updated.desc()).limit(limit).all()
-            else:
-                resources = db.session.query(ThrivResource).filter(ThrivResource.approved == "Approved").limit(limit).all()
-                all_resources = db.session.query(ThrivResource).all()
-                for r in all_resources:
-                    if g.user.email in r.owners():
-                        resources.append(r)
-                resources.order_by(ThrivResource.last_updated.desc())
-        else:
-            resources = db.session.query(ThrivResource).filter(ThrivResource.approved == "Approved").order_by(
-                ThrivResource.last_updated.desc()).limit(limit).all()
+        resources = db.session.query(ThrivResource).order_by(ThrivResource.last_updated.desc()).limit(limit).all()
+        viewable_resources = []
+        for r in resources:
+            if r.user_may_view():
+                    viewable_resources.append(r)
 
-        return schema.dump(resources)
+        return schema.dump(viewable_resources)
 
     @auth.login_required
     def post(self):

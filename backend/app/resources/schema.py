@@ -95,7 +95,8 @@ class ThrivResourceSchema(ModelSchema):
                   'website', 'cost', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', 'approved', 'attachments',
                   'contact_email', 'contact_phone', 'contact_notes',
-                  '_links', 'favorites', 'favorite_count', 'resource_categories', 'owners')
+                  '_links', 'favorites', 'favorite_count', 'resource_categories',
+                  'owners', 'user_may_view', 'user_may_edit')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
