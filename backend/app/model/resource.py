@@ -2,7 +2,6 @@ import datetime
 import re
 from app.model.availability import Availability
 from app.model.favorite import Favorite
-from app.model.resource_attachment import ResourceAttachment
 from app import db
 
 
@@ -26,8 +25,7 @@ class ThrivResource(db.Model):
                                      backref=db.backref('resource', lazy=True))
     favorites = db.relationship(lambda: Favorite, cascade="all, delete-orphan",
                                 backref=db.backref('resource', lazy=True))
-    attachments = db.relationship(lambda: ResourceAttachment, cascade="all, delete-orphan",
-                                  backref=db.backref('resource', lazy=True))
+    files = db.relationship("UploadedFile", back_populates="resource")
     categories = db.relationship("ResourceCategory", back_populates="resource")
     approved = db.Column(db.String)
 

@@ -21,8 +21,15 @@ class FileServer:
         file_name = self._save_file(data, path, mime_type)
         return file_name
 
-    def save_resource_attachment(self, data, attachment, mime_type):
-        extension = attachment.name.rsplit('.', 1)[1].lower()
-        path = "ithriv/resource/attachment/%s.%s" % (attachment.id, extension)
-        file_name = self._save_file(data, path, mime_type)
+    def get_key(self, file):
+        extension = file.file_name.split('.', 1)[1].lower()
+        return "ithriv/resource/attachment/%s.%s" % (file.id, extension)
+
+    def save_file(self, data, file, mime_type):
+        key = self.get_key(file)
+        file_name = self._save_file(data, key, mime_type)
         return file_name
+
+    def delete_file(self, file):
+        key = self.get_key(file)
+        self.s3.Object(self.bucket, key).delete()
