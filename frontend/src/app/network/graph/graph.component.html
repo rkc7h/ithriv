@@ -1,12 +1,15 @@
 <div class="container" *ngIf="category">
   <svg [attr.viewBox]="viewBoxDimensions()">
+
+    <g
+      [@rootState]="{value: getRootState(), params: getRootShift()}"
+    >
     <g
       app-network-view-node
       [category]="category"
-      [@circleState]="getState(category)"
       (click)="selectCategory(category)"
+      [state]="getState(category)"
       [options]="{
-                state: state,
                 relationship: 'root',
                 x: 0,
                 y: 0,
@@ -19,15 +22,14 @@
     <g
       *ngFor="let child of category.children; let k = index"
       class="sibling"
-      [attr.transform]="getPositionAsTransformation(category.children.length, k, getState(child))"
+      [@childState]="{value: getState(child), params: getCatPos(child, category, k)}"
     >
       <g
         app-network-view-node
         [category]="child"
-        [@circleState]="getState(child)"
+        [state]="getState(child)"
         (click)="selectCategory(child)"
         [options]="{
-                state: secondary,
                 relationship: 'child',
                 x: 0,
                 y: 0,
@@ -40,7 +42,7 @@
       <g
         *ngFor="let grandChild of child.children; let k = index"
         class="sibling"
-        [attr.transform]="getPositionAsTransformation(child.children.length, k, getState(grandChild))">
+        [@grandchildState]="{value: getState(grandChild), params: getCatPos(grandChild, child, k)}"
         >
         <!--
         <animateTransform attributeName="transform"
@@ -54,10 +56,9 @@
         <g
           app-network-view-node
           [category]="grandChild"
-          [@circleState]="getState(grandChild)"
+          [state]="getState(grandChild)"
           (click)="selectCategory(grandChild)"
           [options]="{
-                  state: secondary,
                   relationship: 'child',
                   x: 0,
                   y: 0,
@@ -71,7 +72,7 @@
 
 
     </g>
-
+    </g>
     -->
   </svg>
   <!--

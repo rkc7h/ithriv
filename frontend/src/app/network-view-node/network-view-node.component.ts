@@ -3,13 +3,11 @@ import { Router } from '@angular/router';
 import { Category } from '../category';
 import { NodeOptions } from '../node-options';
 import { hexColorToRGBA } from '../shared/color';
-import {selectTransition} from '../network/animations';
 
 @Component({
   selector: '[app-network-view-node]',
   templateUrl: './network-view-node.component.html',
   styleUrls: ['./network-view-node.component.scss'],
-  animations: [selectTransition()]
 })
 export class NetworkViewNodeComponent implements OnInit {
   @Input() category: Category;
