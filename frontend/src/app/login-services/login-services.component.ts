@@ -24,6 +24,7 @@ export class LoginServicesComponent implements OnInit {
       { id: 1, color: 'orange', name: 'UVA NetBadge', image: '/assets/institutions/UVA.png' },
       { id: 2, color: 'navy', name: 'Carilion', image: '/assets/institutions/Carilion.png' },
       { id: 3, color: 'purple', name: 'Virginia Tech', image: '/assets/institutions/Virginia Tech.png' },
+      { id: 4, color: 'blue', name: 'Invoa', image: '/assets/institutions/Inova.png' },
     ];
 
     this.loginServices = services.map(s => new LoginService(s));
