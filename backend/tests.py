@@ -1208,16 +1208,19 @@ class TestCase(unittest.TestCase):
         self.createTestUsers();
         self.assertEquals(3, len(db.session.query(User).all()));
 
-        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '2'}
+        query = {'filter' : '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '2'}
         response = self.searchUsers(query)
         self.assertEquals(2, len(response['items']))
         self.assertEquals(3, response['total'])
+        self.assertEquals(3, response['total'])
+        self.assertEquals('Big Bird', response['items'][0]['display_name'])
 
-        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '2', 'pageSize': '2'}
+        query['pageNumber'] = 1
         response = self.searchUsers(query)
         self.assertEquals(1, len(response['items']))
+        self.assertEquals('Oscar the Grouch', response['items'][0]['display_name'])
 
-        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '3', 'pageSize': '2'}
+        query['pageNumber'] = 2
         response = self.searchUsers(query)
         self.assertEquals(0, len(response['items']))
 
