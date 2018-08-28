@@ -91,7 +91,6 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { GraphComponent } from './network/graph/graph.component';
-import { LevelOneComponent } from './network/level-one/level-one.component';
 
 @NgModule({
   declarations: [
@@ -141,7 +140,6 @@ import { LevelOneComponent } from './network/level-one/level-one.component';
     UserAdminComponent,
     FileUploadComponent,
     GraphComponent,
-    LevelOneComponent
   ],
   imports: [
     AppRoutingModule,

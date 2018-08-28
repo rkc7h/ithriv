@@ -1,9 +1,19 @@
 <div class="container" *ngIf="category">
   <svg [attr.viewBox]="viewBoxDimensions()">
 
+    <!-- Draw the lines first, so they show up underneath. -->
     <g
       [@rootState]="{value: getRootState(), params: getRootShift()}"
     >
+      <g *ngIf="transitionState === 'set'">
+        <line *ngFor="let child of category.children; let k = index"
+              [attr.x1]="0"
+              [attr.y1]="0"
+              [attr.x2]="getCatPos(child, category, k, false).x"
+              [attr.y2]="getCatPos(child, category, k, false).y"
+              [attr.stroke]="category.color"
+              [ngStyle]="{'stroke-width': 5, 'stroke-color': 'blue'}"></line>
+      </g>
     <g
       app-network-view-node
       [category]="category"
@@ -24,6 +34,16 @@
       class="sibling"
       [@childState]="{value: getState(child), params: getCatPos(child, category, k)}"
     >
+      <g *ngIf="transitionState === 'set'">
+        <line *ngFor="let grandChild of child.children; let k = index"
+              [attr.x1]="0"
+              [attr.y1]="0"
+              [attr.x2]="getCatPos(grandChild, child, k, false).x"
+              [attr.y2]="getCatPos(grandChild, child, k, false).y"
+              [attr.stroke]="category.color"
+              [ngStyle]="{'stroke-width': 4}"></line>
+      </g>
+
       <g
         app-network-view-node
         [category]="child"
@@ -43,16 +63,8 @@
         *ngFor="let grandChild of child.children; let k = index"
         class="sibling"
         [@grandchildState]="{value: getState(grandChild), params: getCatPos(grandChild, child, k)}"
-        >
-        <!--
-        <animateTransform attributeName="transform"
-                          attributeType="XML"
-                          type="rotate"
-                          from="0 60 70"
-                          [attr.to]="'360 60 70'"
-                          dur="10s"
-                          repeatCount="indefinite"></animateTransform>
-        -->
+        (@grandchildState.done) = "transitionCallback()">
+
         <g
           app-network-view-node
           [category]="grandChild"

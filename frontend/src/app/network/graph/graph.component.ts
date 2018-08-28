@@ -20,7 +20,7 @@ export class GraphComponent {
   selectedCategory: Category;
   relationship = 'root';
   flatCategories: Category[];
-
+  transitionState = 'moving';
   layoutWidth = 982;
   layoutHeight = 982;
   baseRadius = 80;
@@ -42,21 +42,21 @@ export class GraphComponent {
       this.category = cats[0];
       this.selectedCategory = this.category;
       this.flatCategories = [];
-      this.category.previousState = this.getState(this.category);
-      this.flatten([this.category], this.flatCategories);
-      console.log(`There are ${this.flatCategories.length} total categories`);
-      for (const c of this.flatCategories) {
-        c.previousState = this.getState(c);
-      }
+      this.setIndexesAndBackReferences(this.category);
     });
   }
 
-  // Recursive madness.
-  flatten(input: Category[], output: Category[]) {
-    for (const c of input) {
-      output.push(c);
+  // Recursive madness, beware.
+  // This assures that a parent referers to the same exact object as
+  // the element with children.
+  setIndexesAndBackReferences(c: Category) {
+      let index = 0;
       if (c.children) {
-        this.flatten(c.children, output);
+        for (const child of c.children) {
+          child.index = index;
+          child.parent = c;
+          index++;
+          this.setIndexesAndBackReferences(child);
       }
     }
   }
@@ -77,39 +77,33 @@ export class GraphComponent {
     return new NodeOptions({ x: x, y: y });
   }
 
-  getPositionAsTransformation(nodeCount, nodeIndex, category) {
+  getCatPos(category, parent, index, scale= true) {
     const state = this.getState(category);
+    let nodeCount = parent.children.length;
     let radius = 0;
     if (state === 'primary') {
-      radius = this.baseRadius * 3 + this.baseRadius * 1.5;
+      radius = this.baseRadius * 3;
+      if (scale) { radius = radius * 1.5; }
     } else if (state === 'secondary') {
-      radius = this.baseRadius * 1.5 + this.baseRadius * 1.5;
+      radius = this.baseRadius * 3;
     } else if (state === 'tertiary') {
-      radius = this.baseRadius + this.baseRadius * 0.35;
+      radius = this.baseRadius * 1.5;
+      if (scale) { radius += this.baseRadius * 4; }
     } else if (state === 'nary') {
       radius = 0;
     }
 
-    const angle = 360 / nodeCount * nodeIndex;
-    const options = this.calcCoords(angle, radius);
-    return `translate(${options.x},${options.y})`;
-  }
-
-  getCatPos(category, parent, index) {
-    const state = this.getState(category);
-    const nodeCount = parent.children.length;
-    let radius = 0;
-    if (state === 'primary') {
-      radius = this.baseRadius * 3 + this.baseRadius * 1.5;
-    } else if (state === 'secondary') {
-      radius = this.baseRadius * 1.5 + this.baseRadius * 1.5;
-    } else if (state === 'tertiary') {
-      radius = this.baseRadius * 6 + this.baseRadius * 0.35;
-    } else if (state === 'nary') {
-      radius = 0;
+    let base_angle = 0;
+    index = category.index;
+    if (category.parent && category.level === 2) {
+      // If there is a parent, then make room for a link back to the parent.
+      base_angle = 360 / category.parent.parent.children.length * category.parent.index;
+      base_angle = base_angle + 180;  // flip it to the other side,
+      index = category.index + 1;
+      nodeCount++;
     }
 
-    const angle = 360 / nodeCount * index;
+    const angle = base_angle + (360 / nodeCount * index);
     const options = this.calcCoords(angle, radius);
     return {x: options.x, y: options.y};
 //    return `translate(${options.x},${options.y})`;
@@ -117,7 +111,13 @@ export class GraphComponent {
 
 
   selectCategory(c: Category) {
+    if (c === this.selectedCategory) return;
     this.selectedCategory = c;
+    this.transitionState = 'moving';
+  }
+
+  transitionCallback() {
+    this.transitionState = 'set';
   }
 
   /**
@@ -151,14 +151,11 @@ export class GraphComponent {
   getRootState() {
     if (this.selectedCategory) {
       if (this.selectedCategory.level === 0) {
-        console.log('The state is root');
         return 'root';
       } else {
-        console.log('The state is child');
         return 'child';
       }
     } else {
-      console.log('The state is root');
       return 'root';
     }
   }
@@ -167,35 +164,14 @@ export class GraphComponent {
    * Calculate the center of the currently selected node.
    */
   getRootShift() {
-    if (this.selectedCategory && this.selectedCategory.level === 1) {
-      let index = 0;
-      for (const c of this.category.children) {
-        if (c.id === this.selectedCategory.id) {
-          break;
-        } else {
-          index ++;
-        }
-      }
-      const position = this.getCatPos(this.selectedCategory, this.category, index);
-      position.x = -position.x;
-      position.y = -position.y;
-      console.log('The root position should be translated to ' + JSON.stringify(position));
-      return position;
+    if (this.selectedCategory === this.category) {
+      return {x:0, y: 0};
     }
-  }
-
-  getViewBoxState() {
-    if (this.selectedCategory.parent) {
-      console.log('Going left');
-      return 'left';
-    } else {
-      console.log('Showing All');
-      return 'all';
-    }
-  }
-
-  setRelationship(r: string) {
-    this.relationship = r;
+    const index = this.selectedCategory.index;
+    const position = this.getCatPos(this.selectedCategory, this.category, index);
+    position.x = -position.x;
+    position.y = -position.y;
+    return position;
   }
 
   setCategory(c: Category) {
