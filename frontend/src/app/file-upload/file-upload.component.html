@@ -47,7 +47,26 @@
         <td
           mat-cell
           *matCellDef="let file"
-        > {{truncate(file.name, 60)}} </td>
+        > {{truncate((file.name || file.file_name), 60)}} </td>
+      </ng-container>
+      <ng-container matColumnDef="display_name">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+        >Name</th>
+        <td
+          mat-cell
+          *matCellDef="let file"
+        >
+          <mat-form-field>
+            <input
+              matInput
+              placeholder="Display name"
+              [value]="file.display_name || file.name || file.file_name"
+              (blur)="updateDisplayName($event, file)"
+            >
+          </mat-form-field>
+        </td>
       </ng-container>
       <ng-container matColumnDef="size">
         <th
@@ -67,7 +86,7 @@
         <td
           mat-cell
           *matCellDef="let file"
-        > {{formatDate(file.lastModifiedDate)}} </td>
+        > {{formatDate(file.lastModifiedDate || file.date_modified)}} </td>
       </ng-container>
       <ng-container matColumnDef="actions">
         <th
@@ -78,10 +97,11 @@
           mat-cell
           *matCellDef="let file"
         >
+          <ng-progress [id]="file.name"></ng-progress>
           <button
             mat-icon-button
             color="warn"
-            (click)="removeFile(file)"
+            (click)="removeFile($event, file)"
           >
             <mat-icon>delete</mat-icon>
           </button>
@@ -95,8 +115,7 @@
       <tr
         mat-row
         *matRowDef="let row; columns: displayedColumns;"
-      >
-      </tr>
+      ></tr>
     </table>
   </div>
 </div>

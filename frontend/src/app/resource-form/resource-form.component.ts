@@ -235,13 +235,11 @@ export class ResourceFormComponent implements OnInit {
   }
 
   loadResourceFiles() {
-    if (this.resource.attachments && (this.resource.attachments.length > 0)) {
-      this.resource.attachments.forEach(ra => {
-        if (ra.attachment_id) {
-          this.api.getFileAttachment(ra.attachment_id).subscribe(fa => {
-            this.fields.attachments.attachments.set(fa.id.toString(), fa);
-            this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
-          });
+    if (this.resource.files && (this.resource.files.length > 0)) {
+      this.resource.files.forEach(fa => {
+        if (fa.id) {
+          this.fields.attachments.attachments.set(fa.md5, fa);
+          this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
         }
       });
     }
@@ -463,8 +461,14 @@ export class ResourceFormComponent implements OnInit {
 
   updateAttachments() {
     if (this.hasAttachments()) {
-      const attachments = [];
-      this.fields.attachments.attachments.forEach(a => attachments.push(a));
+      const attachments: FileAttachment[] = [];
+      this.fields.attachments.attachments.forEach(a => {
+        if (this.resource) {
+          a.resource_id = this.resource.id;
+        }
+        attachments.push(a);
+      });
+
       return attachments.map(a => this.api.updateFileAttachment(a));
     }
   }
@@ -506,8 +510,6 @@ export class ResourceFormComponent implements OnInit {
 
   // Go to resource screen
   close() {
-    console.log('=== close ===');
-
     if (this.resource && this.resource.id) {
       this.router.navigate(['resource', this.resource.id]);
     } else {

@@ -1,10 +1,10 @@
 import { Availability } from './availability';
 import { Favorite } from './favorite';
+import { FileAttachment } from './file-attachment';
 import { Institution } from './institution';
 import { Links } from './links';
-import { ResourceType } from './resourceType';
 import { ResourceCategory } from './resource-category';
-import { ResourceAttachment } from './resource-attachment';
+import { ResourceType } from './resourceType';
 
 export interface Resource {
   id: number;
@@ -19,7 +19,7 @@ export interface Resource {
   type_id?: number;
   website?: string;
   approved?: string;
-  attachments?: ResourceAttachment[];
+  files?: FileAttachment[];
   last_updated?: string;
   favorites?: Favorite[];
   availabilities?: Availability[];

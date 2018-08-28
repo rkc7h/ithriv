@@ -7,5 +7,5 @@ export interface FileAttachment extends File {
   file_name?: string;
   date_modified?: Date;
   mime_type?: string;
-  resource_id?: string;
+  resource_id?: number;
 }

@@ -5,7 +5,7 @@ import { FormField } from '../form-field';
 import { zoomTransition } from '../shared/animations';
 import { FileAttachment } from '../file-attachment';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { NgProgressComponent, NgProgress } from '@ngx-progressbar/core';
+import { NgProgressComponent } from '@ngx-progressbar/core';
 import { ParallelHasher } from 'ts-md5/dist/parallel_hasher';
 
 @Component({
@@ -16,8 +16,15 @@ import { ParallelHasher } from 'ts-md5/dist/parallel_hasher';
 })
 export class FileUploadComponent implements OnInit {
   @Input() field: FormField;
-  updateFilesSubject = new ReplaySubject<Map<number | string, FileAttachment>>();
-  displayedColumns: string[] = ['name', 'type', 'size', 'lastModifiedDate', 'actions'];
+  updateFilesSubject = new ReplaySubject<FileAttachment[]>();
+  displayedColumns: string[] = [
+    'name',
+    'display_name',
+    'type',
+    'size',
+    'lastModifiedDate',
+    'actions'
+  ];
   dropZoneHover = false;
   @ViewChild(NgProgressComponent) progress: NgProgressComponent;
 
@@ -67,24 +74,30 @@ export class FileUploadComponent implements OnInit {
     }
   }
 
-  formatDate(d: Date): string {
+  formatDate(d: Date | string | number): string {
+    const dateObj = (d instanceof Date) ? d : new Date(d);
+
     return `
-      ${d.getFullYear()}/${d.getMonth()}/${d.getDay()}
-      ${d.getHours()}:${d.getMinutes()}
+      ${dateObj.getFullYear()}/${dateObj.getMonth()}/${dateObj.getDay()}
+      ${dateObj.getHours()}:${dateObj.getMinutes()}
     `;
   }
 
   truncate(s: string, maxLength = 20): string {
-    if (s.length > (maxLength - 3)) {
-      return s.slice(0, maxLength) + '...';
+    if (s) {
+      if (s.length > (maxLength - 3)) {
+        return s.slice(0, maxLength) + '...';
+      } else {
+        return s;
+      }
     } else {
-      return s;
+      return '';
     }
   }
 
-  fileIcon(file: File): string {
-    const s = file.type || file.name;
-    const nameArray = s.toLowerCase().split(file.type ? '/' : '.');
+  fileIcon(file: FileAttachment): string {
+    const s = file.mime_type || file.type || file.name || file.file_name;
+    const nameArray = s.toLowerCase().split((file.mime_type || file.type) ? '/' : '.');
 
     if (nameArray.length > 0) {
       return `/assets/filetypes/${nameArray[nameArray.length - 1]}.svg`;
@@ -98,69 +111,81 @@ export class FileUploadComponent implements OnInit {
     hasher.hash(attachment).then(md5 => {
       attachment.md5 = md5;
 
-      const old = this.field.attachments.get(attachment.name);
-
       // Check for existing attachments
-      if (old) {
+      let old: FileAttachment;
+      this.field.attachments.forEach((f: FileAttachment) => {
+        if (f.file_name === attachment.name) {
+          old = f;
+        }
+      });
 
-        // Existing attachment. Copy all existing metadata to the new file.
-        attachment.id = old.id;
-        attachment.display_name = old.display_name;
-        this.field.attachments.set(attachment.name, attachment);
+      if (old) {
+        if (old.md5 !== md5) {
+          // New version of existing attachment.
+          // Copy all existing metadata to the new file.
+          const keys = ['id', 'display_name', 'url', 'mime_type', 'resource_id'];
+          keys.forEach(key => attachment[key] = old[key]);
+          this.field.attachments.set(md5, attachment);
+          this.field.attachments.delete(old.md5);
+        } else {
+          // Same version of existing attachment. Do nothing.
+        }
       } else {
 
         // New attachment.
-        this.field.attachments.set(attachment.name, attachment);
+        this.field.attachments.set(md5, attachment);
       }
 
       const apiFn = old ? 'updateFileAttachment' : 'addFileAttachment';
 
-      console.log('apiFn', apiFn);
-      console.log('attachment', attachment);
-
       // Upload changes to S3 immediately
       this.api[apiFn](attachment).subscribe(fa => {
-        console.log('fa', fa);
+
+        // Save the returned ID for later.
+        this.editFileAttachment(fa, { id: fa.id });
 
         // Only upload the file blob if the bytes have changed.
         const sameBlob = (old && (old.md5 === attachment.md5));
         if (!sameBlob) {
           this.api
-            .addFileAttachmentBlob(fa.id, fa, this.progress)
-            .subscribe(f => console.log('f', f));
+            .addFileAttachmentBlob(fa.id, attachment, this.progress)
+            .subscribe(f => {
+              this.api.getFileAttachment(fa.id, md5).subscribe(updated => {
+                this.editFileAttachment(fa, { url: updated.url });
+                this.updateFileList();
+              });
+            });
         }
       });
       this.updateFileList();
-
     });
 
   }
 
-  removeFile(attachment: FileAttachment) {
-    if (this.field.attachments.has(attachment.name)) {
-      const old = this.field.attachments.get(attachment.name);
-      attachment.id = old.id;
-      attachment.display_name = old.display_name;
-      // attachment.status = 'removed';
-      this.field.attachments.set(attachment.name, attachment);
-    }
-
-    this.updateFileList();
+  removeFile($event, attachment: FileAttachment) {
+    $event.preventDefault();
+    this.field.attachments.delete(attachment.md5);
+    this.api.deleteFileAttachment(attachment).subscribe(_ => this.updateFileList());
   }
 
   editFileAttachment(attachment: FileAttachment, options) {
-    attachment[options.key] = options.value;
+    const file = this.field.attachments.get(attachment.md5);
 
-    // If this is not the first time the file has been added,
-    // set its status to 'updated'.
-    // if (attachment.status !== 'added') {
-    //   attachment.status = 'updated';
-    // }
+    for (const key in options) {
+      if (options.hasOwnProperty(key)) {
+        file[key] = options[key];
+      }
+    }
 
-    this.field.attachments.set(attachment.name, attachment);
+    this.field.attachments.set(attachment.md5, file);
+    this.updateFileList();
   }
 
   updateFileList() {
-    this.updateFilesSubject.next(this.field.attachments);
+    this.updateFilesSubject.next(Array.from(this.field.attachments.values()));
+  }
+
+  updateDisplayName($event, attachment: FileAttachment) {
+    this.editFileAttachment(attachment, { display_name: $event.target.value });
   }
 }
