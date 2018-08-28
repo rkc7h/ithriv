@@ -9,8 +9,8 @@
         <line *ngFor="let child of category.children; let k = index"
               [attr.x1]="0"
               [attr.y1]="0"
-              [attr.x2]="getCatPos(child, category, k, false).x"
-              [attr.y2]="getCatPos(child, category, k, false).y"
+              [attr.x2]="getCatPos(child, false).x"
+              [attr.y2]="getCatPos(child, false).y"
               [attr.stroke]="category.color"
               [ngStyle]="{'stroke-width': 5, 'stroke-color': 'blue'}"></line>
       </g>
@@ -32,14 +32,14 @@
     <g
       *ngFor="let child of category.children; let k = index"
       class="sibling"
-      [@childState]="{value: getState(child), params: getCatPos(child, category, k)}"
+      [@childState]="{value: getState(child), params: getCatPos(child)}"
     >
       <g *ngIf="transitionState === 'set'">
         <line *ngFor="let grandChild of child.children; let k = index"
               [attr.x1]="0"
               [attr.y1]="0"
-              [attr.x2]="getCatPos(grandChild, child, k, false).x"
-              [attr.y2]="getCatPos(grandChild, child, k, false).y"
+              [attr.x2]="getCatPos(grandChild, false).x"
+              [attr.y2]="getCatPos(grandChild, false).y"
               [attr.stroke]="category.color"
               [ngStyle]="{'stroke-width': 4}"></line>
       </g>
@@ -62,7 +62,7 @@
       <g
         *ngFor="let grandChild of child.children; let k = index"
         class="sibling"
-        [@grandchildState]="{value: getState(grandChild), params: getCatPos(grandChild, child, k)}"
+        [@grandchildState]="{value: getState(grandChild), params: getCatPos(grandChild)}"
         (@grandchildState.done) = "transitionCallback()">
 
         <g

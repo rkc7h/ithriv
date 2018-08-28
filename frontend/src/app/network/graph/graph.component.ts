@@ -56,6 +56,9 @@ export class GraphComponent {
           child.index = index;
           child.parent = c;
           index++;
+          if (child.id === 1006) {
+            console.log(child.parent.name, child.name, child.index);
+          }
           this.setIndexesAndBackReferences(child);
       }
     }
@@ -77,9 +80,9 @@ export class GraphComponent {
     return new NodeOptions({ x: x, y: y });
   }
 
-  getCatPos(category, parent, index, scale= true) {
+  getCatPos(category, scale= true) {
     const state = this.getState(category);
-    let nodeCount = parent.children.length;
+    let nodeCount = category.parent.children.length;
     let radius = 0;
     if (state === 'primary') {
       radius = this.baseRadius * 3;
@@ -94,7 +97,7 @@ export class GraphComponent {
     }
 
     let base_angle = 0;
-    index = category.index;
+    let index = category.index;
     if (category.parent && category.level === 2) {
       // If there is a parent, then make room for a link back to the parent.
       base_angle = 360 / category.parent.parent.children.length * category.parent.index;
@@ -105,13 +108,16 @@ export class GraphComponent {
 
     const angle = base_angle + (360 / nodeCount * index);
     const options = this.calcCoords(angle, radius);
+
     return {x: options.x, y: options.y};
 //    return `translate(${options.x},${options.y})`;
   }
 
 
   selectCategory(c: Category) {
-    if (c === this.selectedCategory) return;
+    if (c === this.selectedCategory) {
+      return;
+    }
     this.selectedCategory = c;
     this.transitionState = 'moving';
   }
@@ -141,7 +147,7 @@ export class GraphComponent {
     } else if (node.parent && this.selectedCategory.parent &&
               this.selectedCategory.parent.id === node.parent.id) {
       return 'tertiary';
-    } else if (this.selectedCategory.id === node.parent.parent.id) {
+    } else if (node.parent && node.parent.parent && this.selectedCategory.id === node.parent.parent.id) {
       return 'tertiary';
     } else {
       return 'nary';
@@ -167,8 +173,7 @@ export class GraphComponent {
     if (this.selectedCategory === this.category) {
       return {x:0, y: 0};
     }
-    const index = this.selectedCategory.index;
-    const position = this.getCatPos(this.selectedCategory, this.category, index);
+    const position = this.getCatPos(this.selectedCategory);
     position.x = -position.x;
     position.y = -position.y;
     return position;

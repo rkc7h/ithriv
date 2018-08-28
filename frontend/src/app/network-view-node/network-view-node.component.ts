@@ -21,7 +21,6 @@ export class NetworkViewNodeComponent implements OnInit {
   constructor(private router: Router) { }
 
   ngOnInit() {
-    console.log("The category is " + this.category)
   }
 
   animatedLog() {
