@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FileSystemFileEntry, UploadEvent } from 'ngx-file-drop';
 import { ReplaySubject } from 'rxjs';
 import { FormField } from '../form-field';
 import { zoomTransition } from '../shared/animations';
 import { FileAttachment } from '../file-attachment';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { NgProgressComponent } from '@ngx-progressbar/core';
+import { NgProgressComponent, NgProgress } from '@ngx-progressbar/core';
 import { ParallelHasher } from 'ts-md5/dist/parallel_hasher';
 
 @Component({
@@ -19,7 +19,7 @@ export class FileUploadComponent implements OnInit {
   updateFilesSubject = new ReplaySubject<Map<number | string, FileAttachment>>();
   displayedColumns: string[] = ['name', 'type', 'size', 'lastModifiedDate', 'actions'];
   dropZoneHover = false;
-  progress: NgProgressComponent;
+  @ViewChild(NgProgressComponent) progress: NgProgressComponent;
 
   constructor(private api: ResourceApiService) {
   }
@@ -115,6 +115,9 @@ export class FileUploadComponent implements OnInit {
 
       const apiFn = old ? 'updateFileAttachment' : 'addFileAttachment';
 
+      console.log('apiFn', apiFn);
+      console.log('attachment', attachment);
+
       // Upload changes to S3 immediately
       this.api[apiFn](attachment).subscribe(fa => {
         console.log('fa', fa);
@@ -123,7 +126,7 @@ export class FileUploadComponent implements OnInit {
         const sameBlob = (old && (old.md5 === attachment.md5));
         if (!sameBlob) {
           this.api
-            .addFileAttachmentBlob(attachment.id, fa, this.progress)
+            .addFileAttachmentBlob(fa.id, fa, this.progress)
             .subscribe(f => console.log('f', f));
         }
       });
@@ -138,7 +141,7 @@ export class FileUploadComponent implements OnInit {
       const old = this.field.attachments.get(attachment.name);
       attachment.id = old.id;
       attachment.display_name = old.display_name;
-      attachment.status = 'removed';
+      // attachment.status = 'removed';
       this.field.attachments.set(attachment.name, attachment);
     }
 
@@ -150,9 +153,9 @@ export class FileUploadComponent implements OnInit {
 
     // If this is not the first time the file has been added,
     // set its status to 'updated'.
-    if (attachment.status !== 'added') {
-      attachment.status = 'updated';
-    }
+    // if (attachment.status !== 'added') {
+    //   attachment.status = 'updated';
+    // }
 
     this.field.attachments.set(attachment.name, attachment);
   }

@@ -51,7 +51,7 @@ export class ResourceApiService {
     availabilityList: '/api/availability',
     availability: '/api/availability/<id>',
     fileAttachment: '/api/file/<file_id>', // One file
-    fileAttachmentList: '/api/file/', // All files
+    fileAttachmentList: '/api/file', // All files
     resourceCategoryList: '/api/resource_category',
     resourceCategory: '/api/resource_category/<id>',
     resourceAttachment: '/api/resource/attachment/<id>', // One attachment
@@ -346,14 +346,47 @@ export class ResourceApiService {
   /** addFileAttachment */
   addFileAttachment(attachment: FileAttachment): Observable<FileAttachment> {
     const url = this.apiRoot + this.endpoints.fileAttachmentList;
-    return this.httpClient.post<FileAttachment>(url, attachment)
+    const attachmentMetadata = {
+      file_name: attachment.name,
+      display_name: attachment.name,
+      date_modified: new Date(attachment.lastModified),
+      md5: attachment.md5,
+      mime_type: attachment.type,
+      size: attachment.size
+    };
+
+    return this.httpClient.post<FileAttachment>(url, attachmentMetadata)
       .pipe(catchError(this.handleError));
   }
 
-  /** addFileAttachment */
-  addFileAttachmentBlob(attachmentId, file: File, progress: NgProgressComponent): Observable<File> {
+  /** addFileAttachmentBlob */
+  addFileAttachmentBlob(attachmentId: number, file: File, progress: NgProgressComponent): Observable<File> {
+
+    console.log('=== addFileAttachmentBlob ===');
+    console.log('attachmentId', attachmentId);
+    console.log('file', file);
+    console.log('progress', progress);
+
+
+
     const url = this.apiRoot + this.endpoints.fileAttachmentList + '/' + attachmentId;
-    return this.httpClient.post<File>(url, file, { reportProgress: true, observe: 'events' })
+
+    console.log('url', url);
+
+    const options: {
+      headers?: HttpHeaders,
+      observe: 'events',
+      params?: HttpParams,
+      reportProgress?: boolean,
+      responseType: 'json',
+      withCredentials?: boolean
+    } = {
+      observe: 'events',
+      reportProgress: true,
+      responseType: 'blob' as 'json'
+    };
+
+    return this.httpClient.put<File>(url, file, options)
       .pipe(
         map(event => this.showProgress(event, file, progress)),
         last(), // return last (completed) message to caller
@@ -361,7 +394,7 @@ export class ResourceApiService {
       );
   }
 
-  /** addFileAttachment */
+  /** updateFileAttachment */
   updateFileAttachment(fileAttachment: FileAttachment): Observable<FileAttachment> {
     const url = this.apiRoot + this.endpoints.fileAttachmentList + '/' + fileAttachment.id;
     return this.httpClient.post<FileAttachment>(url, fileAttachment)
