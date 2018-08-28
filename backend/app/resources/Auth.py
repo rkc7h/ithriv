@@ -9,6 +9,7 @@ from flask import jsonify, redirect, g, request, Blueprint
 
 auth_blueprint = Blueprint('auth', __name__, url_prefix='/api')
 
+
 @sso.login_handler
 def login(user_info):
     if app.config["DEVELOPMENT"]:
@@ -55,6 +56,7 @@ def confirm_email(email_token):
 
     auth_token = user.encode_auth_token().decode()
     return jsonify({"token": auth_token})
+
 
 @auth_blueprint.route('/login_password', methods=["GET", "POST"])
 def login_password():
@@ -112,6 +114,14 @@ def reset_password():
     return jsonify({"token": auth_token})
 
 
+# Many endpoints will take the current user into account when returning values.
+# Since the flask_htttauth will throw an error if the authentication fails, we
+# return a default participant with a role of ANON - and must then check the
+# roles of the user if the endpoint is restricted to logged-in users.
+
+# defaultUser = User(id=0, role="Anon")
+
+
 @auth.verify_token
 def verify_token(token):
     try:
@@ -119,10 +129,12 @@ def verify_token(token):
         if resp:
             g.user = User.query.filter_by(id=resp).first()
     except:
+        # g.user = defaultUser
         g.user = None
 
     if 'user' in g and g.user:
         return True
     else:
+        # g.user = defaultUser
         return False
 
