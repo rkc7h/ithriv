@@ -66,11 +66,6 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['login']);
   }
 
-  goProfile($event) {
-    $event.preventDefault();
-    this.router.navigate(['profile']);
-  }
-
   goConsult($event) {
     $event.preventDefault();
     this.router.navigate(['consult_request']);
