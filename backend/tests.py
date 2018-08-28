@@ -9,7 +9,6 @@ import random
 import string
 from app.email_service import TEST_MESSAGES
 from io import BytesIO
-from flask import g
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import ThrivResourceSchema, CategorySchema, IconSchema, ThrivTypeSchema, UserSchema, ResourceAttachmentSchema
 import unittest
@@ -1103,7 +1102,6 @@ class TestCase(unittest.TestCase):
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
         participant = User.query.filter_by(uid=uid).first()
-        g.user = participant
         if user:
             participant.role = user.role
         else:

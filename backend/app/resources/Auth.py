@@ -29,6 +29,7 @@ def login(user_info):
 
         db.session.add(user)
         db.session.commit()
+        g.user = user
     # redirect users back to the front end, include the new auth token.
     auth_token = user.encode_auth_token().decode()
     response_url = ("%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
@@ -65,11 +66,13 @@ def login_password():
         if user.is_correct_password(request_data["password"]):
             # redirect users back to the front end, include the new auth token.
             auth_token = user.encode_auth_token().decode()
+            g.user = user
             return jsonify({"token": auth_token})
         else:
             raise RestException(RestException.LOGIN_FAILURE)
     else:
         if 'email_token' in request_data:
+            g.user = user
             return confirm_email(request_data['email_token'])
         else:
             raise RestException(RestException.CONFIRM_EMAIL)
