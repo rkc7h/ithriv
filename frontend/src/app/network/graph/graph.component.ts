@@ -4,22 +4,21 @@ import {Title} from '@angular/platform-browser';
 import {ResourceApiService} from '../../shared/resource-api/resource-api.service';
 import {Category} from '../../category';
 import {hexColorToRGBA} from '../../shared/color';
-import {childPositionTransition, grandchildPositionTransition, rootTransition} from '../animations';
+import {childPositionTransition, grandchildPositionTransition, menuTransition, rootTransition} from '../animations';
 import {NodeOptions} from '../../node-options';
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss'],
-  animations: [rootTransition(), childPositionTransition(), grandchildPositionTransition()]
+  animations: [menuTransition(), rootTransition(), childPositionTransition(), grandchildPositionTransition()]
 })
 export class GraphComponent {
 
   topCategories: Category[];
   category: Category;
   selectedCategory: Category;
-  relationship = 'root';
-  flatCategories: Category[];
   transitionState = 'moving';
   layoutWidth = 982;
   layoutHeight = 982;
@@ -31,35 +30,66 @@ export class GraphComponent {
   constructor(private router: Router,
               private route: ActivatedRoute,
               private api: ResourceApiService,
+              private location: Location,
               private titleService: Title) {
 
-    this.loadRootCategories();
+    this.route.params.subscribe(params => {
+      if (params && params.hasOwnProperty('category')) {
+        console.log("Laoding Category #" + params['category']);
+        this.loadRootCategories(Number(params['category']));
+      } else {
+        this.loadRootCategories();
+      }
+    });
   }
 
-  loadRootCategories() {
+  setInitialCategory(c: Category) {
+    switch (c.level) {
+      case 0:
+        this.category = c;
+        this.selectedCategory = c;
+        break;
+      case 1:
+        this.category = c.parent;
+        this.selectedCategory = c;
+        break;
+      case 2:
+        this.category = c.parent.parent;
+        this.selectedCategory = c.parent;
+        break;
+    }
+  }
+
+  loadRootCategories(category_id = -1) {
     this.api.getCategories().subscribe(cats => {
       this.topCategories = cats;
-      this.category = cats[0];
-      this.selectedCategory = this.category;
-      this.flatCategories = [];
-      this.setIndexesAndBackReferences(this.category);
+      let index = 0;
+      for (const c of this.topCategories) {
+        c.index = index;
+        index++;
+        this.setIndexesAndBackReferences(c, category_id);
+        if (!this.category) {
+          this.setCategory(this.topCategories[0]);
+        }
+      }
     });
   }
 
   // Recursive madness, beware.
   // This assures that a parent referers to the same exact object as
   // the element with children.
-  setIndexesAndBackReferences(c: Category) {
+  setIndexesAndBackReferences(c: Category, category_id: Number) {
       let index = 0;
+      // Set the selected category
+      if (c.id === category_id) {
+        this.setInitialCategory(c);
+      }
       if (c.children) {
         for (const child of c.children) {
           child.index = index;
           child.parent = c;
           index++;
-          if (child.id === 1006) {
-            console.log(child.parent.name, child.name, child.index);
-          }
-          this.setIndexesAndBackReferences(child);
+          this.setIndexesAndBackReferences(child, category_id);
       }
     }
   }
@@ -115,11 +145,20 @@ export class GraphComponent {
 
 
   selectCategory(c: Category) {
-    if (c === this.selectedCategory) {
-      return;
+    /* navigate to another page if a 3rd level category is clicked when it's parent category
+    is active (it's in a secondary state).  Otherwise, make the parent category active. */
+    this.location.replaceState(`/network/${c.id}`);
+    if (c.level === 2) {
+      if (this.getState(c) === 'secondary') {
+        this.router.navigate(['category', c.id]);
+      } else {
+        this.selectedCategory = c.parent;
+        this.transitionState = 'moving';
+      }
+    } else if (c !== this.selectedCategory) {
+      this.selectedCategory = c;
+      this.transitionState = 'moving';
     }
-    this.selectedCategory = c;
-    this.transitionState = 'moving';
   }
 
   transitionCallback() {
@@ -154,6 +193,21 @@ export class GraphComponent {
     }
   }
 
+  getMenuState(node) {
+    if (this.category === node) {
+      return 'selected';
+    } else {
+      return 'unselected';
+    }
+  }
+
+  getMenuPosition(node) {
+    const x = -(this.layoutWidth / 2) + this.navRadius * 3 * (node.index + 1);
+    const y = -(this.layoutHeight / 2) + this.navRadius * 1.5;
+    return {x: x, y: y};
+  }
+
+
   getRootState() {
     if (this.selectedCategory) {
       if (this.selectedCategory.level === 0) {
@@ -171,7 +225,7 @@ export class GraphComponent {
    */
   getRootShift() {
     if (this.selectedCategory === this.category) {
-      return {x:0, y: 0};
+      return {x: 0, y: 0};
     }
     const position = this.getCatPos(this.selectedCategory);
     position.x = -position.x;
@@ -180,7 +234,11 @@ export class GraphComponent {
   }
 
   setCategory(c: Category) {
-    this.category = c;
+   if (c !== this.selectedCategory) {
+      this.category = c;
+      this.selectedCategory = c;
+      this.transitionState = 'moving';
+    }
   }
 
   categoryColor(hexColor: string, alpha = 1) {

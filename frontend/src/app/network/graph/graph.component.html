@@ -1,6 +1,25 @@
 <div class="container" *ngIf="category">
   <svg [attr.viewBox]="viewBoxDimensions()">
 
+    <!-- Top Level Category Menu -->
+    <g class="top-level">
+      <g *ngFor="let node of topCategories; let i = index"
+         [@menuState]="{value: getMenuState(node), params: getMenuPosition(node)}"
+         app-network-view-node
+         [state]="getState(node)"
+         (click)="setCategory(node)"
+         [category]="node"
+         [options]="{
+                relationship: 'root',
+                x: 0,
+                y: 0,
+                radius: navRadius,
+                angle: 0,
+                titleHeight: parentTitleHeight
+              }"
+      ></g>
+    </g>
+
     <!-- Draw the lines first, so they show up underneath. -->
     <g
       [@rootState]="{value: getRootState(), params: getRootShift()}"

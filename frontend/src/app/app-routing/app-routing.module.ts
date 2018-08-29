@@ -31,8 +31,8 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent, data: { title: 'Welcome to iThriv' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
   { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
-  { path: 'network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
-  { path: 'network2', component: GraphComponent, data: { title: 'Category' } },
+  { path: 'network', component: GraphComponent, data: { title: 'Category' } },
+  { path: 'network/:category', component: GraphComponent, data: { title: 'Category' } },
   { path: 'profile', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
   { path: 'register', component: LoginComponent, data: { title: 'Sign up for iThriv', hideHeader: true } },
   {

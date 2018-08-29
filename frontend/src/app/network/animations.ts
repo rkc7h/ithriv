@@ -74,4 +74,20 @@ export function rootTransition(): AnimationTriggerMetadata {
   ]);
 }
 
+export function menuTransition(): AnimationTriggerMetadata {
+  return trigger('menuState', [
+
+    state('selected',   style({
+      transform: 'translate({{x}}px,{{y}}px)'
+    }), {params: {x: 0, y: 0}}),
+    state('unselected',   style({
+      opacity: 0.25,
+      transform: 'translate({{x}}px,{{y}}px)'
+    }), {params: {x: 0, y: 0}}),
+    transition('* => *', [
+        animate('600ms ease-in')
+    ]),
+  ]);
+}
+
 
