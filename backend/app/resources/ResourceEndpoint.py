@@ -26,27 +26,33 @@ class ResourceEndpoint(flask_restful.Resource):
     @auth.login_required
     def delete(self, id):
         resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
-        try:
-            elastic_index.remove_resource(resource)
-        except:
-            print("unable to remove record from elastic index, might not exist.")
-        db.session.query(Availability).filter_by(resource_id=id).delete()
-        db.session.query(ResourceCategory).filter_by(resource_id=id).delete()
-        db.session.query(ThrivResource).filter_by(id=id).delete()
-        db.session.commit()
-        return None
+        if resource.user_may_edit():
+            try:
+                elastic_index.remove_resource(resource)
+            except:
+                print("unable to remove record from elastic index, might not exist.")
+            db.session.query(Availability).filter_by(resource_id=id).delete()
+            db.session.query(ResourceCategory).filter_by(resource_id=id).delete()
+            db.session.query(ThrivResource).filter_by(id=id).delete()
+            db.session.commit()
+            return None
+        else:
+            raise RestException(RestException.PERMISSION_DENIED)
 
     @auth.login_required
     def put(self, id):
         request_data = request.get_json()
         instance = db.session.query(ThrivResource).filter_by(id=id).first()
-        updated, errors = ThrivResourceSchema().load(request_data, instance=instance)
-        if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
-        updated.last_updated = datetime.datetime.now()
-        db.session.add(updated)
-        db.session.commit()
-        elastic_index.update_resource(updated)
-        return ThrivResourceSchema().dump(updated)
+        if instance.user_may_edit():
+            updated, errors = ThrivResourceSchema().load(request_data, instance=instance)
+            if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
+            updated.last_updated = datetime.datetime.now()
+            db.session.add(updated)
+            db.session.commit()
+            elastic_index.update_resource(updated)
+            return ThrivResourceSchema().dump(updated)
+        else:
+            raise RestException(RestException.PERMISSION_DENIED)
 
 
 class ResourceListEndpoint(flask_restful.Resource):

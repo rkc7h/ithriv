@@ -180,6 +180,107 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertEqual(404, rv.status_code)
 
+    def test_user_edit_resource(self):
+        u1 = User(id=1, uid=self.test_uid, display_name="Peter Cottontail", email="peter@cottontail", role="User")
+        u2 = User(id=2, uid=self.admin_uid, display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
+        r1 = self.construct_resource(owner=u1.email)
+        r2 = self.construct_resource(owner="flopsy@cottontail.com")
+        db.session.add_all([u1, u2, r1, r2])
+        db.session.commit()
+
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        response['name'] = 'Farm Fresh Carrots'
+        response['owner'] = 'peter@cottontail, flopsy@cottontail.com'
+        orig_date = response['last_updated']
+
+        # Peter should be able to edit his own resource
+        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json",
+                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        self.assertSuccess(rv)
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response['name'], 'Farm Fresh Carrots')
+        self.assertEqual(response['owner'], 'peter@cottontail, flopsy@cottontail.com')
+        self.assertNotEqual(orig_date, response['last_updated'])
+
+        # But Peter should not be able to edit anyone else's resources.
+        rv = self.app.get('/api/resource/2', content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        response['name'] = 'Farm Fresh Carrots'
+        response['owner'] = 'peter@cottontail, flopsy@cottontail.com'
+        orig_date = response['last_updated']
+        rv = self.app.put('/api/resource/2', data=json.dumps(response), content_type="application/json",
+                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        self.assertEqual(400, rv.status_code)
+
+        # The Velveteen Rabbit can edit others' resources though, as an Admin:
+        rv = self.app.get('/api/resource/2', content_type="application/json")
+        response = json.loads(rv.get_data(as_text=True))
+        response['name'] = 'All the Carrots and Love'
+        response['owner'] = 'rabbit@velveteen.com, peter@cottontail, flopsy@cottontail.com'
+        rv = self.app.put('/api/resource/2', data=json.dumps(response), content_type="application/json",
+                          headers=self.logged_in_headers(user=u2), follow_redirects=True)
+        self.assertSuccess(rv)
+
+    def test_general_user_delete_resource(self):
+        u1 = User(id=1, uid=self.test_uid, display_name="Peter Cottontail", email="peter@cottontail", role="User")
+        r1 = self.construct_resource(owner=u1.email)
+        r2 = self.construct_resource(owner="flopsy@cottontail.com")
+        db.session.add_all([u1, r1, r2])
+        db.session.commit()
+
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertSuccess(rv)
+
+        rv = self.app.get('/api/resource/2', content_type="application/json")
+        self.assertSuccess(rv)
+        self.assertEqual(2, db.session.query(ThrivResource).count())
+
+        # We shouldn't be able to delete a resource when not logged in
+        rv = self.app.delete('/api/resource/1', content_type="application/json")
+        self.assertEqual(401, rv.status_code)
+        self.assertEqual(2, db.session.query(ThrivResource).count())
+
+        # A general user should be able to delete their own resources
+        rv = self.app.delete('/api/resource/1', content_type="application/json", headers=self.logged_in_headers(user=u1),
+                             follow_redirects=True)
+        self.assertSuccess(rv)
+
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertEqual(404, rv.status_code)
+        self.assertEqual(1, db.session.query(ThrivResource).count())
+
+        # And a user shouldn't be able to delete a resource that doesn't belong to them
+        # (Flopsy might not want Peter deleting that thing)
+        rv = self.app.delete('/api/resource/2', content_type="application/json", headers=self.logged_in_headers(user=u1),
+                             follow_redirects=True)
+        self.assertEqual(400, rv.status_code)
+
+        rv = self.app.get('/api/resource/2', content_type="application/json")
+        self.assertSuccess(rv)
+        self.assertEqual(1, db.session.query(ThrivResource).count())
+
+    def test_admin_user_delete_resource(self):
+        # Remember -- A user shouldn't be able to delete a resource that doesn't belong to them...
+        # ...Unless that user is a superuser, in which case they can delete whatever they want
+        # (The Velveteen Rabbit is all-powerful)
+        r1 = self.construct_resource(owner="mopsy@cottontail.com")
+        u = User(id=2, uid=self.admin_uid, display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
+
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertSuccess(rv)
+        self.assertEqual(1, db.session.query(ThrivResource).count())
+
+        rv = self.app.delete('/api/resource/1', content_type="application/json", headers=self.logged_in_headers(user=u),
+                             follow_redirects=True)
+        self.assertSuccess(rv)
+
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertEqual(404, rv.status_code)
+        self.assertEqual(0, db.session.query(ThrivResource).count())
+
     def test_create_resource(self):
         resource = {'name':"Barbarella's Funky Gun", 'description':"A thing. In a movie, or something."}
         rv = self.app.post('/api/resource', data=json.dumps(resource), content_type="application/json",

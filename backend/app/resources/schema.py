@@ -115,6 +115,8 @@ class ThrivResourceSchema(ModelSchema):
     favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
     resource_categories = fields.Nested(CategoriesOnResourceSchema(), many=True, dump_only=True)
     attachments = fields.Nested(ResourceAttachmentSchema(), many=True, dump_only=True)
+    user_may_view = fields.Boolean(allow_none=True)
+    user_may_edit = fields.Boolean(allow_none=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.resourceendpoint', id='<id>'),
         'collection': ma.URLFor('api.resourcelistendpoint'),
