@@ -115,8 +115,6 @@ class ThrivResourceSchema(ModelSchema):
     favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
     resource_categories = fields.Nested(CategoriesOnResourceSchema(), many=True, dump_only=True)
     attachments = fields.Nested(ResourceAttachmentSchema(), many=True, dump_only=True)
-    # user_may_view = fields.Method('get_user_view')
-    # user_may_edit = fields.Method('get_user_edit')
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.resourceendpoint', id='<id>'),
         'collection': ma.URLFor('api.resourcelistendpoint'),
@@ -128,35 +126,6 @@ class ThrivResourceSchema(ModelSchema):
     },
         dump_only=True)
 
-    # def get_user_view(self, obj):
-    #     if obj.approved == "Approved":
-    #         return "Object_Approved"
-    #     if g.user is None:
-    #         return "No_User"
-    #     if g.user.role == "Admin":
-    #         return "User_is_Admin"
-    #     if g.user.email in obj.owners():
-    #         return "User_is_Owner"
-    #     else:
-    #         return "Something_else_entirely"
-    #     # try:
-    #     #     if obj.approved == "Approved":
-    #     #         return True
-    #     #     if g.user.role == "Admin":
-    #     #         return True
-    #     #     if g.user.email in obj.owners():
-    #     #         return True
-    #     # except:
-    #     #     return False
-    #
-    # def get_user_edit(self, obj):
-    #     try:
-    #         if g.user.role == "Admin":
-    #             return True
-    #         if g.user.email in obj.owners():
-    #             return True
-    #     except:
-    #         return False
 
 
 class CategorySchema(ModelSchema):

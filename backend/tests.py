@@ -333,7 +333,7 @@ class TestCase(unittest.TestCase):
         u1 = User(id=1, uid='ogrouch', display_name="Oscar the Grouch", email="oscar@sesamestreet.com", role="User")
         u2 = User(id=2, uid='bbird', display_name="Big Bird", email="bigbird@sesamestreet.com", role="User")
         u3 = User(id=3, uid='sgrover', display_name="Grover", email="grover@sesamestreet.com", role="User")
-
+        db.session.add_all([u1, u2, u3])
         db.session.commit()
 
         # Testing that the correct amount of resources show up for the correct user
@@ -368,7 +368,7 @@ class TestCase(unittest.TestCase):
         self.construct_resource(name="Snuffy's Balloon Collection",
                                 owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
         u1 = User(id=4, uid='maria', display_name="Maria", email="maria@sesamestreet.com", role="Admin")
-
+        db.session.add(u1)
         db.session.commit()
 
         # Maria should see all the resources as an Admin

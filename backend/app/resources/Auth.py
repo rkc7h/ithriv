@@ -1,5 +1,7 @@
 # Login
 # *****************************
+from functools import wraps
+
 from itsdangerous import URLSafeTimedSerializer
 
 from app import sso, app, RestException, db, auth, email_service
@@ -114,14 +116,6 @@ def reset_password():
     return jsonify({"token": auth_token})
 
 
-# Many endpoints will take the current user into account when returning values.
-# Since the flask_htttauth will throw an error if the authentication fails, we
-# return a default participant with a role of ANON - and must then check the
-# roles of the user if the endpoint is restricted to logged-in users.
-
-# defaultUser = User(id=0, role="Anon")
-
-
 @auth.verify_token
 def verify_token(token):
     try:
@@ -129,12 +123,23 @@ def verify_token(token):
         if resp:
             g.user = User.query.filter_by(id=resp).first()
     except:
-        # g.user = defaultUser
         g.user = None
 
     if 'user' in g and g.user:
         return True
     else:
-        # g.user = defaultUser
         return False
+
+
+def login_optional(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if request.method != 'OPTIONS':  # pragma: no cover
+            try:
+                auth = verify_token(request.headers['AUTHORIZATION'].split(' ')[1])
+            except:
+                auth = False
+
+        return f(*args, **kwargs)
+    return decorated
 

@@ -12,10 +12,12 @@ from app.model.availability import Availability
 from app.model.resource_category import ResourceCategory
 from app.model.resource import ThrivResource
 from app.resources.schema import ThrivResourceSchema
+from resources.Auth import login_optional
 
 
 class ResourceEndpoint(flask_restful.Resource):
 
+    @login_optional
     def get(self, id):
         resource = db.session.query(ThrivResource).filter(ThrivResource.id == id).first()
         if resource is None: raise RestException(RestException.NOT_FOUND)
@@ -49,6 +51,7 @@ class ResourceEndpoint(flask_restful.Resource):
 
 class ResourceListEndpoint(flask_restful.Resource):
 
+    @login_optional
     def get(self):
         args = request.args
         limit = eval(args["limit"]) if ("limit" in args) else 10
