@@ -129,7 +129,6 @@ class ThrivResourceSchema(ModelSchema):
         dump_only=True)
 
 
-
 class CategorySchema(ModelSchema):
     """Provides detailed information about a category, including all the children"""
     class Meta:
@@ -155,7 +154,12 @@ class CategorySchema(ModelSchema):
     })
 
     def get_resource_count(self, obj):
-        return len(obj.category_resources)
+        category_resources = obj.category_resources
+        resource_count = 0
+        for cr in category_resources:
+            if cr.resource.user_may_view():
+                resource_count += 1
+        return resource_count
 
 
 class ResourceCategoriesSchema(ModelSchema):

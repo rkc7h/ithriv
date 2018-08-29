@@ -5,11 +5,13 @@ from sqlalchemy.exc import IntegrityError
 from app import db, RestException
 from app.model.category import Category
 from app.resources.schema import CategorySchema
+from resources.Auth import login_optional
 
 
 class CategoryEndpoint(flask_restful.Resource):
     schema = CategorySchema()
 
+    @login_optional
     def get(self, id):
         category = db.session.query(Category).filter(Category.id == id).first()
         return self.schema.dump(category)
@@ -36,6 +38,7 @@ class CategoryListEndpoint(flask_restful.Resource):
     category_schema = CategorySchema()
     categories_schema = CategorySchema(many=True)
 
+    @login_optional
     def get(self):
         categories = db.session.query(Category).filter(Category.parent_id == None).all()
         return self.categories_schema.dump(categories)
