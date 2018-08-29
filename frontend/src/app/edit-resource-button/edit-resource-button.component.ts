@@ -31,8 +31,7 @@ export class EditResourceButtonComponent implements OnInit {
   }
 
   userMayEdit() {
-    console.log(this.resource);
-    this.resource.user_may_edit;
+    return this.resource.user_may_edit;
   }
 
 }
