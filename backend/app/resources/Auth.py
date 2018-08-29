@@ -14,13 +14,14 @@ def login(user_info):
     if app.config["DEVELOPMENT"]:
         uid = app.config["SSO_DEVELOPMENT_UID"]
     else:
-        uid = user_info['uid']
+        uid = user_info['eppn']
 
     user = User.query.filter_by(uid=uid).first()
     if user is None:
+
         user = User(uid=uid,
-                    display_name=user_info["givenName"],
-                    email=user_info["email"])
+                    display_name=user_info["eppn"],
+                    email=user_info["eppn"])
         if "Surname" in user_info:
             user.display_name = user.display_name + " " + user_info["Surname"]
 
