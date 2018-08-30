@@ -4,9 +4,10 @@ import { Category } from '../category';
 import { Institution } from '../institution';
 import { Resource } from '../resource';
 import { ResourceCategory } from '../resource-category';
-import { fadeTransition, zoomTransition } from '../shared/animations';
+import { zoomTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ResourceAttachment } from '../resource-attachment';
+import { FileAttachment } from '../file-attachment';
 
 @Component({
   selector: 'app-resource',
@@ -18,6 +19,7 @@ export class ResourceComponent implements OnInit {
   resourceId: number;
   @Input() resource: Resource;
   @Input() categories: ResourceCategory[];
+  attachments: FileAttachment[];
 
   transitionState = '';
   isDataLoaded = false;
@@ -56,6 +58,12 @@ export class ResourceComponent implements OnInit {
       });
   }
 
+  loadResourceAttachments(resource: Resource) {
+    this.attachments = resource.files;
+    this.transitionState = 'zoom-in-enter';
+    this.isDataLoaded = true;
+  }
+
   getAvailableInstitutions() {
     return this.resource
       .availabilities
@@ -92,8 +100,9 @@ export class ResourceComponent implements OnInit {
     window.open(this.resource.website, '_blank');
   }
 
-  fileIcon(attachment: ResourceAttachment): string {
-    const nameArray = attachment.name.toLowerCase().split('.');
+  fileIcon(file: FileAttachment): string {
+    const s = file.mime_type || file.type || file.name || file.file_name;
+    const nameArray = s.toLowerCase().split((file.mime_type || file.type) ? '/' : '.');
 
     if (nameArray.length > 0) {
       return `/assets/filetypes/${nameArray[nameArray.length - 1]}.svg`;

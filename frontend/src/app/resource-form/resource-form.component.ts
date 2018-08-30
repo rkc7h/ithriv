@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,6 +14,8 @@ import { ResourceCategory } from '../resource-category';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ValidateUrl } from '../shared/validators/url.validator';
+import { FileAttachment } from '../file-attachment';
+import { NgProgressComponent } from '@ngx-progressbar/core';
 
 @Component({
   selector: 'app-resource-form',
@@ -35,6 +37,8 @@ export class ResourceFormComponent implements OnInit {
   showConfirmDelete = false;
   savesInAction = 0;
   files = {};
+  progress: NgProgressComponent;
+  progressMessage: '';
 
   // Field groupings
   fieldsets: Fieldset[] = [];
@@ -160,7 +164,7 @@ export class ResourceFormComponent implements OnInit {
     }),
     attachments: new FormField({
       formControl: new FormControl(),
-      files: [],
+      attachments: new Map<number | string, FileAttachment>(),
       required: false,
       placeholder: 'Attachments',
       type: 'files'
@@ -231,16 +235,11 @@ export class ResourceFormComponent implements OnInit {
   }
 
   loadResourceFiles() {
-    if (this.resource.attachments && (this.resource.attachments.length > 0)) {
-      this.fields.attachments.files = [];
-      this.resource.attachments.forEach(ra => {
-        if (ra.url) {
-          this.api
-            .getResourceAttachmentBlob(ra)
-            .subscribe(blob => {
-              this.fields.attachments.files.push(new File([blob], ra.name));
-              this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
-            });
+    if (this.resource.files && (this.resource.files.length > 0)) {
+      this.resource.files.forEach(fa => {
+        if (fa.id) {
+          this.fields.attachments.attachments.set(fa.md5, fa);
+          this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
         }
       });
     }
@@ -363,7 +362,7 @@ export class ResourceFormComponent implements OnInit {
       const fnName = this.createNew ? 'addResource' : 'updateResource';
 
       if (this.hasAttachments()) {
-        const numAttachments = this.fields.attachments.files.length;
+        const numAttachments = this.fields.attachments.attachments.size;
         let numDone = 0;
 
         this.api[fnName](this.resource)
@@ -373,16 +372,14 @@ export class ResourceFormComponent implements OnInit {
             switchMap(() => this.updateAvailabilities()),
             switchMap(() => this.updateAttachments()),
             map(ras => {
-              ras.forEach(ra => {
-                this.updateAttachmentFiles(ra).subscribe(resourceAttachment => {
-                  numDone++;
-                  console.log('resourceAttachment updated:', resourceAttachment);
-                  console.log(`${numDone} of ${numAttachments} complete.`);
+              ras.subscribe(resourceAttachment => {
+                numDone++;
+                console.log('resourceAttachment updated:', resourceAttachment);
+                console.log(`${numDone} of ${numAttachments} complete.`);
 
-                  if (numDone === numAttachments) {
-                    this.close();
-                  }
-                });
+                if (numDone === numAttachments) {
+                  this.close();
+                }
               });
             })
           ).subscribe(result => console.log('result', result));
@@ -464,15 +461,25 @@ export class ResourceFormComponent implements OnInit {
 
   updateAttachments() {
     if (this.hasAttachments()) {
-      this.fields.attachments.files.forEach(f => this.files[f.name] = f);
-      const filenames = Object.keys(this.files);
-      return this.api.addResourceAttachment(this.resource.id, filenames);
+      const attachments: FileAttachment[] = [];
+      this.fields.attachments.attachments.forEach(a => {
+        if (this.resource) {
+          a.resource_id = this.resource.id;
+        }
+        attachments.push(a);
+      });
+
+      return attachments.map(a => this.api.updateFileAttachment(a));
     }
   }
 
-  updateAttachmentFiles(ra: ResourceAttachment) {
-    const file: File = this.files[ra.name];
-    return this.api.addResourceAttachmentFile(ra, file);
+  uploadFileAttachment(attachment: FileAttachment) {
+    const file: File = this.files[attachment.name];
+    return this.api.addFileAttachmentBlob(attachment.id, file, this.progress);
+  }
+
+  updateAttachmentFiles(fa: FileAttachment) {
+    return this.api.linkResourceAndAttachment(this.resource, fa);
   }
 
   onCancel() {
@@ -503,8 +510,6 @@ export class ResourceFormComponent implements OnInit {
 
   // Go to resource screen
   close() {
-    console.log('=== close ===');
-
     if (this.resource && this.resource.id) {
       this.router.navigate(['resource', this.resource.id]);
     } else {
@@ -532,8 +537,8 @@ export class ResourceFormComponent implements OnInit {
   hasAttachments() {
     return (
       this.fields.attachments &&
-      this.fields.attachments.files &&
-      (this.fields.attachments.files.length > 0)
+      this.fields.attachments.attachments &&
+      (this.fields.attachments.attachments.size > 0)
     );
   }
 }
