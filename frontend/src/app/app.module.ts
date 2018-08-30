@@ -44,7 +44,6 @@ import { InlineSVGModule } from 'ng-inline-svg';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { DeviceDetectorModule } from 'ngx-device-detector';
 import { FileDropModule } from 'ngx-file-drop';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MarkdownModule } from 'ngx-markdown';
 import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
 import { AddResourceButtonComponent } from './add-resource-button/add-resource-button.component';
@@ -155,7 +154,6 @@ import { UserResourceListComponent } from './user-resource-list/user-resource-li
     FileDropModule,
     FlexLayoutModule,
     HttpClientModule,
-    InfiniteScrollModule,
     InlineSVGModule.forRoot(),
     MarkdownModule.forRoot(),
     MatBadgeModule,

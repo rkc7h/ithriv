@@ -1,10 +1,12 @@
 <div *ngIf="session">
-  <button
-    mat-mini-fab
-    color="accent"
-    (click)="openEdit()"
-    aria-label="Edit Resource"
-  >
-    <mat-icon>edit</mat-icon>
-  </button>
+  <div *ngIf="userMayEdit() == true">
+    <button
+      mat-mini-fab
+      color="accent"
+      (click)="openEdit()"
+      aria-label="Edit Resource"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
 </div>

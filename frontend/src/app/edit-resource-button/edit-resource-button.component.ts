@@ -30,4 +30,8 @@ export class EditResourceButtonComponent implements OnInit {
     this.router.navigateByUrl(`resource/${this.resource.id}/edit`);
   }
 
+  userMayEdit() {
+    return this.resource.user_may_edit;
+  }
+
 }

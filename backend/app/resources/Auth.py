@@ -1,5 +1,7 @@
 # Login
 # *****************************
+from functools import wraps
+
 from itsdangerous import URLSafeTimedSerializer
 
 from app import sso, app, RestException, db, auth, email_service
@@ -9,18 +11,20 @@ from flask import jsonify, redirect, g, request, Blueprint
 
 auth_blueprint = Blueprint('auth', __name__, url_prefix='/api')
 
+
 @sso.login_handler
 def login(user_info):
     if app.config["DEVELOPMENT"]:
         uid = app.config["SSO_DEVELOPMENT_UID"]
     else:
-        uid = user_info['uid']
+        uid = user_info['eppn']
 
     user = User.query.filter_by(uid=uid).first()
     if user is None:
+
         user = User(uid=uid,
-                    display_name=user_info["givenName"],
-                    email=user_info["email"])
+                    display_name=user_info["eppn"],
+                    email=user_info["eppn"])
         if "Surname" in user_info:
             user.display_name = user.display_name + " " + user_info["Surname"]
 
@@ -29,6 +33,7 @@ def login(user_info):
 
         db.session.add(user)
         db.session.commit()
+        g.user = user
     # redirect users back to the front end, include the new auth token.
     auth_token = user.encode_auth_token().decode()
     response_url = ("%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
@@ -55,6 +60,7 @@ def confirm_email(email_token):
     auth_token = user.encode_auth_token().decode()
     return jsonify({"token": auth_token})
 
+
 @auth_blueprint.route('/login_password', methods=["GET", "POST"])
 def login_password():
     request_data = request.get_json()
@@ -65,11 +71,13 @@ def login_password():
         if user.is_correct_password(request_data["password"]):
             # redirect users back to the front end, include the new auth token.
             auth_token = user.encode_auth_token().decode()
+            g.user = user
             return jsonify({"token": auth_token})
         else:
             raise RestException(RestException.LOGIN_FAILURE)
     else:
         if 'email_token' in request_data:
+            g.user = user
             return confirm_email(request_data['email_token'])
         else:
             raise RestException(RestException.CONFIRM_EMAIL)
@@ -122,4 +130,17 @@ def verify_token(token):
         return True
     else:
         return False
+
+
+def login_optional(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if request.method != 'OPTIONS':  # pragma: no cover
+            try:
+                auth = verify_token(request.headers['AUTHORIZATION'].split(' ')[1])
+            except:
+                auth = False
+
+        return f(*args, **kwargs)
+    return decorated
 

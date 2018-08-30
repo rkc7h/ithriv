@@ -23,7 +23,7 @@ export class UserResourceListComponent implements OnInit {
   getUserResources() {
     this.api.getUserResources().subscribe(
       (resources) => {
-        this.resources = resources
+        this.resources = resources;
       }
     );
   }

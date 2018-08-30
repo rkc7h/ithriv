@@ -95,7 +95,8 @@ class ThrivResourceSchema(ModelSchema):
                   'website', 'cost', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', 'approved', 'files',
                   'contact_email', 'contact_phone', 'contact_notes',
-                  '_links', 'favorites', 'favorite_count', 'resource_categories', 'owners')
+                  '_links', 'favorites', 'favorite_count', 'resource_categories',
+                  'owners', 'user_may_view', 'user_may_edit')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
@@ -114,6 +115,8 @@ class ThrivResourceSchema(ModelSchema):
     favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
     resource_categories = fields.Nested(CategoriesOnResourceSchema(), many=True, dump_only=True)
     files = fields.Nested(FileSchema(), many=True, dump_only=True)
+    user_may_view = fields.Boolean(allow_none=True)
+    user_may_edit = fields.Boolean(allow_none=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.resourceendpoint', id='<id>'),
         'collection': ma.URLFor('api.resourcelistendpoint'),
@@ -151,7 +154,12 @@ class CategorySchema(ModelSchema):
     })
 
     def get_resource_count(self, obj):
-        return len(obj.category_resources)
+        category_resources = obj.category_resources
+        resource_count = 0
+        for cr in category_resources:
+            if cr.resource.user_may_view():
+                resource_count += 1
+        return resource_count
 
 
 class ResourceCategoriesSchema(ModelSchema):
