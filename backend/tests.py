@@ -408,7 +408,7 @@ class TestCase(unittest.TestCase):
         self.construct_resource(name="Snuffy's Balloon Collection", owner="oscar@sesamestreet.com bigbird@sesamestreet.com")
         u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
         u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
-
+        db.session.add_all([u1, u2])
         db.session.commit()
 
         # Testing that the correct amount of user-owned resources show up for the correct user
