@@ -872,7 +872,7 @@ class TestCase(unittest.TestCase):
         cr = ResourceCategory(resource=r, category=c)
         db.session.add(cr)
         db.session.commit()
-        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json")
+        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers = self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(1, len(response))
@@ -887,7 +887,7 @@ class TestCase(unittest.TestCase):
         cr2 = ResourceCategory(resource=r, category=c2)
         db.session.add_all([cr, cr2]);
         db.session.commit();
-        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json")
+        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers = self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(r.id, response[0]["id"])
@@ -900,7 +900,7 @@ class TestCase(unittest.TestCase):
         cr = ResourceCategory(resource=r, category=c)
         db.session.add(cr)
         db.session.commit()
-        rv = self.app.get('/api/category/%i' % c.id, content_type="application/json")
+        rv = self.app.get('/api/category/%i' % c.id, content_type="application/json", headers = self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEquals(1, response["resource_count"])
