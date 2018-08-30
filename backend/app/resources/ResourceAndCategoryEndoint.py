@@ -5,9 +5,10 @@ from app import db, RestException
 from app.model.category import Category
 from app.model.resource import ThrivResource
 from app.model.resource_category import ResourceCategory
+from app.resources.Auth import login_optional
 from app.resources.schema import CategorySchema, ThrivResourceSchema, ResourceCategorySchema, CategoryResourcesSchema, \
     ResourceCategoriesSchema
-from resources.Auth import login_optional
+
 
 
 class ResourceByCategoryEndpoint(flask_restful.Resource):

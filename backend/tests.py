@@ -1219,10 +1219,10 @@ class TestCase(unittest.TestCase):
     def logged_in_headers(self, user=None):
         if not user:
             uid = self.test_uid
-            headers = {'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
+            headers = {'uid': self.test_uid, 'eppn': "dhf8r@virginia.edu", 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
         else:
             uid = user.uid
-            headers = {'uid': user.uid, 'givenName': user.display_name, 'mail': user.email}
+            headers = {'uid': user.uid, 'eppn': "dhf8r@virginia.edu", 'givenName': user.display_name, 'mail': user.email}
 
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")

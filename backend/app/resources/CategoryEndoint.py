@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from app import db, RestException
 from app.model.category import Category
 from app.resources.schema import CategorySchema
-from resources.Auth import login_optional
+from app.resources.Auth import login_optional
 
 
 class CategoryEndpoint(flask_restful.Resource):

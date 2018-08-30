@@ -12,7 +12,7 @@ from app.model.availability import Availability
 from app.model.resource_category import ResourceCategory
 from app.model.resource import ThrivResource
 from app.resources.schema import ThrivResourceSchema
-from resources.Auth import login_optional
+from app.resources.Auth import login_optional
 
 
 class ResourceEndpoint(flask_restful.Resource):
