@@ -4,6 +4,7 @@ from itsdangerous import URLSafeTimedSerializer
 
 from app import sso, app, RestException, db, auth, email_service
 from app.model.email_log import EmailLog
+from app.model.institution import ThrivInstitution
 from app.model.user import User
 from flask import jsonify, redirect, g, request, Blueprint
 
@@ -11,22 +12,29 @@ auth_blueprint = Blueprint('auth', __name__, url_prefix='/api')
 
 @sso.login_handler
 def login(user_info):
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++")
+    for x in user_info:
+        print (x,":",user_info[x])
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++")
+
     if app.config["DEVELOPMENT"]:
-        uid = app.config["SSO_DEVELOPMENT_UID"]
+        eppn = app.config["SSO_DEVELOPMENT_UID"]
     else:
-        uid = user_info['eppn']
+        eppn = user_info['eppn']
 
-    user = User.query.filter_by(uid=uid).first()
+    user = User.query.filter_by(eppn=eppn).first()
     if user is None:
-
-        user = User(uid=uid,
+        user = User(eppn=eppn,
                     display_name=user_info["eppn"],
                     email=user_info["eppn"])
         if "Surname" in user_info:
             user.display_name = user.display_name + " " + user_info["Surname"]
 
-        if "displayName" in user_info and len(user_info["displayName"]) > 1:
+        if "displayName" in user_info and user_info["displayName"] is not None and len(user_info["displayName"]) > 1:
             user.display_name = user_info["displayName"]
+
+        domain = user_info['eppn'].split('@')[1]
+        user.institution = ThrivInstitution.query.filter(domain==domain).first();
 
         db.session.add(user)
         db.session.commit()
@@ -34,9 +42,6 @@ def login(user_info):
     auth_token = user.encode_auth_token().decode()
     response_url = ("%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
     return redirect(response_url)
-
-
-# ourapp/views.py
 
 
 def confirm_email(email_token):

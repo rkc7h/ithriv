@@ -30,6 +30,7 @@ class DataLoader:
         self.icon_file = directory + "/icons.csv"
         self.user_file = directory + "/users.csv"
         self.user_favorite_file = directory + "/user_favorites.csv"
+        self.institution_file = directory + "/institutions.csv"
         self.mime = magic.Magic(mime=True)
         print("Data loader initialized")
 
@@ -148,6 +149,21 @@ class DataLoader:
             print("There are now %i users in the database." %
                   db.session.query(User).count())
 
+    def load_institutions(self):
+        with open(self.institution_file, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
+            next(reader, None)  # use headers to set availability
+
+            for row in reader:
+                inst = ThrivInstitution(id=row[0], name=row[1], description=row[2], domain=row[3])
+                db.session.add(inst)
+            db.session.commit()
+            db.session.execute("SELECT setval('institution_id_seq', "
+                               "COALESCE((SELECT MAX(id) + 1 FROM institution), 1), false);")
+            db.session.commit()
+            print("There are now %i institutions in the database." %
+                  db.session.query(ThrivInstitution).count())
+
     def load_user_favorites(self):
         with open(self.user_favorite_file, newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
@@ -199,6 +215,7 @@ class DataLoader:
         db.session.query(Availability).delete()
         db.session.query(Favorite).delete()
         db.session.query(ThrivResource).delete()
+        db.session.query(ThrivInstitution).delete()
         db.session.query(ThrivType).delete()
         db.session.query(Category).delete()
         db.session.query(EmailLog).delete()

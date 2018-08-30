@@ -7,4 +7,5 @@ class ThrivInstitution(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     description = db.Column(db.String)
+    domain = db.Column(db.String)
     resources = db.relationship('ThrivResource', backref=db.backref('institution', lazy=True))

@@ -91,6 +91,7 @@ def handle_404(error):
 
 
 def _load_data(data_loader):
+    data_loader.load_institutions()
     data_loader.load_resources()
     data_loader.load_availability()
     # data_loader.load_icons()

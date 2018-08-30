@@ -296,8 +296,8 @@ class TestCase(unittest.TestCase):
         self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
         self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com, bigbird@sesamestreet.com")
         self.construct_resource(name="Snuffy's Balloon Collection", owner="oscar@sesamestreet.com bigbird@sesamestreet.com")
-        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
-        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
+        u1 = User(id=1, eppn=self.test_uid,  uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, eppn=self.admin_uid, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
 
         db.session.commit()
 
@@ -633,18 +633,18 @@ class TestCase(unittest.TestCase):
 
     def test_update_resource_attachments(self):
         r = self.construct_resource()
-        ra = ResourceAttachment(name="Happy Coconuts", resource_id=r.id)
+        ra = ResourceAttachment(name="HappyCoconuts.csv", resource_id=r.id)
         db.session.add(ra)
         db.session.commit()
-        ra.name = "Happier Coconuts"
+        ra.name = "HappierCoconuts.csv"
         rv = self.app.put('/api/resource/attachment/%i' % ra.id, data=json.dumps(ResourceAttachmentSchema().dump(ra).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals("Happier Coconuts", response["name"])
+        self.assertEquals("HappierCoconuts.csv", response["name"])
 
     def test_upload_resource_attachments(self):
         resource = self.construct_resource()
-        ra = {'name': 'Happy Coconuts', 'resource_id': resource.id}
+        ra = {'name': 'HappyCoconuts.svg', 'resource_id': resource.id}
         rv = self.app.post('/api/resource/attachment', data=json.dumps(ResourceAttachmentSchema().dump(ra).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
@@ -1027,20 +1027,31 @@ class TestCase(unittest.TestCase):
 
     def logged_in_headers(self, user=None):
         if not user:
-            uid = self.test_uid
-            headers = {'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
+            eppn = self.test_uid
+            headers = {'eppn': self.test_uid, 'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
         else:
-            uid = user.uid
-            headers = {'uid': user.uid, 'givenName': user.display_name, 'mail': user.email}
+            eppn = user.eppn
+            headers = {'eppn': user.eppn, 'uid': user.uid, 'givenName': user.display_name, 'mail': user.email}
 
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
-        participant = User.query.filter_by(uid=uid).first()
+        participant = User.query.filter_by(eppn=eppn).first()
         participant.role = "Admin"
         db.session.add(participant)
         db.session.commit()
 
         return dict(Authorization='Bearer ' + participant.encode_auth_token().decode())
+
+    def test_sso_login_sets_institution_to_uva_correctly(self):
+        inst_obj = ThrivInstitution(name="UVA", domain='virginia.edu')
+        db.session.add(inst_obj);
+        user = User(eppn="dhf8r@virginia.edu", uid='dhf84', display_name='Dan Funk', email='dhf8r@virginia.edu')
+        self.logged_in_headers(user)
+        dbu = User.query.filter_by(eppn='dhf8r@virginia.edu').first()
+        self.assertIsNotNone(dbu)
+        self.assertIsNotNone(dbu.institution)
+        self.assertEqual('UVA', dbu.institution.name)
+
 
     def test_create_user_with_password(self):
         data = {
@@ -1162,7 +1173,7 @@ class TestCase(unittest.TestCase):
     def test_get_current_participant(self):
         """ Test for the current participant status """
         # Create the user
-        headers = {'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
+        headers = {'eppn': self.test_uid, 'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
         # Don't check success, login does a redirect to the front end that might not be running.
@@ -1226,29 +1237,29 @@ class TestCase(unittest.TestCase):
 
     def test_find_users_respects_filter(self):
         self.createTestUsers()
-        query = {'filter': 'big', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': 'big', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals(1, len(response['items']))
 
-        query = {'filter': 'Grouch', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': 'Grouch', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals(1, len(response['items']))
 
-        query = {'filter': '123', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': '123', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals(1, len(response['items']))
 
-        query = {'filter': 'Ididnputthisinthedata', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': 'Ididnputthisinthedata', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals(0, len(response['items']))
 
     def test_find_users_orders_results(self):
         self.createTestUsers()
-        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals("Big Bird", response['items'][0]['display_name'])
 
-        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'desc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'desc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals("Oscar the Grouch", response['items'][0]['display_name'])
 
