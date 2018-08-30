@@ -1,8 +1,8 @@
 <span class="mat-label-override">
   <span [ngClass]="{
     'mat-form-field': true,
-    'mat-form-field-invalid': field.formControl ? !field.formControl.valid : !field.formGroup.valid,
-    'mat-form-field-valid': field.formControl ? field.formControl.valid : field.formGroup.valid
+    'mat-form-field-invalid': !isValid(field),
+    'mat-form-field-valid': isValid(field)
   }">
     <label class="mat-form-field-label">
       {{field.placeholder}}

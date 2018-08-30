@@ -1,3 +1,8 @@
+<div *ngIf="progress | async">
+  <h1>Uploading attachements...</h1>
+  <h2>{{progressMessage}}</h2>
+</div>
+
 <div
   *ngIf="isDataLoaded"
   class="container mat-typography"
@@ -21,15 +26,12 @@
       <h3 *ngIf="fieldset.label">{{fieldset.label}}</h3>
       <app-form-field
         *ngFor="let field of fieldset.fields"
-        [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
+        [errors]="getFieldErrors(field)"
         [field]="field"
         [formGroup]="resourceForm"
         [errorMatcher]="errorMatcher"
       ></app-form-field>
     </fieldset>
-
-    <h2>Attachments</h2>
-    <app-file-upload></app-file-upload>
 
     <footer>
       <mat-toolbar color="primary">

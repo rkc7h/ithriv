@@ -24,7 +24,7 @@
     <button
       mat-button
       *ngIf="session"
-      (click)="goProfile($event)"
+      (click)="goHome($event)"
     >
       <mat-icon>account_circle</mat-icon>
       {{session.display_name}}
@@ -69,6 +69,7 @@
     <button
       *ngIf="session"
       mat-stroked-button
+      (click)="goConsult($event)"
     >
       <mat-icon>help</mat-icon>
       Request a Consult

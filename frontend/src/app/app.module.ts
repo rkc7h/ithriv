@@ -39,11 +39,11 @@ import {
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CovalentTextEditorModule } from '@covalent/text-editor';
+import { NgProgressModule } from '@ngx-progressbar/core';
 import { InlineSVGModule } from 'ng-inline-svg';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { DeviceDetectorModule } from 'ngx-device-detector';
 import { FileDropModule } from 'ngx-file-drop';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MarkdownModule } from 'ngx-markdown';
 import { AddCategoryButtonComponent } from './add-category-button/add-category-button.component';
 import { AddResourceButtonComponent } from './add-resource-button/add-resource-button.component';
@@ -58,10 +58,12 @@ import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryNetworkViewComponent } from './category-network-view/category-network-view.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
+import { ConsultRequestFormComponent } from './consult-request-form/consult-request-form.component';
 import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
 import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
 import { FavoriteResourceListComponent } from './favorite-resource-list/favorite-resource-list.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { FormFieldLabelComponent } from './form-field-label/form-field-label.component';
 import { FormFieldComponent } from './form-field/form-field.component';
@@ -75,6 +77,7 @@ import { LoginServicesComponent } from './login-services/login-services.componen
 import { LoginComponent } from './login/login.component';
 import { LogoComponent } from './logo/logo.component';
 import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
+import { GraphComponent } from './network/graph/graph.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ProfileComponent } from './profile/profile.component';
 import { RegisterFormComponent } from './register-form/register-form.component';
@@ -89,8 +92,7 @@ import { SessionRedirectComponent } from './session-redirect/session-redirect.co
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
-import { FileUploadComponent } from './file-upload/file-upload.component';
-import { GraphComponent } from './network/graph/graph.component';
+import { UserResourceListComponent } from './user-resource-list/user-resource-list.component';
 
 @NgModule({
   declarations: [
@@ -105,18 +107,18 @@ import { GraphComponent } from './network/graph/graph.component';
     CategoryFormComponent,
     CategoryNetworkViewComponent,
     CategoryTileComponent,
+    ConsultRequestFormComponent,
     EditCategoryButtonComponent,
     EditResourceButtonComponent,
     FavoriteResourceButtonComponent,
-    FavoriteResourceButtonComponent,
     FavoriteResourceListComponent,
-    FavoriteResourceListComponent,
+    FileUploadComponent,
     ForgotPasswordComponent,
     FormFieldComponent,
     FormFieldLabelComponent,
     GradientBackgroundDirective,
     GradientBorderDirective,
-    GradientBorderDirective,
+    GraphComponent,
     HeaderComponent,
     HomeComponent,
     IsAdminDirective,
@@ -138,8 +140,7 @@ import { GraphComponent } from './network/graph/graph.component';
     SessionRedirectComponent,
     TreeSelectComponent,
     UserAdminComponent,
-    FileUploadComponent,
-    GraphComponent,
+    UserResourceListComponent
   ],
   imports: [
     AppRoutingModule,
@@ -152,7 +153,6 @@ import { GraphComponent } from './network/graph/graph.component';
     FileDropModule,
     FlexLayoutModule,
     HttpClientModule,
-    InfiniteScrollModule,
     InlineSVGModule.forRoot(),
     MarkdownModule.forRoot(),
     MatBadgeModule,
@@ -173,7 +173,6 @@ import { GraphComponent } from './network/graph/graph.component';
     MatNativeDateModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    MatProgressSpinnerModule,
     MatRadioModule,
     MatSelectModule,
     MatSidenavModule,
@@ -186,6 +185,7 @@ import { GraphComponent } from './network/graph/graph.component';
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
+    NgProgressModule.forRoot(),
     ReactiveFormsModule
   ],
   entryComponents: [

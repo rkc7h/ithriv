@@ -1,5 +1,7 @@
-$easeDuration: 300ms;
-$animationDuration: 750ms;
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
 
 h1 {
   text-align: center;

@@ -64,4 +64,8 @@ export class FormFieldComponent implements OnInit {
   isTextField(field: FormField) {
     return ['text', 'url', 'email', 'password'].includes(field.type);
   }
+
+  isNormalField(field: FormField) {
+    return !['tree', 'textarea', 'toggle', 'files'].includes(field.type);
+  }
 }

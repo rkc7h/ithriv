@@ -1,4 +1,5 @@
 export const environment = {
+  envName: 'prod',
   production: true,
-  api: 'https://staging-ithriv.uvasomrc.io'
+  api: 'https://portal.ithriv.org'
 };

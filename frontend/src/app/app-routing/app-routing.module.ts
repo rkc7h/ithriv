@@ -4,6 +4,7 @@ import { BrowseComponent } from '../browse/browse.component';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 import { CategoryNetworkViewComponent } from '../category-network-view/category-network-view.component';
 import { CategoryComponent } from '../category/category.component';
+import { ConsultRequestFormComponent } from "../consult-request-form/consult-request-form.component";
 import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
 import { HomeComponent } from '../home/home.component';
 import { LoginComponent } from '../login/login.component';
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
   { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
   { path: 'category/:category/network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
+  { path: 'consult_request', component: ConsultRequestFormComponent, data: { title: 'Request a Consult', hideHeader: true } },
   { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },
   { path: 'home', component: HomeComponent, data: { title: 'Welcome to iThriv' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },

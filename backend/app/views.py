@@ -4,10 +4,11 @@ import flask_restful
 from flask_restful import reqparse
 
 from app.resources.Auth import auth_blueprint
+from app.resources.FileEndpoint import FileListEndpoint, FileEndpoint
 from app.resources.IconEndpoint import IconListEndpoint, IconEndpoint
 from app.resources.ResourceAndCategoryEndoint import ResourceByCategoryEndpoint, CategoryByResourceEndpoint, \
     ResourceCategoryEndpoint, ResourceCategoryListEndpoint
-from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint
+from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint, UserResourceEndpoint
 from app.resources.CategoryEndoint import CategoryListEndpoint, CategoryEndpoint
 from app.resources.AvailabilityEndpoint import AvailabilityEndpoint, AvailabilityListEndpoint, \
     ResourceAvailabilityEndpoint
@@ -15,6 +16,7 @@ from app.resources.InstitutionEndpoint import InstitutionEndpoint, InstitutionLi
 from app.resources.SearchEndpoint import SearchEndpoint
 from app.resources.SessionEndpoint import SessionEndpoint
 from app.resources.Tracking import tracking_blueprint
+from app.resources.ConsultRequest import consult_blueprint
 from app.resources.TypeEndpoint import TypeEndpoint, TypeListEndpoint
 from app.resources.UserEndpoint import UserEndpoint, UserListEndpoint
 from app.resources.FavoriteEndpoint import UserFavoriteEndpoint, FavoriteEndpoint, FavoriteListEndpoint
@@ -34,6 +36,7 @@ api = IThrivApi(api_blueprint)
 app.register_blueprint(api_blueprint)
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(tracking_blueprint)
+app.register_blueprint(consult_blueprint)
 
 parser = flask_restful.reqparse.RequestParser()
 parser.add_argument('resource')
@@ -76,3 +79,10 @@ api.add_resource(SessionEndpoint, '/session')
 api.add_resource(FavoriteListEndpoint, '/favorite')
 api.add_resource(FavoriteEndpoint, '/favorite/<id>')
 api.add_resource(UserFavoriteEndpoint, '/session/favorite')
+api.add_resource(UserResourceEndpoint, '/session/resource')
+api.add_resource(FileEndpoint, '/file/<id>')
+api.add_resource(FileListEndpoint, '/file')
+
+#api.add_resource(ResourceAttachmentListEndpoint, '/resource/attachment')
+#api.add_resource(ResourceAttachmentEndpoint, '/resource/attachment/<id>')
+#api.add_resource(AttachmentByResourceEndpoint, '/resource/<resource_id>/attachment')

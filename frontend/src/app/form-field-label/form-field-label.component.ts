@@ -15,5 +15,15 @@ export class FormFieldLabelComponent implements OnInit {
 
   ngOnInit() {
   }
+
+  isValid(field: FormField) {
+    if (field.formControl) {
+      return field.formControl.valid;
+    } else if (field.formGroup) {
+      return field.formGroup.valid;
+    } else {
+      return true;
+    }
+  }
 }
 

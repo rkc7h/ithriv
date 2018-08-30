@@ -1,16 +1,21 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
+import { map, switchMap } from 'rxjs/operators';
+import { Availability } from '../availability';
 import { Category } from '../category';
 import { ErrorMatcher } from '../error-matcher';
 import { Fieldset } from '../fieldset';
 import { FormField } from '../form-field';
 import { Resource } from '../resource';
+import { ResourceAttachment } from '../resource-attachment';
 import { ResourceCategory } from '../resource-category';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { fadeTransition } from '../shared/animations';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ValidateUrl } from '../shared/validators/url.validator';
-import { Availability } from '../availability';
+import { FileAttachment } from '../file-attachment';
+import { NgProgressComponent } from '@ngx-progressbar/core';
 
 @Component({
   selector: 'app-resource-form',
@@ -31,6 +36,9 @@ export class ResourceFormComponent implements OnInit {
   resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
   savesInAction = 0;
+  files = {};
+  progress: NgProgressComponent;
+  progressMessage: '';
 
   // Field groupings
   fieldsets: Fieldset[] = [];
@@ -154,12 +162,20 @@ export class ResourceFormComponent implements OnInit {
         'Unapproved'
       ]
     }),
+    attachments: new FormField({
+      formControl: new FormControl(),
+      attachments: new Map<number | string, FileAttachment>(),
+      required: false,
+      placeholder: 'Attachments',
+      type: 'files'
+    }),
   };
 
   constructor(
     private api: ResourceApiService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public snackBar: MatSnackBar
   ) {
     this.loadData();
   }
@@ -218,6 +234,17 @@ export class ResourceFormComponent implements OnInit {
       });
   }
 
+  loadResourceFiles() {
+    if (this.resource.files && (this.resource.files.length > 0)) {
+      this.resource.files.forEach(fa => {
+        if (fa.id) {
+          this.fields.attachments.attachments.set(fa.md5, fa);
+          this.fields.attachments.formControl.updateValueAndValidity({ emitEvent: true });
+        }
+      });
+    }
+  }
+
   loadFieldsets() {
     this.fieldsets = [];
 
@@ -272,6 +299,10 @@ export class ResourceFormComponent implements OnInit {
           validators.push(ValidateUrl);
         }
 
+        if (fieldName === 'attachments') {
+          this.loadResourceFiles();
+        }
+
         if (fieldName === 'categories') {
           const selectedCatIds = this.resourceCategories.map(rc => rc.category.id);
           selectedCatIds.push(+this.category);
@@ -287,17 +318,19 @@ export class ResourceFormComponent implements OnInit {
           this.resourceForm.addControl(fieldName, this.fields.categories.formGroup);
           this.isDataLoaded = true;
         } else {
-          field.formControl.setValidators(validators);
+          if (field.formControl) {
+            field.formControl.setValidators(validators);
 
-          if (fieldName === 'availabilities.institution_id') {
-            const selectedInstitutions = this.resource.availabilities.filter(av => av.available);
-            const selectedInstitutionIds = selectedInstitutions.map(i => i.institution_id);
-            field.formControl.patchValue(selectedInstitutionIds);
-          } else {
-            field.formControl.patchValue(this.resource[fieldName]);
+            if (fieldName === 'availabilities.institution_id') {
+              const selectedInstitutions = this.resource.availabilities.filter(av => av.available);
+              const selectedInstitutionIds = selectedInstitutions.map(i => i.institution_id);
+              field.formControl.patchValue(selectedInstitutionIds);
+            } else {
+              field.formControl.patchValue(this.resource[fieldName]);
+            }
+
+            this.resourceForm.addControl(fieldName, field.formControl);
           }
-
-          this.resourceForm.addControl(fieldName, field.formControl);
         }
       }
     }
@@ -310,23 +343,7 @@ export class ResourceFormComponent implements OnInit {
   }
 
   getFields(): FormField[] {
-    const fields = [];
-
-    for (const fieldName in this.fields) {
-      if (this.fields.hasOwnProperty(fieldName)) {
-        fields.push(this.fields[fieldName]);
-      }
-    }
-
-    return fields;
-  }
-
-  closeIfComplete() {
-    this.savesInAction--;
-    console.log("Total Saves in action:" + this.savesInAction)
-    if (this.savesInAction === 0) {
-      this.close();
-    }
+    return Object.entries(this.fields).map(f => f[1]);
   }
 
   onSubmit($event) {
@@ -342,25 +359,83 @@ export class ResourceFormComponent implements OnInit {
         }
       }
 
-      this.savesInAction = 3; // Assumes we'll have three api calls
-      if (this.createNew) {
-        this.api.addResource(this.resource).subscribe(r => {
-          this.resource = r;
-          this.updateCategories();
-          this.updateAvailabilities();
-          this.closeIfComplete();
-        });
+      const fnName = this.createNew ? 'addResource' : 'updateResource';
+
+      if (this.hasAttachments()) {
+        const numAttachments = this.fields.attachments.attachments.size;
+        let numDone = 0;
+
+        this.api[fnName](this.resource)
+          .pipe(
+            map(r => this.resource = r),
+            switchMap(() => this.updateCategories()),
+            switchMap(() => this.updateAvailabilities()),
+            switchMap(() => this.updateAttachments()),
+            map(ras => {
+              ras.subscribe(resourceAttachment => {
+                numDone++;
+                console.log('resourceAttachment updated:', resourceAttachment);
+                console.log(`${numDone} of ${numAttachments} complete.`);
+
+                if (numDone === numAttachments) {
+                  this.close();
+                }
+              });
+            })
+          ).subscribe(result => console.log('result', result));
       } else {
-        this.api.updateResource(this.resource).subscribe(r => {
-          this.resource = r;
-          this.updateCategories();
-          this.updateAvailabilities();
-          this.closeIfComplete();
-        });
+        this.api[fnName](this.resource)
+          .pipe(
+            map(r => this.resource = r),
+            switchMap(() => this.updateCategories()),
+            switchMap(() => this.updateAvailabilities()),
+          )
+          .subscribe(
+            result => console.log('result', result),
+            error => console.error(error),
+            () => this.close()
+          );
+      }
+    } else {
+      const messages: string[] = [];
+      const controls = this.resourceForm.controls;
+      for (const fieldName in controls) {
+        if (controls.hasOwnProperty(fieldName)) {
+          const errors = controls[fieldName].errors;
+          const label = this.fields[fieldName].placeholder;
+
+          for (const errorName in errors) {
+            if (errors.hasOwnProperty(errorName)) {
+              switch (errorName) {
+                case 'email':
+                  messages.push(`${label} is not a valid email address.`);
+                  break;
+                case 'maxlength':
+                  messages.push(`${label} is not long enough.`);
+                  break;
+                case 'minlength':
+                  messages.push(`${label} is too short.`);
+                  break;
+                case 'required':
+                  messages.push(`${label} is empty.`);
+                  break;
+                case 'url':
+                  messages.push(`${label} is not a valid URL.`);
+                  break;
+                default:
+                  messages.push(`${label} has an error.`);
+                  break;
+              }
+            }
+          }
+        }
       }
 
-    } else {
-      console.log('FORM NOT VALID');
+      const action = '';
+      const message = `Please double-check the following fields: ${messages.join(' ')}`;
+      this.snackBar.open(message, action, {
+        duration: 2000, panelClass: 'snackbar-warning'
+      });
     }
   }
 
@@ -373,9 +448,7 @@ export class ResourceFormComponent implements OnInit {
         selectedCategories.push({ resource_id: this.resource.id, category_id: parseInt(key, 10) });
       }
     }
-    this.api.updateResourceCategories(this.resource, selectedCategories).subscribe(e => {
-      this.closeIfComplete();
-    });
+    return this.api.updateResourceCategories(this.resource, selectedCategories);
   }
 
   updateAvailabilities() {
@@ -383,9 +456,30 @@ export class ResourceFormComponent implements OnInit {
     for (const value of this.fields['availabilities.institution_id'].formControl.value || []) {
       availabilities.push({ resource_id: this.resource.id, institution_id: value, available: true });
     }
-    this.api.updateResourceAvailability(this.resource, availabilities).subscribe(e => {
-      this.closeIfComplete();
-    });
+    return this.api.updateResourceAvailability(this.resource, availabilities);
+  }
+
+  updateAttachments() {
+    if (this.hasAttachments()) {
+      const attachments: FileAttachment[] = [];
+      this.fields.attachments.attachments.forEach(a => {
+        if (this.resource) {
+          a.resource_id = this.resource.id;
+        }
+        attachments.push(a);
+      });
+
+      return attachments.map(a => this.api.updateFileAttachment(a));
+    }
+  }
+
+  uploadFileAttachment(attachment: FileAttachment) {
+    const file: File = this.files[attachment.name];
+    return this.api.addFileAttachmentBlob(attachment.id, file, this.progress);
+  }
+
+  updateAttachmentFiles(fa: FileAttachment) {
+    return this.api.linkResourceAndAttachment(this.resource, fa);
   }
 
   onCancel() {
@@ -430,5 +524,21 @@ export class ResourceFormComponent implements OnInit {
         }
       });
     }
+  }
+
+  getFieldErrors(field: FormField) {
+    if (field.formControl) {
+      return field.formControl.errors;
+    } else if (field.formGroup) {
+      return field.formGroup.errors;
+    }
+  }
+
+  hasAttachments() {
+    return (
+      this.fields.attachments &&
+      this.fields.attachments.attachments &&
+      (this.fields.attachments.attachments.size > 0)
+    );
   }
 }

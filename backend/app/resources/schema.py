@@ -1,5 +1,4 @@
 from flask_marshmallow.sqla import ModelSchema
-from flask_sqlalchemy import Pagination
 from marshmallow import fields, post_load
 from app import ma
 from app.model.availability import Availability
@@ -10,9 +9,9 @@ from app.model.resource import ThrivResource
 from app.model.resource_category import ResourceCategory
 from app.model.search import Filter, Search
 from app.model.type import ThrivType
+from app.model.uploaded_file import UploadedFile
 from app.model.user import User
 from app.model.favorite import Favorite
-from flask import g
 
 
 class ThrivInstitutionSchema(ModelSchema):
@@ -81,14 +80,23 @@ class CategoriesOnResourceSchema(ModelSchema):
     })
 
 
+class FileSchema(ModelSchema):
+    class Meta:
+        model = UploadedFile
+        fields = ('id', 'file_name', 'display_name', 'date_modified', 'mime_type', 'size', 'md5', 'resource_id', 'url')
+    id = fields.Integer(required=False, allow_none=True)
+    resource_id = fields.Integer(required=False, allow_none=True)
+
+
 class ThrivResourceSchema(ModelSchema):
     class Meta:
         model = ThrivResource
         fields = ('id', 'name', 'description', 'last_updated', 'owner',
                   'website', 'cost', 'institution_id', 'type_id', 'type',
-                  'institution', 'availabilities', 'approved',
+                  'institution', 'availabilities', 'approved', 'files',
                   'contact_email', 'contact_phone', 'contact_notes',
-                  '_links', 'favorites', 'favorite_count', 'resource_categories')
+                  '_links', 'favorites', 'favorite_count', 'resource_categories',
+                  'owners', 'user_may_view', 'user_may_edit')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
@@ -106,18 +114,19 @@ class ThrivResourceSchema(ModelSchema):
     availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
     favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
     resource_categories = fields.Nested(CategoriesOnResourceSchema(), many=True, dump_only=True)
+    files = fields.Nested(FileSchema(), many=True, dump_only=True)
+    user_may_view = fields.Boolean(allow_none=True)
+    user_may_edit = fields.Boolean(allow_none=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.resourceendpoint', id='<id>'),
         'collection': ma.URLFor('api.resourcelistendpoint'),
         'institution': ma.UrlFor('api.institutionendpoint', id='<institution_id>'),
         'type': ma.UrlFor('api.typeendpoint', id='<type_id>'),
         'categories': ma.UrlFor('api.categorybyresourceendpoint', resource_id='<id>'),
-        'availability': ma.UrlFor('api.resourceavailabilityendpoint', resource_id='<id>')
+        'availability': ma.UrlFor('api.resourceavailabilityendpoint', resource_id='<id>'),
+        'attachments': ma.UrlFor('api.attachmentbyresourceendpoint', resource_id='<id>')
     },
         dump_only=True)
-
-
-
 
 
 class CategorySchema(ModelSchema):
@@ -145,7 +154,12 @@ class CategorySchema(ModelSchema):
     })
 
     def get_resource_count(self, obj):
-        return len(obj.category_resources)
+        category_resources = obj.category_resources
+        resource_count = 0
+        for cr in category_resources:
+            if cr.resource.user_may_view():
+                resource_count += 1
+        return resource_count
 
 
 class ResourceCategoriesSchema(ModelSchema):
@@ -232,7 +246,8 @@ class SearchSchema(ma.Schema):
 class UserSchema(ModelSchema):
     class Meta:
         model = User
-        fields = ('id', '_links', 'uid', 'display_name', 'email', 'role', 'institution_id', 'institution', 'password')
+        fields = ('id', '_links', 'uid', 'display_name', 'email', 'role', 'institution_id',
+                  'institution', 'password', 'institutional_role', 'division')
     password = fields.String(load_only=True)
     id = fields.Integer(required=False, allow_none=True)
     institution_id = fields.Integer(required=False, allow_none=True)
@@ -241,6 +256,7 @@ class UserSchema(ModelSchema):
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.userendpoint', id='<id>'),
         'favorites': ma.UrlFor('api.userfavoriteendpoint'),
+        'resources': ma.UrlFor('api.userresourceendpoint'),
     })
 
 

@@ -159,7 +159,7 @@ Execute the following at the top level of the repository to stop all running ser
 
 ### Setting up Mailtrap
 To test email integration set up an account with [Mailtrap](https://mailtrap.io/)
-In your instance config, set your username and password.
+In your instance config, set your sname and password.
 You can find these values in your Mailtrap account in the settings portion of your inbox; you will not find these values in your general account settings as the username and password are specific to each inbox you create.
 
 MAIL_USERNAME = "numbersandletters"
@@ -183,6 +183,7 @@ flask cleardb
 flask clearindex
 flask db upgrade
 flask db migrate
+flask loadicons
 flask initdb
 flask initindex
 ```
@@ -213,17 +214,17 @@ models.Resrouce.query( ...
 
 
 ### Security / Authentication
-This will become increasingly complicated, so check back here often.  
-At present the system can handle single sign on (SSO) authentication through Shibboleth via a 
+This will become increasingly complicated, so check back here often.
+At present the system can handle single sign on (SSO) authentication through Shibboleth via a
 connector on the apache web server that looks for headers we know are provided by the University
 of Virginia.  This will change in the future as we migrate to using a OnConnect which will allow
 connections with more institutions.  We'll also need to offer direct log-ins for community users.
 
-Once credentials are established, the front end (Angular) and backend (Flask/Python) will use a JWT 
+Once credentials are established, the front end (Angular) and backend (Flask/Python) will use a JWT
 token.
 
 #### Develoment Mode
-The SSO aspect is bypassed in Development mode.  Clicking the log in button will immediately 
+The SSO aspect is bypassed in Development mode.  Clicking the log in button will immediately
 log you in as the user specified in your instance/config.py.
 ```
 SSO_DEVELOPMENT_UID = 'dhf8r'

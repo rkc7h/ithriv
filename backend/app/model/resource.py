@@ -1,7 +1,9 @@
 import datetime
+import re
 from app.model.availability import Availability
 from app.model.favorite import Favorite
 from app import db
+from flask import g
 
 
 class ThrivResource(db.Model):
@@ -24,8 +26,35 @@ class ThrivResource(db.Model):
                                      backref=db.backref('resource', lazy=True))
     favorites = db.relationship(lambda: Favorite, cascade="all, delete-orphan",
                                 backref=db.backref('resource', lazy=True))
+    files = db.relationship("UploadedFile", back_populates="resource")
     categories = db.relationship("ResourceCategory", back_populates="resource")
     approved = db.Column(db.String)
 
     def favorite_count(self):
         return len(self.favorites)
+
+    def owners(self):
+        try:
+            return re.split('; |, | ', self.owner)
+        except:
+            pass
+
+    def user_may_view(self):
+        try:
+            if self.approved == "Approved":
+                return True
+            if g.user.role == "Admin":
+                return True
+            if g.user.email in self.owners():
+                return True
+        except:
+            return False
+
+    def user_may_edit(self):
+        try:
+            if g.user.role == "Admin":
+                return True
+            if g.user.email in self.owners():
+                return True
+        except:
+            return False

@@ -51,7 +51,7 @@ class UserListEndpoint(flask_restful.Resource):
     @requires_roles('Admin')
     def get(self):
         args = request.args
-        page = eval(args["pageNumber"]) if ("pageNumber" in args) else 1
+        pageNumber = eval(args["pageNumber"]) if ("pageNumber" in args) else 0
         per_page = eval(args["pageSize"]) if ("pageSize" in args) else 20
         sort_column = args["sort"] if ("sort" in args) else "display_name"
         sort_order = args["sortOrder"] if ("sortOrder" in args) else "asc"
@@ -60,7 +60,7 @@ class UserListEndpoint(flask_restful.Resource):
             f = '%' + args["filter"] + '%'
             query = query.filter(or_(User.email.ilike(f), User.display_name.ilike(f), User.uid.ilike(f)))
         query = query.order_by("%s %s" % (sort_column, sort_order))
-        page = query.paginate(page=page, per_page=per_page, error_out=False)
+        page = query.paginate(page=pageNumber  +1, per_page=per_page, error_out=False)
         return self.searchSchema.dump(page)
 
     @auth.login_required
