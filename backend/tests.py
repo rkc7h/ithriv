@@ -1205,13 +1205,12 @@ class TestCase(unittest.TestCase):
         self.assertEquals(2, len(response['items']))
 
     def test_find_users_respects_pageNumber(self):
-        self.createTestUsers();
-        self.assertEquals(3, len(db.session.query(User).all()));
+        self.createTestUsers()
+        self.assertEquals(3, len(db.session.query(User).all()))
 
         query = {'filter' : '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '2'}
         response = self.searchUsers(query)
         self.assertEquals(2, len(response['items']))
-        self.assertEquals(3, response['total'])
         self.assertEquals(3, response['total'])
         self.assertEquals('Big Bird', response['items'][0]['display_name'])
 
@@ -1226,29 +1225,29 @@ class TestCase(unittest.TestCase):
 
     def test_find_users_respects_filter(self):
         self.createTestUsers()
-        query = {'filter': 'big', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': 'big', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals(1, len(response['items']))
 
-        query = {'filter': 'Grouch', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': 'Grouch', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals(1, len(response['items']))
 
-        query = {'filter': '123', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': '123', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals(1, len(response['items']))
 
-        query = {'filter': 'Ididnputthisinthedata', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': 'Ididnputthisinthedata', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals(0, len(response['items']))
 
     def test_find_users_orders_results(self):
         self.createTestUsers()
-        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals("Big Bird", response['items'][0]['display_name'])
 
-        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'desc', 'pageNumber': '1', 'pageSize': '20'}
+        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'desc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
         self.assertEquals("Oscar the Grouch", response['items'][0]['display_name'])
 
