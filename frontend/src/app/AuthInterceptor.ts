@@ -19,7 +19,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if (this.isS3.test(req.url)) {
       // NOOP - don't add authorization headers when making s3 requests, it confuses AWS.
-    } else {
+    } else if (token) {
       req = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`

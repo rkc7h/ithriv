@@ -7,19 +7,25 @@ from app.model.resource import ThrivResource
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema, ThrivResourceSchema, ResourceCategorySchema, CategoryResourcesSchema, \
     ResourceCategoriesSchema
+from resources.Auth import login_optional
 
 
 class ResourceByCategoryEndpoint(flask_restful.Resource):
 
     schema = CategoryResourcesSchema()
 
+    @login_optional
     def get(self, category_id):
         resource_categories = db.session.query(ResourceCategory)\
             .join(ResourceCategory.resource)\
             .filter(ResourceCategory.category_id == category_id)\
             .order_by(ThrivResource.name)\
             .all()
-        return self.schema.dump(resource_categories,many=True)
+        viewable_resource_categories = []
+        for rc in resource_categories:
+            if rc.resource.user_may_view():
+                    viewable_resource_categories.append(rc)
+        return self.schema.dump(viewable_resource_categories, many=True)
 
 
 class CategoryByResourceEndpoint(flask_restful.Resource):

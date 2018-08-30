@@ -19,6 +19,8 @@ export interface Resource {
   type_id?: number;
   website?: string;
   approved?: string;
+  user_may_view?: boolean;
+  user_may_edit?: boolean;
   attachments?: ResourceAttachment[];
   last_updated?: string;
   favorites?: Favorite[];

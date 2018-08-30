@@ -4,6 +4,7 @@ from app.model.availability import Availability
 from app.model.favorite import Favorite
 from app.model.resource_attachment import ResourceAttachment
 from app import db
+from flask import g
 
 
 class ThrivResource(db.Model):
@@ -39,3 +40,23 @@ class ThrivResource(db.Model):
             return re.split('; |, | ', self.owner)
         except:
             pass
+
+    def user_may_view(self):
+        try:
+            if self.approved == "Approved":
+                return True
+            if g.user.role == "Admin":
+                return True
+            if g.user.email in self.owners():
+                return True
+        except:
+            return False
+
+    def user_may_edit(self):
+        try:
+            if g.user.role == "Admin":
+                return True
+            if g.user.email in self.owners():
+                return True
+        except:
+            return False

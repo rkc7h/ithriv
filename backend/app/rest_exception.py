@@ -7,7 +7,7 @@ class RestException(Exception):
     TOKEN_MISSING = {'code': 'token_missing', 'message': 'You\'re are not logged in.'}
     ELASTIC_ERROR = {'code': 'elastic_error', 'message':"Error connecting to ElasticSearch."}
     NOT_YOUR_ACCOUNT = {'code': 'permission_denied', 'message': 'You may not edit another users account.'}
-    PERMISSON_DENIED = {'code': 'permission_denied', 'message': 'You are not authorized to make this call.'}
+    PERMISSION_DENIED = {'code': 'permission_denied', 'message': 'You are not authorized to make this call.'}
     INVALID_OBJECT = {'code': 'invalid_object', 'message': 'Unable to save the provided object.'}
     CAN_NOT_DELETE = {'code': 'can_not_delete', 'message': 'You must delete all dependent records first.'}
     LOGIN_FAILURE = {'code': 'login_failure', 'message': 'The credentials you supplied are incorrect.'}
