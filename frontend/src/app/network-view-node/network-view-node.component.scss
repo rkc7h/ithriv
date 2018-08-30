@@ -1,10 +1,9 @@
-g {
-  transition: 300ms ease transform;
+g, line, circle, rect, text, image, g > svg {
+  transition: 500ms ease-in-out all;
 }
 
 line, circle, rect {
   stroke-width: 4px;
-  transition: 300ms ease transform;
 }
 
 circle, rect, text, image, .sibling-node {

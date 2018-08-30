@@ -8,8 +8,39 @@
 
   svg {
     flex: 1 1 auto;
-    circle {
-      transition: 1000ms ease-in-out cx, 1000ms ease-in-out cy;
+
+    * {
+      transition: 500ms ease-in-out all;
     }
+
+    line {
+      stroke-width: 4px;
+      transition: 500ms ease-in-out all;
+      animation: grow ease-in-out 500ms;
+
+      &.moving  { animation: shrink ease-in-out 500ms; }
+      &.set     { animation: grow ease-in-out 500ms; }
+    }
+  }
+}
+
+
+@keyframes shrink {
+  0% {
+    transform: scale(1);
+  }
+
+  50%, 100% {
+    transform: scale(0);
+  }
+}
+
+@keyframes grow {
+  0% {
+    transform: scale(0);
+  }
+
+  50%, 100% {
+    transform: scale(1);
   }
 }

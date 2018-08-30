@@ -26,7 +26,6 @@
     [attr.y]="strokeWidth"
     [attr.width]="options.radius * 2 - strokeWidth * 2"
     [attr.height]="(options.radius + options.titleHeight) - strokeWidth * 2"
-    [ngStyle]="{'stroke-width': 1}"
   />
   <svg:text
     fill="black"
@@ -34,21 +33,22 @@
     [attr.y]="options.radius + options.titleHeight/2"
     text-anchor="middle"
   >{{category.name}}</svg:text>
-    <svg:circle
-      cy="0"
-      [attr.r]="options.radius"
-      [attr.stroke]="category.color"
-      fill="white"
-    />
-    <svg:image
-      [attr.x]="-(options.radius) + strokeWidth + strokeWidth/2"
-      [attr.y]="-nodeImageSize()/2"
-      [attr.width]="nodeImageSize()"
-      [attr.height]="nodeImageSize()"
-      [attr.href]="nodeImagePath(category)"
-      class="clip-circle"
-      preserveAspectRatio="xMidYMid slice"
-    />
+  <svg:circle
+    cy="0"
+    [attr.r]="options.radius"
+    [attr.stroke]="category.color"
+    fill="white"
+  />
+  <svg:image
+    *ngIf="category.level === 0"
+    [attr.x]="-(options.radius) + strokeWidth + strokeWidth/2"
+    [attr.y]="-nodeImageSize()/2"
+    [attr.width]="nodeImageSize()"
+    [attr.height]="nodeImageSize()"
+    [attr.href]="nodeImagePath(category)"
+    class="clip-circle"
+    preserveAspectRatio="xMidYMid slice"
+  />
 </svg:g>
 
 <svg:g
@@ -80,7 +80,7 @@
     [attr.fill]="category.hover ? 'white' : category.color"
   >
   </svg:g>
-  <svg:text *ngIf="category.level > 0 && state !== 'tertiary'"
+  <svg:text *ngIf="(category.level > 0) && (state !== 'tertiary')"
     text-anchor="middle"
     [attr.transform]="translateText(category)"
     [attr.fill]="category.hover ? 'white' : 'black'"
@@ -98,4 +98,3 @@
     >{{category.resource_count || 0}} resources</svg:tspan>
   </svg:text>
 </svg:g>
-
