@@ -13,6 +13,7 @@ import {
   menuTransition,
   rootTransition
 } from '../animations';
+import { NodeLoadingStatus } from '../../node-loading-status';
 
 @Component({
   selector: 'app-graph',
@@ -35,8 +36,15 @@ export class GraphComponent {
   baseRadius = 80;
   navRadius = 40;
   parentTitleHeight = 30;
-  selectedCategoryId: number;
   transitionState = 'moving';
+
+  isDataLoaded = false;
+  menuLoaded = false;
+  rootLoaded = false;
+  childrenLoaded = false;
+  grandchildrenLoaded = false;
+
+  loadingStatus = new Map<number, NodeLoadingStatus>();
 
   constructor(
     private router: Router,
@@ -48,8 +56,7 @@ export class GraphComponent {
 
     this.route.params.subscribe(params => {
       if (params && params.hasOwnProperty('category')) {
-        this.selectedCategoryId = Number(params['category']);
-        this.loadRootCategories(this.selectedCategoryId);
+        this.loadRootCategories(Number(params['category']));
       } else {
         this.loadRootCategories();
       }
@@ -84,6 +91,7 @@ export class GraphComponent {
         if (!this.selectedCategory) {
           this.setCategory(this.topCategories[0]);
         }
+        this.isDataLoaded = true;
       }
     });
   }
@@ -166,6 +174,7 @@ export class GraphComponent {
 
   selectCategory(c: Category) {
     this.transitionState = 'moving';
+    this.loadingStatus.clear();
 
     /* navigate to another page if a 3rd level category is clicked when its parent category
     is active (it's in a secondary state).  Otherwise, make the parent category active. */
@@ -179,24 +188,37 @@ export class GraphComponent {
     } else if (c !== this.selectedCategory) {
       this.selectedCategory = c;
     }
-    this.selectedCategoryId = this.selectedCategory.id;
   }
 
-  transitionCallback(from: string) {
-    this.transitionState = 'set';
-    // console.log('transitionCallback from', from);
+  transitionCallback(from: string, node?: Category) {
+    this.transitionState = from;
 
     switch (from) {
-      case 'menuState':
+      case 'menuDone':
+        this.menuLoaded = true;
         break;
-      case 'rootState':
+      case 'rootDone':
+        this.rootLoaded = true;
         break;
-      case 'childState':
+      case 'childDone':
+        this.childrenLoaded = true;
         break;
-      case 'grandchildState':
+      case 'grandchildDone':
+        this.grandchildrenLoaded = true;
         break;
+
       default:
         break;
+    }
+
+
+
+    if ((from === 'childDone') && node && node.id) {
+      if (node.parent && node.parent.id) {
+        const status = this.getLoadingStatus(node.parent);
+        status.numChildrenLoaded++;
+        this.loadingStatus.set(node.parent.id, status);
+      }
     }
   }
 
@@ -241,12 +263,48 @@ export class GraphComponent {
     return { x: x, y: y };
   }
 
-  getChildren(node: Category) {
-    if (node && node.children && (node.children.length > 0)) {
-      return node.children;
-    } else {
-      return [];
+  getLoadingStatus(node) {
+    if (!this.loadingStatus.has(node.id)) {
+      const status = {
+        numChildren: node.children ? node.children.length : 0,
+        numChildrenLoaded: 0
+      };
+      this.loadingStatus.set(node.id, new NodeLoadingStatus(status));
     }
+    return this.loadingStatus.get(node.id);
+  }
+
+  getTopCategories() {
+    return this.menuLoaded ? this.topCategories : [];
+  }
+
+  getChildren(node: Category) {
+    if (
+      this.menuLoaded && this.rootLoaded &&
+      node && node.children && (node.children.length > 0)
+    ) {
+      const status = this.getLoadingStatus(node);
+      status.numChildren = node.children.length;
+      this.loadingStatus.set(node.id, status);
+      return node.children;
+    }
+    return [];
+  }
+
+  getGrandchildren(node: Category) {
+    if (
+      this.menuLoaded && this.rootLoaded && this.childrenLoaded &&
+      node && node.children && (node.children.length > 0)
+    ) {
+      if (node.parent && node.parent.id) {
+        const status = this.getLoadingStatus(node.parent);
+        if (status.numChildrenLoaded >= status.numChildren) {
+          return node.children;
+        }
+      }
+    }
+
+    return [];
   }
 
   getRootState(node: Category) {
@@ -285,6 +343,7 @@ export class GraphComponent {
 
   setCategory(nextCategory: Category) {
     this.transitionState = 'moving';
+    this.loadingStatus.clear();
 
     if (nextCategory && nextCategory.id) {
       if (nextCategory !== this.selectedCategory) {

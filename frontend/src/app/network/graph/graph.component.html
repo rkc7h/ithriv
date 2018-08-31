@@ -1,6 +1,6 @@
 <div
   class="container"
-  *ngIf="topCategories"
+  *ngIf="isDataLoaded && topCategories"
 >
   <svg
     [attr.viewBox]="viewBoxDimensions()"
@@ -12,7 +12,7 @@
       <svg:g
         *ngFor="let node of topCategories; let i = index"
         [@menuState]="{value: getMenuState(node), params: getMenuPosition(node)}"
-        (@menuState.done)="transitionCallback('menuState')"
+        (@menuState.done)="transitionCallback('menuDone')"
         app-network-view-node
         [state]="getState(node)"
         (click)="setCategory(node)"
@@ -30,13 +30,13 @@
 
     <!-- Draw the lines first, so they show up underneath. -->
     <svg:g
-      *ngFor="let thisCategory of topCategories"
+      *ngFor="let thisCategory of getTopCategories()"
       [@rootState]="{value: getRootState(thisCategory), params: getRootShift(thisCategory)}"
-      (@rootState.done)="transitionCallback('rootState')"
+      (@rootState.done)="transitionCallback('rootDone')"
     >
       <svg:g>
         <svg:line
-          *ngFor="let child of thisCategory.children; let k = index"
+          *ngFor="let child of getChildren(thisCategory); let k = index"
           [attr.x1]="0"
           [attr.y1]="0"
           [attr.x2]="getCatPos(child, false).x"
@@ -64,11 +64,11 @@
         *ngFor="let child of getChildren(thisCategory); let k = index"
         class="sibling"
         [@childState]="{value: getState(child), params: getCatPos(child)}"
-        (@childState.done)="transitionCallback('childState')"
+        (@childState.done)="transitionCallback('childDone', child)"
       >
         <svg:g>
           <svg:line
-            *ngFor="let grandChild of child.children; let k = index"
+            *ngFor="let grandChild of getGrandchildren(child); let k = index"
             [attr.x1]="0"
             [attr.y1]="0"
             [attr.x2]="getCatPos(grandChild, false).x"
@@ -95,10 +95,10 @@
         ></svg:g>
 
         <svg:g
-          *ngFor="let grandChild of child.children; let k = index"
+          *ngFor="let grandChild of getGrandchildren(child); let k = index"
           class="sibling"
           [@grandchildState]="{value: getState(grandChild), params: getCatPos(grandChild)}"
-          (@grandchildState.done)="transitionCallback('grandchildState')"
+          (@grandchildState.done)="transitionCallback('grandchildDone')"
         >
 
           <svg:g

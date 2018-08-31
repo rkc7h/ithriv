@@ -105,6 +105,10 @@ export function movingTransition(): AnimationTriggerMetadata {
     state('initial', style({ opacity: 0.5 })),
     state('moving', style({ opacity: 0 })),
     state('set', style({ opacity: 1 })),
+    state('menuDone', style({ opacity: 1 })),
+    state('rootDone', style({ opacity: 1 })),
+    state('childDone', style({ opacity: 1 })),
+    state('grandchildDone', style({ opacity: 1 })),
     transition('* <=> *', [
       animate(easing)
     ]),
