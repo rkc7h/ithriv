@@ -1,5 +1,4 @@
 from flask_marshmallow.sqla import ModelSchema
-from flask_sqlalchemy import Pagination
 from marshmallow import fields, post_load
 from app import ma
 from app.model.availability import Availability
@@ -7,13 +6,12 @@ from app.model.category import Category
 from app.model.icon import Icon
 from app.model.institution import ThrivInstitution
 from app.model.resource import ThrivResource
-from app.model.resource_attachment import ResourceAttachment
 from app.model.resource_category import ResourceCategory
 from app.model.search import Filter, Search
 from app.model.type import ThrivType
+from app.model.uploaded_file import UploadedFile
 from app.model.user import User
 from app.model.favorite import Favorite
-from flask import g
 
 
 class ThrivInstitutionSchema(ModelSchema):
@@ -82,10 +80,12 @@ class CategoriesOnResourceSchema(ModelSchema):
     })
 
 
-class ResourceAttachmentSchema(ModelSchema):
+class FileSchema(ModelSchema):
     class Meta:
-        model = ResourceAttachment
-        fields = ('id', 'name', 'url', 'resource_id')
+        model = UploadedFile
+        fields = ('id', 'file_name', 'display_name', 'date_modified', 'mime_type', 'size', 'md5', 'resource_id', 'url')
+    id = fields.Integer(required=False, allow_none=True)
+    resource_id = fields.Integer(required=False, allow_none=True)
 
 
 class ThrivResourceSchema(ModelSchema):
@@ -93,9 +93,10 @@ class ThrivResourceSchema(ModelSchema):
         model = ThrivResource
         fields = ('id', 'name', 'description', 'last_updated', 'owner',
                   'website', 'cost', 'institution_id', 'type_id', 'type',
-                  'institution', 'availabilities', 'approved', 'attachments',
+                  'institution', 'availabilities', 'approved', 'files',
                   'contact_email', 'contact_phone', 'contact_notes',
-                  '_links', 'favorites', 'favorite_count', 'resource_categories', 'owners')
+                  '_links', 'favorites', 'favorite_count', 'resource_categories',
+                  'owners', 'user_may_view', 'user_may_edit')
     id = fields.Integer(required=False, allow_none=True)
     last_updated = fields.Date(required=False, allow_none=True)
     owner = fields.String(required=False, allow_none=True)
@@ -113,7 +114,9 @@ class ThrivResourceSchema(ModelSchema):
     availabilities = fields.Nested(AvailabilitySchema(), many=True, dump_only=True)
     favorites = fields.Nested(FavoriteSchema(), many=True, dump_only=True)
     resource_categories = fields.Nested(CategoriesOnResourceSchema(), many=True, dump_only=True)
-    attachments = fields.Nested(ResourceAttachmentSchema(), many=True, dump_only=True)
+    files = fields.Nested(FileSchema(), many=True, dump_only=True)
+    user_may_view = fields.Boolean(allow_none=True)
+    user_may_edit = fields.Boolean(allow_none=True)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.resourceendpoint', id='<id>'),
         'collection': ma.URLFor('api.resourcelistendpoint'),
@@ -151,7 +154,12 @@ class CategorySchema(ModelSchema):
     })
 
     def get_resource_count(self, obj):
-        return len(obj.category_resources)
+        category_resources = obj.category_resources
+        resource_count = 0
+        for cr in category_resources:
+            if cr.resource.user_may_view():
+                resource_count += 1
+        return resource_count
 
 
 class ResourceCategoriesSchema(ModelSchema):

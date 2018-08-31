@@ -1,13 +1,22 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType,
+  HttpHeaders,
+  HttpParams
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { NgProgressComponent } from '@ngx-progressbar/core';
 import { Observable, throwError } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { catchError } from 'rxjs/operators';
+import { catchError, last, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Availability } from '../../availability';
 import { Category } from '../../category';
 import { CategoryResource } from '../../category-resource';
 import { Favorite } from '../../favorite';
+import { FileAttachment } from '../../file-attachment';
 import { Icon } from '../../icon';
 import { Institution } from '../../institution';
 import { Resource } from '../../resource';
@@ -41,6 +50,8 @@ export class ResourceApiService {
     resourceAvailability: '/api/resource_institution/<id>',
     availabilityList: '/api/availability',
     availability: '/api/availability/<id>',
+    fileAttachment: '/api/file/<file_id>', // One file
+    fileAttachmentList: '/api/file', // All files
     resourceCategoryList: '/api/resource_category',
     resourceCategory: '/api/resource_category/<id>',
     resourceAttachment: '/api/resource/attachment/<id>', // One attachment
@@ -271,6 +282,19 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** linkResourceAndCategory */
+  linkResourceAndAttachment(resource: Resource, attachment: FileAttachment): Observable<ResourceAttachment> {
+    const options = { resource_id: resource.id, attachment_id: attachment.id };
+    return this.httpClient.post<ResourceAttachment>(this.apiRoot + this.endpoints.resourceAttachmentList, options)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** unlinkResourceAndAttachment */
+  unlinkResourceAndAttachment(rc: ResourceAttachment): Observable<ResourceAttachment> {
+    return this.httpClient.delete<ResourceAttachment>(this.apiRoot + rc._links.self)
+      .pipe(catchError(this.handleError));
+  }
+
   /** deleteResource */
   deleteResource(resource: Resource): Observable<Resource> {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
@@ -311,16 +335,73 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
-  /** addResourceAttachmentFile */
-  addResourceAttachmentFile(attachment: ResourceAttachment, file: File): Observable<ResourceAttachment> {
-    const url = this.endpoints.resourceAttachment.replace('<id>', attachment.id.toString());
-    return this.httpClient.put<ResourceAttachment>(this.apiRoot + url, file)
+  /** getFileAttachment */
+  getFileAttachment(id?: number, md5?: string): Observable<FileAttachment> {
+    const params = { id: String(id), md5: md5 };
+    const url = this.apiRoot + this.endpoints.fileAttachmentList;
+
+    return this.httpClient.get<FileAttachment>(url, { params: params })
       .pipe(catchError(this.handleError));
   }
 
-  /** getResourceAttachmentBlob */
-  getResourceAttachmentBlob(attachment: ResourceAttachment): Observable<Blob> {
-    console.log('attachment.url', attachment.url);
+  /** addFileAttachment */
+  addFileAttachment(attachment: FileAttachment): Observable<FileAttachment> {
+    const url = this.apiRoot + this.endpoints.fileAttachmentList;
+    const attachmentMetadata = {
+      file_name: attachment.name,
+      display_name: attachment.name,
+      date_modified: new Date(attachment.lastModified),
+      md5: attachment.md5,
+      mime_type: attachment.type,
+      size: attachment.size
+    };
+
+    return this.httpClient.post<FileAttachment>(url, attachmentMetadata)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** addFileAttachmentBlob */
+  addFileAttachmentBlob(attachmentId: number, attachment: FileAttachment, progress: NgProgressComponent): Observable<FileAttachment> {
+    const url = this.endpoints.fileAttachment.replace('<file_id>', attachmentId.toString());
+    const options: {
+      headers?: HttpHeaders,
+      observe: 'events',
+      params?: HttpParams,
+      reportProgress?: boolean,
+      responseType: 'json',
+      withCredentials?: boolean
+    } = {
+      observe: 'events',
+      reportProgress: true,
+      responseType: 'blob' as 'json'
+    };
+
+    return this.httpClient.put<File>(this.apiRoot + url, attachment, options)
+      .pipe(
+        map(event => this.showProgress(event, attachment, progress)),
+        last(), // return last (completed) message to caller
+        catchError(this.handleError)
+      );
+  }
+
+  /** updateFileAttachment */
+  updateFileAttachment(attachment: FileAttachment): Observable<FileAttachment> {
+    const url = this.endpoints.fileAttachment.replace('<file_id>', attachment.id.toString());
+    const attachmentMetadata = {
+      display_name: attachment.display_name,
+      date_modified: new Date(attachment.lastModified || attachment.date_modified),
+      md5: attachment.md5,
+      mime_type: attachment.type || attachment.mime_type,
+      size: attachment.size,
+      resource_id: attachment.resource_id
+    };
+
+    return this.httpClient.put<FileAttachment>(this.apiRoot + url, attachmentMetadata)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getFileAttachmentBlob*/
+  getFileAttachmentBlob(attachment: FileAttachment): Observable<Blob> {
     const options: {
       headers?: HttpHeaders,
       observe?: 'body',
@@ -336,10 +417,10 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
-  /** deleteResourceAttachment */
-  deleteResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
-    const url = this.endpoints.resourceAttachment.replace('<id>', attachment.id.toString());
-    return this.httpClient.delete<ResourceAttachment>(this.apiRoot + url)
+  /** deleteFileAttachment */
+  deleteFileAttachment(attachment: FileAttachment): Observable<FileAttachment> {
+    const url = this.endpoints.fileAttachment.replace('<file_id>', attachment.id.toString());
+    return this.httpClient.delete<FileAttachment>(this.apiRoot + url)
       .pipe(catchError(this.handleError));
   }
 
@@ -417,6 +498,26 @@ export class ResourceApiService {
     const request_data = { user_id: user.id, request_category: request_category, request_text: request_text };
     return this.httpClient.post<any>(this.apiRoot + this.endpoints.consult_request, request_data)
       .pipe(catchError(this.handleError));
+  }
+
+  /** Return distinct message for sent, upload progress, & response events */
+  private showProgress(event: HttpEvent<any>, attachment: FileAttachment, progress: NgProgressComponent): FileAttachment {
+    switch (event.type) {
+      case HttpEventType.Sent:
+        progress.start();
+        break;
+      case HttpEventType.UploadProgress:
+        progress.set(Math.round(100 * event.loaded / event.total));
+        break;
+      case HttpEventType.DownloadProgress:
+        progress.set(Math.round(100 * event.loaded / event.total));
+        break;
+      case HttpEventType.Response:
+        progress.complete();
+        return attachment;
+      default:
+        break;
+    }
   }
 }
 

@@ -80,7 +80,13 @@
               [resources]="getResources(getInstitutionId())"
             ></app-resource-list>
             <div
-              *ngIf="getResources(getInstitutionId()).length === 0"
+              *ngIf="getResources(getInstitutionId()).length === 0 && user"
+              class="please-log-in"
+            >
+              <h2>There are no resources available to your home institution.</h2>
+            </div>
+            <div
+              *ngIf="getResources(getInstitutionId()).length === 0 && !user"
               class="please-log-in"
             >
               <h2>Please log in to view resources associated with your institution.</h2>
