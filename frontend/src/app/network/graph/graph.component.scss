@@ -1,3 +1,8 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
 .container {
   display: flex;
   align-items: flex-start;
@@ -9,18 +14,23 @@
   svg {
     flex: 1 1 auto;
 
-    * {
+    g[app-network-view-node], g.top-level, * {
       outline: none;
-      transition: 500ms ease-in-out all;
+      transition: $animationDuration ease-in-out all;
     }
+
+    .shrink          { animation: shrink ease-in-out 2s; }
+    .grow            { animation: grow ease-in-out 2s; }
+    .moving          { animation: shrink ease-in-out 2s; }
+    .menuDone        { animation: shrink ease-in-out 2s; }
+    .rootDone        { animation: shrink ease-in-out 2s; }
+    .childDone       { animation: grow ease-in-out 2s; }
+    .grandchildDone  { animation: grow ease-in-out 2s; }
 
     line {
       stroke-width: 4px;
-      transition: 500ms ease-in-out all;
-      animation: grow ease-in-out 500ms;
-
-      &.moving  { animation: shrink ease-in-out 500ms; }
-      &.set     { animation: grow ease-in-out 500ms; }
+      transition: 2s ease-in-out all;
+      animation: shrink ease-in-out 2s;
     }
   }
 }
@@ -29,19 +39,23 @@
 @keyframes shrink {
   0% {
     transform: scale(1);
+    opacity: 1;
   }
 
   50%, 100% {
     transform: scale(0);
+    opacity: 0;
   }
 }
 
 @keyframes grow {
-  0% {
+  0%, 50% {
     transform: scale(0);
+    opacity: 0;
   }
 
-  50%, 100% {
+  100% {
     transform: scale(1);
+    opacity: 1;
   }
 }

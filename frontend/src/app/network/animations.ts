@@ -12,7 +12,7 @@ import {
 
 const easing = '500ms ease-in';
 const translate = 'translate( {{x}}px, {{y}}px )';
-const parked = { opacity: 0, transform: 'scale(0.5) translateX(-50%) translateY(-50%)' };
+const parked = { opacity: 0, transform: 'scale(0.5) translateX(-80%) translateY(-100%)' };
 
 
 export function childPositionTransition(): AnimationTriggerMetadata {
@@ -102,15 +102,13 @@ export function menuTransition(): AnimationTriggerMetadata {
 
 export function movingTransition(): AnimationTriggerMetadata {
   return trigger('movingTransition', [
-    state('initial', style({ opacity: 0.5 })),
     state('moving', style({ opacity: 0 })),
-    state('set', style({ opacity: 1 })),
-    state('menuDone', style({ opacity: 1 })),
-    state('rootDone', style({ opacity: 1 })),
+    state('menuDone', style({ opacity: 0 })),
+    state('rootDone', style({ opacity: 0 })),
     state('childDone', style({ opacity: 1 })),
     state('grandchildDone', style({ opacity: 1 })),
     transition('* <=> *', [
-      animate(easing)
+      animate('5000ms ease-in')
     ]),
   ]);
 }

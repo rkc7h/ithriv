@@ -36,7 +36,7 @@
     >
       <svg:g>
         <svg:line
-          *ngFor="let child of getChildren(thisCategory); let k = index"
+          *ngFor="let child of getChildren(thisCategory, true); let k = index"
           [attr.x1]="0"
           [attr.y1]="0"
           [attr.x2]="getCatPos(child, false).x"
@@ -45,9 +45,12 @@
           [ngClass]="transitionState"
         />
       </svg:g>
+
+      <!-- PARENT -->
       <svg:g
+        class="parent"
         app-network-view-node
-        [category]="selectedCategory"
+        [category]="thisCategory.parent || thisCategory"
         (click)="selectCategory(thisCategory)"
         [state]="getState(thisCategory)"
         [options]="{
@@ -60,6 +63,7 @@
               }"
       ></svg:g>
 
+      <!-- SIBLINGS -->
       <svg:g
         *ngFor="let child of getChildren(thisCategory); let k = index"
         class="sibling"
@@ -68,7 +72,7 @@
       >
         <svg:g>
           <svg:line
-            *ngFor="let grandChild of getGrandchildren(child); let k = index"
+            *ngFor="let grandChild of getGrandchildren(child, true); let k = index"
             [attr.x1]="0"
             [attr.y1]="0"
             [attr.x2]="getCatPos(grandChild, false).x"
@@ -78,6 +82,7 @@
           />
         </svg:g>
 
+        <!-- CHILDREN -->
         <svg:g
           app-network-view-node
           [category]="child"
