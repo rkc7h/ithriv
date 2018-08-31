@@ -493,6 +493,13 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** Request a Resource Related Consult */
+  sendResourceConsultRequestEmail(user: User, resource:Resource, request_category: string, request_text: string): Observable<any> {
+    const request_data = { user_id: user.id, resource_id: resource.id, request_category: request_category, request_text: request_text };
+    return this.httpClient.post<any>(this.apiRoot + this.endpoints.consult_request, request_data)
+      .pipe(catchError(this.handleError));
+  }
+
   /** Request a Consult */
   sendConsultRequestEmail(user: User, request_category: string, request_text: string): Observable<any> {
     const request_data = { user_id: user.id, request_category: request_category, request_text: request_text };

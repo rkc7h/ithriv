@@ -28,6 +28,7 @@ const routes: Routes = [
   { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
   { path: 'category/:category/network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
   { path: 'consult_request', component: ConsultRequestFormComponent, data: { title: 'Request a Consult', hideHeader: true } },
+  { path: 'consult_request/:resource', component: ConsultRequestFormComponent, data: { title: 'Request a Consult', hideHeader: true } },
   { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },
   { path: 'home', component: HomeComponent, data: { title: 'Welcome to iThriv' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },

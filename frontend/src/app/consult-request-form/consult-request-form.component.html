@@ -6,12 +6,13 @@
         <h1>Request Research Concierge Services Consult</h1>
         <p>Completing this web form will send a concierge services request which will be routed to the best specialist to address your need. We aim to respond within two business days.</p>
         <h3>Request Context:</h3>
-        <p>{{ user.display_name }}</p>
-        <p>{{ user.uid }}</p>
-        <p>{{ user.email }}</p>
-        <p>{{ user.institution }}</p>
-        <p>{{ user.institutional_role }}</p>
-        <p>{{ user.division }}</p>
+        <p *ngIf="user.display_name">{{ user.display_name }}</p>
+        <p *ngIf="user.uid">{{ user.uid }}</p>
+        <p *ngIf="user.email">{{ user.email }}</p>
+        <p *ngIf="user.institution">{{ user.institution }}</p>
+        <p *ngIf="user.institutional_role">{{ user.institutional_role }}</p>
+        <p *ngIf="user.division">{{ user.division }}</p>
+        <p *ngIf="resource">Relating to: {{ resource.name }}</p>
         <form [formGroup]="requestConsultForm" (ngSubmit)="onSubmit()" *ngIf="formStatus === 'form'">
           <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
             [field]="field" [formGroup]="requestConsultForm" [errorMatcher]="errorMatcher"></app-form-field>

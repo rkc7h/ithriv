@@ -1,12 +1,13 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, Injector, Input} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { IThrivForm } from '../shared/IThrivForm';
 import { User } from '../user';
+import { Resource } from "../resource";
 
 @Component({
   selector: 'app-consult-request-form',
@@ -14,6 +15,7 @@ import { User } from '../user';
   styleUrls: ['./consult-request-form.component.scss']
 })
 export class ConsultRequestFormComponent implements OnInit {
+  resource: Resource;
   user: User;
   errorMessage: string;
   errorMatcher = new ErrorMatcher();
@@ -48,9 +50,21 @@ export class ConsultRequestFormComponent implements OnInit {
   };
   iThrivForm = new IThrivForm(this.fields, this.requestConsultForm);
 
-  constructor(private router: Router, private api: ResourceApiService,
-              private changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private api: ResourceApiService,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {
+    this.resource = null;
     this.iThrivForm.loadForm();
+    this.route.params.subscribe(params => {
+      if ('resource' in params) {
+        api.getResource(params['resource']).subscribe(resource => {
+          this.resource = resource;
+        });
+      }
+    });
   }
 
   ngOnInit() {
@@ -67,17 +81,32 @@ export class ConsultRequestFormComponent implements OnInit {
     this.iThrivForm.validate();
     if (!this.requestConsultForm.valid) { return; }
     this.formStatus = 'submitting';
-    this.api.sendConsultRequestEmail(this.user, this.fields.request_category.formControl.value, this.fields.request_text.formControl.value).subscribe(e => {
-        this.formStatus = 'complete';
-        }, error1 => {
-          if (error1) {
-            this.errorMessage = error1;
-          } else {
-            this.errorMessage = 'We encountered an error resetting your password.  Please contact support.';
-          }
-          this.formStatus = 'form';
-          this.changeDetectorRef.detectChanges();
-    });
+    if (this.resource) {
+      this.api.sendResourceConsultRequestEmail(this.user, this.resource, this.fields.request_category.formControl.value, this.fields.request_text.formControl.value).subscribe(e => {
+          this.formStatus = 'complete';
+          }, error1 => {
+            if (error1) {
+              this.errorMessage = error1;
+            } else {
+              this.errorMessage = 'We encountered an error sending your consult request.  Please contact support.';
+            }
+            this.formStatus = 'form';
+            this.changeDetectorRef.detectChanges();
+      });
+    }
+    if (!this.resource) {
+      this.api.sendConsultRequestEmail(this.user, this.fields.request_category.formControl.value, this.fields.request_text.formControl.value).subscribe(e => {
+          this.formStatus = 'complete';
+          }, error1 => {
+            if (error1) {
+              this.errorMessage = error1;
+            } else {
+              this.errorMessage = 'We encountered an error sending your consult request.  Please contact support.';
+            }
+            this.formStatus = 'form';
+            this.changeDetectorRef.detectChanges();
+      });
+    }
   }
 
   onCancel() {

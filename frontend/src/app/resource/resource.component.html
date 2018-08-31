@@ -26,6 +26,15 @@
         fxLayoutGap.xs="0"
       >
         <img src="/assets/institutions/{{resource.institution.name}}.png" />
+
+        <button
+          *ngIf="session"
+          mat-stroked-button
+          (click)="goConsult($event)"
+        >
+          <mat-icon>help</mat-icon>
+          Request A Consult Regarding This Resource
+        </button>
       </div>
     </div>
     <mat-card fxFlex="25%">

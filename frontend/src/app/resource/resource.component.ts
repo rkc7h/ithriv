@@ -8,6 +8,7 @@ import { zoomTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ResourceAttachment } from '../resource-attachment';
 import { FileAttachment } from '../file-attachment';
+import {User} from "../user";
 
 @Component({
   selector: 'app-resource',
@@ -20,6 +21,7 @@ export class ResourceComponent implements OnInit {
   @Input() resource: Resource;
   @Input() categories: ResourceCategory[];
   attachments: FileAttachment[];
+  session: User;
 
   transitionState = '';
   isDataLoaded = false;
@@ -36,6 +38,11 @@ export class ResourceComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.api.getSession().subscribe(user => {
+      this.session = user;
+    }, error1 => {
+      this.session = null;
+    });
   }
 
   loadResource() {
@@ -98,6 +105,12 @@ export class ResourceComponent implements OnInit {
   goWebsite($event) {
     $event.preventDefault();
     window.open(this.resource.website, '_blank');
+  }
+
+  goConsult($event, resource: Resource) {
+    $event.preventDefault();
+    resource = this.resource
+    this.router.navigate(['consult_request', resource.id]);
   }
 
   fileIcon(file: FileAttachment): string {
