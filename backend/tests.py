@@ -321,7 +321,7 @@ class TestCase(unittest.TestCase):
                           follow_redirects=True,
                           content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(response["code"], "not_found")
+        self.assertEqual(response["code"], "not_found")
 
     def test_resource_has_institution(self):
         self.construct_resource()
@@ -754,7 +754,7 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         rv = self.app.delete('/api/institution/%i' % response['id'])
         self.assertSuccess(rv)
-        self.assertEquals(0, db.session.query(ThrivInstitution).filter_by(id=1).count())
+        self.assertEqual(0, db.session.query(ThrivInstitution).filter_by(id=1).count())
 
     def test_modify_institution(self):
         institution = {"name": "Ender's Academy for wayward space boys",
@@ -768,7 +768,7 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         rv = self.app.get('/api/institution/%i' % response["id"])
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals("My little bronnie", response["name"])
+        self.assertEqual("My little bronnie", response["name"])
 
     def test_create_type(self):
         type = {"name": "A typey typer type"}
@@ -776,7 +776,7 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         response["name"] = "A typey typer type"
-        self.assertEquals(1, db.session.query(ThrivType).count())
+        self.assertEqual(1, db.session.query(ThrivType).count())
 
     def test_edit_type(self):
         type = ThrivType(name="one way")
@@ -794,9 +794,9 @@ class TestCase(unittest.TestCase):
         type = ThrivType(name="one way")
         db.session.add(type)
         db.session.commit()
-        self.assertEquals(1, db.session.query(ThrivType).count())
+        self.assertEqual(1, db.session.query(ThrivType).count())
         rv = self.app.delete('/api/type/%i' % type.id, content_type="application/json")
-        self.assertEquals(0, db.session.query(ThrivType).count())
+        self.assertEqual(0, db.session.query(ThrivType).count())
 
     def test_list_types(self):
         db.session.add(ThrivType(name="a"))
@@ -805,7 +805,7 @@ class TestCase(unittest.TestCase):
         db.session.commit()
         rv = self.app.get('/api/type', content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(3, len(response))
+        self.assertEqual(3, len(response))
 
     def test_add_file(self):
         file = UploadedFile(file_name='happy_coconuts.svg', display_name='Happy Coconuts',
@@ -831,11 +831,11 @@ class TestCase(unittest.TestCase):
     def test_remove_file(self):
         file_data = self.test_add_file();
         response = requests.get(file_data['url'])
-        self.assertEquals(200, response.status_code)
+        self.assertEqual(200, response.status_code)
         rv = self.app.delete('/api/file/%i' % file_data['id'])
         self.assertSuccess(rv)
         response = requests.get(file_data['url'])
-        self.assertEquals(404, response.status_code)
+        self.assertEqual(404, response.status_code)
 
     def test_attach_file_to_resource(self):
         r = self.construct_resource()
@@ -875,9 +875,9 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers = self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(1, len(response))
-        self.assertEquals(r.id, response[0]["id"])
-        self.assertEquals(r.description, response[0]["resource"]["description"])
+        self.assertEqual(1, len(response))
+        self.assertEqual(r.id, response[0]["id"])
+        self.assertEqual(r.description, response[0]["resource"]["description"])
 
     def test_get_resource_by_category_includes_category_details(self):
         c = self.construct_category(name="c1")
@@ -890,9 +890,9 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers = self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(r.id, response[0]["id"])
-        self.assertEquals(2, len(response[0]["resource"]["resource_categories"]))
-        self.assertEquals("c1", response[0]["resource"]["resource_categories"][0]["category"]["name"])
+        self.assertEqual(r.id, response[0]["id"])
+        self.assertEqual(2, len(response[0]["resource"]["resource_categories"]))
+        self.assertEqual("c1", response[0]["resource"]["resource_categories"][0]["category"]["name"])
 
     def test_category_resource_count(self):
         c = self.construct_category()
@@ -903,7 +903,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/category/%i' % c.id, content_type="application/json", headers = self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(1, response["resource_count"])
+        self.assertEqual(1, response["resource_count"])
 
     def test_get_category_by_resource(self):
         c = self.construct_category()
@@ -914,9 +914,9 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/resource/%i/category' % r.id, content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(1, len(response))
-        self.assertEquals(c.id, response[0]["id"])
-        self.assertEquals(c.description, response[0]["category"]["description"])
+        self.assertEqual(1, len(response))
+        self.assertEqual(c.id, response[0]["id"])
+        self.assertEqual(c.description, response[0]["category"]["description"])
 
     def test_add_category_to_resource(self):
         c = self.construct_category()
@@ -927,8 +927,8 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/resource_category', data=json.dumps(rc_data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(c.id, response["category_id"])
-        self.assertEquals(r.id, response["resource_id"])
+        self.assertEqual(c.id, response["category_id"])
+        self.assertEqual(r.id, response["resource_id"])
 
     def test_set_all_categories_on_resource(self):
         c1 = self.construct_category(name="c1")
@@ -944,7 +944,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/resource/%i/category' % r.id, data=json.dumps(rc_data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(3, len(response))
+        self.assertEqual(3, len(response))
 
         rc_data = [
             {"category_id": c1.id}
@@ -952,7 +952,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/resource/%i/category' % r.id, data=json.dumps(rc_data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(1, len(response))
+        self.assertEqual(1, len(response))
 
     def test_remove_category_from_resource(self):
         self.test_add_category_to_resource()
@@ -1011,15 +1011,15 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(3, len(response))
+        self.assertEqual(3, len(response))
 
         availability_data = [{"institution_id": i2.id, "resource_id": r.id, "available": True}]
 
         rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(1, len(response))
-        self.assertEquals(2, response[0]["institution_id"])
+        self.assertEqual(1, len(response))
+        self.assertEqual(2, response[0]["institution_id"])
 
         rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
         self.assertSuccess(rv)
@@ -1093,11 +1093,11 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(c["name"], response["name"])
-        self.assertEquals(c["description"], response["description"])
-        self.assertEquals(c["brief_description"], response["brief_description"])
-        self.assertEquals(c["color"], response["color"])
-        self.assertEquals(c["image"], response["image"])
+        self.assertEqual(c["name"], response["name"])
+        self.assertEqual(c["description"], response["description"])
+        self.assertEqual(c["brief_description"], response["brief_description"])
+        self.assertEqual(c["color"], response["color"])
+        self.assertEqual(c["image"], response["image"])
 
     def test_create_child_category(self):
         parent = Category(name= "Desk Stuffs", description = "The many stuffs on my desk")
@@ -1107,9 +1107,9 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(parent.id, response["parent"]["id"])
-        self.assertEquals(0, response["parent"]["level"])
-        self.assertEquals(1, response["level"])
+        self.assertEqual(parent.id, response["parent"]["id"])
+        self.assertEqual(0, response["parent"]["level"])
+        self.assertEqual(1, response["level"])
 
     def test_update_category(self):
         c = Category(name="Desk Stuffs",
@@ -1121,7 +1121,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.put('/api/category/%i' % c.id, data=json.dumps(CategorySchema().dump(c).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(c.description, response["description"])
+        self.assertEqual(c.description, response["description"])
 
     def test_category_has_parents_color_if_not_set(self):
         parent = Category(name= "Beer", description = "There are lots of types of beer.", color="#A52A2A")
@@ -1131,7 +1131,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals("#A52A2A", response["color"])
+        self.assertEqual("#A52A2A", response["color"])
 
     def test_category_has_ordered_children(self):
         parent = Category(name= "Beer", description = "There are lots of types of beer.", color="#A52A2A")
@@ -1162,7 +1162,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/icon', content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(4, len(response))
+        self.assertEqual(4, len(response))
 
     def test_update_icon(self):
         i = Icon(name="Happy Coconuts")
@@ -1172,7 +1172,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.put('/api/icon/%i' % i.id, data=json.dumps(IconSchema().dump(i).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals("Happier Coconuts", i.name)
+        self.assertEqual("Happier Coconuts", i.name)
 
     def test_upload_icon(self):
         i = {"name": "Happy Coconuts"}
@@ -1200,8 +1200,8 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/category', data=json.dumps(CategorySchema().dump(category).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(icon.id, response["icon_id"])
-        self.assertEquals("Cool Places", response["icon"]["name"])
+        self.assertEqual(icon.id, response["icon_id"])
+        self.assertEqual("Cool Places", response["icon"]["name"])
 
     def test_set_type_icon(self):
         thrivtype = ThrivType(name="Wickedly Cool")
@@ -1213,8 +1213,8 @@ class TestCase(unittest.TestCase):
         rv = self.app.post('/api/category', data=json.dumps(ThrivTypeSchema().dump(thrivtype).data), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(icon.id, response["icon_id"])
-        self.assertEquals("Cool Places", response["icon"]["name"])
+        self.assertEqual(icon.id, response["icon_id"])
+        self.assertEqual("Cool Places", response["icon"]["name"])
 
     def logged_in_headers(self, user=None):
         if not user:
@@ -1392,58 +1392,58 @@ class TestCase(unittest.TestCase):
 
         query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '1'}
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response['items']))
+        self.assertEqual(1, len(response['items']))
 
         query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '2'}
         response = self.searchUsers(query)
-        self.assertEquals(2, len(response['items']))
+        self.assertEqual(2, len(response['items']))
 
     def test_find_users_respects_pageNumber(self):
         self.createTestUsers()
-        self.assertEquals(3, len(db.session.query(User).all()))
+        self.assertEqual(3, len(db.session.query(User).all()))
 
         query = {'filter' : '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '2'}
         response = self.searchUsers(query)
-        self.assertEquals(2, len(response['items']))
-        self.assertEquals(3, response['total'])
-        self.assertEquals('Big Bird', response['items'][0]['display_name'])
+        self.assertEqual(2, len(response['items']))
+        self.assertEqual(3, response['total'])
+        self.assertEqual('Big Bird', response['items'][0]['display_name'])
 
         query['pageNumber'] = 1
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response['items']))
-        self.assertEquals('Oscar the Grouch', response['items'][0]['display_name'])
+        self.assertEqual(1, len(response['items']))
+        self.assertEqual('Oscar the Grouch', response['items'][0]['display_name'])
 
         query['pageNumber'] = 2
         response = self.searchUsers(query)
-        self.assertEquals(0, len(response['items']))
+        self.assertEqual(0, len(response['items']))
 
     def test_find_users_respects_filter(self):
         self.createTestUsers()
         query = {'filter': 'big', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response['items']))
+        self.assertEqual(1, len(response['items']))
 
         query = {'filter': 'Grouch', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response['items']))
+        self.assertEqual(1, len(response['items']))
 
         query = {'filter': '123', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals(1, len(response['items']))
+        self.assertEqual(1, len(response['items']))
 
         query = {'filter': 'Ididnputthisinthedata', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals(0, len(response['items']))
+        self.assertEqual(0, len(response['items']))
 
     def test_find_users_orders_results(self):
         self.createTestUsers()
         query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals("Big Bird", response['items'][0]['display_name'])
+        self.assertEqual("Big Bird", response['items'][0]['display_name'])
 
         query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'desc', 'pageNumber': '0', 'pageSize': '20'}
         response = self.searchUsers(query)
-        self.assertEquals("Oscar the Grouch", response['items'][0]['display_name'])
+        self.assertEqual("Oscar the Grouch", response['items'][0]['display_name'])
 
     def test_resource_list_limits_to_10_by_default(self):
         for i in range(20):
@@ -1452,7 +1452,7 @@ class TestCase(unittest.TestCase):
                           content_type="application/json", headers=self.logged_in_headers())
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(10, len(result))
+        self.assertEqual(10, len(result))
 
         rv = self.app.get('/api/resource', follow_redirects=True,
                           query_string={'limit':'5'},
@@ -1460,4 +1460,4 @@ class TestCase(unittest.TestCase):
                           headers=self.logged_in_headers())
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
-        self.assertEquals(5, len(result))
+        self.assertEqual(5, len(result))
