@@ -152,16 +152,6 @@ export class ResourceFormComponent implements OnInit {
       apiSource: 'getCategories',
       multiSelect: true
     }),
-    approved: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'Approval Status',
-      type: 'select',
-      selectOptions: [
-        'Approved',
-        'Unapproved'
-      ]
-    }),
     attachments: new FormField({
       formControl: new FormControl(),
       attachments: new Map<number | string, FileAttachment>(),
