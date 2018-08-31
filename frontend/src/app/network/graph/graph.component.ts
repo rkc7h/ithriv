@@ -189,7 +189,6 @@ export class GraphComponent {
 
   transitionCallback(from: string, node?: Category) {
     this.transitionState = from;
-    console.log(from);
 
     switch (from) {
       case 'menuDone':
