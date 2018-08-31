@@ -110,16 +110,16 @@ class EmailService():
 
         return tracking_code
 
-    def consult_email(self, user, request_data):
+    def consult_email(self, user, resource, request_data):
         tracking_code = self.tracking_code()
 
         subject = "iThriv: Consult Request"
         logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
         text_body = render_template("consult_email.txt",
-                                    user=user, request_data=request_data, tracking_code=tracking_code)
+                                    user=user, resource=resource, request_data=request_data, tracking_code=tracking_code)
 
         html_body = render_template("consult_email.html",
-                                    user=user, request_data=request_data, logo_url=logo_url, tracking_code=tracking_code)
+                                    user=user, resource=resource, request_data=request_data, logo_url=logo_url, tracking_code=tracking_code)
 
         self.send_email(subject,
                         recipients=[self.app.config['MAIL_CONSULT_RECIPIENT']], text_body=text_body, html_body=html_body)

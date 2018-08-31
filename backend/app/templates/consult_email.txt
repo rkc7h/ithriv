@@ -6,5 +6,6 @@ User Id: {{ user.uid }}
 User Institution: {{ user.institution }}
 User Institutional Role: {{ user.institutional_role }}
 User Division: {{ user.division }}
+Relating to Resource: #{{resource.id}} - {{ resource.name }}
 Request Category: {{ request_data.request_category }}
 Request Text: {{ request_data.request_text }}
