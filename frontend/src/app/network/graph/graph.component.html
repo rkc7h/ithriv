@@ -12,7 +12,6 @@
       <svg:g
         *ngFor="let node of topCategories; let i = index"
         [@menuState]="{value: getMenuState(node), params: getMenuPosition(node)}"
-        (@menuState.done)="transitionCallback('menuDone')"
         app-network-view-node
         [state]="getState(node)"
         (click)="setCategory(node)"
@@ -30,56 +29,65 @@
 
     <!-- Draw the lines first, so they show up underneath. -->
     <svg:g
-      *ngFor="let thisCategory of getTopCategories()"
+      *ngFor="let thisCategory of topCategories"
       [@rootState]="{value: getRootState(thisCategory), params: getRootShift(thisCategory)}"
-      (@rootState.done)="transitionCallback('rootDone')"
     >
-      <svg:g>
+      <svg:g
+        [@lineState]="getRootState(thisCategory)"
+        [attr.transform]="'scale(0)'"
+      >
         <svg:line
-          *ngFor="let child of getChildren(thisCategory, true); let k = index"
+          *ngFor="let child of thisCategory.children; let k = index"
           [attr.x1]="0"
           [attr.y1]="0"
           [attr.x2]="getCatPos(child, false).x"
           [attr.y2]="getCatPos(child, false).y"
           [attr.stroke]="categoryColor(thisCategory.color)"
-          [ngClass]="transitionState"
         />
       </svg:g>
 
-      <!-- PARENT -->
-      <svg:g
-        class="parent"
-        app-network-view-node
-        [category]="thisCategory.parent || thisCategory"
-        (click)="selectCategory(thisCategory)"
-        [state]="getState(thisCategory)"
-        [options]="{
-                relationship: 'root',
-                x: 0,
-                y: 0,
-                radius: baseRadius,
-                angle: 0,
-                titleHeight: 40
-              }"
-      ></svg:g>
-
       <!-- SIBLINGS -->
       <svg:g
-        *ngFor="let child of getChildren(thisCategory); let k = index"
+        *ngFor="let child of thisCategory.children; let k = index"
         class="sibling"
         [@childState]="{value: getState(child), params: getCatPos(child)}"
-        (@childState.done)="transitionCallback('childDone', child)"
       >
-        <svg:g>
+        <svg:g
+          [@lineState]="getState(child)"
+          [attr.transform]="'scale(0)'"
+        >
           <svg:line
-            *ngFor="let grandChild of getGrandchildren(child, true); let k = index"
+            *ngFor="let grandChild of child.children; let k = index"
             [attr.x1]="0"
             [attr.y1]="0"
             [attr.x2]="getCatPos(grandChild, false).x"
             [attr.y2]="getCatPos(grandChild, false).y"
             [attr.stroke]="categoryColor(thisCategory.color)"
-            [ngClass]="transitionState"
           />
+        </svg:g>
+
+        <!-- GRANDCHILDREN -->
+        <svg:g
+          *ngFor="let grandChild of child.children; let k = index"
+          class="sibling"
+          [@grandchildState]="{value: getState(grandChild), params: getCatPos(grandChild)}"
+        >
+          <svg:g
+            app-network-view-node
+            [category]="grandChild"
+            [state]="getState(grandChild)"
+            (click)="selectCategory(grandChild)"
+            [options]="{
+              relationship: 'child',
+              x: 0,
+              y: 0,
+              radius: baseRadius,
+              angle: 0,
+              titleHeight: 40
+            }"
+            [matTooltip]="(selectedCategory.level === 0) ? grandChild.name : ''"
+          >
+          </svg:g>
         </svg:g>
 
         <!-- CHILDREN -->
@@ -99,33 +107,24 @@
           [matTooltip]="showTooltip(child) ? child.name : ''"
         ></svg:g>
 
-        <svg:g
-          *ngFor="let grandChild of getGrandchildren(child); let k = index"
-          class="sibling"
-          [@grandchildState]="{value: getState(grandChild), params: getCatPos(grandChild)}"
-          (@grandchildState.done)="transitionCallback('grandchildDone')"
-        >
-
-          <svg:g
-            app-network-view-node
-            [category]="grandChild"
-            [state]="getState(grandChild)"
-            (click)="selectCategory(grandChild)"
-            [options]="{
-                  relationship: 'child',
-                  x: 0,
-                  y: 0,
-                  radius: baseRadius,
-                  angle: 0,
-                  titleHeight: 40
-                }"
-            [matTooltip]="(selectedCategory.level === 0) ? grandChild.name : ''"
-          >
-          </svg:g>
-        </svg:g>
-
-
       </svg:g>
+
+      <!-- PARENT -->
+      <svg:g
+        class="parent"
+        app-network-view-node
+        [category]="thisCategory.parent || thisCategory"
+        (click)="selectCategory(thisCategory)"
+        [state]="getState(thisCategory)"
+        [options]="{
+          relationship: 'root',
+          x: 0,
+          y: 0,
+          radius: baseRadius,
+          angle: 0,
+          titleHeight: 40
+        }"
+      ></svg:g>
     </svg:g>
     -->
   </svg>

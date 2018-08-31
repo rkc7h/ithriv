@@ -1,8 +1,13 @@
-g, line, circle, rect, text, image, g > svg {
-  transition: 500ms ease-in-out all;
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
+g, circle, rect, text, image, g > svg {
+  transition: $animationDuration ease-in-out all;
 }
 
-line, circle, rect {
+circle, rect {
   stroke-width: 4px;
 }
 
@@ -19,7 +24,7 @@ circle, rect, text, image, .sibling-node {
 }
 
 g.node {
-  transition: 300ms ease transform;
+  transition: $animationDuration ease-in-out all;
 }
 
 tspan.category-name {

@@ -16,46 +16,46 @@
 
     g[app-network-view-node], g.top-level, * {
       outline: none;
-      transition: $animationDuration ease-in-out all;
+      // transition: $animationDuration ease-in-out all;
     }
 
-    .shrink          { animation: shrink ease-in-out $animationDuration; }
-    .grow            { animation: grow ease-in-out $animationDuration; }
-    .moving          { animation: shrink ease-in-out $animationDuration; }
-    .menuDone        { animation: shrink ease-in-out $animationDuration; }
-    .rootDone        { animation: shrink ease-in-out $animationDuration; }
-    .childDone       { animation: grow ease-in-out $animationDuration; }
-    .grandchildDone  { animation: grow ease-in-out $animationDuration; }
+    // .shrink          { animation: shrink ease-in-out $animationDuration; }
+    // .grow            { animation: grow ease-in-out $animationDuration; }
+    // .moving          { animation: shrink ease-in-out $animationDuration; }
+    // .menuDone        { animation: shrink ease-in-out $animationDuration; }
+    // .rootDone        { animation: shrink ease-in-out $animationDuration; }
+    // .childDone       { animation: grow ease-in-out $animationDuration; }
+    // .grandchildDone  { animation: grow ease-in-out $animationDuration; }
 
     line {
       stroke-width: 4px;
-      transition: $animationDuration ease-in-out all;
-      animation: shrink ease-in-out $animationDuration;
+      // transition: $animationDuration ease-in-out all;
+      // animation: shrink ease-in-out $animationDuration;
     }
   }
 }
 
 
-@keyframes shrink {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
+// @keyframes shrink {
+//   0% {
+//     transform: scale(1);
+//     opacity: 1;
+//   }
 
-  50%, 100% {
-    transform: scale(0);
-    opacity: 0;
-  }
-}
+//   50%, 100% {
+//     transform: scale(0);
+//     opacity: 0;
+//   }
+// }
 
-@keyframes grow {
-  0%, 50% {
-    transform: scale(0);
-    opacity: 0;
-  }
+// @keyframes grow {
+//   0%, 50% {
+//     transform: scale(0);
+//     opacity: 0;
+//   }
 
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+//   100% {
+//     transform: scale(1);
+//     opacity: 1;
+//   }
+// }

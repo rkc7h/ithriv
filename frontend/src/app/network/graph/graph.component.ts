@@ -9,7 +9,7 @@ import { ResourceApiService } from '../../shared/resource-api/resource-api.servi
 import {
   childPositionTransition,
   grandchildPositionTransition,
-  movingTransition,
+  lineTransition,
   menuTransition,
   rootTransition
 } from '../animations';
@@ -24,26 +24,19 @@ import { NodeLoadingStatus } from '../../node-loading-status';
     rootTransition(),
     childPositionTransition(),
     grandchildPositionTransition(),
-    movingTransition()
+    lineTransition()
   ]
 })
 export class GraphComponent {
   topCategories: Category[] = [];
   selectedCategory: Category;
+  topLevelNode: Category;
   layoutWidth = 982;
   layoutHeight = 982;
   baseRadius = 80;
   navRadius = 40;
   parentTitleHeight = 30;
-  transitionState = 'moving';
-
   isDataLoaded = false;
-  menuLoaded = false;
-  rootLoaded = false;
-  childrenLoaded = false;
-  grandchildrenLoaded = false;
-
-  loadingStatus = new Map<number, NodeLoadingStatus>();
 
   constructor(
     private router: Router,
@@ -171,8 +164,6 @@ export class GraphComponent {
   }
 
   selectCategory(c: Category) {
-    this.resetAnimations();
-
     /* navigate to another page if a 3rd level category is clicked when its parent category
     is active (it's in a secondary state).  Otherwise, make the parent category active. */
     this.location.replaceState(`/network/${c.id}`);
@@ -183,40 +174,11 @@ export class GraphComponent {
         this.selectedCategory = c.parent;
       }
     } else if (c !== this.selectedCategory) {
+      this.selectedCategory = this.topLevelNode;
       this.selectedCategory = c;
     }
-  }
 
-  transitionCallback(from: string, node?: Category) {
-    this.transitionState = from;
-
-    switch (from) {
-      case 'menuDone':
-        this.menuLoaded = true;
-        break;
-      case 'rootDone':
-        this.rootLoaded = true;
-        break;
-      case 'childDone':
-        this.childrenLoaded = true;
-        break;
-      case 'grandchildDone':
-        this.grandchildrenLoaded = true;
-        break;
-
-      default:
-        break;
-    }
-
-
-
-    if ((from === 'childDone') && node && node.id) {
-      if (node.parent && node.parent.id) {
-        const status = this.getLoadingStatus(node.parent);
-        status.numChildrenLoaded++;
-        this.loadingStatus.set(node.parent.id, status);
-      }
-    }
+    this.setTopLevelNode();
   }
 
   /**
@@ -260,56 +222,10 @@ export class GraphComponent {
     return { x: x, y: y };
   }
 
-  getLoadingStatus(node) {
-    if (!this.loadingStatus.has(node.id)) {
-      const status = {
-        numChildren: node.children ? node.children.length : 0,
-        numChildrenLoaded: 0
-      };
-      this.loadingStatus.set(node.id, new NodeLoadingStatus(status));
-    }
-    return this.loadingStatus.get(node.id);
-  }
-
-  getTopCategories() {
-    return this.menuLoaded ? this.topCategories : [];
-  }
-
-  getChildren(node: Category, wait: boolean) {
-    const loadNow = wait ? this.childrenLoaded : this.rootLoaded;
-    if (loadNow && node && node.children && (node.children.length > 0)) {
-      const status = this.getLoadingStatus(node);
-      status.numChildren = node.children.length;
-      this.loadingStatus.set(node.id, status);
-      return node.children;
-    }
-    return [];
-  }
-
-  getGrandchildren(node: Category, wait: boolean) {
-    const loadNow = wait ? this.grandchildrenLoaded : this.childrenLoaded;
-    if (loadNow && node && node.children && (node.children.length > 0)) {
-      if (node.parent && node.parent.id) {
-        const status = this.getLoadingStatus(node.parent);
-        if (status.numChildrenLoaded >= status.numChildren) {
-          return node.children;
-        }
-      }
-    }
-
-    return [];
-  }
-
   getRootState(node: Category) {
     if (node && this.selectedCategory) {
 
-      let topLevelNode = this.selectedCategory;
-
-      while (topLevelNode.level > 0) {
-        topLevelNode = topLevelNode.parent;
-      }
-
-      if (topLevelNode.id !== node.id) {
+      if (this.topLevelNode.id !== node.id) {
         return 'parked';
       } else if (this.selectedCategory.level === 0) {
         return 'root';
@@ -335,13 +251,13 @@ export class GraphComponent {
   }
 
   setCategory(nextCategory: Category) {
-    this.resetAnimations();
-
     if (nextCategory && nextCategory.id) {
       if (nextCategory !== this.selectedCategory) {
         this.selectedCategory = nextCategory;
       }
     }
+
+    this.setTopLevelNode();
   }
 
   categoryColor(hexColor: string, alpha = 1) {
@@ -356,14 +272,13 @@ export class GraphComponent {
     return false;
   }
 
-  resetAnimations() {
-    this.transitionState = 'moving';
-    this.loadingStatus.clear();
-    this.childrenLoaded = false;
-    this.grandchildrenLoaded = false;
-  }
+  setTopLevelNode() {
+    let topLevelNode = this.selectedCategory;
 
-  drawLines() {
-    return this.grandchildrenLoaded;
+    while (topLevelNode.level > 0) {
+      topLevelNode = topLevelNode.parent;
+    }
+
+    this.topLevelNode = topLevelNode;
   }
 }
