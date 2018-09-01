@@ -140,7 +140,9 @@ class DataLoader:
             next(reader, None)  # use headers to set availability
 
             for row in reader:
-                user = User(id=row[0], uid=row[1], email=row[2], display_name=row[3], password=row[4], role=row[5])
+                user = User(id=row[0], eppn=row[1], email=row[1], display_name=row[2], password=row[3], role=row[4],
+                            email_verified=True)
+
                 db.session.add(user)
             db.session.commit()
             db.session.execute("SELECT setval('ithriv_user_id_seq', "

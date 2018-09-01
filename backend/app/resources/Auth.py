@@ -21,27 +21,31 @@ def login(user_info):
     print("+++++++++++++++++++++++++++++++++++++++++++++++++")
 
     if app.config["DEVELOPMENT"]:
-        eppn = app.config["SSO_DEVELOPMENT_UID"]
+        eppn = app.config["SSO_DEVELOPMENT_EPPN"]
     else:
         eppn = user_info['eppn']
 
     user = User.query.filter_by(eppn=eppn).first()
     if user is None:
         user = User(eppn=eppn,
-                    display_name=user_info["eppn"],
-                    email=user_info["eppn"])
+                    display_name=eppn,
+                    email=eppn)
         if "Surname" in user_info:
             user.display_name = user.display_name + " " + user_info["Surname"]
 
         if "displayName" in user_info and user_info["displayName"] is not None and len(user_info["displayName"]) > 1:
             user.display_name = user_info["displayName"]
 
-        domain = user_info['eppn'].split('@')[1]
-        user.institution = ThrivInstitution.query.filter(domain==domain).first();
+        # Link the user to their institution if possible
+        institutions = ThrivInstitution.query.all()
+        for i in institutions:
+            if i.domain and eppn.lower().endswith(i.domain):
+                user.institution = i
 
         db.session.add(user)
         db.session.commit()
-        g.user = user
+
+    g.user = user
     # redirect users back to the front end, include the new auth token.
     auth_token = user.encode_auth_token().decode()
     response_url = ("%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
@@ -72,6 +76,8 @@ def login_password():
     email = request_data['email']
     user = User.query.filter_by(email=email).first()
 
+    if user is None:
+        raise RestException(RestException.LOGIN_FAILURE)
     if user.email_verified:
         if user.is_correct_password(request_data["password"]):
             # redirect users back to the front end, include the new auth token.

@@ -58,7 +58,7 @@ class UserListEndpoint(flask_restful.Resource):
         query = db.session.query(User)
         if "filter" in args:
             f = '%' + args["filter"] + '%'
-            query = query.filter(or_(User.email.ilike(f), User.display_name.ilike(f), User.uid.ilike(f)))
+            query = query.filter(or_(User.email.ilike(f), User.display_name.ilike(f), User.eppn.ilike(f)))
         query = query.order_by("%s %s" % (sort_column, sort_order))
         page = query.paginate(page=pageNumber  +1, per_page=per_page, error_out=False)
         return self.searchSchema.dump(page)

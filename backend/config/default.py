@@ -27,7 +27,7 @@ ELASTIC_SEARCH = {
 
 # Single Signon configuration
 SECRET_KEY = 'thiv_impossibly_bad_key_stored_in_public_repo_dont_use_this_ouside_development_yuck!'
-SSO_DEVELOPMENT_UID = 'dhf8r'
+SSO_DEVELOPMENT_EPPN = 'dhf8r@virginia.edu'
 SSO_ATTRIBUTE_MAP = {
     'eppn': (False, 'eppn'),  # dhf8r@virginia.edu
     'uid': (False, 'uid'),  # dhf8r

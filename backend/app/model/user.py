@@ -11,7 +11,6 @@ class User(db.Model):
     __tablename__ = 'ithriv_user'
     id = db.Column(db.Integer, primary_key=True)
     eppn = db.Column(db.String, nullable=True)
-    uid = db.Column(db.String, nullable=True)
     email = db.Column(db.String, nullable=False, unique=True)
     display_name = db.Column(db.String)
     _password = db.Column('password', db.Binary(60))

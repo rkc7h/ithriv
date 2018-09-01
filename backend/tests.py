@@ -32,8 +32,8 @@ from app import app, db, elastic_index
 
 class TestCase(unittest.TestCase):
 
-    test_uid = "dhf8rtest"
-    admin_uid = "dhf8admin"
+    test_eppn = "dhf8rtest@virginia.edu"
+    admin_eppn = "dhf8admin@virginia.edu"
 
     def setUp(self):
         self.ctx = app.test_request_context()
@@ -186,8 +186,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(404, rv.status_code)
 
     def test_user_edit_resource(self):
-        u1 = User(id=1, uid=self.test_uid, display_name="Peter Cottontail", email="peter@cottontail", role="User")
-        u2 = User(id=2, uid=self.admin_uid, display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
+        u1 = User(id=1, eppn=self.test_eppn, display_name="Peter Cottontail", email="peter@cottontail", role="User")
+        u2 = User(id=2, eppn=self.admin_eppn, display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
         r1 = self.construct_resource(owner=u1.email)
         r2 = self.construct_resource(owner="flopsy@cottontail.com")
         db.session.add_all([u1, u2, r1, r2])
@@ -230,7 +230,7 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
 
     def test_general_user_delete_resource(self):
-        u1 = User(id=1, uid=self.test_uid, display_name="Peter Cottontail", email="peter@cottontail", role="User")
+        u1 = User(id=1, eppn=self.test_eppn, display_name="Peter Cottontail", email="peter@cottontail", role="User")
         r1 = self.construct_resource(owner=u1.email)
         r2 = self.construct_resource(owner="flopsy@cottontail.com")
         db.session.add_all([u1, r1, r2])
@@ -272,7 +272,7 @@ class TestCase(unittest.TestCase):
         # ...Unless that user is a superuser, in which case they can delete whatever they want
         # (The Velveteen Rabbit is all-powerful)
         r1 = self.construct_resource(owner="mopsy@cottontail.com")
-        u = User(id=2, uid=self.admin_uid, display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
+        u = User(id=2, eppn=self.admin_eppn, display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
 
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertSuccess(rv)
@@ -406,8 +406,8 @@ class TestCase(unittest.TestCase):
         self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
         self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com, bigbird@sesamestreet.com")
         self.construct_resource(name="Snuffy's Balloon Collection", owner="oscar@sesamestreet.com bigbird@sesamestreet.com")
-        u1 = User(id=1, eppn=self.test_uid,  uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
-        u2 = User(id=2, eppn=self.admin_uid, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
+        u1 = User(id=1, eppn=self.test_eppn, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, eppn=self.admin_eppn, display_name="Big Bird", email="bigbird@sesamestreet.com")
         db.session.add_all([u1, u2])
         db.session.commit()
 
@@ -436,9 +436,9 @@ class TestCase(unittest.TestCase):
         self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com", approved="Unapproved")
         self.construct_resource(name="Snuffy's Balloon Collection",
                                 owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
-        u1 = User(id=1, uid='ogrouch', display_name="Oscar the Grouch", email="oscar@sesamestreet.com", role="User")
-        u2 = User(id=2, uid='bbird', display_name="Big Bird", email="bigbird@sesamestreet.com", role="User")
-        u3 = User(id=3, uid='sgrover', display_name="Grover", email="grover@sesamestreet.com", role="User")
+        u1 = User(id=1, eppn='ogrouch@seseme.org', display_name="Oscar the Grouch", email="oscar@sesamestreet.com", role="User")
+        u2 = User(id=2, eppn='bbird@seseme.org', display_name="Big Bird", email="bigbird@sesamestreet.com", role="User")
+        u3 = User(id=3, eppn='sgrover@seseme.org', display_name="Grover", email="grover@sesamestreet.com", role="User")
         db.session.add_all([u1, u2, u3])
         db.session.commit()
 
@@ -473,7 +473,7 @@ class TestCase(unittest.TestCase):
                                 approved="Unapproved")
         self.construct_resource(name="Snuffy's Balloon Collection",
                                 owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
-        u1 = User(id=4, uid='maria', display_name="Maria", email="maria@sesamestreet.com", role="Admin")
+        u1 = User(id=4, eppn='maria@seseme.edu', display_name="Maria", email="maria@sesamestreet.com", role="Admin")
         db.session.add(u1)
         db.session.commit()
 
@@ -839,16 +839,6 @@ class TestCase(unittest.TestCase):
 
     def test_attach_file_to_resource(self):
         r = self.construct_resource()
-        file = UploadedFile(name="HappyCoconuts.csv", resource_id=r.id)
-        db.session.add(file)
-        db.session.commit()
-        file.name = "HappierCoconuts.csv"
-        rv = self.app.put('/api/file/%i' % file.id, data=json.dumps(FileSchema().dump(file).data), content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertEquals("HappierCoconuts.csv", response["name"])
-
-    def test_upload_resource_attachments(self):
         file = self.test_add_file()
         file['resource_id'] = r.id
         rv = self.app.put('/api/file/%i' % file['id'], data=json.dumps(file), content_type="application/json")
@@ -1064,8 +1054,8 @@ class TestCase(unittest.TestCase):
         r1 = self.construct_resource(name="Birdseed sale at Hooper's")
         r2 = self.construct_resource(name="Slimy the worm's flying school")
         r3 = self.construct_resource(name="Oscar's Trash Orchestra")
-        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
-        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
+        u1 = User(id=1, eppn=self.test_eppn, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, eppn=self.admin_eppn, display_name="Big Bird", email="bigbird@sesamestreet.com")
 
         db.session.commit()
 
@@ -1228,59 +1218,35 @@ class TestCase(unittest.TestCase):
 
     def logged_in_headers(self, user=None):
         if not user:
-<<<<<<< HEAD
-            eppn = self.test_uid
-            headers = {'eppn': self.test_uid, 'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
+            eppn = self.test_eppn
+            headers = {'eppn': eppn, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
         else:
             eppn = user.eppn
-            headers = {'eppn': user.eppn, 'uid': user.uid, 'givenName': user.display_name, 'mail': user.email}
+            headers = {'eppn': eppn, 'givenName': user.display_name, 'mail': user.email}
 
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
         participant = User.query.filter_by(eppn=eppn).first()
-        participant.role = "Admin"
-=======
-            uid = self.test_uid
-            headers = {'uid': self.test_uid, 'eppn': "dhf8r@virginia.edu", 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
-        else:
-            uid = user.uid
-            headers = {'uid': user.uid, 'eppn': "dhf8r@virginia.edu", 'givenName': user.display_name, 'mail': user.email}
-
-        rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
-                          content_type="application/json")
-        participant = User.query.filter_by(uid=uid).first()
         if user:
             participant.role = user.role
         else:
             participant.role = "Admin"
->>>>>>> master
         db.session.add(participant)
         db.session.commit()
 
         return dict(Authorization='Bearer ' + participant.encode_auth_token().decode())
 
-    def test_sso_login_sets_institution_to_uva_correctly(self):
-        inst_obj = ThrivInstitution(name="UVA", domain='virginia.edu')
-        db.session.add(inst_obj);
-        user = User(eppn="dhf8r@virginia.edu", uid='dhf84', display_name='Dan Funk', email='dhf8r@virginia.edu')
-        self.logged_in_headers(user)
-        dbu = User.query.filter_by(eppn='dhf8r@virginia.edu').first()
-        self.assertIsNotNone(dbu)
-        self.assertIsNotNone(dbu.institution)
-        self.assertEqual('UVA', dbu.institution.name)
-
-
     def test_create_user_with_password(self):
         data = {
             "display_name": "Peter Dinklage",
-            "uid": "pad123",
+            "eppn": "tyrion@got.com",
             "email": "tyrion@got.com",
             "role": "User"
         }
         rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True, headers=self.logged_in_headers(),
                            content_type="application/json")
         self.assertSuccess(rv)
-        user = User.query.filter_by(uid=data["uid"]).first()
+        user = User.query.filter_by(eppn=data["eppn"]).first()
         user.password = "peterpass"
         db.session.add(user)
         db.session.commit()
@@ -1292,6 +1258,16 @@ class TestCase(unittest.TestCase):
         self.assertEqual("User", response["role"])
         self.assertEqual(True, user.is_correct_password("peterpass"))
         return user;
+
+    def test_sso_login_sets_institution_to_uva_correctly(self):
+        inst_obj = ThrivInstitution(name="UVA", domain='virginia.edu')
+        db.session.add(inst_obj);
+        user = User(eppn="dhf8r@virginia.edu", display_name='Dan Funk', email='dhf8r@virginia.edu')
+        self.logged_in_headers(user)
+        dbu = User.query.filter_by(eppn='dhf8r@virginia.edu').first()
+        self.assertIsNotNone(dbu)
+        self.assertIsNotNone(dbu.institution)
+        self.assertEqual('UVA', dbu.institution.name)
 
     def test_login_user(self):
         user = self.test_create_user_with_password()
@@ -1390,13 +1366,13 @@ class TestCase(unittest.TestCase):
     def test_get_current_participant(self):
         """ Test for the current participant status """
         # Create the user
-        headers = {'eppn': self.test_uid, 'uid': self.test_uid, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
+        headers = {'eppn': self.test_eppn, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
         # Don't check success, login does a redirect to the front end that might not be running.
         # self.assert_success(rv)
 
-        user = User.query.filter_by(uid=self.test_uid).first()
+        user = User.query.filter_by(eppn=self.test_eppn).first()
 
         # Now get the user back.
         response = self.app.get('/api/session', headers=dict(
@@ -1415,9 +1391,9 @@ class TestCase(unittest.TestCase):
         return json.loads(rv.get_data(as_text=True))
 
     def createTestUsers(self):
-        u1 = User(id=1, uid=self.test_uid, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
-        u2 = User(id=2, uid=self.admin_uid, display_name="Big Bird", email="bigbird@sesamestreet.com")
-        u3 = User(id=3, uid="stuff123", display_name="Elmo", email="elmo@sesamestreet.com")
+        u1 = User(id=1, eppn=self.test_eppn, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
+        u2 = User(id=2, eppn=self.admin_eppn, display_name="Big Bird", email="bigbird@sesamestreet.com")
+        u3 = User(id=3, eppn="stuff123@vt.edu", display_name="Elmo", email="elmo@sesamestreet.com")
         db.session.add_all([u1, u2, u3])
         db.session.commit()
 

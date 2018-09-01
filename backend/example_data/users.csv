@@ -1,7 +1,7 @@
-id,uid,email_address,display_name,password,role
-1,dhf8r,daniel.h.funk@gmail.com,Dan Funk,dfunk7,Admin
-2,egraham,eleanorcjkgraham@gmail.com,Eleanor Graham,egraham4,Admin
-3,ajlouie,ajlouie@gmail.com,Aaron Louie,alouie2,Admin
-4,jjk4d,JJL4D@hscmail.mcc.virginia.edu,Johanna Loomba,jloomba5,Admin
-5,bk7k,BK7K@hscmail.mcc.virginia.edu,DB Kim,dbkim8,Admin
-6,nem2p,NEM2P@hscmail.mcc.virginia.edu,Neal Magee,nmagee9,Admin
+id,email_address,display_name,password,role
+1,daniel.h.funk@gmail.com,Dan Funk,dfunk7,Admin
+2,eleanorcjkgraham@gmail.com,Eleanor Graham,egraham4,Admin
+3,ajlouie@gmail.com,Aaron Louie,alouie2,Admin
+4,JJL4D@hscmail.mcc.virginia.edu,Johanna Loomba,jloomba5,Admin
+5,BK7K@hscmail.mcc.virginia.edu,DB Kim,dbkim8,Admin
+6,NEM2P@hscmail.mcc.virginia.edu,Neal Magee,nmagee9,Admin
