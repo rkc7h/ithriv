@@ -25,8 +25,8 @@ ELASTIC_SEARCH = {
 # to them as that when pulling them out.  This is slightly different from
 # the structure that actually comes back from Shibboleth.
 SSO_ATTRIBUTE_MAP = {
-    'HTTP_UID': (True, 'uid'), # dhf8r
-    'HTTP_UID': (False, 'eppn'), # dhf8r
+    'HTTP_EPPN': (True, 'eppn'),  # dhf8r@virginia.edu
+    'HTTP_UID': (False, 'uid'), # dhf8r
     'HTTP_GIVENNAME': (False, 'givenName'), # Daniel
     'HTTP_MAIL': (False, 'email')  # dhf8r@Virginia.EDU
 }

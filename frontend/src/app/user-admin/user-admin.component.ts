@@ -16,7 +16,7 @@ import {CategoryFormComponent} from '../category-form/category-form.component';
 export class UserAdminComponent implements OnInit, AfterViewInit {
 
   dataSource: UserDataSource;
-  displayedColumns = ['uid', 'display_name', 'role', 'email', 'institution'];
+  displayedColumns = ['display_name', 'role', 'email', 'institution'];
   default_page_size = 10;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;

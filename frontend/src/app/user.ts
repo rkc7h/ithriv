@@ -3,7 +3,7 @@ import {Institution} from './institution';
 
 export interface User {
   id: number;
-  uid?: string;
+  eppn?: string;
   email: string;
   display_name: string;
   password?: string;

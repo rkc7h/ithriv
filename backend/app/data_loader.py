@@ -30,6 +30,7 @@ class DataLoader:
         self.icon_file = directory + "/icons.csv"
         self.user_file = directory + "/users.csv"
         self.user_favorite_file = directory + "/user_favorites.csv"
+        self.institution_file = directory + "/institutions.csv"
         self.mime = magic.Magic(mime=True)
         print("Data loader initialized")
 
@@ -139,7 +140,9 @@ class DataLoader:
             next(reader, None)  # use headers to set availability
 
             for row in reader:
-                user = User(id=row[0], uid=row[1], email=row[2], display_name=row[3], password=row[4], role=row[5])
+                user = User(id=row[0], eppn=row[1], email=row[1], display_name=row[2], password=row[3], role=row[4],
+                            email_verified=True)
+
                 db.session.add(user)
             db.session.commit()
             db.session.execute("SELECT setval('ithriv_user_id_seq', "
@@ -147,6 +150,21 @@ class DataLoader:
             db.session.commit()
             print("There are now %i users in the database." %
                   db.session.query(User).count())
+
+    def load_institutions(self):
+        with open(self.institution_file, newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
+            next(reader, None)  # use headers to set availability
+
+            for row in reader:
+                inst = ThrivInstitution(id=row[0], name=row[1], description=row[2], domain=row[3])
+                db.session.add(inst)
+            db.session.commit()
+            db.session.execute("SELECT setval('institution_id_seq', "
+                               "COALESCE((SELECT MAX(id) + 1 FROM institution), 1), false);")
+            db.session.commit()
+            print("There are now %i institutions in the database." %
+                  db.session.query(ThrivInstitution).count())
 
     def load_user_favorites(self):
         with open(self.user_favorite_file, newline='') as csvfile:
@@ -199,6 +217,7 @@ class DataLoader:
         db.session.query(Availability).delete()
         db.session.query(Favorite).delete()
         db.session.query(ThrivResource).delete()
+        db.session.query(ThrivInstitution).delete()
         db.session.query(ThrivType).delete()
         db.session.query(Category).delete()
         db.session.query(EmailLog).delete()

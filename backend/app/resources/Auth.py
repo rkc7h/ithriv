@@ -6,6 +6,7 @@ from itsdangerous import URLSafeTimedSerializer
 
 from app import sso, app, RestException, db, auth, email_service
 from app.model.email_log import EmailLog
+from app.model.institution import ThrivInstitution
 from app.model.user import User
 from flask import jsonify, redirect, g, request, Blueprint
 
@@ -14,33 +15,41 @@ auth_blueprint = Blueprint('auth', __name__, url_prefix='/api')
 
 @sso.login_handler
 def login(user_info):
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++")
+    for x in user_info:
+        print (x,":",user_info[x])
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++")
+
     if app.config["DEVELOPMENT"]:
-        uid = app.config["SSO_DEVELOPMENT_UID"]
+        eppn = app.config["SSO_DEVELOPMENT_EPPN"]
     else:
-        uid = user_info['eppn']
+        eppn = user_info['eppn']
 
-    user = User.query.filter_by(uid=uid).first()
+    user = User.query.filter_by(eppn=eppn).first()
     if user is None:
-
-        user = User(uid=uid,
-                    display_name=user_info["eppn"],
-                    email=user_info["eppn"])
+        user = User(eppn=eppn,
+                    display_name=eppn,
+                    email=eppn)
         if "Surname" in user_info:
             user.display_name = user.display_name + " " + user_info["Surname"]
 
-        if "displayName" in user_info and len(user_info["displayName"]) > 1:
+        if "displayName" in user_info and user_info["displayName"] is not None and len(user_info["displayName"]) > 1:
             user.display_name = user_info["displayName"]
+
+        # Link the user to their institution if possible
+        institutions = ThrivInstitution.query.all()
+        for i in institutions:
+            if i.domain and eppn.lower().endswith(i.domain):
+                user.institution = i
 
         db.session.add(user)
         db.session.commit()
-        g.user = user
+
+    g.user = user
     # redirect users back to the front end, include the new auth token.
     auth_token = user.encode_auth_token().decode()
     response_url = ("%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
     return redirect(response_url)
-
-
-# ourapp/views.py
 
 
 def confirm_email(email_token):
@@ -67,6 +76,8 @@ def login_password():
     email = request_data['email']
     user = User.query.filter_by(email=email).first()
 
+    if user is None:
+        raise RestException(RestException.LOGIN_FAILURE)
     if user.email_verified:
         if user.is_correct_password(request_data["password"]):
             # redirect users back to the front end, include the new auth token.
