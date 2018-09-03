@@ -60,7 +60,7 @@ pip3 install -r requirements.txt
 postgres -D /usr/local/var/postgres
 createuser --no-createdb --no-superuser --pwprompt ed_user
 createdb ithriv -O ed_user ed_platform
-```q
+```
 
 * Debian
 ```BASH
