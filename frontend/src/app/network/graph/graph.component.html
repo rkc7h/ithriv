@@ -15,7 +15,7 @@
         [@menuState]="{value: getMenuState(level0Category), params: getMenuPosition(level0Category)}"
         app-node
         [state]="getState(level0Category)"
-        (click)="setCategory(level0Category)"
+        (click)="selectCategory(level0Category)"
         [category]="level0Category"
         [options]="{
           relationship: 'root',

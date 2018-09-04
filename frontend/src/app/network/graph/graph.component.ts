@@ -54,23 +54,6 @@ export class GraphComponent {
     });
   }
 
-  setInitialCategory(c: Category) {
-    switch (c.level) {
-      case 0:
-        this.topLevelNode = c;
-        this.selectedCategory = c;
-        break;
-      case 1:
-        this.topLevelNode = c.parent;
-        this.selectedCategory = c;
-        break;
-      case 2:
-        this.topLevelNode = c.parent.parent;
-        this.selectedCategory = c.parent;
-        break;
-    }
-  }
-
   loadRootCategories(category_id = -1) {
     this.api.getCategories().subscribe(cats => {
       this.level0Categories = cats;
@@ -80,7 +63,7 @@ export class GraphComponent {
         index++;
         this.setIndexesAndBackReferences(c, category_id);
         if (!this.selectedCategory) {
-          this.setCategory(this.level0Categories[0]);
+          this.selectCategory(this.level0Categories[0]);
         }
         this.isDataLoaded = true;
       }
@@ -94,7 +77,7 @@ export class GraphComponent {
     let index = 0;
     // Set the selected category
     if (c.id === category_id) {
-      this.setInitialCategory(c);
+      this.selectCategory(c);
     }
     if (c.children) {
       for (const child of c.children) {
@@ -244,16 +227,6 @@ export class GraphComponent {
     position.x = -position.x;
     position.y = -position.y;
     return position;
-  }
-
-  setCategory(nextCategory: Category) {
-    if (nextCategory && nextCategory.id) {
-      if (nextCategory !== this.selectedCategory) {
-        this.selectedCategory = nextCategory;
-      }
-    }
-
-    this.setTopLevelNode();
   }
 
   categoryColor(hexColor: string, alpha = 1) {
