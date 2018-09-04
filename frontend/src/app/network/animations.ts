@@ -12,7 +12,6 @@ import {
 } from '@angular/animations';
 
 const duration = 500;
-const delay = { delay: `${duration}ms` };
 const easing = `${duration}ms ease-in-out`;
 const translate = 'translate( {{x}}px, {{y}}px )';
 const defaultParams = { params: { x: 0, y: 0 } };
@@ -27,7 +26,7 @@ export function menuTransition(): AnimationTriggerMetadata {
       transform: `${translate}`,
       opacity: 1,
     }), defaultParams),
-    transition('* <=> *', [
+    transition('* => *', [
       animate(easing)
     ]),
   ]);
@@ -40,17 +39,20 @@ export function rootTransition(): AnimationTriggerMetadata {
     opacity: 1
   });
 
+  const parked = style({
+    transform: 'translate(-200px, -200px) scale(0)',
+    opacity: 0
+  });
+
   return trigger('rootState', [
     state('root', shown, defaultParams),
     state('child', shown, defaultParams),
-    state('parked', style({
-      opacity: 0, transform: 'scale(0) translateX(-80%) translateY(-100%)'
-    }), defaultParams),
-    transition('* <=> *', [
+    state('parked', parked, defaultParams),
+    transition('* => *', [
       group([
-        animate(easing),
         query('@lineState', animateChild(), { optional: true }),
-        query('@childState', animateChild(delay), { optional: true })
+        query('@childState', animateChild(), { optional: true }),
+        animate(easing)
       ])
     ])
   ]);
@@ -74,10 +76,10 @@ export function childPositionTransition(): AnimationTriggerMetadata {
       transform: `scale(0) ${translate}`,
       opacity: 0
     }), defaultParams),
-    transition('* <=> *', [
+    transition('* => *', [
       group([
         query('@lineState', animateChild(), { optional: true }),
-        query('@grandchildState', animateChild(delay), { optional: true }),
+        query('@grandchildState', animateChild(), { optional: true }),
         animate(easing)
       ])
     ]),
@@ -102,7 +104,7 @@ export function grandchildPositionTransition(): AnimationTriggerMetadata {
       transform: `scale(0) ${translate}`,
       opacity: 0
     }), defaultParams),
-    transition('* <=> *', [
+    transition('* => *', [
       animate(easing)
     ]),
   ]);

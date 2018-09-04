@@ -23,9 +23,9 @@ circle, rect, text, image, .sibling-node {
   }
 }
 
-g.node {
-  transition: $animationDuration ease-in-out all;
-}
+// g.node {
+//   transition: $animationDuration ease-in-out all;
+// }
 
 tspan.category-name {
   font-weight: 900;

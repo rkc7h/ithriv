@@ -101,9 +101,9 @@ export class GraphComponent {
     // Convert degrees to radians
     const theta = angle * Math.PI / 180;
     // x is adjacent, r is hypoteneuse
-    const x = Math.cos(theta) * r;
+    const x = Math.round(Math.cos(theta) * r);
     // y is opposite, r is hypoteneuse
-    const y = Math.sin(theta) * r;
+    const y = Math.round(Math.sin(theta) * r);
     return new NodeOptions({ x: x, y: y });
   }
 
@@ -170,16 +170,17 @@ export class GraphComponent {
    */
   getState(node: Category) {
     if (node && node.id && this.selectedCategory && this.selectedCategory.id) {
-      if (this.selectedCategory.id === node.id) {
+      const nodeIsSelected = (this.selectedCategory.id === node.id);
+      const nodeIsParentOfSelected = (this.selectedCategory.parent && this.selectedCategory.parent.id === node.id);
+      const parentIsSelected = (node.parent && this.selectedCategory.id === node.parent.id);
+      const siblingIsSelected = (node.parent && this.selectedCategory.parent && this.selectedCategory.parent.id === node.parent.id);
+      const grandparentIsSelected = (node.parent && node.parent.parent && this.selectedCategory.id === node.parent.parent.id);
+
+      if (nodeIsSelected) {
         return 'primary';
-      } else if (this.selectedCategory.parent && this.selectedCategory.parent.id === node.id) {
+      } else if (nodeIsParentOfSelected || parentIsSelected) {
         return 'secondary';
-      } else if (node.parent && this.selectedCategory.id === node.parent.id) {
-        return 'secondary';
-      } else if (node.parent && this.selectedCategory.parent &&
-        this.selectedCategory.parent.id === node.parent.id) {
-        return 'tertiary';
-      } else if (node.parent && node.parent.parent && this.selectedCategory.id === node.parent.parent.id) {
+      } else if (siblingIsSelected || grandparentIsSelected) {
         return 'tertiary';
       }
     }
@@ -188,7 +189,7 @@ export class GraphComponent {
   }
 
   getMenuState(node: Category): string {
-    if (this.selectedCategory === node) {
+    if (this.topLevelNode === node) {
       return 'selected';
     } else {
       return 'unselected';
@@ -202,18 +203,15 @@ export class GraphComponent {
   }
 
   getRootState(node: Category): string {
-    if (node && this.selectedCategory) {
-
-      if (this.topLevelNode.id !== node.id) {
-        return 'parked';
-      } else if (this.selectedCategory.level === 0) {
+    if (this.topLevelNode.id === node.id) {
+      if (this.selectedCategory.id === node.id) {
         return 'root';
       } else {
         return 'child';
       }
+    } else {
+      return 'parked';
     }
-
-    return 'parked';
   }
 
   /**
@@ -222,11 +220,12 @@ export class GraphComponent {
   getRootShift(node: Category): NodeOptions {
     if (this.selectedCategory && (this.selectedCategory.id === node.id)) {
       return new NodeOptions({ x: 0, y: 0 });
+    } else {
+      const position = this.getCatPos(this.selectedCategory);
+      position.x = -position.x;
+      position.y = -position.y;
+      return position;
     }
-    const position = this.getCatPos(this.selectedCategory);
-    position.x = -position.x;
-    position.y = -position.y;
-    return position;
   }
 
   categoryColor(hexColor: string, alpha = 1) {
@@ -241,13 +240,17 @@ export class GraphComponent {
     return false;
   }
 
-  setTopLevelNode() {
-    let topLevelNode = this.selectedCategory;
+  getTopLevelNode(node: Category): Category {
+    let topLevelNode = node;
 
     while (topLevelNode.level > 0) {
       topLevelNode = topLevelNode.parent;
     }
 
-    this.topLevelNode = topLevelNode;
+    return topLevelNode;
+  }
+
+  setTopLevelNode() {
+    this.topLevelNode = this.getTopLevelNode(this.selectedCategory);
   }
 }
