@@ -27,7 +27,7 @@ import {
   ]
 })
 export class GraphComponent {
-  topCategories: Category[] = [];
+  level0Categories: Category[] = [];
   selectedCategory: Category;
   topLevelNode: Category;
   layoutWidth = 982;
@@ -57,15 +57,15 @@ export class GraphComponent {
   setInitialCategory(c: Category) {
     switch (c.level) {
       case 0:
-        // this.category = c;
+        this.topLevelNode = c;
         this.selectedCategory = c;
         break;
       case 1:
-        // this.category = c.parent;
+        this.topLevelNode = c.parent;
         this.selectedCategory = c;
         break;
       case 2:
-        // this.category = c.parent.parent;
+        this.topLevelNode = c.parent.parent;
         this.selectedCategory = c.parent;
         break;
     }
@@ -73,14 +73,14 @@ export class GraphComponent {
 
   loadRootCategories(category_id = -1) {
     this.api.getCategories().subscribe(cats => {
-      this.topCategories = cats;
+      this.level0Categories = cats;
       let index = 0;
-      for (const c of this.topCategories) {
+      for (const c of this.level0Categories) {
         c.index = index;
         index++;
         this.setIndexesAndBackReferences(c, category_id);
         if (!this.selectedCategory) {
-          this.setCategory(this.topCategories[0]);
+          this.setCategory(this.level0Categories[0]);
         }
         this.isDataLoaded = true;
       }
@@ -137,8 +137,8 @@ export class GraphComponent {
     }
   }
 
-  getCatPos(category, scale = true) {
-    if (category.parent) {
+  getCatPos(category: Category, scale = true): NodeOptions {
+    if (category.level > 0) {
       const state = this.getState(category);
       let nodeCount = category.parent.children.length;
       const radius = this.baseRadius * this.getRadiusMultiplier(state, scale);
@@ -154,11 +154,9 @@ export class GraphComponent {
       }
 
       const angle = base_angle + (360 / nodeCount * index);
-      const options = this.calcCoords(angle, radius);
-
-      return { x: options.x, y: options.y };
+      return this.calcCoords(angle, radius);
     } else {
-      return { x: 0, y: 0 };
+      return new NodeOptions({ x: 0, y: 0 });
     }
   }
 
@@ -173,7 +171,6 @@ export class GraphComponent {
         this.selectedCategory = c.parent;
       }
     } else if (c !== this.selectedCategory) {
-      this.selectedCategory = this.topLevelNode;
       this.selectedCategory = c;
     }
 
@@ -207,7 +204,7 @@ export class GraphComponent {
     return 'nary';
   }
 
-  getMenuState(node) {
+  getMenuState(node: Category): string {
     if (this.selectedCategory === node) {
       return 'selected';
     } else {
@@ -221,7 +218,7 @@ export class GraphComponent {
     return { x: x, y: y };
   }
 
-  getRootState(node: Category) {
+  getRootState(node: Category): string {
     if (node && this.selectedCategory) {
 
       if (this.topLevelNode.id !== node.id) {
@@ -239,9 +236,9 @@ export class GraphComponent {
   /**
    * Calculate the center of the currently selected node.
    */
-  getRootShift(node: Category) {
+  getRootShift(node: Category): NodeOptions {
     if (this.selectedCategory && (this.selectedCategory.id === node.id)) {
-      return { x: 0, y: 0 };
+      return new NodeOptions({ x: 0, y: 0 });
     }
     const position = this.getCatPos(this.selectedCategory);
     position.x = -position.x;

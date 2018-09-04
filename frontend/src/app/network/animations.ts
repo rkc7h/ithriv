@@ -111,6 +111,7 @@ export function grandchildPositionTransition(): AnimationTriggerMetadata {
 export function lineTransition(): AnimationTriggerMetadata {
   const hidden = style({ opacity: 0, transform: 'scale(0)' });
   const shown = style({ opacity: 1, transform: 'scale(1)' });
+  const lineEasing = `${duration * 2}ms ease-in-out`;
 
   const hStates = ['void', 'parked', 'nary'];
   const vStates = ['root', 'child', 'primary', 'secondary', 'tertiary'];
@@ -137,25 +138,24 @@ export function lineTransition(): AnimationTriggerMetadata {
     state('tertiary', shown),
     state('nary', hidden),
     transition(v_to_h.join(', '), [
-      animate('2s ease-in-out', keyframes([
+      animate(lineEasing, keyframes([
         shown,
         hidden
       ]))
     ]),
     transition(h_to_h.join(', '), [
-      animate('2s ease-in-out', keyframes([
+      animate(lineEasing, keyframes([
         hidden
       ]))
     ]),
     transition(h_to_v.join(', '), [
-      animate('2s ease-in-out', keyframes([
+      animate(lineEasing, keyframes([
         hidden,
         shown
       ]))
     ]),
     transition(v_to_v.join(', '), [
-      animate('2s ease-in-out', keyframes([
-        shown,
+      animate(lineEasing, keyframes([
         hidden,
         shown
       ]))
