@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { NetworkViewNodeComponent } from './node.component';
+import { NodeComponent } from './node.component';
 
-describe('NetworkViewNodeComponent', () => {
-  let component: NetworkViewNodeComponent;
-  let fixture: ComponentFixture<NetworkViewNodeComponent>;
+describe('NodeComponent', () => {
+  let component: NodeComponent;
+  let fixture: ComponentFixture<NodeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [NetworkViewNodeComponent]
+      declarations: [NodeComponent]
     })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NetworkViewNodeComponent);
+    fixture = TestBed.createComponent(NodeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

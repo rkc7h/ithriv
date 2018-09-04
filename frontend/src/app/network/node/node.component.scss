@@ -1,6 +1,6 @@
 // Import theming functions
 @import '~@angular/material/theming';
-@import '../../ithriv_material';
+@import '../../../ithriv_material';
 @include ithriv-theme($ithriv-theme);
 
 g, circle, rect, text, image, g > svg {
