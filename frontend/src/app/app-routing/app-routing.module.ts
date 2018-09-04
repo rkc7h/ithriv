@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BrowseComponent } from '../browse/browse.component';
 import { CategoryFormComponent } from '../category-form/category-form.component';
-import { CategoryNetworkViewComponent } from '../category-network-view/category-network-view.component';
 import { CategoryComponent } from '../category/category.component';
-import { ConsultRequestFormComponent } from "../consult-request-form/consult-request-form.component";
+import { ConsultRequestFormComponent } from '../consult-request-form/consult-request-form.component';
 import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
 import { HomeComponent } from '../home/home.component';
 import { LoginComponent } from '../login/login.component';
+import { GraphComponent } from '../network/graph/graph.component';
 import { NotFoundComponent } from '../not-found/not-found.component';
 import { ProfileComponent } from '../profile/profile.component';
 import { ResetPasswordComponent } from '../reset-password/reset-password.component';
@@ -16,7 +16,6 @@ import { ResourceComponent } from '../resource/resource.component';
 import { SearchComponent } from '../search/search.component';
 import { SessionRedirectComponent } from '../session-redirect/session-redirect.component';
 import { UserAdminComponent } from '../user-admin/user-admin.component';
-import {GraphComponent} from '../network/graph/graph.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -27,7 +26,6 @@ const routes: Routes = [
   { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
   { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
-  { path: 'category/:category/network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
   { path: 'consult_request', component: ConsultRequestFormComponent, data: { title: 'Request a Consult', hideHeader: true } },
   { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },
   { path: 'home', component: HomeComponent, data: { title: 'Welcome to iThriv' } },

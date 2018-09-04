@@ -12,7 +12,7 @@
       <svg:g
         *ngFor="let node of topCategories; let i = index"
         [@menuState]="{value: getMenuState(node), params: getMenuPosition(node)}"
-        app-network-view-node
+        app-node
         [state]="getState(node)"
         (click)="setCategory(node)"
         [category]="node"
@@ -73,7 +73,7 @@
           [@grandchildState]="{value: getState(grandChild), params: getCatPos(grandChild)}"
         >
           <svg:g
-            app-network-view-node
+            app-node
             [category]="grandChild"
             [state]="getState(grandChild)"
             (click)="selectCategory(grandChild)"
@@ -92,7 +92,7 @@
 
         <!-- CHILDREN -->
         <svg:g
-          app-network-view-node
+          app-node
           [category]="child"
           [state]="getState(child)"
           (click)="selectCategory(child)"
@@ -112,7 +112,7 @@
       <!-- PARENT -->
       <svg:g
         class="parent"
-        app-network-view-node
+        app-node
         [category]="thisCategory.parent || thisCategory"
         (click)="selectCategory(thisCategory)"
         [state]="getState(thisCategory)"

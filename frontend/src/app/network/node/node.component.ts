@@ -1,15 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Category } from '../category';
-import { NodeOptions } from '../node-options';
-import { hexColorToRGBA } from '../shared/color';
+import { Category } from '../../category';
+import { NodeOptions } from '../../node-options';
+import { hexColorToRGBA } from '../../shared/color';
 
 @Component({
-  selector: '[app-network-view-node]',
-  templateUrl: './network-view-node.component.html',
-  styleUrls: ['./network-view-node.component.scss'],
+  selector: '[app-node]',
+  templateUrl: './node.component.html',
+  styleUrls: ['./node.component.scss'],
 })
-export class NetworkViewNodeComponent implements OnInit {
+export class NodeComponent implements OnInit {
   @Input() category: Category;
   @Input() numTotal: number;
   @Input() options: NodeOptions;

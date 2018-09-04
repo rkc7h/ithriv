@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { NetworkViewNodeComponent } from './network-view-node.component';
+import { NetworkViewNodeComponent } from './node.component';
 
 describe('NetworkViewNodeComponent', () => {
   let component: NetworkViewNodeComponent;

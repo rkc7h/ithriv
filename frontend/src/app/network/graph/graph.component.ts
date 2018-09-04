@@ -13,7 +13,6 @@ import {
   menuTransition,
   rootTransition
 } from '../animations';
-import { NodeLoadingStatus } from '../../node-loading-status';
 
 @Component({
   selector: 'app-graph',
