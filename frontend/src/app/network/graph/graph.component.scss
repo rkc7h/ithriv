@@ -1,0 +1,37 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  color: black;
+  font-weight: 900;
+  box-shadow: none;
+
+  svg {
+    flex: 1 1 auto;
+
+    * {
+      outline: none;
+    }
+
+    g {
+      &.level-0,
+      &.level-0-node,
+      &.level-1,
+      &.level-1-line,
+      &.level-1-node,
+      &.level-2-line,
+      &[app-node] {
+        transition: $animationDuration ease-in-out all;
+      }
+    }
+
+    line {
+      stroke-width: 4px;
+    }
+  }
+}

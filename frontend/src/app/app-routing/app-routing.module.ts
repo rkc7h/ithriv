@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BrowseComponent } from '../browse/browse.component';
 import { CategoryFormComponent } from '../category-form/category-form.component';
-import { CategoryNetworkViewComponent } from '../category-network-view/category-network-view.component';
 import { CategoryComponent } from '../category/category.component';
-import { ConsultRequestFormComponent } from "../consult-request-form/consult-request-form.component";
+import { ConsultRequestFormComponent } from '../consult-request-form/consult-request-form.component';
 import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
 import { HomeComponent } from '../home/home.component';
 import { LoginComponent } from '../login/login.component';
+import { GraphComponent } from '../network/graph/graph.component';
 import { NotFoundComponent } from '../not-found/not-found.component';
 import { ProfileComponent } from '../profile/profile.component';
 import { ResetPasswordComponent } from '../reset-password/reset-password.component';
@@ -26,13 +26,13 @@ const routes: Routes = [
   { path: 'browse/:category', component: BrowseComponent, data: { title: 'Browse' } },
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
   { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
-  { path: 'category/:category/network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
   { path: 'consult_request', component: ConsultRequestFormComponent, data: { title: 'Request a Consult', hideHeader: true } },
   { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },
   { path: 'home', component: HomeComponent, data: { title: 'Welcome to iThriv' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
   { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
-  { path: 'network', component: CategoryNetworkViewComponent, data: { title: 'Category' } },
+  { path: 'network', component: GraphComponent, data: { title: 'Category' } },
+  { path: 'network/:category', component: GraphComponent, data: { title: 'Category' } },
   { path: 'profile', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
   { path: 'register', component: LoginComponent, data: { title: 'Sign up for iThriv', hideHeader: true } },
   {

@@ -109,7 +109,7 @@ export class CategoryComponent implements OnInit {
     if (category.level === 2) {
       this.router.navigate(['category', category.id], { queryParams: { from: this.category.level } });
     } else if (this.api.getViewPreferences().isNetworkView) {
-      this.router.navigate(['category', category.id, 'network'], { queryParams: { from: this.category.level } });
+      this.router.navigate(['network', category.id]);
     } else {
       const id = (category.level === 1) ? category.parent.id : category.id;
       this.router.navigate(['browse', id], { queryParams: { from: this.category.level } });
