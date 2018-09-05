@@ -1,0 +1,26 @@
+<div
+  fxLayout="column"
+  fxLayoutGap="10px"
+  fxLayoutAlign="center center"
+>
+  <h3>Select your institution</h3>
+  <div
+    class="login-service"
+    fxLayout="row wrap"
+    fxLayoutGap="10px"
+    fxLayoutAlign="center center"
+  >
+    <button
+      *ngFor="let s of loginServices"
+      mat-stroked-button
+      (click)="goLoginService(s)"
+      [ngStyle]="{
+            'border-color': s.color
+          }"
+      class="service-logo"
+      matTooltip="{{s.name}}"
+    >
+      <img [src]="s.image">
+    </button>
+  </div>
+</div>
