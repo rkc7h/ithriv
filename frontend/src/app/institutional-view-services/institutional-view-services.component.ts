@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { ResourceApiService } from "../shared/resource-api/resource-api.service";
+import { Institution } from "../institution";
 import { LoginService } from '../login-service';
-import {ResourceApiService} from "../shared/resource-api/resource-api.service";
-import {forEach} from "@angular/router/src/utils/collection";
-import {Institution} from "../institution";
 
 @Component({
   selector: 'app-institutional-view-services',
@@ -23,7 +21,6 @@ export class InstitutionalViewServicesComponent implements OnInit {
   ngOnInit() {
   }
 
-  // !!! TO DO: Load available login services from the API
   loadServices() {
     const services = [];
     this.api.getInstitutions().subscribe(institutions => {

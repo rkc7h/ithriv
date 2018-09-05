@@ -88,7 +88,8 @@ export class CategoryComponent implements OnInit {
     }).map(cr => cr.resource);
   }
 
-  // Returns current user's name, or "public" if user is not logged in.
+  // Returns current user's name, the session institution_name, or "the public" if a user is not logged in
+  // and there is no session institution set.
   getUserName() {
     if (this.user){
       return this.user.display_name;
@@ -99,8 +100,8 @@ export class CategoryComponent implements OnInit {
     }
   }
 
-  // Returns current user's institution_id, or Public institution_id
-  // if user is not logged in.
+  // Returns current user's institution_id, the session institution_id, or Public institution_id
+  // if a user is not logged in and there is no session institution set.
   getInstitutionId() {
     if (this.user){
       return this.user.institution_id;
