@@ -71,7 +71,7 @@ export class LoginFormComponent {
         if (error1) {
           this.errorEmitter.emit(error1);
         } else {
-          this.errorEmitter.emit('An unexpected error occured.  Please contact support.');
+          this.errorEmitter.emit('An unexpected error occurred.  Please contact support.');
         }
       });
   }

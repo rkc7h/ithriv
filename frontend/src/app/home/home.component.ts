@@ -71,7 +71,7 @@ export class HomeComponent implements OnInit {
     const catId = category.id.toString();
 
     if (isNetworkView) {
-      this.router.navigate(['category', catId, 'network']);
+      this.router.navigate(['network', catId]);
     } else {
       this.router.navigate(['browse', catId]);
     }

@@ -1,18 +1,19 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Category } from '../category';
-import { NodeOptions } from '../node-options';
-import { hexColorToRGBA } from '../shared/color';
+import { Category } from '../../category';
+import { NodeOptions } from '../../node-options';
+import { hexColorToRGBA } from '../../shared/color';
 
 @Component({
-  selector: '[app-network-view-node]',
-  templateUrl: './network-view-node.component.html',
-  styleUrls: ['./network-view-node.component.scss']
+  selector: '[app-node]',
+  templateUrl: './node.component.html',
+  styleUrls: ['./node.component.scss'],
 })
-export class NetworkViewNodeComponent implements OnInit {
+export class NodeComponent implements OnInit {
   @Input() category: Category;
   @Input() numTotal: number;
   @Input() options: NodeOptions;
+  @Input() state: string;
   strokeWidth = 4;
   iconSize = 24;
   fontSize = 16;
@@ -20,6 +21,10 @@ export class NetworkViewNodeComponent implements OnInit {
   constructor(private router: Router) { }
 
   ngOnInit() {
+  }
+
+  animatedLog() {
+    console.log('Animation call back occured.');
   }
 
   rotate(angle: number) {
@@ -55,7 +60,11 @@ export class NetworkViewNodeComponent implements OnInit {
   }
 
   nodeImagePath(c: Category) {
-    return `/assets/browse/${c.image}`;
+    if (c && c.image) {
+      return `/assets/browse/${c.image}`;
+    } else {
+      return `/assets/logo/ithriv-logomark.png`;
+    }
   }
 
   words(str: string) {
