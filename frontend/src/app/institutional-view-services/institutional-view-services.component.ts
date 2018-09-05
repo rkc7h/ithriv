@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ResourceApiService } from "../shared/resource-api/resource-api.service";
-import { Institution } from "../institution";
 import { LoginService } from '../login-service';
 
 @Component({
@@ -10,7 +9,6 @@ import { LoginService } from '../login-service';
 })
 export class InstitutionalViewServicesComponent implements OnInit {
   loginServices: LoginService[] = [];
-  institutions: Institution[] = [];
 
   constructor(
     private api: ResourceApiService,
@@ -24,10 +22,9 @@ export class InstitutionalViewServicesComponent implements OnInit {
   loadServices() {
     const services = [];
     this.api.getInstitutions().subscribe(institutions => {
-              this.institutions = institutions;
-              for (const id in this.institutions) {
-                if (this.institutions.hasOwnProperty(id)) {
-                  const inst = this.institutions[id];
+              for (const id in institutions) {
+                if (institutions.hasOwnProperty(id)) {
+                  const inst = institutions[id];
                   if (inst.name != 'iTHRIV') {
                     const image = '/assets/institutions/' + inst.name + '.png';
                     services.push({ id:inst.id, name: inst.name, color: 'black', image: image });
