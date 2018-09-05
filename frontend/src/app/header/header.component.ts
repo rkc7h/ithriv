@@ -106,6 +106,8 @@ export class HeaderComponent implements OnInit {
 
     if (this.categoryId) {
       if (this.isNetworkView) {
+        this.router.navigate(['network', this.categoryId]);
+
         // Go up the hierarchy to the Level 1 or 0 parent for this category
         this.api.getCategory(parseInt(this.categoryId, 10)).subscribe(c => {
           let catId: number;
@@ -115,7 +117,7 @@ export class HeaderComponent implements OnInit {
           if (c.level <= 1) {
             catId = c.id;
           }
-          this.router.navigate(['category', catId.toString(), 'network']);
+          this.router.navigate(['network', catId.toString()]);
         });
 
       } else {

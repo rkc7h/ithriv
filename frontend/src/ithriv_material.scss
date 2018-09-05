@@ -117,7 +117,7 @@ $ithriv-warn: mat-palette($mat-deep-orange);
 $ithriv-theme: mat-light-theme($ithriv-primary, $ithriv-accent, $ithriv-warn);
 
 $easeDuration: 300ms;
-$animationDuration: 750ms;
+$animationDuration: 500ms;
 
 @include angular-material-theme($uva-theme);
 @include angular-material-theme($ithriv-theme);

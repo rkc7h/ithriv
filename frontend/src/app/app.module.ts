@@ -55,7 +55,6 @@ import { AvailabilityComponent } from './availability/availability.component';
 import { BrowseComponent } from './browse/browse.component';
 import { CategoryColorBorderDirective } from './category-color-border.directive';
 import { CategoryFormComponent } from './category-form/category-form.component';
-import { CategoryNetworkViewComponent } from './category-network-view/category-network-view.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
 import { ConsultRequestFormComponent } from './consult-request-form/consult-request-form.component';
@@ -76,7 +75,8 @@ import { LoginFormComponent } from './login-form/login-form.component';
 import { LoginServicesComponent } from './login-services/login-services.component';
 import { LoginComponent } from './login/login.component';
 import { LogoComponent } from './logo/logo.component';
-import { NetworkViewNodeComponent } from './network-view-node/network-view-node.component';
+import { NodeComponent } from './network/node/node.component';
+import { GraphComponent } from './network/graph/graph.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ProfileComponent } from './profile/profile.component';
 import { RegisterFormComponent } from './register-form/register-form.component';
@@ -105,14 +105,11 @@ import { InstitutionalViewServicesComponent } from './institutional-view-service
     CategoryColorBorderDirective,
     CategoryComponent,
     CategoryFormComponent,
-    CategoryNetworkViewComponent,
     CategoryTileComponent,
     ConsultRequestFormComponent,
     EditCategoryButtonComponent,
     EditResourceButtonComponent,
     FavoriteResourceButtonComponent,
-    FavoriteResourceButtonComponent,
-    FavoriteResourceListComponent,
     FavoriteResourceListComponent,
     FileUploadComponent,
     ForgotPasswordComponent,
@@ -120,7 +117,7 @@ import { InstitutionalViewServicesComponent } from './institutional-view-service
     FormFieldLabelComponent,
     GradientBackgroundDirective,
     GradientBorderDirective,
-    GradientBorderDirective,
+    GraphComponent,
     HeaderComponent,
     HomeComponent,
     IsAdminDirective,
@@ -128,7 +125,7 @@ import { InstitutionalViewServicesComponent } from './institutional-view-service
     LoginFormComponent,
     LoginServicesComponent,
     LogoComponent,
-    NetworkViewNodeComponent,
+    NodeComponent,
     NotFoundComponent,
     ProfileComponent,
     RegisterFormComponent,
@@ -175,7 +172,6 @@ import { InstitutionalViewServicesComponent } from './institutional-view-service
     MatMenuModule,
     MatNativeDateModule,
     MatPaginatorModule,
-    MatProgressSpinnerModule,
     MatProgressSpinnerModule,
     MatRadioModule,
     MatSelectModule,
