@@ -13,7 +13,6 @@ import {Institution} from "../institution";
 export class InstitutionalViewServicesComponent implements OnInit {
   loginServices: LoginService[] = [];
   institutions: Institution[] = [];
-  loginUrl = environment.api + '/api/login';
 
   constructor(
     private api: ResourceApiService,
@@ -33,7 +32,6 @@ export class InstitutionalViewServicesComponent implements OnInit {
                 if (this.institutions.hasOwnProperty(id)) {
                   const inst = this.institutions[id];
                   if (inst.name != 'iTHRIV') {
-                    console.log(inst);
                     const image = '/assets/institutions/' + inst.name + '.png';
                     services.push({ id:inst.id, name: inst.name, color: 'black', image: image });
                   }
@@ -43,10 +41,9 @@ export class InstitutionalViewServicesComponent implements OnInit {
             });
   }
 
-  goLoginService(loginService: LoginService) {
-    console.log('loginService', loginService);
-    // !!! TO DO: Open web intent associated with given LoginService
-    window.location.href = this.loginUrl;
+  setInstitutionService(loginService: LoginService) {
+    sessionStorage.setItem('institution_id', loginService.id.toString());
+    sessionStorage.setItem('institution_name', loginService.name);
   }
 
 }
