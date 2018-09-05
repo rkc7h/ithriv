@@ -89,8 +89,7 @@
               *ngIf="getResources(getInstitutionId()).length === 0 && !user"
               class="please-log-in"
             >
-              <h2>Please log in to view resources associated with your institution.</h2>
-              <app-login-services></app-login-services>
+              <h2>Please <a href="#/login">log in</a> or choose your affiliation below to view resources associated with your institution.</h2>
               <app-institutional-view-services></app-institutional-view-services>
               <p>
                 Select your institution to view resources in this category that you have direct access to. To view all resources listed across

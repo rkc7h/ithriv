@@ -90,13 +90,25 @@ export class CategoryComponent implements OnInit {
 
   // Returns current user's name, or "public" if user is not logged in.
   getUserName() {
-    return this.user ? this.user.display_name : 'the public';
+    if (this.user){
+      return this.user.display_name;
+    } else if (sessionStorage.getItem("institution_name")) {
+      return sessionStorage.getItem("institution_name")
+    } else {
+      return 'the public'
+    }
   }
 
   // Returns current user's institution_id, or Public institution_id
   // if user is not logged in.
   getInstitutionId() {
-    return this.user ? this.user.institution_id : this.publicId;
+    if (this.user){
+      return this.user.institution_id;
+    } else if (sessionStorage.getItem("institution_id")) {
+      return parseInt(sessionStorage.getItem("institution_id"), 10);
+    } else {
+      return this.publicId
+    }
   }
 
   ngOnInit() {
