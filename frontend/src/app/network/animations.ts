@@ -10,22 +10,32 @@ import {
   trigger,
   keyframes
 } from '@angular/animations';
-
+​
 const duration = 500;
 const easing = `${duration}ms ease-in-out`;
 const translate = 'translate( {{x}}px, {{y}}px )';
 const defaultParams = { params: { x: 0, y: 0 } };
-const hidden = style({ opacity: 0, transform: 'scale(0)' });
+​
+const shown = style({
+  transform: `${translate}`,
+  opacity: 1
+});
+​
+const parked = style({
+  transform: 'translate(-200px, -200px) scale(0)',
+  opacity: 0
+});
+​
+const lineHidden = style({ opacity: 0, transform: 'scale(0)' });
+const lineShown = style({ opacity: 1, transform: 'scale(1)' });
 const lineEasing = `${duration * 2}ms ease-in-out`;
-const parked = style({ transform: 'translate(-200px, -200px) scale(0)', opacity: 0});
-// const shown = style({ opacity: 1, transform: 'scale(1)' });
-const shown = style({transform: `${translate}`,  opacity: 1});
 const hStates = ['void', 'parked', 'nary'];
 const vStates = ['root', 'child', 'primary', 'secondary', 'tertiary'];
 const v_to_h: string[] = [];
 const h_to_h: string[] = [];
 const h_to_v: string[] = [];
 const v_to_v: string[] = [];
+​
 hStates.forEach(h1 => hStates.forEach(h2 => h_to_h.push(`${h1} => ${h2}`)));
 vStates.forEach(v1 => {
   hStates.forEach(h => {
@@ -34,8 +44,7 @@ vStates.forEach(v1 => {
   });
   vStates.forEach(v2 => v_to_v.push(`${v1} => ${v2}`));
 });
-
-
+​
 export function menuTransition(): AnimationTriggerMetadata {
   return trigger('menuState', [
     state('selected', style({
@@ -51,8 +60,8 @@ export function menuTransition(): AnimationTriggerMetadata {
     ]),
   ]);
 }
-
-
+​
+​
 export function rootTransition(): AnimationTriggerMetadata {
   return trigger('rootState', [
     state('root', shown, defaultParams),
@@ -67,7 +76,7 @@ export function rootTransition(): AnimationTriggerMetadata {
     ])
   ]);
 }
-
+​
 export function childPositionTransition(): AnimationTriggerMetadata {
   return trigger('childState', [
     state('primary', style({
@@ -95,7 +104,7 @@ export function childPositionTransition(): AnimationTriggerMetadata {
     ]),
   ]);
 }
-
+​
 export function grandchildPositionTransition(): AnimationTriggerMetadata {
   return trigger('grandchildState', [
     state('primary', style({
@@ -119,40 +128,37 @@ export function grandchildPositionTransition(): AnimationTriggerMetadata {
     ]),
   ]);
 }
-
+​
 export function lineTransition(): AnimationTriggerMetadata {
-
-
-
   return trigger('lineState', [
-    state('root', shown),
-    state('child', shown),
-    state('parked', hidden),
-    state('primary', shown),
-    state('secondary', shown),
-    state('tertiary', shown),
-    state('nary', hidden),
+    state('root', lineShown),
+    state('child', lineShown),
+    state('parked', lineHidden),
+    state('primary', lineShown),
+    state('secondary', lineShown),
+    state('tertiary', lineShown),
+    state('nary', lineHidden),
     transition(v_to_h.join(', '), [
       animate(lineEasing, keyframes([
-        shown,
-        hidden
+        lineShown,
+        lineHidden
       ]))
     ]),
     transition(h_to_h.join(', '), [
       animate(lineEasing, keyframes([
-        hidden
+        lineHidden
       ]))
     ]),
     transition(h_to_v.join(', '), [
       animate(lineEasing, keyframes([
-        hidden,
-        shown
+        lineHidden,
+        lineShown
       ]))
     ]),
     transition(v_to_v.join(', '), [
       animate(lineEasing, keyframes([
-        hidden,
-        shown
+        lineHidden,
+        lineShown
       ]))
     ])
   ]);
