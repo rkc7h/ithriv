@@ -9,25 +9,13 @@ $base-font-size: 16px;
 $padding-size: 20px;
 $border-top-size: 10px;
 $icon-size: 50px;
-.resource {
+
+mat-card.resource {
+  cursor: pointer;
   margin: 0px;
   padding: $padding-size;
   padding-top: $border-top-size + $padding-size;
   position: relative;
-
-  .category-color {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: $border-top-size;
-    background-size: 100% $border-top-size;
-    background-repeat:no-repeat;
-  }
-}
-
-mat-card {
-  cursor: pointer;
 
   &:hover {
     outline: 1px solid mat-color($ithriv-primary, 200, 1);
@@ -37,6 +25,16 @@ mat-card {
   &:active {
     outline: 1px solid mat-color($ithriv-accent, 200, 1);
     background-color: mat-color($ithriv-accent, 100, 1);
+  }
+
+  .category-color {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $border-top-size;
+    background-size: 100% $border-top-size;
+    background-repeat:no-repeat;
   }
 
   .icon-with-content {
