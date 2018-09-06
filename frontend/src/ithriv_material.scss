@@ -252,5 +252,10 @@ $animationDuration: 500ms;
       }
     }
   }
+  ::ng-deep mat-sidenav, ::ng-deep .mat-drawer-content {
+    overflow-x: visible;
+    overflow-y: visible;
+  }
+
 }
 
