@@ -5,9 +5,8 @@
 
 #browse-top-level, #browse {
   .header {
-    height: 200px;
     min-height: 200px;
-    max-height: 200px;
+    max-height: 400px;
     margin: 0 0 0 0 ;
     padding: 20px 0 0 20px;
     color: white;
@@ -19,11 +18,11 @@
     	top: 0;
     	right: 0;
     	bottom: 0;
-      left: 0;
-      background-size: 50% auto;
+      background-size: cover;
       background-repeat: no-repeat;
-      background-position: right center;
+      background-position: right 30%;
       z-index: -2;
+      width: 50%;
     }
 
     .gradient-overlay {
@@ -60,19 +59,21 @@
       }
     }
 
-    markdown, markdown p {
-      max-width: 400px;
-      color: white;
-      z-index: 100;
+    markdown {
+      display: block;
+      max-width: 50%;
+
+      p {
+        color: white;
+        z-index: 100;
+      }
     }
   }
 }
 
 #browse-top-level {
   .header {
-    height: 140px;
-    min-height: 140px;
-    max-height: 140px;
+    min-height: 120px;
     padding: 2em;
     margin-bottom: 2em;
     cursor: pointer;

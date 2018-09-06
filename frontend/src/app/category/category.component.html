@@ -24,7 +24,7 @@
         class="breadcrumb breadcrumb-parent"
         (click)="goCategory($event, category.parent)"
         [ngStyle]="category.parent.hover ? {'background-color': category.color, 'border-color': category.color, 'color': 'white'} : {'color': category.color, 'border-color': category.color}"
-
+    
         (mouseover)="category.parent.hover=true"
         (mouseleave)="category.parent.hover=false"
       >
@@ -78,6 +78,7 @@
           ">
             <app-resource-list *ngIf="getResources(getInstitutionId()).length > 0"
               [resources]="getResources(getInstitutionId())"
+              fxFlexFill
             ></app-resource-list>
             <div
               *ngIf="getResources(getInstitutionId()).length === 0 && user"
@@ -98,7 +99,10 @@
             </div>
           </mat-tab>
           <mat-tab label="View all in category ({{getAllResources().length}})">
-            <app-resource-list [resources]="getAllResources()"></app-resource-list>
+            <app-resource-list
+              [resources]="getAllResources()"
+              fxFlexFill
+            ></app-resource-list>
           </mat-tab>
         </mat-tab-group>
       </div>

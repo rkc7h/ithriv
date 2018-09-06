@@ -3,7 +3,9 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
+const localhost = navigator.platform.includes('Win') ? '10.0.2.2' : 'localhost';
+
 export const environment = {
   production: false,
-  api: 'http://localhost:5000'
+  api: `http://${localhost}:5000`
 };
