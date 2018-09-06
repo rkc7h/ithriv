@@ -8,27 +8,35 @@
 >
   <div fxFlex="50%">
     <app-logo></app-logo>
-    <mat-tab-group
-      mat-stretch-tabs
-      dynamicHeight
-      [selectedIndex]="selectedTabIndex"
+    <app-login-services></app-login-services>
+    <div
+      *ngIf="getInstitution()"
     >
-      <mat-tab label="Log in">
-        <app-login-form></app-login-form>
-      </mat-tab>
-      <mat-tab label="Help">
-        <div class="help">
-          <p>Most features available on the iThriv portal do not currently require an account. Just select your institution
-            when prompted, and we will provide you with lists of resources that are specific to you.</p>
-          <p>We are working with partnering institutions to enable single-signon authentication for users across a number
-            of institutions. Over time more and more features will become available, and logging into the system will be
-            more important.</p>
-          <p>Please contact <a href="mailto:support@ithriv.org">Support@IThriv.org</a> if you would like additional information.</p>
-        </div>
-        <!--
-        <app-register-form></app-register-form>
-        -->
-      </mat-tab>
-    </mat-tab-group>
+      <mat-tab-group
+        mat-stretch-tabs
+        dynamicHeight
+        [selectedIndex]="selectedTabIndex"
+      >
+        <mat-tab label="iTHRIV PORTAL {{ getInstitution().name.toUpperCase() }} VIEW">
+          <div class="help">
+            <p>We are working to implement logins that will give you a personalized view of the portal using your
+              {{ institution.name }} login and password. In the meantime, click below to access the portal as a
+              {{ institution.name }} user.</p>
+            <button mat-stroked-button (click)="goHome($event)">
+              <span>
+                <img [src]="'/assets/institutions/' + institution.name + '.png'">
+              </span>
+               CONTINUE TO PORTAL {{ institution.name.toUpperCase() }} VIEW
+            </button>
+          </div>
+          <!--
+          <app-register-form></app-register-form>
+          -->
+        </mat-tab>
+        <mat-tab label="SYSTEM ADMIN LOGIN">
+          <app-login-form></app-login-form>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
   </div>
 </div>
