@@ -76,31 +76,19 @@ mat-card-title, mat-card-title.mat-card-title {
   font-weight: 900;
   margin: 0 0 5px 0;
   padding: 0 $base-font-size * 2 10px 0;
-  // height: $base-font-size * 2;
-  // min-height: $base-font-size * 2;
-  // max-height: $base-font-size * 2;
   overflow: hidden;
 }
 
 mat-card-content {
   overflow: hidden;
   margin-left: 8px;
-  // height: $base-font-size * 4;
-  // min-height: $base-font-size * 4;
-  // max-height: $base-font-size * 4;
 }
 
-mat-card-actions {
-  height: $base-font-size * 3;
-  min-height: $base-font-size * 3;
-  max-height: $base-font-size * 3;
-
-  app-favorite-resource-button {
-    position: absolute;
-    top: $base-font-size + $border-top-size;
-    right: $base-font-size;
-    z-index: 2;
-  }
+app-favorite-resource-button {
+  position: absolute;
+  top: $base-font-size + $border-top-size;
+  right: $base-font-size;
+  z-index: 2;
 }
 
 

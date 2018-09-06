@@ -2,11 +2,11 @@
   class="resource-list"
   fxLayout="row wrap"
   fxLayout.xs="column"
-  fxLayoutAlign="start start"
+  fxLayoutAlign="start stretch"
   fxLayoutAlign.xs="start start"
   fxLayoutGap="20px grid"
 >
-  <div
+  <app-resource-tile
     *ngFor="let resource of resources"
     class="resource-tile-container"
     fxFlex.xl="1 1 20%"
@@ -15,7 +15,6 @@
     fxFlex.sm="1 1 50%"
     fxFlex.xs="1 1 100%"
     fxFlexFill
-  >
-    <app-resource-tile [resource]="resource"></app-resource-tile>
-  </div>
+    [resource]="resource"
+  ></app-resource-tile>
 </div>
