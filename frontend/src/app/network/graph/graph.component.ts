@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../../category';
@@ -35,6 +35,7 @@ export class GraphComponent {
   baseRadius = 80;
   navRadius = 40;
   parentTitleHeight = 30;
+  strokeWidth = 4;
   isDataLoaded = false;
 
   constructor(
@@ -45,6 +46,8 @@ export class GraphComponent {
     private titleService: Title
   ) {
 
+    this.onResize();
+
     this.route.params.subscribe(params => {
       if (params && params.hasOwnProperty('category')) {
         this.loadRootCategories(Number(params['category']));
@@ -52,6 +55,20 @@ export class GraphComponent {
         this.loadRootCategories();
       }
     });
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    console.log('resizing');
+
+    if (window && window.innerWidth) {
+      this.layoutWidth = window.innerWidth;
+      this.layoutHeight = window.innerHeight;
+
+      this.baseRadius = Math.min(80, Math.round(this.layoutWidth / 10));
+      this.navRadius = Math.min(40, Math.round(this.layoutWidth / 20));
+      this.parentTitleHeight = Math.min(30, Math.round(this.layoutWidth / 30));
+    }
   }
 
   loadRootCategories(category_id = -1) {

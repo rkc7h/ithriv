@@ -6,6 +6,24 @@
     [attr.viewBox]="viewBoxDimensions()"
     class="mat-typography"
   >
+    <defs>
+      <mask [id]="'circleMask' + navRadius">
+        <circle
+          [attr.cx]="0"
+          [attr.cy]="0"
+          [attr.r]="navRadius - strokeWidth * 1.5"
+          fill="white"
+        ></circle>
+      </mask>
+      <mask [id]="'circleMask' + baseRadius">
+        <circle
+          [attr.cx]="0"
+          [attr.cy]="0"
+          [attr.r]="baseRadius - strokeWidth * 1.5"
+          fill="white"
+        ></circle>
+      </mask>
+    </defs>
 
     <!-- Top Level Category Menu -->
     <svg:g [ngClass]="'level-0'">

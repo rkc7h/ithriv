@@ -46,7 +46,7 @@
     [attr.width]="nodeImageSize()"
     [attr.height]="nodeImageSize()"
     [attr.href]="nodeImagePath(category)"
-    class="clip-circle"
+    [attr.mask]="'url(#circleMask' + options.radius + ')'"
     preserveAspectRatio="xMidYMid slice"
   />
 </svg:g>
