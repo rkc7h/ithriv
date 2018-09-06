@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { ResourceApiService } from "../shared/resource-api/resource-api.service";
 import { LoginService } from '../login-service';
+import { Router } from "@angular/router";
+import { Institution } from "../institution";
 
 @Component({
   selector: 'app-login-services',
@@ -11,14 +13,30 @@ import { LoginService } from '../login-service';
 export class LoginServicesComponent implements OnInit {
   loginServices: LoginService[] = [];
   loginUrl = environment.api + '/api/login';
+  institution: Institution;
 
   constructor(
-    private api: ResourceApiService
+    private api: ResourceApiService,
+    private router: Router
     ) {
     this.loadServices();
   }
 
   ngOnInit() {
+  }
+
+  goHome($event) {
+    $event.preventDefault();
+    this.router.navigate(['']);
+  }
+
+  getInstitution() {
+    this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+      (inst) => {
+        this.institution = inst;
+      }
+    );
+    return this.institution;
   }
 
   loadServices() {
@@ -32,7 +50,6 @@ export class LoginServicesComponent implements OnInit {
   }
 
   goLoginService(loginService: LoginService) {
-    console.log('loginService', loginService);
     if (loginService.url) {
       window.location.href = loginService.url;
     } else {
@@ -43,8 +60,7 @@ export class LoginServicesComponent implements OnInit {
             if (inst.name == loginService.name) {
               sessionStorage.setItem('institution_id', inst.id.toString());
               sessionStorage.setItem('institution_name', loginService.name);
-              console.log('setting Name', loginService.name);
-              console.log('setting Id', inst.id.toString());
+              this.getInstitution();
             }
           }
         }

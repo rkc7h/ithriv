@@ -9,34 +9,5 @@
   <div fxFlex="50%">
     <app-logo></app-logo>
     <app-login-services></app-login-services>
-    <div
-      *ngIf="getInstitution()"
-    >
-      <mat-tab-group
-        mat-stretch-tabs
-        dynamicHeight
-        [selectedIndex]="selectedTabIndex"
-      >
-        <mat-tab label="iTHRIV PORTAL {{ getInstitution().name.toUpperCase() }} VIEW">
-          <div class="help">
-            <p>We are working to implement logins that will give you a personalized view of the portal using your
-              {{ institution.name }} login and password. In the meantime, click below to access the portal as a
-              {{ institution.name }} user.</p>
-            <button mat-stroked-button (click)="goHome($event)">
-              <span>
-                <img [src]="'/assets/institutions/' + institution.name + '.png'">
-              </span>
-               CONTINUE TO PORTAL {{ institution.name.toUpperCase() }} VIEW
-            </button>
-          </div>
-          <!--
-          <app-register-form></app-register-form>
-          -->
-        </mat-tab>
-        <mat-tab label="SYSTEM ADMIN LOGIN">
-          <app-login-form></app-login-form>
-        </mat-tab>
-      </mat-tab-group>
-    </div>
   </div>
 </div>
