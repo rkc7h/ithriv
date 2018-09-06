@@ -45,6 +45,12 @@ vStates.forEach(v1 => {
   vStates.forEach(v2 => v_to_v.push(`${v1} => ${v2}`));
 });
 
+const v_to_h_str = v_to_h.join(', ');
+const h_to_h_str = h_to_h.join(', ');
+const h_to_v_str = h_to_v.join(', ');
+const v_to_v_str = v_to_v.join(', ');
+
+
 export function menuTransition(): AnimationTriggerMetadata {
   return trigger('menuState', [
     state('selected', style({
@@ -138,24 +144,24 @@ export function lineTransition(): AnimationTriggerMetadata {
     state('secondary', lineShown),
     state('tertiary', lineShown),
     state('nary', lineHidden),
-    transition(v_to_h.join(', '), [
+    transition(v_to_h_str, [
       animate(lineEasing, keyframes([
         lineShown,
         lineHidden
       ]))
     ]),
-    transition(h_to_h.join(', '), [
+    transition(h_to_h_str, [
       animate(lineEasing, keyframes([
         lineHidden
       ]))
     ]),
-    transition(h_to_v.join(', '), [
+    transition(h_to_v_str, [
       animate(lineEasing, keyframes([
         lineHidden,
         lineShown
       ]))
     ]),
-    transition(v_to_v.join(', '), [
+    transition(v_to_v_str, [
       animate(lineEasing, keyframes([
         lineHidden,
         lineShown
