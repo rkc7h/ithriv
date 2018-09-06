@@ -27,22 +27,79 @@ const parked = {
 
 const lineHidden = { opacity: 0, transform: 'scale(0)' };
 const lineShown = { opacity: 1, transform: 'scale(1)' };
-const lineEasing = `${duration * 2}ms ease-in-out`;
-const hStates = ['void', 'parked', 'nary'];
-const vStates = ['root', 'child', 'primary', 'secondary', 'tertiary'];
-const v_to_h: string[] = [];
-const h_to_h: string[] = [];
-const h_to_v: string[] = [];
-const v_to_v: string[] = [];
-
-hStates.forEach(h1 => hStates.forEach(h2 => h_to_h.push(`${h1} => ${h2}`)));
-vStates.forEach(v1 => {
-  hStates.forEach(h => {
-    v_to_h.push(`${v1} => ${h}`);
-    h_to_v.push(`${h} => ${v1}`);
-  });
-  vStates.forEach(v2 => v_to_v.push(`${v1} => ${v2}`));
-});
+const lineEasing = `${duration}ms ease-in-out`;
+const v_to_h: string[] = [
+  'root => void',
+  'root => parked',
+  'root => nary',
+  'child => void',
+  'child => parked',
+  'child => nary',
+  'primary => void',
+  'primary => parked',
+  'primary => nary',
+  'secondary => void',
+  'secondary => parked',
+  'secondary => nary',
+  'tertiary => void',
+  'tertiary => parked',
+  'tertiary => nary'
+];
+const h_to_h: string[] = [
+  'void => void',
+  'void => parked',
+  'void => nary',
+  'parked => void',
+  'parked => parked',
+  'parked => nary',
+  'nary => void',
+  'nary => parked',
+  'nary => nary'
+];
+const h_to_v: string[] = [
+  'void => root',
+  'parked => root',
+  'nary => root',
+  'void => child',
+  'parked => child',
+  'nary => child',
+  'void => primary',
+  'parked => primary',
+  'nary => primary',
+  'void => secondary',
+  'parked => secondary',
+  'nary => secondary',
+  'void => tertiary',
+  'parked => tertiary',
+  'nary => tertiary'
+];
+const v_to_v: string[] = [
+  'root => root',
+  'root => child',
+  'root => primary',
+  'root => secondary',
+  'root => tertiary',
+  'child => root',
+  'child => child',
+  'child => primary',
+  'child => secondary',
+  'child => tertiary',
+  'primary => root',
+  'primary => child',
+  'primary => primary',
+  'primary => secondary',
+  'primary => tertiary',
+  'secondary => root',
+  'secondary => child',
+  'secondary => primary',
+  'secondary => secondary',
+  'secondary => tertiary',
+  'tertiary => root',
+  'tertiary => child',
+  'tertiary => primary',
+  'tertiary => secondary',
+  'tertiary => tertiary'
+];
 
 const v_to_h_str = v_to_h.join(', ');
 const h_to_h_str = h_to_h.join(', ');
