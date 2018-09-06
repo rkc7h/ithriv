@@ -15,6 +15,16 @@ const duration = 500;
 const easing = `${duration}ms ease-in-out`;
 const translate = 'translate( {{x}}px, {{y}}px )';
 const defaultParams = { params: { x: 0, y: 0 } };
+const hidden = style({ opacity: 0, transform: 'scale(0)' });
+const shown = style({ opacity: 1, transform: 'scale(1)' });
+const lineEasing = `${duration * 2}ms ease-in-out`;
+
+const hStates = ['void', 'parked', 'nary'];
+const vStates = ['root', 'child', 'primary', 'secondary', 'tertiary'];
+const v_to_h: string[] = [];
+const h_to_h: string[] = [];
+const h_to_v: string[] = [];
+const v_to_v: string[] = [];
 
 export function menuTransition(): AnimationTriggerMetadata {
   return trigger('menuState', [
@@ -111,16 +121,6 @@ export function grandchildPositionTransition(): AnimationTriggerMetadata {
 }
 
 export function lineTransition(): AnimationTriggerMetadata {
-  const hidden = style({ opacity: 0, transform: 'scale(0)' });
-  const shown = style({ opacity: 1, transform: 'scale(1)' });
-  const lineEasing = `${duration * 2}ms ease-in-out`;
-
-  const hStates = ['void', 'parked', 'nary'];
-  const vStates = ['root', 'child', 'primary', 'secondary', 'tertiary'];
-  const v_to_h: string[] = [];
-  const h_to_h: string[] = [];
-  const h_to_v: string[] = [];
-  const v_to_v: string[] = [];
 
   hStates.forEach(h1 => hStates.forEach(h2 => h_to_h.push(`${h1} => ${h2}`)));
   vStates.forEach(v1 => {
