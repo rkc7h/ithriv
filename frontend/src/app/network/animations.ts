@@ -16,15 +16,25 @@ const easing = `${duration}ms ease-in-out`;
 const translate = 'translate( {{x}}px, {{y}}px )';
 const defaultParams = { params: { x: 0, y: 0 } };
 const hidden = style({ opacity: 0, transform: 'scale(0)' });
-const shown = style({ opacity: 1, transform: 'scale(1)' });
 const lineEasing = `${duration * 2}ms ease-in-out`;
-
+const parked = style({ transform: 'translate(-200px, -200px) scale(0)', opacity: 0});
+// const shown = style({ opacity: 1, transform: 'scale(1)' });
+const shown = style({transform: `${translate}`,  opacity: 1});
 const hStates = ['void', 'parked', 'nary'];
 const vStates = ['root', 'child', 'primary', 'secondary', 'tertiary'];
 const v_to_h: string[] = [];
 const h_to_h: string[] = [];
 const h_to_v: string[] = [];
 const v_to_v: string[] = [];
+hStates.forEach(h1 => hStates.forEach(h2 => h_to_h.push(`${h1} => ${h2}`)));
+vStates.forEach(v1 => {
+  hStates.forEach(h => {
+    v_to_h.push(`${v1} => ${h}`);
+    h_to_v.push(`${h} => ${v1}`);
+  });
+  vStates.forEach(v2 => v_to_v.push(`${v1} => ${v2}`));
+});
+
 
 export function menuTransition(): AnimationTriggerMetadata {
   return trigger('menuState', [
@@ -44,16 +54,6 @@ export function menuTransition(): AnimationTriggerMetadata {
 
 
 export function rootTransition(): AnimationTriggerMetadata {
-  const shown = style({
-    transform: `${translate}`,
-    opacity: 1
-  });
-
-  const parked = style({
-    transform: 'translate(-200px, -200px) scale(0)',
-    opacity: 0
-  });
-
   return trigger('rootState', [
     state('root', shown, defaultParams),
     state('child', shown, defaultParams),
@@ -122,14 +122,7 @@ export function grandchildPositionTransition(): AnimationTriggerMetadata {
 
 export function lineTransition(): AnimationTriggerMetadata {
 
-  hStates.forEach(h1 => hStates.forEach(h2 => h_to_h.push(`${h1} => ${h2}`)));
-  vStates.forEach(v1 => {
-    hStates.forEach(h => {
-      v_to_h.push(`${v1} => ${h}`);
-      h_to_v.push(`${h} => ${v1}`);
-    });
-    vStates.forEach(v2 => v_to_v.push(`${v1} => ${v2}`));
-  });
+
 
   return trigger('lineState', [
     state('root', shown),
