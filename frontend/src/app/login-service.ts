@@ -3,6 +3,7 @@ export class LoginService {
   color: string;
   name: string;
   image: string;
+  url?: string;
 
   constructor(private _props) {
     for (const propName in this._props) {

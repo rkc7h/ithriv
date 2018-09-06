@@ -87,11 +87,17 @@
               <h2>There are no resources available to your home institution.</h2>
             </div>
             <div
-              *ngIf="getResources(getInstitutionId()).length === 0 && !user"
+              *ngIf="getResources(getInstitutionId()).length === 0 && !user && getInstitutionId()"
               class="please-log-in"
             >
-              <h2>Please log in to view resources associated with your institution.</h2>
-              <app-login-services></app-login-services>
+              <h2>There are no resources available to {{getUserName()}}.</h2>
+            </div>
+            <div
+              *ngIf="getResources(getInstitutionId()).length === 0 && !user && !getInstitutionId()"
+              class="please-log-in"
+            >
+              <h2>Please <a href="#/login">log in</a> or choose your affiliation below to view resources associated with your institution.</h2>
+              <app-institutional-view-services></app-institutional-view-services>
               <p>
                 Select your institution to view resources in this category that you have direct access to. To view all resources listed across
                 iTHRIV institutions, select the "View all in category" tab.

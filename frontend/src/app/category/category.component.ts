@@ -34,7 +34,6 @@ export class CategoryComponent implements OnInit {
       this.categoryId = params['category'];
       this.loadCategory(this.categoryId);
     });
-    this.publicId = 87;
     this.loadUser();
   }
 
@@ -88,15 +87,26 @@ export class CategoryComponent implements OnInit {
     }).map(cr => cr.resource);
   }
 
-  // Returns current user's name, or "public" if user is not logged in.
+  // Returns current user's name, the session institution_name, or "the public" if a user is not logged in
+  // and there is no session institution set.
   getUserName() {
-    return this.user ? this.user.display_name : 'the public';
+    if (this.user){
+      return this.user.display_name;
+    } else if (sessionStorage.getItem("institution_name")) {
+      return sessionStorage.getItem("institution_name")
+    } else {
+      return 'the public'
+    }
   }
 
-  // Returns current user's institution_id, or Public institution_id
-  // if user is not logged in.
+  // Returns current user's institution_id, the session institution_id, or Public institution_id
+  // if a user is not logged in and there is no session institution set.
   getInstitutionId() {
-    return this.user ? this.user.institution_id : this.publicId;
+    if (this.user){
+      return this.user.institution_id;
+    } else if (sessionStorage.getItem("institution_id")) {
+      return parseInt(sessionStorage.getItem("institution_id"), 10);
+    }
   }
 
   ngOnInit() {

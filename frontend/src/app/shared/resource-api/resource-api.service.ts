@@ -221,6 +221,12 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** getInstitution */
+  getInstitution(id: Number): Observable<Institution> {
+    return this.httpClient.get<Institution>(`${this.apiRoot + this.endpoints.institutionList}/${id}`)
+      .pipe(catchError(this.handleError));
+  }
+
   /** getTypes */
   getTypes(): Observable<ResourceType[]> {
     return this.httpClient.get<ResourceType[]>(this.apiRoot + this.endpoints.typeList)

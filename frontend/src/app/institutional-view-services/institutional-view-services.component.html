@@ -3,7 +3,6 @@
   fxLayoutGap="10px"
   fxLayoutAlign="center center"
 >
-  <h2>Select your institution</h2>
   <div
     class="login-service"
     fxLayout="row wrap"
@@ -13,7 +12,7 @@
     <button
       *ngFor="let s of loginServices"
       mat-stroked-button
-      (click)="goLoginService(s)"
+      (click)="setInstitutionService(s)"
       [ngStyle]="{
             'border-color': s.color
           }"
