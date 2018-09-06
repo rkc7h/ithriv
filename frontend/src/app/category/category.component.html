@@ -86,7 +86,13 @@
               <h2>There are no resources available to your home institution.</h2>
             </div>
             <div
-              *ngIf="getResources(getInstitutionId()).length === 0 && !user"
+              *ngIf="getResources(getInstitutionId()).length === 0 && !user && getInstitutionId()"
+              class="please-log-in"
+            >
+              <h2>There are no resources available to {{getUserName()}}.</h2>
+            </div>
+            <div
+              *ngIf="getResources(getInstitutionId()).length === 0 && !user && !getInstitutionId()"
               class="please-log-in"
             >
               <h2>Please <a href="#/login">log in</a> or choose your affiliation below to view resources associated with your institution.</h2>

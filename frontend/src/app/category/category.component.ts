@@ -34,7 +34,6 @@ export class CategoryComponent implements OnInit {
       this.categoryId = params['category'];
       this.loadCategory(this.categoryId);
     });
-    this.publicId = 87;
     this.loadUser();
   }
 
@@ -107,8 +106,6 @@ export class CategoryComponent implements OnInit {
       return this.user.institution_id;
     } else if (sessionStorage.getItem("institution_id")) {
       return parseInt(sessionStorage.getItem("institution_id"), 10);
-    } else {
-      return this.publicId
     }
   }
 
