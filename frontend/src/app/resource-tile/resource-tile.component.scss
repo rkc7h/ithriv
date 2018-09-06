@@ -9,25 +9,13 @@ $base-font-size: 16px;
 $padding-size: 20px;
 $border-top-size: 10px;
 $icon-size: 50px;
-.resource {
+
+mat-card.resource {
+  cursor: pointer;
   margin: 0px;
   padding: $padding-size;
   padding-top: $border-top-size + $padding-size;
   position: relative;
-
-  .category-color {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: $border-top-size;
-    background-size: 100% $border-top-size;
-    background-repeat:no-repeat;
-  }
-}
-
-mat-card {
-  cursor: pointer;
 
   &:hover {
     outline: 1px solid mat-color($ithriv-primary, 200, 1);
@@ -39,6 +27,16 @@ mat-card {
     background-color: mat-color($ithriv-accent, 100, 1);
   }
 
+  .category-color {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $border-top-size;
+    background-size: 100% $border-top-size;
+    background-repeat:no-repeat;
+  }
+
   .icon-with-content {
     display: flex;
     align-items: flex-start;
@@ -47,7 +45,7 @@ mat-card {
     .type-icon {
       width: $icon-size + 20px;
       height: $icon-size + 20px;
-      background-color: #999;
+      background-color: #666;
       border-radius: 25%;
       margin-right: $padding-size;
 
@@ -78,31 +76,19 @@ mat-card-title, mat-card-title.mat-card-title {
   font-weight: 900;
   margin: 0 0 5px 0;
   padding: 0 $base-font-size * 2 10px 0;
-  // height: $base-font-size * 2;
-  // min-height: $base-font-size * 2;
-  // max-height: $base-font-size * 2;
   overflow: hidden;
 }
 
 mat-card-content {
   overflow: hidden;
   margin-left: 8px;
-  // height: $base-font-size * 4;
-  // min-height: $base-font-size * 4;
-  // max-height: $base-font-size * 4;
 }
 
-mat-card-actions {
-  height: $base-font-size * 3;
-  min-height: $base-font-size * 3;
-  max-height: $base-font-size * 3;
-
-  app-favorite-resource-button {
-    position: absolute;
-    top: $base-font-size + $border-top-size;
-    right: $base-font-size;
-    z-index: 2;
-  }
+app-favorite-resource-button {
+  position: absolute;
+  top: $base-font-size + $border-top-size;
+  right: $base-font-size;
+  z-index: 2;
 }
 
 

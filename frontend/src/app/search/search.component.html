@@ -27,6 +27,7 @@
   fxLayout="row"
   fxLayout.xs="column"
   class="mat-typography"
+  fxFlexFill
 >
   <mat-sidenav
     #sidenav
@@ -95,10 +96,9 @@
     </li>
   </ul>
 
-
-  <div class="example-large-box mat-elevation-z4">
-    <app-resource-list
-      [resources]="getAllResources()">s</app-resource-list>
-  </div>
+  <app-resource-list
+    [resources]="getAllResources()"
+    fxFlexFill
+  ></app-resource-list>
 
 </mat-sidenav-container>

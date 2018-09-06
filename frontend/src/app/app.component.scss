@@ -6,10 +6,3 @@
 
 // Load the UVA Theme
 @include ithriv-theme($ithriv-theme);
-
-.main {
-  max-width: 982px;
-  margin: auto;
-  @include mat-elevation(1);
-  min-height: 1024px;
-}

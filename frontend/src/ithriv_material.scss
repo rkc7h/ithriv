@@ -135,11 +135,6 @@ $animationDuration: 500ms;
     margin: 0px;
   }
 
-  p {
-    font-weight: 400;
-    max-width: 600px;
-  }
-
   #browse {
     .header {
       markdown {
@@ -257,5 +252,10 @@ $animationDuration: 500ms;
       }
     }
   }
+  ::ng-deep mat-sidenav, ::ng-deep .mat-drawer-content {
+    overflow-x: visible;
+    overflow-y: visible;
+  }
+
 }
 

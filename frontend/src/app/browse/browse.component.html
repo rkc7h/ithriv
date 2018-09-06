@@ -23,7 +23,7 @@
         (updatedCategory)="addCategory($event)"
       ></app-add-category-button>
     </h1>
-    <markdown [ngStyle]="{'color': 'white'}">{{rootCategory.brief_description || dummyText.category}}</markdown>
+    <markdown>{{rootCategory.brief_description || dummyText.category}}</markdown>
     <button mat-raised-button>Start {{gerunding(rootCategory.name)}}</button>
     <div
       class="bg-img"
