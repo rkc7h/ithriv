@@ -123,8 +123,7 @@ class ThrivResourceSchema(ModelSchema):
         'institution': ma.UrlFor('api.institutionendpoint', id='<institution_id>'),
         'type': ma.UrlFor('api.typeendpoint', id='<type_id>'),
         'categories': ma.UrlFor('api.categorybyresourceendpoint', resource_id='<id>'),
-        'availability': ma.UrlFor('api.resourceavailabilityendpoint', resource_id='<id>'),
-        'attachments': ma.UrlFor('api.attachmentbyresourceendpoint', resource_id='<id>')
+        'availability': ma.UrlFor('api.resourceavailabilityendpoint', resource_id='<id>')
     },
         dump_only=True)
 

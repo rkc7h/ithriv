@@ -1,4 +1,17 @@
 <div *appIsAdmin class="ribbon ribbon-top-right">
-  <span *ngIf="resource.approved === 'Approved'" class="approved">Approved</span>
-  <span *ngIf="resource.approved === 'Unapproved'">Unapproved</span>
+  <span
+    (click)="handleClick($event)"
+    *ngIf="resource.approved === 'Approved'"
+    class="approved"
+    matTooltip="{{instructions()}}"
+  >
+    Approved
+  </span>
+  <span
+    (click)="handleClick($event)"
+    *ngIf="resource.approved === 'Unapproved'"
+    matTooltip="{{instructions()}}"
+  >
+    Unapproved
+  </span>
 </div>

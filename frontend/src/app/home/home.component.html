@@ -1,36 +1,4 @@
 <div
-  fxLayout="row"
-  fxLayout.xs="column"
-  fxLayoutAlign="center"
->
-  <div fxFlex="75%">
-    <form
-      class="search-box"
-      [formGroup]="searchForm"
-      (ngSubmit)="goSearch()"
-    >
-      <mat-form-field appearance="outline">
-        <input
-          matInput
-          #query
-          type="search"
-          [formControl]="searchBox"
-          placeholder="Search"
-        >
-        <mat-icon
-          matSuffix
-          (click)="goSearch()"
-        >search</mat-icon>
-        <mat-hint class="mat-h3">
-          Need help?
-          <a href="#">Request a Research Concierge Services Consultation</a>
-        </mat-hint>
-      </mat-form-field>
-    </form>
-  </div>
-</div>
-
-<div
   id="tiles"
   fxLayout="row wrap"
   fxLayoutGap="45px grid"
@@ -50,17 +18,17 @@
   dynamicHeight
   backgroundColor="primary"
 >
-  <mat-tab label="Recently Updated Resources">
-    <div class="example-small-box mat-elevation-z4">
-      <app-resource-list [resources]="resources"></app-resource-list>
-    </div>
-  </mat-tab>
   <mat-tab label="My Favorite Resources">
     <div class="example-large-box mat-elevation-z4">
       <app-favorite-resource-list></app-favorite-resource-list>
     </div>
   </mat-tab>
-    <mat-tab label="My Resources">
+  <mat-tab label="Recently Updated Resources">
+    <div class="example-small-box mat-elevation-z4">
+      <app-resource-list [resources]="resources"></app-resource-list>
+    </div>
+  </mat-tab>
+  <mat-tab label="My Resources">
     <div class="example-large-box mat-elevation-z4">
       <app-user-resource-list></app-user-resource-list>
     </div>
