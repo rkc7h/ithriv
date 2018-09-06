@@ -22,17 +22,17 @@ export class InstitutionalViewServicesComponent implements OnInit {
   loadServices() {
     const services = [];
     this.api.getInstitutions().subscribe(institutions => {
-              for (const id in institutions) {
-                if (institutions.hasOwnProperty(id)) {
-                  const inst = institutions[id];
-                  if (inst.name != 'iTHRIV') {
-                    const image = '/assets/institutions/' + inst.name + '.png';
-                    services.push({ id:inst.id, name: inst.name, color: 'black', image: image });
-                  }
-                }
-              }
-              this.loginServices = services.map(s => new LoginService(s));
-            });
+      for (const id in institutions) {
+        if (institutions.hasOwnProperty(id)) {
+          const inst = institutions[id];
+          if (inst.name != 'iTHRIV') {
+            const image = '/assets/institutions/' + inst.name + '.png';
+            services.push({ id:inst.id, name: inst.name, color: 'black', image: image });
+          }
+        }
+      }
+      this.loginServices = services.map(s => new LoginService(s));
+    });
   }
 
   setInstitutionService(loginService: LoginService) {
