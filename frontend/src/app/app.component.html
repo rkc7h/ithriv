@@ -4,8 +4,11 @@
   <div
     class="content"
     [@fadeTransition]="getState(o)"
+    fxFlexFill
   >
-    <router-outlet #o="outlet"></router-outlet>
+    <router-outlet
+      #o="outlet"
+      fxFlexFill
+    ></router-outlet>
   </div>
-
 </div>

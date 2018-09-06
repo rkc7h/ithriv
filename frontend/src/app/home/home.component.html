@@ -52,7 +52,10 @@
 >
   <mat-tab label="Recently Updated Resources">
     <div class="example-small-box mat-elevation-z4">
-      <app-resource-list [resources]="resources"></app-resource-list>
+      <app-resource-list
+        [resources]="resources"
+        fxFlexFill
+      ></app-resource-list>
     </div>
   </mat-tab>
   <mat-tab label="My Favorite Resources">
@@ -60,7 +63,7 @@
       <app-favorite-resource-list></app-favorite-resource-list>
     </div>
   </mat-tab>
-    <mat-tab label="My Resources">
+  <mat-tab label="My Resources">
     <div class="example-large-box mat-elevation-z4">
       <app-user-resource-list></app-user-resource-list>
     </div>

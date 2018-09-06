@@ -6,8 +6,3 @@
 
 // Load the UVA Theme
 @include ithriv-theme($ithriv-theme);
-
-.main {
-  margin: auto;
-  @include mat-elevation(1);
-}
