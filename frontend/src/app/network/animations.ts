@@ -14,18 +14,19 @@ const duration = 500;
 const easing = `${duration}ms ease-in-out`;
 const translate = 'translate( {{x}}px, {{y}}px )';
 const defaultParams = { params: { x: 0, y: 0 } };
-const shown = style({
+
+const shown = {
   transform: `${translate}`,
   opacity: 1
-});
+};
 
-const parked = style({
+const parked = {
   transform: 'translate(-200px, -200px) scale(0)',
   opacity: 0
-});
+};
 
-const lineHidden = style({ opacity: 0, transform: 'scale(0)' });
-const lineShown = style({ opacity: 1, transform: 'scale(1)' });
+const lineHidden = { opacity: 0, transform: 'scale(0)' };
+const lineShown = { opacity: 1, transform: 'scale(1)' };
 const lineEasing = `${duration * 2}ms ease-in-out`;
 const hStates = ['void', 'parked', 'nary'];
 const vStates = ['root', 'child', 'primary', 'secondary', 'tertiary'];
@@ -65,9 +66,9 @@ export function menuTransition(): AnimationTriggerMetadata {
 }
 export function rootTransition(): AnimationTriggerMetadata {
   return trigger('rootState', [
-    state('root', shown, defaultParams),
-    state('child', shown, defaultParams),
-    state('parked', parked, defaultParams),
+    state('root', style(shown), defaultParams),
+    state('child', style(shown), defaultParams),
+    state('parked', style(parked), defaultParams),
     transition('* => *', [
       group([
         query('@lineState', animateChild(), { optional: true }),
@@ -132,34 +133,34 @@ export function grandchildPositionTransition(): AnimationTriggerMetadata {
 
 export function lineTransition(): AnimationTriggerMetadata {
   return trigger('lineState', [
-    state('root', lineShown),
-    state('child', lineShown),
-    state('parked', lineHidden),
-    state('primary', lineShown),
-    state('secondary', lineShown),
-    state('tertiary', lineShown),
-    state('nary', lineHidden),
+    state('root', style(lineShown)),
+    state('child', style(lineShown)),
+    state('parked', style(lineHidden)),
+    state('primary', style(lineShown)),
+    state('secondary', style(lineShown)),
+    state('tertiary', style(lineShown)),
+    state('nary', style(lineHidden)),
     transition(v_to_h_str, [
       animate(lineEasing, keyframes([
-        lineShown,
-        lineHidden
+        style(lineShown),
+        style(lineHidden)
       ]))
     ]),
     transition(h_to_h_str, [
       animate(lineEasing, keyframes([
-        lineHidden
+        style(lineHidden)
       ]))
     ]),
     transition(h_to_v_str, [
       animate(lineEasing, keyframes([
-        lineHidden,
-        lineShown
+        style(lineHidden),
+        style(lineShown)
       ]))
     ]),
     transition(v_to_v_str, [
       animate(lineEasing, keyframes([
-        lineHidden,
-        lineShown
+        style(lineHidden),
+        style(lineShown)
       ]))
     ])
   ]);
