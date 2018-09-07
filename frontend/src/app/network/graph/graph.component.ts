@@ -11,6 +11,7 @@ import {
   grandchildPositionTransition,
   lineTransition,
   menuTransition,
+  rootLineTransition,
   rootTransition
 } from '../animations';
 
@@ -32,11 +33,12 @@ const parked = {
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss'],
   animations: [
-    menuTransition(),
-    rootTransition(),
     childPositionTransition(),
     grandchildPositionTransition(),
-    lineTransition()
+    lineTransition(),
+    menuTransition(),
+    rootLineTransition(),
+    rootTransition()
   ]
 })
 export class GraphComponent {

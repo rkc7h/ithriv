@@ -55,7 +55,7 @@
       <svg:line
         *ngFor="let level1Category of level0Category.children; let k = index"
         [ngClass]="'level-1-line'"
-        [@lineState]="getRootState(level0Category)"
+        [@rootLineState]="getRootState(level0Category)"
         [attr.stroke]="categoryColor(level0Category.color)"
         [attr.transform]="'scale(0)'"
         [attr.x1]="0"

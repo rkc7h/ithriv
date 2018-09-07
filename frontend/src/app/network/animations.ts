@@ -42,8 +42,10 @@ export function rootTransition(): AnimationTriggerMetadata {
     }), { params: { x: 0, y: 0 } }),
     transition('* => *', [
       group([
-        query('@lineState', animateChild(), { optional: true }),
         query('@childState', animateChild(), { optional: true }),
+        query('@grandchildState', animateChild(), { optional: true }),
+        query('@rootLineState', animateChild(), { optional: true }),
+        query('@lineState', animateChild(), { optional: true }),
         animate('500ms ease-in-out')
       ])
     ])
@@ -70,8 +72,6 @@ export function childPositionTransition(): AnimationTriggerMetadata {
     }), { params: { x: 0, y: 0 } }),
     transition('* => *', [
       group([
-        query('@lineState', animateChild(), { optional: true }),
-        query('@grandchildState', animateChild(), { optional: true }),
         animate('500ms ease-in-out')
       ])
     ]),
@@ -97,55 +97,69 @@ export function grandchildPositionTransition(): AnimationTriggerMetadata {
       opacity: 0
     }), { params: { x: 0, y: 0 } }),
     transition('* => *', [
-      animate('500ms ease-in-out')
+      group([
+        animate('500ms ease-in-out')
+      ])
     ]),
   ]);
 }
 
-export function lineTransition(): AnimationTriggerMetadata {
-  return trigger('lineState', [
+export function rootLineTransition(): AnimationTriggerMetadata {
+  return trigger('rootLineState', [
     state('root', style({ opacity: 1, transform: 'scale(1)' })),
     state('child', style({ opacity: 1, transform: 'scale(1)' })),
     state('parked', style({ opacity: 0, transform: 'scale(0)' })),
-    state('primary', style({ opacity: 1, transform: 'scale(1)' })),
-    state('secondary', style({ opacity: 1, transform: 'scale(1)' })),
-    state('tertiary', style({ opacity: 1, transform: 'scale(1)' })),
-    state('nary', style({ opacity: 0, transform: 'scale(0)' })),
     transition(
-      'root => void, root => parked, root => nary, child => void, ' +
-      'child => parked, child => nary, primary => void, primary => parked, ' +
-      'primary => nary, secondary => void, secondary => parked, ' +
-      'secondary => nary, tertiary => void, tertiary => parked, tertiary => nary', [
+      'root => void, root => parked, child => void, child => parked, ' +
+      'primary => void, primary => parked', [
         animate('500ms ease-in-out', keyframes([
           style({ opacity: 1, transform: 'scale(1)' }),
           style({ opacity: 0, transform: 'scale(0)' })
         ]))
       ]),
     transition(
-      'void => void, void => parked, void => nary, parked => void, ' +
-      'parked => parked, parked => nary, nary => void, nary => parked, ' +
-      'nary => nary', [
+      'void => void, void => parked, parked => void, parked => parked', [
         animate('500ms ease-in-out', keyframes([
           style({ opacity: 0, transform: 'scale(0)' })
         ]))
       ]),
-    transition('void => root, parked => root, nary => root, void => child, ' +
-      'parked => child, nary => child, void => primary, parked => primary, ' +
-      'nary => primary, void => secondary, parked => secondary, ' +
-      'nary => secondary, void => tertiary, parked => tertiary, ' +
-      'nary => tertiary', [
+    transition(
+      'void => root, parked => root, void => child, ' +
+      'parked => child, root => root, root => child, ' +
+      'child => root, child => child', [
         animate('500ms ease-in-out', keyframes([
           style({ opacity: 0, transform: 'scale(0)' }),
           style({ opacity: 1, transform: 'scale(1)' })
         ]))
+      ])
+  ]);
+}
+
+export function lineTransition(): AnimationTriggerMetadata {
+  return trigger('lineState', [
+    state('primary', style({ opacity: 1, transform: 'scale(1)' })),
+    state('secondary', style({ opacity: 1, transform: 'scale(1)' })),
+    state('tertiary', style({ opacity: 1, transform: 'scale(1)' })),
+    state('nary', style({ opacity: 0, transform: 'scale(0)' })),
+    transition(
+      'primary => void, primary => nary, secondary => void, ' +
+      'secondary => nary, tertiary => void, tertiary => nary', [
+        animate('500ms ease-in-out', keyframes([
+          style({ opacity: 1, transform: 'scale(1)' }),
+          style({ opacity: 0, transform: 'scale(0)' })
+        ]))
       ]),
-    transition('root => root, root => child, root => primary, root => secondary, ' +
-      'root => tertiary, child => root, child => child, child => primary, ' +
-      'child => secondary, child => tertiary, primary => root, ' +
-      'primary => child, primary => primary, primary => secondary, ' +
-      'primary => tertiary, secondary => root, secondary => child, ' +
-      'secondary => primary, secondary => secondary, secondary => tertiary, ' +
-      'tertiary => root, tertiary => child, tertiary => primary, ' +
+    transition(
+      'void => void, void => nary, nary => void, nary => nary', [
+        animate('500ms ease-in-out', keyframes([
+          style({ opacity: 0, transform: 'scale(0)' })
+        ]))
+      ]),
+    transition(
+      'void => primary, nary => primary, void => secondary, nary => secondary, ' +
+      'void => tertiary, nary => tertiary, primary => primary, ' +
+      'primary => secondary, primary => tertiary, secondary => primary, ' +
+      'secondary => secondary, secondary => tertiary, tertiary => primary, ' +
       'tertiary => secondary, tertiary => tertiary', [
         animate('500ms ease-in-out', keyframes([
           style({ opacity: 0, transform: 'scale(0)' }),
