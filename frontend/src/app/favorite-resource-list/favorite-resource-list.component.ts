@@ -22,13 +22,17 @@ export class FavoriteResourceListComponent implements OnInit {
   }
 
   getFavoriteResources() {
-    this.api.getUserFavorites().subscribe(
-      (favorites) => {
-        for (const f of favorites) {
-          this.resources.push(f.resource);
-        }
+    this.api.getSession().subscribe(user => {
+      if (user) {
+        this.api.getUserFavorites().subscribe(
+          (favorites) => {
+            for (const f of favorites) {
+              this.resources.push(f.resource);
+            }
+          }
+        );
       }
-    );
+    });
   }
 
   getInstitution() {
@@ -42,11 +46,10 @@ export class FavoriteResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getFavoriteResources();
-    this.getInstitution();
     this.api.getSession().subscribe(user => {
       this.session = user;
     });
+    this.getFavoriteResources();
+    this.getInstitution();
   }
-
 }
