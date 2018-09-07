@@ -1,11 +1,11 @@
 <div
-  class="breadcrumb breadcrumb-root"
+  class="category-tile category-tile-root"
   (mouseover)="category.hover=true"
   (mouseout)="category.hover=false"
   [ngStyle]="{'box-shadow': category.hover ? 'none' : '0px 0px 20px 5px white', 'border-color': category.color, 'background-image': categoryImageURL()}"
 ></div>
 <div
-  class="mat-typography breadcrumb-root-title"
+  class="mat-typography category-tile-root-title"
   (mouseover)="category.hover=true"
   (mouseout)="category.hover=false"
   [ngStyle]="{'background-color': category.hover ? category.color : categoryColorLight(), 'border-color': category.hover ? category.color : categoryColorLight()}"
