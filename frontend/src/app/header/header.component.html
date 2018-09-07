@@ -15,7 +15,7 @@
     <mat-divider [vertical]="true"></mat-divider>
     <button
       mat-button
-      *ngIf="institution"
+      *ngIf="!session && institution"
       (click)="goLogin($event)"
     >
       {{ institution.name }} View
