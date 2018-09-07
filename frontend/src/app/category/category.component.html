@@ -24,7 +24,7 @@
         class="breadcrumb breadcrumb-parent"
         (click)="goCategory($event, category.parent)"
         [ngStyle]="category.parent.hover ? {'background-color': category.color, 'border-color': category.color, 'color': 'white'} : {'color': category.color, 'border-color': category.color}"
-    
+
         (mouseover)="category.parent.hover=true"
         (mouseleave)="category.parent.hover=false"
       >
@@ -96,8 +96,7 @@
               *ngIf="getResources(getInstitutionId()).length === 0 && !user && !getInstitutionId()"
               class="please-log-in"
             >
-              <h2>Please <a href="#/login">log in</a> or choose your affiliation below to view resources associated with your institution.</h2>
-              <app-institutional-view-services></app-institutional-view-services>
+              <app-login-services></app-login-services>
               <p>
                 Select your institution to view resources in this category that you have direct access to. To view all resources listed across
                 iTHRIV institutions, select the "View all in category" tab.
