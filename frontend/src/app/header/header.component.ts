@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { fadeTransition } from '../shared/animations';
 import { User } from '../user';
+import {Institution} from "../institution";
 
 @Component({
   selector: 'app-header',
@@ -22,6 +23,7 @@ export class HeaderComponent implements OnInit {
   isResourceView = false;
   isNetworkView: boolean;
   session: User;
+  institution: Institution;
 
   constructor(
     private router: Router,
@@ -46,6 +48,7 @@ export class HeaderComponent implements OnInit {
     });
 
     this.isNetworkView = this.getIsNetworkView();
+    this.getInstitution();
   }
 
   ngOnInit() {
@@ -84,6 +87,16 @@ export class HeaderComponent implements OnInit {
   goLogout($event) {
     $event.preventDefault();
     this.api.closeSession().subscribe();
+  }
+
+  getInstitution() {
+    if (sessionStorage.getItem("institution_id")) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+        (inst) => {
+          this.institution = inst;
+        }
+      );
+    }
   }
 
   getIsNetworkView() {
