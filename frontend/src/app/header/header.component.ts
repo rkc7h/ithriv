@@ -1,8 +1,23 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
-import { ActivationStart, NavigationEnd, Router, ActivationEnd, ActivatedRoute } from '@angular/router';
+import { MediaMatcher } from '@angular/cdk/layout';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostBinding,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import { MatSidenav } from '@angular/material';
+import {
+  ActivatedRoute,
+  ActivationEnd,
+  ActivationStart,
+  NavigationEnd,
+  Router
+} from '@angular/router';
 import { environment } from '../../environments/environment';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { fadeTransition } from '../shared/animations';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
 
 @Component({
@@ -12,7 +27,7 @@ import { User } from '../user';
   animations: [fadeTransition()]
 })
 
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   @HostBinding('@fadeTransition')
   title: string;
   isHome = false;
@@ -23,11 +38,22 @@ export class HeaderComponent implements OnInit {
   isNetworkView: boolean;
   session: User;
 
+  @ViewChild('sidenav') sidenav: MatSidenav;
+  mobileQuery: MediaQueryList;
+  private _mobileQueryListener: () => void;
+
   constructor(
     private router: Router,
     private api: ResourceApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    changeDetectorRef: ChangeDetectorRef,
+    media: MediaMatcher
   ) {
+
+    this.mobileQuery = media.matchMedia('(max-width: 959px)');
+    this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+    this.mobileQuery.addListener(this._mobileQueryListener);
+
     this.router.events.subscribe((e) => {
       if (e instanceof ActivationStart || e instanceof ActivationEnd) {
         if (e.snapshot && e.snapshot.data) {
@@ -54,6 +80,10 @@ export class HeaderComponent implements OnInit {
     }, error1 => {
       this.session = null;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.mobileQuery.removeListener(this._mobileQueryListener);
   }
 
   goHome($event) {
@@ -145,4 +175,13 @@ export class HeaderComponent implements OnInit {
       }
     }
   }
+
+  toggleSidenav() {
+    this.sidenav.toggle();
+  }
+
+  closeSidenav() {
+    this.sidenav.close();
+  }
+
 }
