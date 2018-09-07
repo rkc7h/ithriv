@@ -48,10 +48,10 @@ export class HeaderComponent implements OnInit {
     });
 
     this.isNetworkView = this.getIsNetworkView();
-    this.getInstitution();
   }
 
   ngOnInit() {
+    this.getInstitution();
     this.api.getSession().subscribe(user => {
       this.session = user;
     }, error1 => {

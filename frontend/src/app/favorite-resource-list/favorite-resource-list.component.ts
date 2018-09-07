@@ -19,7 +19,6 @@ export class FavoriteResourceListComponent implements OnInit {
     private api: ResourceApiService,
   ) {
     this.resources = [];
-    this.getInstitution();
   }
 
   getFavoriteResources() {
@@ -44,6 +43,7 @@ export class FavoriteResourceListComponent implements OnInit {
 
   ngOnInit() {
     this.getFavoriteResources();
+    this.getInstitution();
     this.api.getSession().subscribe(user => {
       this.session = user;
     });

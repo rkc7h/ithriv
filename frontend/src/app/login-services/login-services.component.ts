@@ -20,10 +20,10 @@ export class LoginServicesComponent implements OnInit {
     private api: ResourceApiService,
     private router: Router
     ) {
-    this.loadServices();
   }
 
   ngOnInit() {
+    this.loadServices();
   }
 
   goNetworkBrowse() {
@@ -38,11 +38,13 @@ export class LoginServicesComponent implements OnInit {
   }
 
   getInstitution() {
-    this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
-      (inst) => {
-        this.institution = inst;
-      }
-    );
+    if (sessionStorage.getItem("institution_id")) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+        (inst) => {
+          this.institution = inst;
+        }
+      );
+    }
   }
 
   loadServices() {
