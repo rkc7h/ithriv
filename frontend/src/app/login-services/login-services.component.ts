@@ -4,6 +4,7 @@ import { ResourceApiService } from "../shared/resource-api/resource-api.service"
 import { LoginService } from '../login-service';
 import { Router } from "@angular/router";
 import { Institution } from "../institution";
+import {Category} from "../category";
 
 @Component({
   selector: 'app-login-services',
@@ -25,9 +26,15 @@ export class LoginServicesComponent implements OnInit {
   ngOnInit() {
   }
 
-  goHome($event) {
-    $event.preventDefault();
-    this.router.navigate(['']);
+  goNetworkBrowse() {
+    const viewPrefs = this.api.getViewPreferences();
+    const isNetworkView = viewPrefs && viewPrefs.hasOwnProperty('isNetworkView') ? viewPrefs.isNetworkView : true;
+
+    if (isNetworkView) {
+      this.router.navigate(['network']);
+    } else {
+      this.router.navigate(['browse']);
+    }
   }
 
   getInstitution() {

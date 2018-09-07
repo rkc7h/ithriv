@@ -36,7 +36,7 @@
             <p>We are working to implement logins that will give you a personalized view of the portal using your
               {{ institution.name }} login and password. In the meantime, click below to access the portal as a
               {{ institution.name }} user.</p>
-            <button mat-stroked-button (click)="goHome($event)">
+            <button mat-stroked-button (click)="goNetworkBrowse($event)">
               <span>
                 <img [src]="'/assets/institutions/' + institution.name + '.png'">
               </span>
