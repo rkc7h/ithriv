@@ -74,12 +74,9 @@ export class GraphComponent {
 
   @HostListener('window:resize')
   onResize() {
-    console.log('resizing');
-
     if (window && window.innerWidth) {
       this.layoutWidth = window.innerWidth;
       this.layoutHeight = window.innerHeight;
-
       this.baseRadius = Math.min(80, Math.round(this.layoutWidth / 10));
       this.navRadius = Math.min(40, Math.round(this.layoutWidth / 20));
       this.parentTitleHeight = Math.min(30, Math.round(this.layoutWidth / 30));
