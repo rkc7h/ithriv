@@ -36,7 +36,6 @@ export class LoginServicesComponent implements OnInit {
         this.institution = inst;
       }
     );
-    return this.institution;
   }
 
   loadServices() {
