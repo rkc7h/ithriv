@@ -5,9 +5,16 @@
   ></app-resource-list>
 </div>
 <div
-  *ngIf="!session"
+  *ngIf="!session && !institution"
   class="please-log-in"
 >
   <h2>Please log in to view your favorites.</h2>
   <app-login-services></app-login-services>
+</div>
+<div
+  *ngIf="!session && institution"
+  class="please-log-in"
+>
+  <h2>{{ institution.name }} View</h2>
+  <h2>You must <a href="#/login">log in</a> to view your favorites.</h2>
 </div>
