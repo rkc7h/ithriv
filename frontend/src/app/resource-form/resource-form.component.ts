@@ -93,7 +93,7 @@ export class ResourceFormComponent implements OnInit {
     owner: new FormField({
       formControl: new FormControl(),
       required: true,
-      maxLength: 100,
+      maxLength: 1000,
       minLength: 1,
       placeholder: 'Owner',
       type: 'text'
