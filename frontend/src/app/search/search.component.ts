@@ -69,6 +69,11 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.api.getResources().subscribe(
+      (resources) => {
+        this.resources = resources;
+      }
+    );
     this.doSearch();
     this.searchBox = new FormControl();
     this.searchForm = new FormGroup({

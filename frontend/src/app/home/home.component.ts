@@ -22,7 +22,7 @@ export class HomeComponent implements OnInit {
   searchForm: FormGroup;
   searchBox: FormControl;
   loading = false;
-  resources: Resource;
+  resources: Resource[];
   categories: Category[];
   user: User;
 
