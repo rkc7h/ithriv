@@ -349,6 +349,10 @@ export class ResourceFormComponent implements OnInit {
         }
       }
 
+      if (!this.resource.approved) {
+        this.resource.approved = "Unapproved"
+      }
+
       const fnName = this.createNew ? 'addResource' : 'updateResource';
 
       if (this.hasAttachments()) {
