@@ -1,4 +1,5 @@
 import { MediaMatcher } from '@angular/cdk/layout';
+import { Location } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -16,10 +17,10 @@ import {
   Router
 } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { Institution } from '../institution';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
-import {Institution} from "../institution";
 
 @Component({
   selector: 'app-header',
@@ -45,11 +46,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private _mobileQueryListener: () => void;
 
   constructor(
-    private router: Router,
-    private api: ResourceApiService,
-    private route: ActivatedRoute,
     changeDetectorRef: ChangeDetectorRef,
-    media: MediaMatcher
+    media: MediaMatcher,
+    private api: ResourceApiService,
+    private location: Location,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
 
     this.mobileQuery = media.matchMedia('(max-width: 959px)');
@@ -120,8 +122,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   getInstitution() {
-    if (sessionStorage.getItem("institution_id")) {
-      this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+    if (sessionStorage.getItem('institution_id')) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem('institution_id'), 10)).subscribe(
         (inst) => {
           this.institution = inst;
         }
@@ -145,6 +147,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   viewMode(isNetworkView: boolean) {
+
+    // URL may have been modified via location.replaceState. Retrieve
+    // categoryId from raw URL path string.
+    const pathArray = this.location.path().split('/');
+
+    if (
+      pathArray &&
+      (pathArray.length === 3) &&
+      (pathArray[1] === 'network' || pathArray[1] === 'browse') &&
+      /^[0-9]+$/.test(pathArray[2])
+    ) {
+      this.categoryId = pathArray[2];
+    }
+
     this.isNetworkView = this.setIsNetworkView(isNetworkView);
 
     if (this.categoryId) {

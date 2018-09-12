@@ -176,6 +176,7 @@ export class GraphComponent {
     /* navigate to another page if a 3rd level category is clicked when its parent category
     is active (it's in a secondary state).  Otherwise, make the parent category active. */
     this.location.replaceState(`/network/${c.id}`);
+
     if (c.level === 2) {
       if (this.getState(c) === 'secondary') {
         this.router.navigate(['category', c.id]);
