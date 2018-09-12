@@ -25,7 +25,11 @@
         fxLayoutGap="10px"
         fxLayoutGap.xs="0"
       >
-        <img src="/assets/institutions/{{resource.institution.name}}.png" />
+        <img
+          src="/assets/institutions/{{resource.institution.name}}.png"
+          matTooltip="{{resource.institution.name}}"
+          (click)="goInstitution($event, resource.institution)"
+        />
       </div>
     </div>
     <mat-card fxFlex="25%">
