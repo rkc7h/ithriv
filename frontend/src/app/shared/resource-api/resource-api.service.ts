@@ -240,8 +240,8 @@ export class ResourceApiService {
   }
 
   /** getResources */
-  getResources(): Observable<Resource> {
-    return this.httpClient.get<Resource>(this.apiRoot + this.endpoints.resourceList)
+  getResources(): Observable<Resource[]> {
+    return this.httpClient.get<Resource[]>(this.apiRoot + this.endpoints.resourceList)
       .pipe(catchError(this.handleError));
   }
 

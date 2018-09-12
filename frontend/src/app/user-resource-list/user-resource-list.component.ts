@@ -20,15 +20,18 @@ export class UserResourceListComponent implements OnInit {
     private api: ResourceApiService,
   ) {
       this.resources = [];
-      this.getInstitution();
   }
 
   getUserResources() {
-    this.api.getUserResources().subscribe(
-      (resources) => {
-        this.resources = resources;
+    this.api.getSession().subscribe(user => {
+      if (user) {
+        this.api.getUserResources().subscribe(
+          (resources) => {
+            this.resources = resources;
+          }
+        );
       }
-    );
+    });
   }
 
   getInstitution() {
@@ -42,10 +45,11 @@ export class UserResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-      this.getUserResources();
       this.api.getSession().subscribe(user => {
         this.session = user;
       });
+      this.getUserResources();
+      this.getInstitution();
   }
 
 }

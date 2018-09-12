@@ -19,17 +19,20 @@ export class FavoriteResourceListComponent implements OnInit {
     private api: ResourceApiService,
   ) {
     this.resources = [];
-    this.getInstitution();
   }
 
   getFavoriteResources() {
-    this.api.getUserFavorites().subscribe(
-      (favorites) => {
-        for (const f of favorites) {
-          this.resources.push(f.resource);
-        }
+    this.api.getSession().subscribe(user => {
+      if (user) {
+        this.api.getUserFavorites().subscribe(
+          (favorites) => {
+            for (const f of favorites) {
+              this.resources.push(f.resource);
+            }
+          }
+        );
       }
-    );
+    });
   }
 
   getInstitution() {
@@ -43,10 +46,10 @@ export class FavoriteResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getFavoriteResources();
     this.api.getSession().subscribe(user => {
       this.session = user;
     });
+    this.getFavoriteResources();
+    this.getInstitution();
   }
-
 }
