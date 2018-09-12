@@ -108,25 +108,6 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  onScroll() {
-    console.log('Scrolled!');
-    if (this.loading) { return; }
-
-    if (this.resources != null && this.resources.length === this.resourceQuery.total) {
-      return;
-    }
-    console.log('finding more resources....');
-    this.loading = true;
-    const scrollSearch = this.resourceQuery;
-    scrollSearch.start = this.resources.length;
-    this.api.searchResources(scrollSearch).subscribe(
-      (query) => {
-        this.resources = this.resources.concat(query.resources);
-        this.loading = false;
-      }
-    );
-  }
-
   addFilter(field: string, value: string) {
     this.resourceQuery.filters.push({ field: field, value: value });
     this.showFilters = false;
