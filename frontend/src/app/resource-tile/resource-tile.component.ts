@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Resource } from '../resource';
 import { Institution } from '../institution';
+import { Resource } from '../resource';
+import { ResourceType } from "../resourceType";
 
 @Component({
   selector: 'app-resource-tile',
@@ -19,6 +20,16 @@ export class ResourceTileComponent implements OnInit {
   goResource($event, resource: Resource) {
     $event.preventDefault();
     this.router.navigate(['resource', resource.id]);
+  }
+
+  goInstitution($event, institutuion: Institution) {
+    $event.preventDefault();
+    this.router.navigate(['search', institutuion.name]);
+  }
+
+  goType($event, type: ResourceType) {
+    $event.preventDefault();
+    this.router.navigate(['search', type.name]);
   }
 
   typeIconId(resource: Resource) {
