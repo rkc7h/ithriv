@@ -1,30 +1,32 @@
 <div
   *ngIf="isDataLoaded"
-  fxLayout="column"
-  class="container mat-typography"
-  fxLayoutGap="20px"
+  class="mat-typography"
   [@zoomTransition]="transitionClass"
 >
   <div
-    fxLayout="row wrap"
-    fxLayoutAlign="start start"
+    fxLayout.gt-sm="row wrap"
+    fxLayout.lt-md="column"
+    fxLayoutAlign.gt-sm="start start"
+    fxLayoutAlign.lt-md="center start"
     fxLayoutGap="20px"
   >
     <div
       *ngIf="category.parent && category.parent.icon_id"
       class="breadcrumbs"
-      fxFlex="calc(15% - 20px)"
+      fxFlex.gt-sm="calc(15% - 20px)"
+      fxFlex.lt-md="calc(100% - 20px)"
     >
-      <app-category-tile
-        [category]="category.parent.parent"
-        [fromCategory]="category"
-        (click)="goCategory($event, category.parent.parent)"
-      ></app-category-tile>
+      <div class="breadcrumb breadcrumb-root">
+        <app-category-tile
+          [category]="category.parent.parent"
+          [fromCategory]="category"
+          (click)="goCategory($event, category.parent.parent)"
+        ></app-category-tile>
+      </div>
       <div
         class="breadcrumb breadcrumb-parent"
         (click)="goCategory($event, category.parent)"
         [ngStyle]="category.parent.hover ? {'background-color': category.color, 'border-color': category.color, 'color': 'white'} : {'color': category.color, 'border-color': category.color}"
-
         (mouseover)="category.parent.hover=true"
         (mouseleave)="category.parent.hover=false"
       >
@@ -50,7 +52,8 @@
 
     <div
       class="content"
-      fxFlex="calc(85% - 20px)"
+      fxFlex.gt-sm="calc(85% - 20px)"
+      fxFlex.lt-md="calc(100% - 40px)"
     >
       <div fxLayout="column">
         <h1
@@ -76,7 +79,8 @@
             Resources available to {{getUserName()}}
             ({{getResources(getInstitutionId()).length}})
           ">
-            <app-resource-list *ngIf="getResources(getInstitutionId()).length > 0"
+            <app-resource-list
+              *ngIf="getResources(getInstitutionId()).length > 0"
               [resources]="getResources(getInstitutionId())"
               fxFlexFill
             ></app-resource-list>
@@ -98,7 +102,8 @@
             >
               <app-login-services></app-login-services>
               <p>
-                Select your institution to view resources in this category that you have direct access to. To view all resources listed across
+                Select your institution to view resources in this category that you have direct access to. To view all
+                resources listed across
                 iTHRIV institutions, select the "View all in category" tab.
               </p>
             </div>

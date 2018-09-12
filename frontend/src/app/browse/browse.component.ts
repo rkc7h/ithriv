@@ -47,9 +47,8 @@ export class BrowseComponent implements OnInit {
       if (params && params.hasOwnProperty('category')) {
         this.categoryId = params['category'];
         this.loadCategory(this.categoryId);
-      } else {
-        this.loadAllCategories();
       }
+      this.loadAllCategories();
     });
   }
 
@@ -128,6 +127,48 @@ export class BrowseComponent implements OnInit {
         .toLowerCase()
         .replace(/e$/, '') + 'ing'
     );
+  }
+
+  hasCategories(): boolean {
+    return (
+      this.category &&
+      this.allCategories &&
+      (this.allCategories.length > 0)
+    );
+  }
+
+  // Returns all Level 0 categories before the selected category
+  prevCategories() {
+    const cats: Category[] = [];
+
+    if (this.hasCategories()) {
+      for (const c of this.allCategories) {
+        if (c.id === this.category.id) {
+          return cats;
+        } else {
+          cats.push(c);
+        }
+      }
+    } else {
+      return cats;
+    }
+  }
+
+  // Returns all Level 0 categories after the selected category
+  nextCategories() {
+    const cats: Category[] = [];
+
+    if (this.hasCategories()) {
+      const allCatsReversed = this.allCategories.slice().reverse();
+
+      for (const c of allCatsReversed) {
+        if (c.id === this.category.id) {
+          return cats;
+        } else {
+          cats.unshift(c);
+        }
+      }
+    }
   }
 
 }

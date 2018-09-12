@@ -1,10 +1,26 @@
-import { Component, HostBinding, OnInit } from '@angular/core';
-import { ActivationStart, NavigationEnd, Router, ActivationEnd, ActivatedRoute } from '@angular/router';
+import { MediaMatcher } from '@angular/cdk/layout';
+import { Location } from '@angular/common';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostBinding,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import { MatSidenav } from '@angular/material';
+import {
+  ActivatedRoute,
+  ActivationEnd,
+  ActivationStart,
+  NavigationEnd,
+  Router
+} from '@angular/router';
 import { environment } from '../../environments/environment';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { Institution } from '../institution';
 import { fadeTransition } from '../shared/animations';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
-import {Institution} from "../institution";
 
 @Component({
   selector: 'app-header',
@@ -13,7 +29,7 @@ import {Institution} from "../institution";
   animations: [fadeTransition()]
 })
 
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   @HostBinding('@fadeTransition')
   title: string;
   isHome = false;
@@ -25,11 +41,23 @@ export class HeaderComponent implements OnInit {
   session: User;
   institution: Institution;
 
+  @ViewChild('sidenav') sidenav: MatSidenav;
+  mobileQuery: MediaQueryList;
+  private _mobileQueryListener: () => void;
+
   constructor(
-    private router: Router,
+    changeDetectorRef: ChangeDetectorRef,
+    media: MediaMatcher,
     private api: ResourceApiService,
-    private route: ActivatedRoute
+    private location: Location,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
+
+    this.mobileQuery = media.matchMedia('(max-width: 959px)');
+    this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+    this.mobileQuery.addListener(this._mobileQueryListener);
+
     this.router.events.subscribe((e) => {
       if (e instanceof ActivationStart || e instanceof ActivationEnd) {
         if (e.snapshot && e.snapshot.data) {
@@ -57,6 +85,10 @@ export class HeaderComponent implements OnInit {
     }, error1 => {
       this.session = null;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.mobileQuery.removeListener(this._mobileQueryListener);
   }
 
   goHome($event) {
@@ -90,8 +122,8 @@ export class HeaderComponent implements OnInit {
   }
 
   getInstitution() {
-    if (sessionStorage.getItem("institution_id")) {
-      this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+    if (sessionStorage.getItem('institution_id')) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem('institution_id'), 10)).subscribe(
         (inst) => {
           this.institution = inst;
         }
@@ -115,6 +147,20 @@ export class HeaderComponent implements OnInit {
   }
 
   viewMode(isNetworkView: boolean) {
+
+    // URL may have been modified via location.replaceState. Retrieve
+    // categoryId from raw URL path string.
+    const pathArray = this.location.path().split('/');
+
+    if (
+      pathArray &&
+      (pathArray.length === 3) &&
+      (pathArray[1] === 'network' || pathArray[1] === 'browse') &&
+      /^[0-9]+$/.test(pathArray[2])
+    ) {
+      this.categoryId = pathArray[2];
+    }
+
     this.isNetworkView = this.setIsNetworkView(isNetworkView);
 
     if (this.categoryId) {
@@ -158,4 +204,13 @@ export class HeaderComponent implements OnInit {
       }
     }
   }
+
+  toggleSidenav() {
+    this.sidenav.toggle();
+  }
+
+  closeSidenav() {
+    this.sidenav.close();
+  }
+
 }

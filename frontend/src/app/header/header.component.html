@@ -1,8 +1,97 @@
+<mat-sidenav-container
+  class="xs-sidenav-container"
+  [style.marginTop.px]="mobileQuery.matches ? 56 : 0"
+  *ngIf="mobileQuery.matches"
+>
+  <mat-sidenav
+    #sidenav
+    [mode]="mobileQuery.matches ? 'over' : 'side'"
+    [fixedInViewport]="mobileQuery.matches"
+    fixedTopGap="56"
+  >
+    <mat-nav-list>
+      <mat-list-item>
+        <button
+          mat-button
+          (click)="closeSidenav(); goHome($event)"
+        >
+          <mat-icon>home</mat-icon>
+          Home
+        </button>
+      </mat-list-item>
+      <mat-list-item *appIsAdmin>
+        <button
+          mat-button
+          (click)="closeSidenav(); goUserAdmin($event)"
+        >
+          <mat-icon>person_add</mat-icon>
+          User Administration
+        </button>
+      </mat-list-item>
+      <mat-list-item *ngIf="!session">
+        <button
+          mat-button
+          (click)="closeSidenav(); goLogin($event)"
+        >
+          <mat-icon>account_circle</mat-icon>
+          Log in
+        </button>
+      </mat-list-item>
+      <mat-list-item *ngIf="session">
+        <button
+          mat-button
+          (click)="closeSidenav(); goHome($event)"
+        >
+          <mat-icon>account_circle</mat-icon>
+          {{session.display_name}}
+        </button>
+      </mat-list-item>
+      <mat-list-item *ngIf="session">
+        <button
+          mat-button
+          (click)="closeSidenav(); goLogout($event)"
+        >
+          <mat-icon>exit_to_app</mat-icon>
+          Log Out
+        </button>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content></mat-sidenav-content>
+</mat-sidenav-container>
+
 <mat-toolbar
   *ngIf="!hideHeader"
   class="mat-toolbar-tools"
 >
-  <mat-toolbar-row class="menubar">
+  <mat-toolbar-row
+    class="menubar menubar-xs"
+    *ngIf="mobileQuery.matches"
+  >
+    <button
+      mat-icon-button
+      (tap)="toggleSidenav()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+    <button
+      mat-button
+      (click)="goHome($event)"
+      aria-label="Go Home"
+    >
+      <img
+        src="/assets/logo/ithriv-logomark.png"
+        alt="iThriv"
+        class="logomark"
+      />
+      iThriv Research Concierge Portal
+    </button>
+  </mat-toolbar-row>
+
+  <mat-toolbar-row
+    class="menubar"
+    *ngIf="!mobileQuery.matches"
+  >
     <span class="fill-remaining-space"></span>
     <button
       mat-button
@@ -12,7 +101,6 @@
       <mat-icon>person_add</mat-icon>
       User Administration
     </button>
-    <mat-divider [vertical]="true"></mat-divider>
     <button
       mat-button
       *ngIf="!session && institution"
@@ -47,12 +135,15 @@
   </mat-toolbar-row>
 
   <mat-toolbar-row
-    fxLayout="row wrap"
-    fxLayoutAlign="space-around center"
-    fxLayoutGap="20px"
+    fxLayout.gt-xs="row wrap"
+    fxLayout.xs="row"
+    fxLayoutAlign.gt-xs="space-around center"
+    fxLayoutAlign.xs="space-around center"
+    fxLayoutGap.gt-xs="20px"
+    fxLayoutGap.xs="10px"
     class="logo"
   >
-    <h1>
+    <h1 *ngIf="!mobileQuery.matches">
       <a
         href="#"
         (click)="goHome($event)"
@@ -62,13 +153,18 @@
           src="/assets/logo/ithriv-logomark.png"
           alt="iThriv"
           class="logomark"
-        /> Research Concierge Portal
+        />
+        Research Concierge Portal
       </a>
     </h1>
-    <span class="fill-remaining-space"></span>
+    <span
+      *ngIf="!mobileQuery.matches"
+      class="fill-remaining-space"
+    ></span>
     <button
       mat-stroked-button
       (click)="goSearch($event)"
+      fxFlex.xs="calc(50% - 20px)"
     >
       <mat-icon>search</mat-icon>
       Search
@@ -77,6 +173,7 @@
       *ngIf="session"
       mat-stroked-button
       (click)="goConsult($event)"
+      fxFlex.xs="calc(50% - 20px)"
     >
       <mat-icon>help</mat-icon>
       Request a Consult
@@ -85,6 +182,7 @@
       href="#"
       (click)="goHome($event)"
       aria-label="Go Home"
+      *ngIf="!mobileQuery.matches"
     >
       <img
         src="/assets/logo/ithriv-logo.png"
@@ -100,8 +198,11 @@
     fxLayoutGap="20px"
     class="secondary-nav"
   >
-    <h1>Find Resources</h1>
-    <span class="fill-remaining-space"></span>
+    <h1 *ngIf="!mobileQuery.matches">Find Resources</h1>
+    <span
+      *ngIf="!mobileQuery.matches"
+      class="fill-remaining-space"
+    ></span>
     <ng-container>
       <div>Change View:</div>
       <mat-button-toggle-group #group="matButtonToggleGroup">

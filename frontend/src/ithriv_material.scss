@@ -257,5 +257,18 @@ $animationDuration: 500ms;
     overflow-y: visible;
   }
 
+  ::ng-deep .mat-drawer-backdrop.mat-drawer-shown {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  }
+
+  :host >>> .content {
+    height: -moz-available;          /* WebKit-based browsers will ignore this. */
+    height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+  }
 }
 

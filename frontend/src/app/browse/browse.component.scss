@@ -41,7 +41,7 @@
       text-transform: capitalize;
       background-color: transparent;
       color: white;
-      z-index: 100;
+      z-index: 1;
       font-weight: bolder;
       max-width: 400px;
       position: relative;
@@ -192,5 +192,26 @@
       top: 6px;
       right: 6px;
     }
+  }
+}
+
+.prev-category, .next-category {
+  cursor: pointer;
+  padding: 10px 10px 10px 20px;
+  margin: 0px 0px 2em 0px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  h1 {
+    padding: 0;
+    margin: 0;
+    text-transform: capitalize;
+    background-color: transparent;
+    color: white;
+    z-index: 1;
+    font-weight: bolder;
+    position: relative;
   }
 }

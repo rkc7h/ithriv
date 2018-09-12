@@ -74,12 +74,9 @@ export class GraphComponent {
 
   @HostListener('window:resize')
   onResize() {
-    console.log('resizing');
-
     if (window && window.innerWidth) {
       this.layoutWidth = window.innerWidth;
       this.layoutHeight = window.innerHeight;
-
       this.baseRadius = Math.min(80, Math.round(this.layoutWidth / 10));
       this.navRadius = Math.min(40, Math.round(this.layoutWidth / 20));
       this.parentTitleHeight = Math.min(30, Math.round(this.layoutWidth / 30));
@@ -179,6 +176,7 @@ export class GraphComponent {
     /* navigate to another page if a 3rd level category is clicked when its parent category
     is active (it's in a secondary state).  Otherwise, make the parent category active. */
     this.location.replaceState(`/network/${c.id}`);
+
     if (c.level === 2) {
       if (this.getState(c) === 'secondary') {
         this.router.navigate(['category', c.id]);
