@@ -69,11 +69,6 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.api.getResources().subscribe(
-      (resources) => {
-        this.resources = resources;
-      }
-    );
     this.doSearch();
     this.searchBox = new FormControl();
     this.searchForm = new FormGroup({
@@ -151,7 +146,7 @@ export class SearchComponent implements OnInit {
 
   getAllResources() {
     return this.resources.filter(r => {
-      return this.user ? true : r.approved;
+      return this.user ? (this.user.role == "Admin" ? true : r.approved == "Approved") : r.approved == "Approved";
     });
   }
 }
