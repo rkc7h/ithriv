@@ -194,3 +194,24 @@
     }
   }
 }
+
+.prev-category, .next-category {
+  cursor: pointer;
+  padding: 10px 10px 10px 20px;
+  margin: 0px 0px 2em 0px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  h1 {
+    padding: 0;
+    margin: 0;
+    text-transform: capitalize;
+    background-color: transparent;
+    color: white;
+    z-index: 1;
+    font-weight: bolder;
+    position: relative;
+  }
+}
