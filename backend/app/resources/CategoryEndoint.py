@@ -1,6 +1,7 @@
 import flask_restful
 from flask import request
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 
 from app import db, RestException
 from app.model.category import Category
@@ -40,7 +41,7 @@ class CategoryListEndpoint(flask_restful.Resource):
 
     @login_optional
     def get(self):
-        categories = db.session.query(Category).filter(Category.parent_id == None).all()
+        categories = db.session.query(Category).options(joinedload(Category.children)).filter(Category.parent_id == None).all()
         return self.categories_schema.dump(categories)
 
     def post(self):

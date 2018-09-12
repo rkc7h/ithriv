@@ -14,6 +14,8 @@ class Category(db.Model):
     image = db.Column(db.String)  # Should be the url for a large background image
     children = db.relationship("Category",
                                backref=db.backref('parent', remote_side=[id]),
+                               lazy="joined",
+                               join_depth=2,
                                order_by = "Category.name")
     icon_id = db.Column(db.Integer, db.ForeignKey('icon.id'))
     icon = db.relationship("Icon")
