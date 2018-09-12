@@ -19,6 +19,7 @@ import { environment } from '../../environments/environment';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
+import {Institution} from "../institution";
 
 @Component({
   selector: 'app-header',
@@ -37,6 +38,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isResourceView = false;
   isNetworkView: boolean;
   session: User;
+  institution: Institution;
 
   @ViewChild('sidenav') sidenav: MatSidenav;
   mobileQuery: MediaQueryList;
@@ -75,6 +77,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.getInstitution();
     this.api.getSession().subscribe(user => {
       this.session = user;
     }, error1 => {
@@ -114,6 +117,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
   goLogout($event) {
     $event.preventDefault();
     this.api.closeSession().subscribe();
+  }
+
+  getInstitution() {
+    if (sessionStorage.getItem("institution_id")) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+        (inst) => {
+          this.institution = inst;
+        }
+      );
+    }
   }
 
   getIsNetworkView() {

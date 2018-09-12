@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Category } from '../category';
 import { fadeTransition } from '../shared/animations';
 import { hexColorToRGBA } from '../shared/color';
+import { ResourceApiService } from "../shared/resource-api/resource-api.service";
 
 @Component({
   selector: 'app-category-tile',
@@ -15,17 +16,23 @@ export class CategoryTileComponent implements OnInit {
   @Input() category: Category;
   @Input() fromCategory: Category;
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private api: ResourceApiService
+  ) { }
 
   ngOnInit() {
   }
 
-  goBrowse($event, category) {
-    $event.preventDefault();
-    if (this.fromCategory) {
-      this.router.navigate(['network', category.id], { queryParams: { from: this.fromCategory.level } });
+  goCategory(category: Category) {
+    const viewPrefs = this.api.getViewPreferences();
+    const isNetworkView = viewPrefs && viewPrefs.hasOwnProperty('isNetworkView') ? viewPrefs.isNetworkView : true;
+    const catId = category.id.toString();
+
+    if (isNetworkView) {
+      this.router.navigate(['network', catId]);
     } else {
-      this.router.navigate(['network', category.id]);
+      this.router.navigate(['browse', catId]);
     }
   }
 

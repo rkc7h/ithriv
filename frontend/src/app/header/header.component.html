@@ -103,6 +103,13 @@
     </button>
     <button
       mat-button
+      *ngIf="!session && institution"
+      (click)="goLogin($event)"
+    >
+      {{ institution.name }} View
+    </button>
+    <button
+      mat-button
       *ngIf="!session"
       (click)="goLogin($event)"
     >
