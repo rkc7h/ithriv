@@ -7,6 +7,7 @@ import { ResourceCategory } from '../resource-category';
 import { zoomTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FileAttachment } from '../file-attachment';
+import { ResourceType } from '../resourceType';
 
 @Component({
   selector: 'app-resource',
@@ -72,26 +73,17 @@ export class ResourceComponent implements OnInit {
 
   goInstitution($event, institution: Institution) {
     $event.preventDefault();
-    console.log('Go to the resource search screen, filtered by Institution');
-    console.log('institution:', institution);
+    this.router.navigate(['search', institution.name]);
   }
 
   goCategory($event, category: Category) {
     $event.preventDefault();
     this.router.navigate(['category', category.id]);
-    console.log('Go to the category page, filtered by Institution');
-    console.log('category:', category);
   }
 
-
-  goOwner($event) {
+  goResourceType($event, type: ResourceType) {
     $event.preventDefault();
-    console.log('Go to the resource search screen, filtered by Owner');
-  }
-
-  goResourceType($event) {
-    $event.preventDefault();
-    console.log('Go to the resource search screen, filtered by ResourceType');
+    this.router.navigate(['search', type.name]);
   }
 
   goWebsite($event) {

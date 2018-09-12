@@ -40,7 +40,7 @@
             <a
               mat-line
               href="#"
-              (click)="goResourceType($event)"
+              (click)="goResourceType($event, resource.type)"
             >{{resource.type.name}}</a>
           </mat-list-item>
           <mat-list-item *ngIf="resource.institution">
