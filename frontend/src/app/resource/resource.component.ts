@@ -6,7 +6,6 @@ import { Resource } from '../resource';
 import { ResourceCategory } from '../resource-category';
 import { zoomTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { ResourceAttachment } from '../resource-attachment';
 import { FileAttachment } from '../file-attachment';
 
 @Component({

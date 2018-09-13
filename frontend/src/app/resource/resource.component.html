@@ -16,12 +16,12 @@
   >
     <div fxFlex="75%">
       <h1 class="mat-display-2">{{resource.name}}</h1>
-      <markdown>{{resource.description}}</markdown>
+      <markdown [data]="resource.description"></markdown>
       <div
         class="container"
         fxLayout="row wrap"
         fxLayout.xs="column"
-        fxLayoutAlign="center"
+        fxLayoutAlign="center center"
         fxLayoutGap="10px"
         fxLayoutGap.xs="0"
       >

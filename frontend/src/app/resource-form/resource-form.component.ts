@@ -93,7 +93,7 @@ export class ResourceFormComponent implements OnInit {
     owner: new FormField({
       formControl: new FormControl(),
       required: true,
-      maxLength: 100,
+      maxLength: 1000,
       minLength: 1,
       placeholder: 'Owner',
       type: 'text'
@@ -347,6 +347,10 @@ export class ResourceFormComponent implements OnInit {
         if (this.fields[fieldName].formControl) {
           this.resource[fieldName] = this.fields[fieldName].formControl.value;
         }
+      }
+
+      if (!this.resource.approved) {
+        this.resource.approved = "Unapproved"
       }
 
       const fnName = this.createNew ? 'addResource' : 'updateResource';

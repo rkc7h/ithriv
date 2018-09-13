@@ -1,4 +1,13 @@
 <div
+  *ngFor="let c of prevCategories()"
+  class="mat-typography prev-category"
+  [ngStyle]="{'background-color': c.color}"
+  (click)="goCategory($event, c)"
+>
+  <h1>{{c.name}}</h1>
+</div>
+
+<div
   id="browse-top-level"
   class="mat-typography"
   *ngIf="isDataLoaded && !category"
@@ -79,7 +88,6 @@
           class="cat-icon-2"
           svgIcon="{{categoryIcon(c)}}"
           [ngStyle]="c.hover ? {'background-color': c.color, 'border-color': c.color} : {'color': c.color, 'border-color': c.color}"
-      
           (mouseover)="c.hover=true"
           (mouseleave)="c.hover=false"
           (click)="goCategory($event, c)"
@@ -139,4 +147,13 @@
       </div>
     </section>
   </div>
+</div>
+
+<div
+  *ngFor="let c of nextCategories()"
+  class="mat-typography next-category"
+  [ngStyle]="{'background-color': c.color}"
+  (click)="goCategory($event, c)"
+>
+  <h1>{{c.name}}</h1>
 </div>

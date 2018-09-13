@@ -28,6 +28,20 @@ mat-toolbar {
     height: 30px;
     font-size: 12px;
     background-color: mat-color($ithriv-primary, 900, 1.0);
+
+    &.menubar-xs {
+      height: 56px;
+      display: flex;
+      flex-direction: row;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+
+    }
+
   }
 
   .logo {
@@ -36,7 +50,7 @@ mat-toolbar {
     background-color: white;
     border-bottom: 8px solid mat-color($ithriv-primary, 800, 1.0);
 
-    @media screen and (max-width: 720px) {
+    @media screen and (max-width: 959px) {
       height: 48px;
       max-height: 48px;
       padding-top: 16px;
@@ -56,7 +70,7 @@ mat-toolbar {
         max-height: 48px;
         vertical-align: middle;
 
-        @media screen and (max-width: 720px) {
+        @media screen and (max-width: 959px) {
           height: 24px;
         }
       }
@@ -66,7 +80,7 @@ mat-toolbar {
         max-height: 40px;
         vertical-align: middle;
 
-        @media screen and (max-width: 720px) {
+        @media screen and (max-width: 959px) {
           height: 40px;
         }
       }
@@ -77,7 +91,7 @@ mat-toolbar {
       color: mat-color($ithriv-primary, 800, 1.0);
       font-size: 32px;
 
-      @media screen and (max-width: 720px) {
+      @media screen and (max-width: 959px) {
         font-size: 16px;
         background: transparent;
       }
@@ -89,9 +103,7 @@ mat-toolbar {
     }
   }
 
-  .navigation, .secondary-nav {
-    background: white;
-
+  .xs-app-name, .menubar, .navigation, .secondary-nav {
     img {
       &.logomark {
         height: 24px;
@@ -104,11 +116,15 @@ mat-toolbar {
         max-height: 40px;
         vertical-align: middle;
 
-        @media screen and (max-width: 720px) {
+        @media screen and (max-width: 959px) {
           height: 40px;
         }
       }
     }
+  }
+
+  .navigation, .secondary-nav {
+    background: white;
 
     h1 {
       color: mat-color($ithriv-primary, 800, 1.0);
@@ -136,3 +152,32 @@ mat-toolbar {
   }
 
 }
+
+
+
+mat-sidenav, mat-sidenav-container {
+  z-index: 10;
+
+  mat-list-item button {
+    color: mat-color($ithriv-primary, 800, 1.0);
+  }
+}
+
+.xs-toolbar {
+  position: fixed;
+  /* Make sure the toolbar will stay on top of the content as it scrolls past. */
+  z-index: 1005;
+}
+
+.xs-sidenav-container {
+  /* When the sidenav is not fixed, stretch the sidenav container to fill the available space. This
+     causes `<mat-sidenav-content>` to act as our scrolling element for desktop layouts. */
+  flex: 1;
+}
+
+.xs-is-mobile .xs-sidenav-container {
+  /* When the sidenav is fixed, don't constrain the height of the sidenav container. This allows the
+     `<body>` to be our scrolling element for mobile layouts. */
+  flex: 1 0 auto;
+}
+
