@@ -3,6 +3,7 @@
 from functools import wraps
 
 from itsdangerous import URLSafeTimedSerializer
+from sqlalchemy import or_
 
 from app import sso, app, RestException, db, auth, email_service
 from app.model.email_log import EmailLog
@@ -15,17 +16,12 @@ auth_blueprint = Blueprint('auth', __name__, url_prefix='/api')
 
 @sso.login_handler
 def login(user_info):
-    print("+++++++++++++++++++++++++++++++++++++++++++++++++")
-    for x in user_info:
-        print (x,":",user_info[x])
-    print("+++++++++++++++++++++++++++++++++++++++++++++++++")
-
     if app.config["DEVELOPMENT"]:
         eppn = app.config["SSO_DEVELOPMENT_EPPN"]
     else:
         eppn = user_info['eppn']
 
-    user = User.query.filter_by(eppn=eppn).first()
+    user = User.query.filter(or_(User.eppn == eppn, User.email == eppn)).first()
     if user is None:
         user = User(eppn=eppn,
                     display_name=eppn,
@@ -41,9 +37,12 @@ def login(user_info):
         for i in institutions:
             if i.domain and eppn.lower().endswith(i.domain):
                 user.institution = i
+    else:
+        user.eppn = eppn
+        user.email = eppn
 
-        db.session.add(user)
-        db.session.commit()
+    db.session.add(user)
+    db.session.commit()
 
     g.user = user
     # redirect users back to the front end, include the new auth token.
@@ -153,5 +152,5 @@ def login_optional(f):
                 auth = False
 
         return f(*args, **kwargs)
-    return decorated
 
+    return decorated
