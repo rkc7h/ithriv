@@ -217,7 +217,7 @@ class DataLoader:
         db.session.query(Availability).delete()
         db.session.query(Favorite).delete()
         db.session.query(ThrivResource).delete()
-        db.session.query(ThrivInstitution).delete()
+        # db.session.query(ThrivInstitution).delete()
         db.session.query(ThrivType).delete()
         db.session.query(Category).delete()
         db.session.query(EmailLog).delete()

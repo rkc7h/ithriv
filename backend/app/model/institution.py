@@ -9,3 +9,4 @@ class ThrivInstitution(db.Model):
     description = db.Column(db.String)
     domain = db.Column(db.String)
     resources = db.relationship('ThrivResource', backref=db.backref('institution', lazy=True))
+    hide_availablity = db.Column(db.Boolean(), default=False)
