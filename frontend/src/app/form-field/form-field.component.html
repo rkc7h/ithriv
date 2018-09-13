@@ -1,15 +1,50 @@
-<mat-form-field *ngIf="isNormalField(field)" [hideRequiredMarker]="formGroup.value.hideRequired" [floatLabel]="formGroup.value.floatLabel">
-  <input *ngIf="(field.type === 'color')" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder"
-    [required]="field.required" [(colorPicker)]="field.formControl.value" [style.background]="field.formControl.value" [value]="field.formControl.value"
-    [cpOKButton]="true" [cpCancelButton]="true" [cpPosition]="'top'" [cpPositionOffset]="'50%'" type="text">
-  <input *ngIf="isTextField(field)" matInput [formControl]="field.formControl" [errorStateMatcher]="errorMatcher" [placeholder]="field.placeholder"
-    [required]="field.required" type="{{field.type}}">
+<mat-form-field
+  *ngIf="isNormalField(field)"
+  [hideRequiredMarker]="formGroup.value.hideRequired"
+  [floatLabel]="formGroup.value.floatLabel"
+>
+  <input
+    *ngIf="(field.type === 'color')"
+    matInput
+    [formControl]="field.formControl"
+    [errorStateMatcher]="errorMatcher"
+    [placeholder]="field.placeholder"
+    [required]="field.required"
+    [(colorPicker)]="field.formControl.value"
+    [style.background]="field.formControl.value"
+    [value]="field.formControl.value"
+    [cpOKButton]="true"
+    [cpCancelButton]="true"
+    [cpPosition]="'top'"
+    [cpPositionOffset]="'50%'"
+    type="text"
+  >
+  <input
+    *ngIf="isTextField(field)"
+    matInput
+    [formControl]="field.formControl"
+    [errorStateMatcher]="errorMatcher"
+    [placeholder]="field.placeholder"
+    [required]="field.required"
+    type="{{field.type}}"
+  >
 
-  <mat-select *ngIf="field.type === 'select'" [multiple]="field.multiSelect" [formControl]="field.formControl" [placeholder]="field.placeholder"
-    [required]="field.required">
+  <mat-select
+    *ngIf="field.type === 'select'"
+    [multiple]="field.multiSelect"
+    [formControl]="field.formControl"
+    [placeholder]="field.placeholder"
+    [required]="field.required"
+  >
     <mat-option *ngIf="!field.multiSelect">-- None --</mat-option>
-    <mat-option *ngFor="let option of options" [value]="option.id">
-      <mat-icon *ngIf="field.showIcons" svgIcon="ithriv_{{option.id}}"></mat-icon>
+    <mat-option
+      *ngFor="let option of options"
+      [value]="option.id"
+    >
+      <mat-icon
+        *ngIf="field.showIcons"
+        svgIcon="ithriv_{{option.id}}"
+      ></mat-icon>
       {{option.name}}
     </mat-option>
   </mat-select>
@@ -17,7 +52,14 @@
     {{field.placeholder}}
   </mat-label>
 
-  <mat-hint *ngIf="field.maxLength" align="end">
+  <mat-hint *ngIf="field.helpText">
+    <markdown>{{field.helpText}}</markdown>
+  </mat-hint>
+
+  <mat-hint
+    *ngIf="field.maxLength"
+    align="end"
+  >
     {{currentLength()}} / {{field.maxLength}}
   </mat-hint>
 
@@ -45,13 +87,25 @@
   </mat-error>
 </mat-form-field>
 
-<div *ngIf="field.type === 'tree'" class="mat-typography">
-  <app-form-field-label [field]="field" [errors]="errors"></app-form-field-label>
+<div
+  *ngIf="field.type === 'tree'"
+  class="mat-typography"
+>
+  <app-form-field-label
+    [field]="field"
+    [errors]="errors"
+  ></app-form-field-label>
   <app-tree-select [field]="field"></app-tree-select>
 </div>
 
-<div *ngIf="field.type === 'textarea'" class="mat-typography">
-  <app-form-field-label [field]="field" [errors]="errors"></app-form-field-label>
+<div
+  *ngIf="field.type === 'textarea'"
+  class="mat-typography"
+>
+  <app-form-field-label
+    [field]="field"
+    [errors]="errors"
+  ></app-form-field-label>
   <mat-error *ngIf="field.formControl.errors && (field.formControl.dirty || field.formControl.touched)">
     <span *ngIf="field.required && field.formControl.hasError('required')">
       {{field.placeholder}} is
@@ -68,16 +122,32 @@
       <strong>{{currentLength()}}</strong> characters.
     </span>
   </mat-error>
-  <td-text-editor [formControl]="field.formControl" [value]="field.formControl.value" [options]="field.options"></td-text-editor>
+  <td-text-editor
+    [formControl]="field.formControl"
+    [value]="field.formControl.value"
+    [options]="field.options"
+  ></td-text-editor>
 </div>
 
-<div *ngIf="field.type === 'toggle'" class="toggle mat-typography">
-  <mat-slide-toggle color="primary" [formControl]="field.formControl">
+<div
+  *ngIf="field.type === 'toggle'"
+  class="toggle mat-typography"
+>
+  <mat-slide-toggle
+    color="primary"
+    [formControl]="field.formControl"
+  >
     {{field.placeholder}}
   </mat-slide-toggle>
 </div>
 
-<div *ngIf="field.type === 'files'" class="mat-typography">
-  <app-form-field-label [field]="field" [errors]="errors"></app-form-field-label>
+<div
+  *ngIf="field.type === 'files'"
+  class="mat-typography"
+>
+  <app-form-field-label
+    [field]="field"
+    [errors]="errors"
+  ></app-form-field-label>
   <app-file-upload [field]="field"></app-file-upload>
 </div>

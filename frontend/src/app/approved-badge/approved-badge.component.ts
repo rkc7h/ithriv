@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Resource } from '../resource';
-import {ResourceApiService} from "../shared/resource-api/resource-api.service";
-import {resource} from "selenium-webdriver/http";
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-approved-badge',
@@ -21,13 +20,13 @@ export class ApprovedBadgeComponent implements OnInit {
   handleClick($event) {
     $event.preventDefault();
     $event.stopPropagation();
-    if (this.resource.approved == "Approved") {
-      this.resource.approved = "Unapproved";
+    if (this.resource.approved === 'Approved') {
+      this.resource.approved = 'Unapproved';
       this.api.updateResource(this.resource).subscribe(r => {
         this.resource = r;
       });
     } else {
-      this.resource.approved = "Approved";
+      this.resource.approved = 'Approved';
       this.api.updateResource(this.resource).subscribe(r => {
         this.resource = r;
       });
@@ -35,10 +34,14 @@ export class ApprovedBadgeComponent implements OnInit {
   }
 
   instructions(): string {
-    if (this.resource.approved == "Approved") {
-      return 'Mark this resource as Unapproved';
-    } else {
-      return 'Mark this resource as Approved';
-    }
+    const what = (this.resource.approved === 'Approved') ? 'Unapproved' : 'Approved';
+    return `
+      Mark this resource as ${what}.
+      Unapproved resources are only visible to the resource owners and system
+      administrators. Once a resource page is approved, it appears to users in the
+      system. Edits to an approved resource immediately update the live content. A
+      system administrator can return an approved resource to unapproved if needed
+      while changes are underway.
+    `;
   }
 }

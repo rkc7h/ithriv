@@ -104,8 +104,8 @@ export class CategoryComponent implements OnInit {
   getInstitutionId() {
     if (this.user) {
       return this.user.institution_id;
-    } else if (sessionStorage.getItem("institution_id")) {
-      return parseInt(sessionStorage.getItem("institution_id"), 10);
+    } else if (sessionStorage.getItem('institution_id')) {
+      return parseInt(sessionStorage.getItem('institution_id'), 10);
     }
   }
 
