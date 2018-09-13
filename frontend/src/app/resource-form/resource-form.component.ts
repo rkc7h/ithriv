@@ -52,6 +52,7 @@ export class ResourceFormComponent implements OnInit {
       minLength: 1,
       placeholder: 'Name',
       type: 'text',
+      helpText: ''
     }),
     description: new FormField({
       formControl: new FormControl(),
@@ -60,7 +61,8 @@ export class ResourceFormComponent implements OnInit {
       type: 'textarea',
       options: {
         status: ['words'],
-      }
+      },
+      helpText: ''
     }),
     contact_notes: new FormField({
       formControl: new FormControl(),
@@ -70,7 +72,8 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Contact Details',
       type: 'text',
       fieldsetId: 'contact_info',
-      fieldsetLabel: 'Contact:'
+      fieldsetLabel: 'Contact:',
+      helpText: ''
     }),
     contact_email: new FormField({
       formControl: new FormControl(),
@@ -79,7 +82,8 @@ export class ResourceFormComponent implements OnInit {
       minLength: 1,
       placeholder: 'Contact Email',
       type: 'email',
-      fieldsetId: 'contact_info'
+      fieldsetId: 'contact_info',
+      helpText: ''
     }),
     contact_phone: new FormField({
       formControl: new FormControl(),
@@ -88,7 +92,8 @@ export class ResourceFormComponent implements OnInit {
       minLength: 1,
       placeholder: 'Contact Phone',
       type: 'text',
-      fieldsetId: 'contact_info'
+      fieldsetId: 'contact_info',
+      helpText: ''
     }),
     owner: new FormField({
       formControl: new FormControl(),
@@ -96,7 +101,8 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 1000,
       minLength: 1,
       placeholder: 'Owner',
-      type: 'text'
+      type: 'text',
+      helpText: ''
     }),
     cost: new FormField({
       formControl: new FormControl(),
@@ -109,14 +115,16 @@ export class ResourceFormComponent implements OnInit {
         'Free Across iTHRIV',
         'Free to Home Institution',
         'Cost Recovery',
-      ]
+      ],
+      helpText: ''
     }),
     type_id: new FormField({
       formControl: new FormControl(),
       required: true,
       placeholder: 'Select Type',
       type: 'select',
-      apiSource: 'getTypes'
+      apiSource: 'getTypes',
+      helpText: ''
     }),
     institution_id: new FormField({
       formControl: new FormControl(),
@@ -125,7 +133,8 @@ export class ResourceFormComponent implements OnInit {
       type: 'select',
       apiSource: 'getInstitutions',
       fieldsetId: 'institution_prefs',
-      fieldsetLabel: 'Institutions'
+      fieldsetLabel: 'Institutions',
+      helpText: ''
     }),
     'availabilities.institution_id': new FormField({
       formControl: new FormControl(),
@@ -135,6 +144,7 @@ export class ResourceFormComponent implements OnInit {
       multiSelect: true,
       apiSource: 'getInstitutions',
       fieldsetId: 'institution_prefs',
+      helpText: ''
     }),
     website: new FormField({
       formControl: new FormControl(),
@@ -142,7 +152,8 @@ export class ResourceFormComponent implements OnInit {
       maxLength: 200,
       minLength: 7,
       placeholder: 'Website',
-      type: 'url'
+      type: 'url',
+      helpText: ''
     }),
     categories: new FormField({
       formGroup: new FormGroup({}),
@@ -150,14 +161,16 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Select Categories',
       type: 'tree',
       apiSource: 'getCategories',
-      multiSelect: true
+      multiSelect: true,
+      helpText: ''
     }),
     attachments: new FormField({
       formControl: new FormControl(),
       attachments: new Map<number | string, FileAttachment>(),
       required: false,
       placeholder: 'Attachments',
-      type: 'files'
+      type: 'files',
+      helpText: ''
     }),
   };
 
@@ -350,7 +363,7 @@ export class ResourceFormComponent implements OnInit {
       }
 
       if (!this.resource.approved) {
-        this.resource.approved = "Unapproved"
+        this.resource.approved = 'Unapproved';
       }
 
       const fnName = this.createNew ? 'addResource' : 'updateResource';
