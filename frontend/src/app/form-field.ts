@@ -6,6 +6,7 @@ export class FormField {
   fieldsetLabel?: string;
   formControl?: FormControl;
   formGroup?: FormGroup;
+  helpText?: string;
   maxLength?: number;
   minLength?: number;
   multiSelect = false;
