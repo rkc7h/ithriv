@@ -1,4 +1,7 @@
-<div *appIsAdmin class="ribbon ribbon-top-right">
+<div
+  *appIsAdmin
+  class="ribbon ribbon-top-right"
+>
   <span
     (click)="handleClick($event)"
     *ngIf="resource.approved === 'Approved'"

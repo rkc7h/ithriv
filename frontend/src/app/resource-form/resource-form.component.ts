@@ -52,7 +52,11 @@ export class ResourceFormComponent implements OnInit {
       minLength: 1,
       placeholder: 'Name',
       type: 'text',
-      helpText: ''
+      helpText: `
+        You must be one of the persons responsible for a research resource to add it.
+        After saving your resource page, a system administrator must review and approve
+        it before it will be live in the system.
+      `
     }),
     description: new FormField({
       formControl: new FormControl(),
@@ -62,7 +66,12 @@ export class ResourceFormComponent implements OnInit {
       options: {
         status: ['words'],
       },
-      helpText: ''
+      helpText: `
+        Describe your resource or service and when a researcher or community member
+        should access it. You may use the hyperlink feature here to link to outside
+        sites, but you can also use the WEBSITE field below for the main associated
+        webpage.
+      `
     }),
     contact_notes: new FormField({
       formControl: new FormControl(),
@@ -73,7 +82,7 @@ export class ResourceFormComponent implements OnInit {
       type: 'text',
       fieldsetId: 'contact_info',
       fieldsetLabel: 'Contact:',
-      helpText: ''
+      helpText: `Contact information is optional, but will be displayed to the users.`
     }),
     contact_email: new FormField({
       formControl: new FormControl(),
@@ -82,8 +91,7 @@ export class ResourceFormComponent implements OnInit {
       minLength: 1,
       placeholder: 'Contact Email',
       type: 'email',
-      fieldsetId: 'contact_info',
-      helpText: ''
+      fieldsetId: 'contact_info'
     }),
     contact_phone: new FormField({
       formControl: new FormControl(),
@@ -92,8 +100,7 @@ export class ResourceFormComponent implements OnInit {
       minLength: 1,
       placeholder: 'Contact Phone',
       type: 'text',
-      fieldsetId: 'contact_info',
-      helpText: ''
+      fieldsetId: 'contact_info'
     }),
     owner: new FormField({
       formControl: new FormControl(),
@@ -102,7 +109,10 @@ export class ResourceFormComponent implements OnInit {
       minLength: 1,
       placeholder: 'Owner',
       type: 'text',
-      helpText: ''
+      helpText: `
+        Enter the **full email addresses** of the people who are
+        responsible for this resource page and should be able to edit in the future.
+      `
     }),
     cost: new FormField({
       formControl: new FormControl(),
@@ -116,15 +126,17 @@ export class ResourceFormComponent implements OnInit {
         'Free to Home Institution',
         'Cost Recovery',
       ],
-      helpText: ''
+      helpText: `
+        This is an optional field and can be used to generally indicate if there are
+        charges associated with use of this resource.
+      `
     }),
     type_id: new FormField({
       formControl: new FormControl(),
       required: true,
       placeholder: 'Select Type',
       type: 'select',
-      apiSource: 'getTypes',
-      helpText: ''
+      apiSource: 'getTypes'
     }),
     institution_id: new FormField({
       formControl: new FormControl(),
@@ -133,18 +145,22 @@ export class ResourceFormComponent implements OnInit {
       type: 'select',
       apiSource: 'getInstitutions',
       fieldsetId: 'institution_prefs',
-      fieldsetLabel: 'Institutions',
-      helpText: ''
+      fieldsetLabel: 'Institutions'
     }),
     'availabilities.institution_id': new FormField({
       formControl: new FormControl(),
       required: false,
-      placeholder: 'Institutions that may access this resource',
+      placeholder: 'Who can use this resource?',
       type: 'select',
       multiSelect: true,
       apiSource: 'getInstitutions',
       fieldsetId: 'institution_prefs',
-      helpText: ''
+      helpText: `
+        Select the audiences or user groups that have access to this resource or
+        service. These user groups will see this in their "resources you have access
+        to" category tabs. User groups not selected here will only see this resource
+        page when they select the "view all in category" tab.
+      `
     }),
     website: new FormField({
       formControl: new FormControl(),
@@ -153,7 +169,10 @@ export class ResourceFormComponent implements OnInit {
       minLength: 7,
       placeholder: 'Website',
       type: 'url',
-      helpText: ''
+      helpText: `
+        Provide the primary URL associated with this resource. This is an optional
+        field.
+      `
     }),
     categories: new FormField({
       formGroup: new FormGroup({}),
@@ -161,16 +180,14 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Select Categories',
       type: 'tree',
       apiSource: 'getCategories',
-      multiSelect: true,
-      helpText: ''
+      multiSelect: true
     }),
     attachments: new FormField({
       formControl: new FormControl(),
       attachments: new Map<number | string, FileAttachment>(),
       required: false,
       placeholder: 'Attachments',
-      type: 'files',
-      helpText: ''
+      type: 'files'
     }),
   };
 
