@@ -1,5 +1,5 @@
-import {Links} from "./links";
-import {Resource} from "./resource";
+import { Links } from './links';
+import { Resource } from './resource';
 
 export interface Favorite {
   id: number;
