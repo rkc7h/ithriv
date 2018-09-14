@@ -52,7 +52,8 @@ export class SearchComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       const query = ('query' in params ? params['query'] : '');
-      this.resourceQuery = { query: query, filters: [], facets: [], total: 0, size: 10, start: 0, resources: [] };
+      const filter = ('field' && 'value' in params ? [{ field: params['field'], value: params['value'] }] : [] );
+      this.resourceQuery = { query: query, filters: filter, facets: [], total: 0, size: 10, start: 0, resources: [] };
     });
     this.renderer.listen(window, 'resize', (event) => {
       this.checkWindowWidth();
