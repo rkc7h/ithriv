@@ -110,10 +110,11 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  sortResults() {
-    this.resources.sort(function(a, b) {
-      return +new Date(b.last_updated) - +new Date(a.last_updated);
-    });
+  sortByDate() {
+    this.resourceQuery.sort = '-last_updated';
+    this.showFilters = false;
+    this.resourceQuery.start = 0;
+    this.doSearch();
   }
 
   addFilter(field: string, value: string) {
