@@ -26,10 +26,10 @@
     </defs>
 
     <!-- Top Level Category Menu -->
-    <svg:g [ngClass]="'level-0'">
+    <svg:g [ngClass]="'level-0-menu'">
       <svg:g
         *ngFor="let level0Category of level0Categories; let i = index"
-        [ngClass]="'level-0-node'"
+        [ngClass]="'level-0-menu-node'"
         [@menuState]="{value: getMenuState(level0Category), params: getMenuPosition(level0Category)}"
         app-node
         [state]="getState(level0Category)"
