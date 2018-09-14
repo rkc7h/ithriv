@@ -131,7 +131,7 @@ class ResourceSearch(elasticsearch_dsl.FacetedSearch):
         super(ResourceSearch, self).__init__(*args, **kwargs)
 
     doc_types = [ElasticResource]
-    fields = ['name^10', 'description^5', 'type^30', 'institution^20', 'owner', 'website']
+    fields = ['name^10', 'description^5', 'type^2', 'institution', 'owner', 'website']
 
     facets = {
         'Type': elasticsearch_dsl.TermsFacet(field='type'),
