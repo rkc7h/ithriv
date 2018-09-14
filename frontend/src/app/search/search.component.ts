@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Renderer2, ViewChild, HostBinding } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatSidenav } from '@angular/material';
+import { MatPaginator, MatSidenav } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { Category } from '../category';
@@ -31,6 +31,7 @@ export class SearchComponent implements OnInit {
   user: User;
 
   @ViewChild('sidenav') public sideNav: MatSidenav;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(
     private api: ResourceApiService,
@@ -51,7 +52,7 @@ export class SearchComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       const query = ('query' in params ? params['query'] : '');
-      this.resourceQuery = { query: query, filters: [], facets: [], total: 0, size: 50, start: 0, resources: [] };
+      this.resourceQuery = { query: query, filters: [], facets: [], total: 0, size: 10, start: 0, resources: [] };
     });
     this.renderer.listen(window, 'resize', (event) => {
       this.checkWindowWidth();
@@ -125,9 +126,10 @@ export class SearchComponent implements OnInit {
     this.doSearch();
   }
 
-  getAllResources() {
-    return this.resources.filter(r => {
-      return this.user ? (this.user.role == "Admin" ? true : r.approved == "Approved") : r.approved == "Approved";
-    });
+  updatePage() {
+    this.resourceQuery.size = this.paginator.pageSize;
+    this.resourceQuery.start = (this.paginator.pageIndex * this.paginator.pageSize) + 1;
+    this.doSearch();
   }
+
 }

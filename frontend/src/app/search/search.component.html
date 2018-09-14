@@ -97,8 +97,15 @@
   </ul>
 
   <app-resource-list
-    [resources]="getAllResources()"
+    [resources]="resources"
     fxFlexFill
   ></app-resource-list>
+
+  <mat-paginator [length]="resourceQuery.total"
+                 [pageSize]="10"
+                 [pageSizeOptions]="[5, 10, 25, 100]"
+                 (page)="updatePage()">
+  </mat-paginator>
+
 
 </mat-sidenav-container>
