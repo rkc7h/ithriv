@@ -117,6 +117,13 @@ export class SearchComponent implements OnInit {
     this.doSearch();
   }
 
+  sortByRelevance() {
+    this.resourceQuery.sort = '_score';
+    this.showFilters = false;
+    this.resourceQuery.start = 0;
+    this.doSearch();
+  }
+
   addFilter(field: string, value: string) {
     this.resourceQuery.filters.push({ field: field, value: value });
     this.showFilters = false;
