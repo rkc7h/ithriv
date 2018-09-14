@@ -1,18 +1,23 @@
 import elasticsearch
 import flask_restful
-from flask import request
+from flask import request, g
 
 from app import elastic_index, RestException
 from app.model.resource import ThrivResource
-from app.model.search import Facet, FacetCount
+from app.model.search import Facet, FacetCount, Filter
 from app.resources.schema import SearchSchema, ThrivResourceSchema
+from app.resources.Auth import login_optional
 
 
 class SearchEndpoint(flask_restful.Resource):
 
+    @login_optional
     def post(self):
         request_data = request.get_json()
         search, errors = SearchSchema().load(request_data)
+        if not 'user' in g or not g.user or g.user.role != "Admin":
+            search.filters.append(Filter(field="Approved", value="Approved"))
+
         if errors: raise RestException(RestException.INVALID_OBJECT, details=errors)
         try:
             results = elastic_index.search_resources(search)
