@@ -110,6 +110,12 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  sortResults() {
+    this.resources.sort(function(a, b) {
+      return +new Date(b.last_updated) - +new Date(a.last_updated);
+    });
+  }
+
   addFilter(field: string, value: string) {
     this.resourceQuery.filters.push({ field: field, value: value });
     this.showFilters = false;
