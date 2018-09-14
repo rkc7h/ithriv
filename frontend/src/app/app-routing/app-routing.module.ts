@@ -44,6 +44,7 @@ const routes: Routes = [
   { path: 'resource/add/:category', component: ResourceFormComponent, data: { title: 'Add Resource' } },
   { path: 'search', component: SearchComponent, data: { title: 'Search' } },
   { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
+  { path: 'search/filter/:field/:value', component: SearchComponent, data: { title: 'Search' } },
   { path: 'session/:token', component: SessionRedirectComponent, data: { title: 'Logging in...' } },
   { path: '**', component: NotFoundComponent }
 ];
