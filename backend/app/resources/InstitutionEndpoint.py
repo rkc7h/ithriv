@@ -49,3 +49,11 @@ class InstitutionListEndpoint(flask_restful.Resource):
         except ValidationError as err:
             raise RestException(RestException.INVALID_OBJECT,
                                 details=load_result.errors)
+
+
+class InstitutionAvailabilityListEndpoint(flask_restful.Resource):
+
+    def get(self):
+        schema = ThrivInstitutionSchema(many=True)
+        institutions = db.session.query(ThrivInstitution).filter_by(hide_availability=False).all()
+        return schema.dump(institutions)
