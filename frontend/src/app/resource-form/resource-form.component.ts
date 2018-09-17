@@ -153,7 +153,7 @@ export class ResourceFormComponent implements OnInit {
       placeholder: 'Who can use this resource?',
       type: 'select',
       multiSelect: true,
-      apiSource: 'getInstitutions',
+      apiSource: 'getAvailabilityInstitutions',
       fieldsetId: 'institution_prefs',
       helpText: `
         Select the audiences or user groups that have access to this resource or
