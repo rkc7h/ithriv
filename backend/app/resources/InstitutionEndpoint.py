@@ -55,5 +55,5 @@ class InstitutionAvailabilityListEndpoint(flask_restful.Resource):
 
     def get(self):
         schema = ThrivInstitutionSchema(many=True)
-        institutions = db.session.query(ThrivInstitution).filter_by(hide_availability=False).all()
+        institutions = db.session.query(ThrivInstitution).filter(ThrivInstitution.hide_availability != True).all()
         return schema.dump(institutions)

@@ -750,14 +750,13 @@ class TestCase(unittest.TestCase):
     def test_list_instititions_with_availability(self):
         i1 = ThrivInstitution(name="Delmar's", description="autobody", hide_availability=True)
         i2 = ThrivInstitution(name="News Leader", description="A once formidablele news source", hide_availability=False)
-        # i2 = ThrivInstitution(name="Baja", description="Yum. Is it lunch time?")
-        db.session.add(i1)
-        db.session.add(i2)
+        i3 = ThrivInstitution(name="Baja", description="Yum. Is it lunch time?")
+        db.session.add_all([i1, i2, i3])
         db.session.commit()
         rv = self.app.get('/api/institution/availability', content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(1, len(response))
+        self.assertEqual(2, len(response))
 
     def test_delete_institution(self):
         institution = {"name": "Ender's Academy for wayward space boys",
