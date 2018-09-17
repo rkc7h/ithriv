@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
-import { User } from "../user";
-import { ResourceApiService } from "../shared/resource-api/resource-api.service";
+import { User } from '../user';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-add-resource-button',
