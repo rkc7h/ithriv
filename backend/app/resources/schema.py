@@ -1,6 +1,8 @@
 from flask_marshmallow.sqla import ModelSchema
 from marshmallow import fields, post_load
-from app import ma
+from sqlalchemy import func
+
+from app import ma, db
 from app.model.availability import Availability
 from app.model.category import Category
 from app.model.icon import Icon
@@ -141,7 +143,7 @@ class CategorySchema(ModelSchema):
     icon = fields.Nested(IconSchema,  allow_none=True, dump_only=True)
     image = fields.String(required=False, allow_none=True)
     parent_id = fields.Integer(required=False, allow_none=True)
-    children = fields.Nested('self', many=True, dump_only=True)
+    children = fields.Nested('self', many=True, dump_only=True, exclude=('parent', 'color'))
     parent = fields.Nested(ParentCategorySchema, dump_only=True)
     color = fields.Function(lambda obj: obj.calculate_color())
     level = fields.Function(lambda obj: obj.calculate_level(), dump_only=True)
@@ -152,13 +154,20 @@ class CategorySchema(ModelSchema):
         'resources': ma.URLFor('api.resourcebycategoryendpoint', category_id='<id>')
     })
 
-    def get_resource_count(self, obj):
+    def get_resource_count_for_current_user(self, obj):
+        """This takes the current users viewable resources into account, but is a little too slow."""
         category_resources = obj.category_resources
         resource_count = 0
         for cr in category_resources:
             if cr.resource.user_may_view():
                 resource_count += 1
         return resource_count
+
+    def get_resource_count(self, obj):
+        query =db.session.query(ResourceCategory).join(ResourceCategory.resource)\
+            .filter(ResourceCategory.category_id == obj.id).filter(ThrivResource.approved == 'Approved')
+        count_q = query.statement.with_only_columns([func.count()]).order_by(None)
+        return query.session.execute(count_q).scalar()
 
 
 class ResourceCategoriesSchema(ModelSchema):
