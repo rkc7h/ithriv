@@ -1269,6 +1269,18 @@ class TestCase(unittest.TestCase):
         self.assertIsNotNone(dbu.institution)
         self.assertEqual('UVA', dbu.institution.name)
 
+    def test_sso_login_with_existing_email_address_doesnt_bomb_out(self):
+        # There is an existing user in the database, but it has no eppn.
+        user = User(display_name='Engelbert Humperdinck', email='ehb11@virginia.edu')
+        db.session.add(user)
+        db.session.commit()
+        # Log in via sso as a user with an eppn that matches an existing users email address.
+        user2 = User(eppn="ehb11@virginia.edu", display_name='Engelbert Humperdinck', email='ehb11@virginia.edu')
+        self.logged_in_headers(user2);
+        # No errors occur when this user logs in, and we only have one account with that email address.
+        self.assertEqual(1, len(User.query.filter(User.email == 'ehb11@virginia.edu').all()));
+
+
     def test_login_user(self):
         user = self.test_create_user_with_password()
         data = {
