@@ -186,8 +186,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(404, rv.status_code)
 
     def test_user_edit_resource(self):
-        u1 = User(id=1, eppn=self.test_eppn, display_name="Peter Cottontail", email="peter@cottontail", role="User")
-        u2 = User(id=2, eppn=self.admin_eppn, display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
+        u1 = User(id=1, eppn="peter@cottontail", display_name="Peter Cottontail", email="peter@cottontail", role="User")
+        u2 = User(id=2, eppn="rabbit@velveteen.com", display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
         r1 = self.construct_resource(owner=u1.email)
         r2 = self.construct_resource(owner="flopsy@cottontail.com")
         db.session.add_all([u1, u2, r1, r2])
@@ -230,7 +230,7 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
 
     def test_general_user_delete_resource(self):
-        u1 = User(id=1, eppn=self.test_eppn, display_name="Peter Cottontail", email="peter@cottontail", role="User")
+        u1 = User(id=1, display_name="Peter Cottontail", email="peter@cottontail", role="User")
         r1 = self.construct_resource(owner=u1.email)
         r2 = self.construct_resource(owner="flopsy@cottontail.com")
         db.session.add_all([u1, r1, r2])
@@ -406,8 +406,8 @@ class TestCase(unittest.TestCase):
         self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
         self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com, bigbird@sesamestreet.com")
         self.construct_resource(name="Snuffy's Balloon Collection", owner="oscar@sesamestreet.com bigbird@sesamestreet.com")
-        u1 = User(id=1, eppn=self.test_eppn, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
-        u2 = User(id=2, eppn=self.admin_eppn, display_name="Big Bird", email="bigbird@sesamestreet.com")
+        u1 = User(id=1, role="User", display_name="Oscar the Grouch", email="oscar@sesamestreet.com", eppn="oscar@sesamestreet.com")
+        u2 = User(id=2, role="Admin", display_name="Big Bird", email="bigbird@sesamestreet.com", eppn="bigbird@sesamestreet.com")
         db.session.add_all([u1, u2])
         db.session.commit()
 
@@ -436,9 +436,9 @@ class TestCase(unittest.TestCase):
         self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com", approved="Unapproved")
         self.construct_resource(name="Snuffy's Balloon Collection",
                                 owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
-        u1 = User(id=1, eppn='ogrouch@seseme.org', display_name="Oscar the Grouch", email="oscar@sesamestreet.com", role="User")
-        u2 = User(id=2, eppn='bbird@seseme.org', display_name="Big Bird", email="bigbird@sesamestreet.com", role="User")
-        u3 = User(id=3, eppn='sgrover@seseme.org', display_name="Grover", email="grover@sesamestreet.com", role="User")
+        u1 = User(id=1, eppn='oscar@sesamestreet.com', display_name="Oscar the Grouch", email="oscar@sesamestreet.com", role="User")
+        u2 = User(id=2, eppn='bigbird@sesamestreet.com', display_name="Big Bird", email="bigbird@sesamestreet.com", role="User")
+        u3 = User(id=3, eppn='grover@sesamestreet.com', display_name="Grover", email="grover@sesamestreet.com", role="User")
         db.session.add_all([u1, u2, u3])
         db.session.commit()
 
@@ -450,7 +450,7 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(4, len(response))
 
-        # Bigbird should see the three resources he owns, and not the Unapproved one he doesn't
+        # Big Bird should see the three resources he owns, and not the Unapproved one he doesn't
         rv = self.app.get('/api/resource', content_type="application/json",
                           headers=self.logged_in_headers(user=u2), follow_redirects=True)
         self.assertSuccess(rv)
