@@ -158,6 +158,8 @@ class DataLoader:
 
             for row in reader:
                 inst = ThrivInstitution(id=row[0], name=row[1], description=row[2], domain=row[3])
+                if row[4] == 'True':
+                    inst.hide_availability = True
                 db.session.add(inst)
             db.session.commit()
             db.session.execute("SELECT setval('institution_id_seq', "
