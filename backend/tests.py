@@ -1077,6 +1077,26 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/favorite/%i' % 1, content_type="application/json")
         self.assertEqual(404, rv.status_code)
 
+    def test_delete_resource_deletes_favorite(self):
+        r = self.construct_resource()
+        u = User(id=1, display_name="Oscar the Grouch")
+
+        favorite_data = {"resource_id": r.id, "user_id": u.id}
+
+        rv = self.app.post('/api/favorite', data=json.dumps(favorite_data), content_type="application/json")
+        self.assertSuccess(rv)
+        self.assertEqual(1, len(r.favorites))
+
+        rv = self.app.delete('/api/resource/1', content_type="application/json", headers=self.logged_in_headers(),
+                             follow_redirects=True)
+        self.assertSuccess(rv)
+
+        rv = self.app.get('/api/resource/1', content_type="application/json")
+        self.assertEqual(404, rv.status_code)
+
+        rv = self.app.get('/api/favorite/1', content_type="application/json")
+        self.assertEqual(404, rv.status_code)
+
     def test_user_favorites_list(self):
         r1 = self.construct_resource(name="Birdseed sale at Hooper's")
         r2 = self.construct_resource(name="Slimy the worm's flying school")
