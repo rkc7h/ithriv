@@ -28,6 +28,7 @@
   fxLayout.xs="column"
   class="mat-typography"
   fxFlexFill
+  [hasBackdrop]="false"
 >
   <mat-sidenav
     #sidenav
@@ -62,6 +63,28 @@
           </mat-list-item>
         </mat-list>
       </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Sort Results
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-list>
+          <mat-list-item
+            (click)="sortByRelevance()"
+          >
+            Search Relevance
+            <div class="spacer"></div>
+          </mat-list-item>
+          <mat-list-item
+            (click)="sortByDate()"
+          >
+            Recently Updated
+            <div class="spacer"></div>
+          </mat-list-item>
+        </mat-list>
+      </mat-expansion-panel>
+
     </mat-accordion>
   </mat-sidenav>
 
@@ -97,8 +120,15 @@
   </ul>
 
   <app-resource-list
-    [resources]="getAllResources()"
+    [resources]="resources"
     fxFlexFill
   ></app-resource-list>
+
+  <mat-paginator [length]="resourceQuery.total"
+                 [pageSize]="pageSize"
+                 [pageSizeOptions]="[pageSize, pageSize*3, pageSize*5]"
+                 (page)="updatePage()">
+  </mat-paginator>
+
 
 </mat-sidenav-container>

@@ -12,12 +12,14 @@ class Search():
     facets = []
     start = 0
     size = 0
+    sort = None
 
-    def __init__(self, query="", filters=[],start=0, size=10):
+    def __init__(self, query="", filters=[], start=0, size=10, sort=None):
         self.query = query
         self.filters = filters
         self.start = start
         self.size = size
+        self.sort = sort
 
     def jsonFilters(self):
         jfilter = {}

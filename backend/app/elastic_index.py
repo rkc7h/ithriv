@@ -95,7 +95,7 @@ class ElasticIndex:
         self.resource_index.flush()
 
     def search_resources(self, search):
-        resource_search = ResourceSearch(search.query, search.jsonFilters(), index=self.resource_index_name)
+        resource_search = ResourceSearch(search.query, search.jsonFilters(), search.sort, index=self.resource_index_name)
         resource_search = resource_search[search.start:search.start + search.size]
         return resource_search.execute()
 
@@ -131,7 +131,7 @@ class ResourceSearch(elasticsearch_dsl.FacetedSearch):
         super(ResourceSearch, self).__init__(*args, **kwargs)
 
     doc_types = [ElasticResource]
-    fields = ['name^10', 'description^5', 'type^30', 'institution^20', 'owner', 'website']
+    fields = ['name^10', 'description^5', 'type^2', 'institution', 'owner', 'website']
 
     facets = {
         'Type': elasticsearch_dsl.TermsFacet(field='type'),

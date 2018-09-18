@@ -63,8 +63,9 @@
           {{category.name}}
         </h1>
         <p>{{category.description}}</p>
-        <div fxFlex></div>
-        <app-add-resource-button [category]="category"></app-add-resource-button>
+        <p>
+          <app-add-resource-button [category]="category"></app-add-resource-button>
+        </p>
       </div>
       <div
         *ngIf="getResources()"
@@ -91,13 +92,13 @@
               <h2>There are no resources available to your home institution.</h2>
             </div>
             <div
-              *ngIf="getResources(getInstitutionId()).length === 0 && !user && getInstitutionId()"
+              *ngIf="getResources(getInstitutionId()).length === 0 && !user && getInstitutionId() != publicId"
               class="please-log-in"
             >
               <h2>There are no resources available to {{getUserName()}}.</h2>
             </div>
             <div
-              *ngIf="getResources(getInstitutionId()).length === 0 && !user && !getInstitutionId()"
+              *ngIf="getResources(getInstitutionId()).length === 0 && !user && getInstitutionId() === publicId"
               class="please-log-in"
             >
               <app-login-services></app-login-services>

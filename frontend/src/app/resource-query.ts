@@ -7,6 +7,7 @@ export interface ResourceQuery {
   total: number;
   size: number;
   start: number;
+  sort?: string;
   resources: Array<Resource>;
 }
 

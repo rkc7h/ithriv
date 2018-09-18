@@ -24,12 +24,12 @@ export class ResourceTileComponent implements OnInit {
 
   goInstitution($event, institutuion: Institution) {
     $event.preventDefault();
-    this.router.navigate(['search', institutuion.name]);
+    this.router.navigate(['search/filter', 'Institution', institutuion.name]);
   }
 
   goType($event, type: ResourceType) {
     $event.preventDefault();
-    this.router.navigate(['search', type.name]);
+    this.router.navigate(['search/filter', 'Type', type.name]);
   }
 
   typeIconId(resource: Resource) {
