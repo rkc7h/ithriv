@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Renderer2, ViewChild, HostBinding } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatSidenav } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatPaginator, MatSidenav } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { Category } from '../category';
 import { Resource } from '../resource';
@@ -29,12 +29,13 @@ export class SearchComponent implements OnInit {
   categories: Category[];
   publicId: number;
   user: User;
+  pageSize = 20;
 
   @ViewChild('sidenav') public sideNav: MatSidenav;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(
     private api: ResourceApiService,
-    private router: Router,
     private route: ActivatedRoute,
     private renderer: Renderer2
   ) {
@@ -51,7 +52,8 @@ export class SearchComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       const query = ('query' in params ? params['query'] : '');
-      this.resourceQuery = { query: query, filters: [], facets: [], total: 0, size: 20, start: 0, resources: [] };
+      const filter = ('field' && 'value' in params ? [{ field: params['field'], value: params['value'] }] : [] );
+      this.resourceQuery = { query: query, filters: filter, facets: [], total: 0, size: this.pageSize, start: 0, resources: [], sort: '_score' };
     });
     this.renderer.listen(window, 'resize', (event) => {
       this.checkWindowWidth();
@@ -69,11 +71,6 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.api.getResources().subscribe(
-      (resources) => {
-        this.resources = resources;
-      }
-    );
     this.doSearch();
     this.searchBox = new FormControl();
     this.searchForm = new FormGroup({
@@ -83,8 +80,7 @@ export class SearchComponent implements OnInit {
     this.searchBox.setValue(this.resourceQuery.query);
     this.searchBox.valueChanges.pipe(
       debounceTime(300)).subscribe(query => {
-        this.resourceQuery.query = query;
-        this.doSearch();
+        this.updateQuery(query);
       });
   }
 
@@ -97,6 +93,7 @@ export class SearchComponent implements OnInit {
   updateQuery(query) {
     this.resourceQuery.query = query;
     this.resourceQuery.start = 0;
+    this.paginator.firstPage();
     this.doSearch();
   }
 
@@ -113,29 +110,25 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  onScroll() {
-    console.log('Scrolled!');
-    if (this.loading) { return; }
+  sortByDate() {
+    this.resourceQuery.sort = '-last_updated';
+    this.showFilters = false;
+    this.resourceQuery.start = 0;
+    this.doSearch();
+  }
 
-    if (this.resources != null && this.resources.length === this.resourceQuery.total) {
-      return;
-    }
-    console.log('finding more resources....');
-    this.loading = true;
-    const scrollSearch = this.resourceQuery;
-    scrollSearch.start = this.resources.length;
-    this.api.searchResources(scrollSearch).subscribe(
-      (query) => {
-        this.resources = this.resources.concat(query.resources);
-        this.loading = false;
-      }
-    );
+  sortByRelevance() {
+    this.resourceQuery.sort = '_score';
+    this.showFilters = false;
+    this.resourceQuery.start = 0;
+    this.doSearch();
   }
 
   addFilter(field: string, value: string) {
     this.resourceQuery.filters.push({ field: field, value: value });
     this.showFilters = false;
     this.resourceQuery.start = 0;
+    this.paginator.firstPage();
     this.doSearch();
   }
 
@@ -149,9 +142,10 @@ export class SearchComponent implements OnInit {
     this.doSearch();
   }
 
-  getAllResources() {
-    return this.resources.filter(r => {
-      return this.user ? true : r.approved;
-    });
+  updatePage() {
+    this.resourceQuery.size = this.paginator.pageSize;
+    this.resourceQuery.start = (this.paginator.pageIndex * this.paginator.pageSize) + 1;
+    this.doSearch();
   }
+
 }

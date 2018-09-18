@@ -240,6 +240,7 @@ class SearchSchema(ma.Schema):
     query = fields.Str()
     start = fields.Integer()
     size = fields.Integer()
+    sort = fields.Str()
     filters = ma.List(ma.Nested(FilterSchema))
     total = fields.Integer(dump_only=True)
     resources = fields.List(fields.Dict(), dump_only=True)

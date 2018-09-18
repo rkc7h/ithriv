@@ -559,7 +559,7 @@ class TestCase(unittest.TestCase):
     def search(self, query):
         '''Executes a query, returning the resulting search results object.'''
         rv = self.app.post('/api/search', data=json.dumps(query), follow_redirects=True,
-                           content_type="application/json")
+                           content_type="application/json", headers=self.logged_in_headers(),)
         self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
 
@@ -603,6 +603,22 @@ class TestCase(unittest.TestCase):
         data = {'query': 'kittens', 'filters': []}
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
+
+    def test_search_unapproved_resource(self):
+        # Unapproved resources should only appear in search results for Admin users
+        resource = self.construct_resource(name="space kittens", approved="Unapproved")
+        self.index_resource(resource)
+        data = {'query': 'kittens', 'filters': []}
+        rv = self.app.post('/api/search', data=json.dumps(data), follow_redirects=True,
+                           content_type="application/json")
+        self.assertSuccess(rv)
+        results = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(len(results["resources"]), 0)
+        rv = self.app.post('/api/search', data=json.dumps(data), follow_redirects=True,
+                           content_type="application/json", headers=self.logged_in_headers())
+        self.assertSuccess(rv)
+        results = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(len(results["resources"]), 1)
 
     def test_search_resource_by_description(self):
         resource = self.construct_resource(name="space kittens", description="Flight of the fur puff")

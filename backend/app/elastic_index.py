@@ -95,7 +95,7 @@ class ElasticIndex:
         self.resource_index.flush()
 
     def search_resources(self, search):
-        resource_search = ResourceSearch(search.query, search.jsonFilters(), index=self.resource_index_name)
+        resource_search = ResourceSearch(search.query, search.jsonFilters(), search.sort, index=self.resource_index_name)
         resource_search = resource_search[search.start:search.start + search.size]
         return resource_search.execute()
 
