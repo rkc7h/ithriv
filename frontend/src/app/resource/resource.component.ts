@@ -91,6 +91,10 @@ export class ResourceComponent implements OnInit {
     window.open(this.resource.website, '_blank');
   }
 
+  openEdit() {
+    this.router.navigateByUrl(`resource/${this.resource.id}/edit`);
+  }
+
   fileIcon(file: FileAttachment): string {
     const s = file.mime_type || file.type || file.name || file.file_name;
     const nameArray = s.toLowerCase().split((file.mime_type || file.type) ? '/' : '.');

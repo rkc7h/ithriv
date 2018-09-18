@@ -68,15 +68,14 @@ import { FormFieldLabelComponent } from './form-field-label/form-field-label.com
 import { FormFieldComponent } from './form-field/form-field.component';
 import { GradientBackgroundDirective } from './gradient-background.directive';
 import { GradientBorderDirective } from './gradient-border.directive';
-import { HeaderComponent } from './header/header.component';
 import { HomeComponent } from './home/home.component';
 import { IsAdminDirective } from './is-admin.directive';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { LoginServicesComponent } from './login-services/login-services.component';
 import { LoginComponent } from './login/login.component';
 import { LogoComponent } from './logo/logo.component';
-import { NodeComponent } from './network/node/node.component';
 import { GraphComponent } from './network/graph/graph.component';
+import { NodeComponent } from './network/node/node.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ProfileComponent } from './profile/profile.component';
 import { RegisterFormComponent } from './register-form/register-form.component';
@@ -117,7 +116,6 @@ import { UserResourceListComponent } from './user-resource-list/user-resource-li
     GradientBackgroundDirective,
     GradientBorderDirective,
     GraphComponent,
-    HeaderComponent,
     HomeComponent,
     IsAdminDirective,
     LoginComponent,

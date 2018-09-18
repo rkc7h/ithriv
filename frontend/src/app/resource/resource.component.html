@@ -15,7 +15,34 @@
     fxLayoutAlign="center"
   >
     <div fxFlex="75%">
-      <h1 class="mat-display-2">{{resource.name}}</h1>
+      <h1
+        class="mat-display-2"
+        (click)="goWebsite($event)"
+      ><a [href]="resource.website">{{resource.name}}</a></h1>
+      <div
+        class="button-row"
+        *ngIf="resource.website || resource.user_may_edit"
+      >
+        <button
+          *ngIf="resource.website"
+          mat-flat-button
+          (click)="goWebsite($event)"
+          color="primary"
+        >
+          <mat-icon>exit_to_app</mat-icon>
+          Visit Website
+        </button>
+        <button
+          *ngIf="resource.user_may_edit"
+          mat-flat-button
+          (click)="openEdit($event)"
+          color="accent"
+        >
+          <mat-icon>edit</mat-icon>
+          Edit Resource
+        </button>
+      </div>
+
       <markdown [data]="resource.description"></markdown>
       <div
         class="container"
@@ -25,11 +52,15 @@
         fxLayoutGap="10px"
         fxLayoutGap.xs="0"
       >
-        <img
-          src="/assets/institutions/{{resource.institution.name}}.png"
-          matTooltip="{{resource.institution.name}}"
+        <a
           (click)="goInstitution($event, resource.institution)"
-        />
+          class="available-institution"
+        >
+          <img
+            src="/assets/institutions/{{resource.institution.name}}.png"
+            matTooltip="{{resource.institution.name}}"
+          />
+        </a>
       </div>
     </div>
     <mat-card fxFlex="25%">

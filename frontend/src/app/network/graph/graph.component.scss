@@ -19,19 +19,19 @@
     }
 
     g {
-      &.level-0,
-      &.level-0-node,
-      &.level-1,
-      &.level-1-line,
-      &.level-1-node,
-      &.level-2-line,
-      &[app-node] {
+      &.level-0-menu,
+      &.level-0 {
         transition: $animationDuration ease-in-out all;
       }
     }
 
     line {
       stroke-width: 4px;
+
+      &.level-1-line,
+      &.level-2-line {
+        transition: $animationDuration ease-in-out all;
+      }
     }
   }
 }

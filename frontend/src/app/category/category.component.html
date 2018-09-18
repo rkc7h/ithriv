@@ -63,8 +63,9 @@
           {{category.name}}
         </h1>
         <p>{{category.description}}</p>
-        <div fxFlex></div>
-        <app-add-resource-button [category]="category"></app-add-resource-button>
+        <p>
+          <app-add-resource-button [category]="category"></app-add-resource-button>
+        </p>
       </div>
       <div
         *ngIf="getResources()"

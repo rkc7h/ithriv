@@ -23,6 +23,19 @@
     font-size: 48px;
     font-weight: bolder;
     background: transparent;
+
+    &.mat-display-2 {
+      margin-bottom: 0px;
+    }
+  }
+
+  .button-row {
+    margin-bottom: 2em;
+
+    button,
+    a {
+      margin-right: 8px;
+    }
   }
 }
 
@@ -32,4 +45,8 @@ mat-card {
 
 mat-card-title {
   color: mat-color($ithriv-primary, 800, 1.0);
+}
+
+.available-institution {
+  cursor: pointer;
 }
