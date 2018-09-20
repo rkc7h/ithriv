@@ -5,7 +5,7 @@ from sqlalchemy.orm import joinedload
 
 from app import db, RestException
 from app.model.category import Category
-from app.resources.schema import CategorySchema
+from app.resources.schema import CategorySchema, ParentCategorySchema
 from app.resources.Auth import login_optional
 
 
@@ -52,3 +52,11 @@ class CategoryListEndpoint(flask_restful.Resource):
         db.session.commit()
         return self.category_schema.dump(new_cat)
 
+
+class RootCategoryListEndpoint(flask_restful.Resource):
+    categories_schema = ParentCategorySchema(many=True)
+
+    @login_optional
+    def get(self):
+        categories = db.session.query(Category).filter(Category.parent_id == None).all()
+        return self.categories_schema.dump(categories)

@@ -19,7 +19,8 @@ from app.model.favorite import Favorite
 class ThrivInstitutionSchema(ModelSchema):
     class Meta:
         model = ThrivInstitution
-        fields = ('id', 'name', 'description')
+        fields = ('id', 'name', 'description', 'hide_availability')
+    hide_availability = fields.Boolean(allow_none=True)
 
 
 class IconSchema(ModelSchema):

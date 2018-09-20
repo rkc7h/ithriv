@@ -9,6 +9,7 @@ from marshmallow import ValidationError
 
 from app import app, RestException, db, elastic_index, auth
 from app.model.availability import Availability
+from app.model.favorite import Favorite
 from app.model.resource_category import ResourceCategory
 from app.model.resource import ThrivResource
 from app.resources.schema import ThrivResourceSchema
@@ -33,6 +34,7 @@ class ResourceEndpoint(flask_restful.Resource):
                 print("unable to remove record from elastic index, might not exist.")
             db.session.query(Availability).filter_by(resource_id=id).delete()
             db.session.query(ResourceCategory).filter_by(resource_id=id).delete()
+            db.session.query(Favorite).filter_by(resource_id=id).delete()
             db.session.query(ThrivResource).filter_by(id=id).delete()
             db.session.commit()
             return None

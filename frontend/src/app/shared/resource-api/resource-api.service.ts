@@ -39,10 +39,12 @@ export class ResourceApiService {
     resource: '/api/resource/<id>',
     categoryByResource: '/api/resource/<resource_id>/category',
     categoryList: '/api/category',
+    rootCategoryList: '/api/category/root',
     category: '/api/category/<id>',
     resourceByCategory: '/api/category/<category_id>/resource',
     institution: '/api/institution/<id>',
     institutionList: '/api/institution',
+    institutionAvailabilityList: '/api/institution/availability',
     type: '/api/type/<id>',
     typeList: '/api/type',
     search: '/api/search',
@@ -179,6 +181,12 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
+  /** getRootCategories */
+  getRootCategories(): Observable<Category[]> {
+    return this.httpClient.get<Category[]>(this.apiRoot + this.endpoints.rootCategoryList)
+      .pipe(catchError(this.handleError));
+  }
+
   /** getCategory */
   getCategory(id: Number): Observable<Category> {
     return this.httpClient.get<Category>(`${this.apiRoot + this.endpoints.categoryList}/${id}`)
@@ -218,6 +226,12 @@ export class ResourceApiService {
   /** getInstitutions */
   getInstitutions(): Observable<Institution[]> {
     return this.httpClient.get<Institution[]>(this.apiRoot + this.endpoints.institutionList)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** getAvailabilityInstitutions */
+  getAvailabilityInstitutions(): Observable<Institution[]> {
+    return this.httpClient.get<Institution[]>(this.apiRoot + this.endpoints.institutionAvailabilityList)
       .pipe(catchError(this.handleError));
   }
 

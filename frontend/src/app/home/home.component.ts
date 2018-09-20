@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit {
     this.loadUser();
     this.categories = [];
 
-    this.api.getCategories().subscribe(
+    this.api.getRootCategories().subscribe(
       (categories) => {
         this.categories = categories;
       }

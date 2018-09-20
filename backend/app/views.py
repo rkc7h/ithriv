@@ -9,10 +9,11 @@ from app.resources.IconEndpoint import IconListEndpoint, IconEndpoint
 from app.resources.ResourceAndCategoryEndoint import ResourceByCategoryEndpoint, CategoryByResourceEndpoint, \
     ResourceCategoryEndpoint, ResourceCategoryListEndpoint
 from app.resources.ResourceEndpoint import ResourceListEndpoint, ResourceEndpoint, UserResourceEndpoint
-from app.resources.CategoryEndoint import CategoryListEndpoint, CategoryEndpoint
+from app.resources.CategoryEndoint import CategoryListEndpoint, CategoryEndpoint, RootCategoryListEndpoint
 from app.resources.AvailabilityEndpoint import AvailabilityEndpoint, AvailabilityListEndpoint, \
     ResourceAvailabilityEndpoint
-from app.resources.InstitutionEndpoint import InstitutionEndpoint, InstitutionListEndpoint
+from app.resources.InstitutionEndpoint import InstitutionEndpoint, InstitutionListEndpoint, \
+    InstitutionAvailabilityListEndpoint
 from app.resources.SearchEndpoint import SearchEndpoint
 from app.resources.SessionEndpoint import SessionEndpoint
 from app.resources.Tracking import tracking_blueprint
@@ -60,9 +61,11 @@ api.add_resource(ResourceEndpoint, '/resource/<id>')
 api.add_resource(CategoryByResourceEndpoint, '/resource/<resource_id>/category')
 api.add_resource(CategoryListEndpoint, '/category')
 api.add_resource(CategoryEndpoint, '/category/<id>')
+api.add_resource(RootCategoryListEndpoint, '/category/root')
 api.add_resource(ResourceByCategoryEndpoint, '/category/<category_id>/resource')
 api.add_resource(InstitutionEndpoint, '/institution/<id>')
 api.add_resource(InstitutionListEndpoint, '/institution')
+api.add_resource(InstitutionAvailabilityListEndpoint, '/institution/availability')
 api.add_resource(TypeEndpoint, '/type/<id>')
 api.add_resource(TypeListEndpoint, '/type')
 api.add_resource(SearchEndpoint, '/search')
