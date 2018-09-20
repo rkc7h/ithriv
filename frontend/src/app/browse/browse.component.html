@@ -80,14 +80,14 @@
     <section
       *ngFor="let c of category.children"
       class="sub-category"
-      [ngStyle]="{'border-top-color': c.color}"
+      [ngStyle]="{'border-top-color': category.color}"
     >
       <div>
         <mat-icon
           *ngIf="c.icon"
           class="cat-icon-2"
           svgIcon="{{categoryIcon(c)}}"
-          [ngStyle]="c.hover ? {'background-color': c.color, 'border-color': c.color} : {'color': c.color, 'border-color': c.color}"
+          [ngStyle]="c.hover ? {'background-color': category.color, 'border-color': category.color} : {'color': category.color, 'border-color': category.color}"
           (mouseover)="c.hover=true"
           (mouseleave)="c.hover=false"
           (click)="goCategory($event, c)"

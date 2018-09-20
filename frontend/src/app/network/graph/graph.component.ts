@@ -112,6 +112,7 @@ export class GraphComponent {
       for (const child of c.children) {
         child.index = index;
         child.parent = c;
+        child.color = c.color;
         index++;
         this.setIndexesAndBackReferences(child, category_id);
       }
