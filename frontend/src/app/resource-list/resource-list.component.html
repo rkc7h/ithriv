@@ -9,11 +9,11 @@
   <app-resource-tile
     *ngFor="let resource of resources"
     class="resource-tile-container"
-    fxFlex.xl="1 1 20%"
-    fxFlex.lg="1 1 25%"
-    fxFlex.md="1 1 33%"
-    fxFlex.sm="1 1 50%"
-    fxFlex.xs="1 1 100%"
+    [fxFlex.xl]="sidenavExpanded ? '1 1 25%' : '1 1 20%'"
+    [fxFlex.lg]="sidenavExpanded ? '1 1 33%' : '1 1 25%'"
+    [fxFlex.md]="sidenavExpanded ? '1 1 50%' : '1 1 33%'"
+    [fxFlex.sm]="sidenavExpanded ? '1 1 100%' : '1 1 50%'"
+    [fxFlex.xs]="sidenavExpanded ? '1 1 100%' : '1 1 100%'"
     fxFlexFill
     [resource]="resource"
   ></app-resource-tile>
