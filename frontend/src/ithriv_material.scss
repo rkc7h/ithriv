@@ -268,7 +268,6 @@ $animationDuration: 500ms;
 
   :host >>> .content {
     height: -moz-available;          /* WebKit-based browsers will ignore this. */
-    height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
   }
 }
 
