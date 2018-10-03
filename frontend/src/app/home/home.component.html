@@ -25,7 +25,10 @@
   </mat-tab>
   <mat-tab label="Recently Updated Resources">
     <div class="example-small-box mat-elevation-z4">
-      <app-resource-list [resources]="resources"></app-resource-list>
+      <app-resource-list
+        [resources]="resources"
+        [sidenavExpanded]="false"
+      ></app-resource-list>
     </div>
   </mat-tab>
   <mat-tab label="My Resources">

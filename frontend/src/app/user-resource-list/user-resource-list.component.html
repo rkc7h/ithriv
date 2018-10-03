@@ -1,8 +1,10 @@
-<div *ngIf="session"
+<div
+  *ngIf="session"
   fxFlexFill
 >
   <app-resource-list
     [resources]="resources"
+    [sidenavExpanded]="false"
     fxFlexFill
   ></app-resource-list>
 </div>

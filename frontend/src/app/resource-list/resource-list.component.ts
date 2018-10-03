@@ -10,6 +10,7 @@ import { Resource } from '../resource';
 export class ResourceListComponent implements OnInit {
 
   @Input() resources: Resource[];
+  @Input() sidenavExpanded: boolean;
 
   constructor() { }
 

@@ -70,15 +70,11 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-list>
-          <mat-list-item
-            (click)="sortByRelevance()"
-          >
+          <mat-list-item (click)="sortByRelevance()">
             Search Relevance
             <div class="spacer"></div>
           </mat-list-item>
-          <mat-list-item
-            (click)="sortByDate()"
-          >
+          <mat-list-item (click)="sortByDate()">
             Recently Updated
             <div class="spacer"></div>
           </mat-list-item>
@@ -121,13 +117,16 @@
 
   <app-resource-list
     [resources]="resources"
+    [sidenavExpanded]="sidenav.opened"
     fxFlexFill
   ></app-resource-list>
 
-  <mat-paginator [length]="resourceQuery.total"
-                 [pageSize]="pageSize"
-                 [pageSizeOptions]="[pageSize, pageSize*3, pageSize*5]"
-                 (page)="updatePage()">
+  <mat-paginator
+    [length]="resourceQuery.total"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[pageSize, pageSize*3, pageSize*5]"
+    (page)="updatePage()"
+  >
   </mat-paginator>
 
 
