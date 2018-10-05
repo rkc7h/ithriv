@@ -125,7 +125,9 @@ export class CategoryComponent implements OnInit {
       this.router.navigate(['network', category.id]);
     } else {
       const id = (category.level === 1) ? category.parent.id : category.id;
-      this.router.navigate(['browse', id], { queryParams: { from: this.category.level } });
+      const scrollTo = (category.level === 1) ? category.id : undefined;
+      const queryParams = { from: this.category.level, scrollTo: scrollTo };
+      this.router.navigate(['browse', id], { queryParams: queryParams });
     }
   }
 

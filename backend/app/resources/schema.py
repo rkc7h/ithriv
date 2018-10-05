@@ -57,7 +57,7 @@ class ParentCategorySchema(ModelSchema):
     """Provides a view of the parent category, all the way to the top, but ignores children"""
     class Meta:
         model = Category
-        fields = ('id', 'name', 'parent', 'level', 'color', 'icon_id', 'icon', 'image', '_links')
+        fields = ('id', 'name', 'parent', 'level', 'color', 'icon_id', 'icon', 'image', '_links', 'brief_description', 'description')
     parent = fields.Nested('self', dump_only=True)
     level = fields.Function(lambda obj: obj.calculate_level())
     color = fields.Function(lambda obj: obj.calculate_color())
