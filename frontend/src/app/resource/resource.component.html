@@ -22,9 +22,14 @@
       fxFlex.xs="100%"
     >
       <h1
+        *ngIf="resource.website"
         class="mat-display-2"
         (click)="goWebsite($event)"
       ><a [href]="resource.website">{{resource.name}}</a></h1>
+      <h1
+        *ngIf="!resource.website"
+        class="mat-display-2"
+      >{{resource.name}}</h1>
       <div
         class="button-row"
         *ngIf="resource.website || resource.user_may_edit"
