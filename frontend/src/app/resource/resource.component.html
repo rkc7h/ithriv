@@ -14,7 +14,13 @@
     fxLayoutGap="1em"
     fxLayoutAlign="center"
   >
-    <div fxFlex="75%">
+    <div
+      fxFlex.xl="75%"
+      fxFlex.lg="75%"
+      fxFlex.md="67%"
+      fxFlex.sm="50%"
+      fxFlex.xs="100%"
+    >
       <h1
         class="mat-display-2"
         (click)="goWebsite($event)"
@@ -63,7 +69,13 @@
         </a>
       </div>
     </div>
-    <mat-card fxFlex="25%">
+    <mat-card
+      fxFlex.xl="25%"
+      fxFlex.lg="25%"
+      fxFlex.md="33%"
+      fxFlex.sm="50%"
+      fxFlex.xs="100%"
+    >
       <app-approved-badge [resource]="resource"></app-approved-badge>
       <mat-card-title>
         Information
@@ -118,12 +130,34 @@
           </mat-list-item>
           <mat-list-item *ngIf="categories">
             <h4 mat-line>Categories</h4>
-            <a
+            <div
+              class="category"
               *ngFor="let rc of categories"
               mat-line
-              href="#"
-              (click)="goCategory($event, rc.category)"
-            >{{rc.category.name}}</a>
+            >
+              <a
+                href="#"
+                (click)="goCategory($event, rc.category.parent.parent)"
+              >{{rc.category.parent.parent.name}}</a>
+              <mat-icon class="category-separator">chevron_right</mat-icon>
+              <a
+                href="
+                #"
+                (click)="goCategory($event, rc.category.parent)"
+                matTooltip="{{rc.category.parent.name}}"
+              >
+                <mat-icon
+                  class="category-icon"
+                  svgIcon="{{getCategoryIcon(rc.category)}}"
+                ></mat-icon>
+              </a>
+              <mat-icon class="category-separator">chevron_right</mat-icon>
+              <a
+                href="#"
+                (click)="goCategory($event, rc.category)"
+                matTooltip="{{rc.category.parent.parent.name}} > {{rc.category.parent.name}} > {{rc.category.name}}"
+              >{{rc.category.name}}</a>
+            </div>
           </mat-list-item>
           <mat-list-item *ngIf="resource.files && (resource.files.length > 0)">
             <h4 mat-line>Attachments</h4>

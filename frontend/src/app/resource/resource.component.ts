@@ -51,7 +51,6 @@ export class ResourceComponent implements OnInit {
     this.api
       .getResourceCategories(resource)
       .subscribe(rcs => {
-        console.log('Loaded Categories:', rcs);
         this.categories = rcs;
         this.transitionState = 'zoom-in-enter';
         this.isDataLoaded = true;
@@ -62,6 +61,12 @@ export class ResourceComponent implements OnInit {
     this.attachments = resource.files;
     this.transitionState = 'zoom-in-enter';
     this.isDataLoaded = true;
+  }
+
+  getCategoryIcon(category: Category) {
+    if (category.level === 2) {
+      return `ithriv_${category.parent.icon.id}`;
+    }
   }
 
   getAvailableInstitutions() {
@@ -78,7 +83,13 @@ export class ResourceComponent implements OnInit {
 
   goCategory($event, category: Category) {
     $event.preventDefault();
-    this.router.navigate(['category', category.id]);
+    if (category.level === 0) {
+      this.router.navigate(['browse', category.id]);
+    } else if (category.level === 1) {
+      this.router.navigate(['browse', category.parent.id], { queryParams: { scrollTo: category.id } });
+    } else if (category.level === 2) {
+      this.router.navigate(['category', category.id]);
+    }
   }
 
   goResourceType($event, type: ResourceType) {
