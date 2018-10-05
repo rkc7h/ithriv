@@ -27,6 +27,7 @@
     "@angular/router": "^6.1.6",
     "@covalent/text-editor": "^1.0.0",
     "@ngx-progressbar/core": "^5.1.2",
+    "@nicky-lenaers/ngx-scroll-to": "^1.1.1",
     "@types/material__top-app-bar": "^0.35.0",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.5.7",

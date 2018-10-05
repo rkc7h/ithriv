@@ -81,6 +81,7 @@
       *ngFor="let c of category.children"
       class="sub-category"
       [ngStyle]="{'border-top-color': category.color}"
+      id="category_{{c.id}}"
     >
       <div>
         <mat-icon
