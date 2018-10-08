@@ -29,7 +29,10 @@
         [ngStyle]="category.parent.hover ? {'background-color': category.color, 'border-color': category.color, 'color': 'white'} : {'color': category.color, 'border-color': category.color}"
         (mouseover)="category.parent.hover=true"
         (mouseleave)="category.parent.hover=false"
-        matTooltip="{{category.parent.brief_description || category.parent.description}}"
+        matTooltip="
+          {{category.name}}:
+          {{category.parent.brief_description || category.parent.description}}
+        "
       >
         <a
           href="#"
