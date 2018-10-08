@@ -1530,3 +1530,6 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
         self.assertEqual(5, len(result))
+
+if __name__ == '__main__':
+    unittest.main()

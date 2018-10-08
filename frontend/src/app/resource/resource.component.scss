@@ -50,3 +50,16 @@ mat-card-title {
 .available-institution {
   cursor: pointer;
 }
+
+.mat-line.category {
+  mat-icon.mat-icon.category-separator {
+    font-size: 12px;
+    text-align: center;
+
+    ::ng-deep svg { margin-bottom: 0px; }
+  }
+
+  mat-icon.mat-icon.category-icon {
+    ::ng-deep svg { margin-bottom: -6px; }
+  }
+}

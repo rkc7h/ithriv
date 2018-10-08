@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Category } from '../category';
 import { fadeTransition } from '../shared/animations';
 import { hexColorToRGBA } from '../shared/color';
-import { ResourceApiService } from "../shared/resource-api/resource-api.service";
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-category-tile',
@@ -22,6 +22,8 @@ export class CategoryTileComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('category', this.category);
+    console.log('fromCategory', this.fromCategory);
   }
 
   goCategory(category: Category) {

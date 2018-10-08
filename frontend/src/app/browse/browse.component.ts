@@ -1,9 +1,10 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ScrollToConfigOptions, ScrollToService } from '@nicky-lenaers/ngx-scroll-to';
 import { Category } from '../category';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { fadeTransition } from '../shared/animations';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-browse',
@@ -40,7 +41,8 @@ export class BrowseComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private api: ResourceApiService,
-    private titleService: Title
+    private titleService: Title,
+    private scrollToService: ScrollToService
   ) {
 
     this.route.params.subscribe(params => {
@@ -49,6 +51,20 @@ export class BrowseComponent implements OnInit {
         this.loadCategory(this.categoryId);
       }
       this.loadAllCategories();
+    });
+  }
+
+  scrollToRouteCategory() {
+    this.route.queryParams.subscribe(queryParams => {
+      console.log('queryParams', queryParams);
+
+      if (queryParams && queryParams.hasOwnProperty('scrollTo')) {
+        const config: ScrollToConfigOptions = {
+          target: `category_${queryParams['scrollTo']}`
+        };
+
+        this.scrollToService.scrollTo(config);
+      }
     });
   }
 
@@ -74,6 +90,7 @@ export class BrowseComponent implements OnInit {
     this.api.getCategories().subscribe(cats => {
       this.allCategories = cats;
       this.isDataLoaded = true;
+      this.scrollToRouteCategory();
     });
   }
 

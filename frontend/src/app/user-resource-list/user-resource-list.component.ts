@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { Institution } from "../institution";
+import { Institution } from '../institution';
 import { Resource } from '../resource';
 import { User } from '../user';
 
@@ -11,7 +11,6 @@ import { User } from '../user';
   styleUrls: ['./user-resource-list.component.scss']
 })
 export class UserResourceListComponent implements OnInit {
-
   resources: Resource[];
   session: User;
   institution: Institution;
@@ -19,7 +18,7 @@ export class UserResourceListComponent implements OnInit {
   constructor(
     private api: ResourceApiService,
   ) {
-      this.resources = [];
+    this.resources = [];
   }
 
   getUserResources() {
@@ -35,8 +34,8 @@ export class UserResourceListComponent implements OnInit {
   }
 
   getInstitution() {
-    if (sessionStorage.getItem("institution_id")) {
-      this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+    if (sessionStorage.getItem('institution_id')) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem('institution_id'), 10)).subscribe(
         (inst) => {
           this.institution = inst;
         }
@@ -45,11 +44,11 @@ export class UserResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-      this.api.getSession().subscribe(user => {
-        this.session = user;
-      });
-      this.getUserResources();
-      this.getInstitution();
+    this.api.getSession().subscribe(user => {
+      this.session = user;
+    });
+    this.getUserResources();
+    this.getInstitution();
   }
 
 }

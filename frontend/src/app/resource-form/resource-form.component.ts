@@ -68,9 +68,9 @@ export class ResourceFormComponent implements OnInit {
       },
       helpText: `
         Describe your resource or service and when a researcher or community member
-        should access it. You may use the hyperlink feature here to link to outside
-        sites, but you can also use the WEBSITE field below for the main associated
-        webpage.
+        should access it.  You may use the hyperlink feature here to link to multiple
+        external websites or other related portal pages, but you should use the WEBSITE
+        field below for the main associated webpage.
       `
     }),
     contact_notes: new FormField({
@@ -107,11 +107,13 @@ export class ResourceFormComponent implements OnInit {
       required: true,
       maxLength: 1000,
       minLength: 1,
-      placeholder: 'Owner',
+      placeholder: 'Owners',
       type: 'text',
       helpText: `
-        Enter the **full email addresses** of the people who are
-        responsible for this resource page and should be able to edit in the future.
+        Enter the **email addresses** of the people who are responsible for this
+        resource page and should be able to edit in the future.  The email must be
+        in one of the following formats: xxx@virginia.edu, xxx@vt.edu,
+        xxx@carilionclinic.org, xxx@inova.org.
       `
     }),
     cost: new FormField({

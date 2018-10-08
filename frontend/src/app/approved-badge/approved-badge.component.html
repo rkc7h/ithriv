@@ -1,6 +1,14 @@
 <div
-  *appIsAdmin
+  *ngIf="resource.user_may_edit && (resource.approved === 'Unapproved')"
   class="ribbon ribbon-top-right"
+>
+  <span>
+    Unapproved
+  </span>
+</div>
+<div
+  *appIsAdmin
+  class="ribbon ribbon-top-right clickable"
 >
   <span
     (click)="handleClick($event)"
