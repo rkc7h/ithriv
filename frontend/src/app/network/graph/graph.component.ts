@@ -28,6 +28,10 @@ const parked = {
   opacity: 0
 };
 
+Node.prototype.contains = function(arg) {
+  return this === arg || !!(this.compareDocumentPosition(arg) & 16);
+};
+
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',

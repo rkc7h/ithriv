@@ -79,7 +79,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }
 
       if (e instanceof NavigationEnd) {
-        this.isHome = ['/', '/search'].includes(e.url);
+        this.isHome = ['/', '/search'].indexOf(e.url) > -1;
         this.isResourceView = /^\/resource\//.test(e.url);
       }
     });
