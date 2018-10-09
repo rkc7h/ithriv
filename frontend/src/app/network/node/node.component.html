@@ -45,7 +45,9 @@
     [attr.y]="-nodeImageSize()/2"
     [attr.width]="nodeImageSize()"
     [attr.height]="nodeImageSize()"
-    [attr.href]="nodeImagePath(category)"
+    [attr.maxWidth]="nodeImageSize()"
+    [attr.maxHeight]="nodeImageSize()"
+    [attr.xlink:href]="nodeImagePath(category)"
     [attr.mask]="'url(#circleMask' + options.radius + ')'"
     preserveAspectRatio="xMidYMid slice"
   />
@@ -69,8 +71,7 @@
     [attr.y]="-nodeImageSize('node')/2"
     [attr.width]="nodeImageSize('node')"
     [attr.height]="nodeImageSize('node')"
-    [attr.href]="nodeImagePath(category)"
-    class="clip-circle"
+    [attr.xlink:href]="nodeImagePath(category)"
     preserveAspectRatio="xMidYMid slice"
   />
   <svg:g
@@ -80,7 +81,8 @@
     [attr.fill]="category.hover ? 'white' : category.color"
   >
   </svg:g>
-  <svg:text *ngIf="(category.level > 0) && (state !== 'tertiary')"
+  <svg:text
+    *ngIf="(category.level > 0) && (state !== 'tertiary')"
     text-anchor="middle"
     [attr.transform]="translateText(category)"
     [attr.fill]="category.hover ? 'white' : 'black'"
