@@ -248,4 +248,27 @@ export class AppComponent implements OnInit, OnDestroy {
     this.sidenav.close();
   }
 
+  isGraphViewSupported() {
+    const ieVersion = this.getInternetExplorerVersion();
+    if ((ieVersion === -1) || (ieVersion > 11)) {
+      return true;
+    } else {
+      this.setIsNetworkView(false);
+      return false;
+    }
+  }
+
+  getInternetExplorerVersion() {
+    let rv = -1;
+    if (navigator.appName === 'Microsoft Internet Explorer') {
+      const ua = navigator.userAgent;
+      const re = new RegExp('MSIE ([0-9]{1,}[\.0-9]{0,})');
+      if (re.exec(ua) != null) { rv = parseFloat(RegExp.$1); }
+    } else if (navigator.appName === 'Netscape') {
+      const ua = navigator.userAgent;
+      const re = new RegExp('Trident/.*rv:([0-9]{1,}[\.0-9]{0,})');
+      if (re.exec(ua) != null) { rv = parseFloat(RegExp.$1); }
+    }
+    return rv;
+  }
 }

@@ -199,7 +199,7 @@
             *ngIf="!mobileQuery.matches"
             class="fill-remaining-space"
           ></span>
-          <ng-container>
+          <ng-container *ngIf="isGraphViewSupported()">
             <div>Change View:</div>
             <mat-button-toggle-group #group="matButtonToggleGroup">
               <mat-button-toggle
