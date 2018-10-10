@@ -47,8 +47,8 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   }));
 
-  it(`should have as title 'iThriv'`, async(() => {
-    expect(component.title).toEqual('iThriv');
+  it(`should have as title 'iTHRIV'`, async(() => {
+    expect(component.title).toEqual('iTHRIV');
   }));
 
   it('should load icons', async(() => {
