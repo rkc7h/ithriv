@@ -62,10 +62,10 @@ export class FormFieldComponent implements OnInit {
   }
 
   isTextField(field: FormField) {
-    return ['text', 'url', 'email', 'password'].includes(field.type);
+    return ['text', 'url', 'email', 'password'].indexOf(field.type) > -1;
   }
 
   isNormalField(field: FormField) {
-    return !['tree', 'textarea', 'toggle', 'files'].includes(field.type);
+    return !(['tree', 'textarea', 'toggle', 'files'].indexOf(field.type) > -1);
   }
 }
