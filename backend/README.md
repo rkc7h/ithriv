@@ -238,6 +238,11 @@ Shibboleth.  The account we use will send the user back to an API endpoint that 
 token, and then redirect again to the front end, passing that token along as a GET parameter.
 
 
+## Testing
 
-
-
+### Run backend tests
+In the `backend` directory, execute the following command:
+```BASH
+source python-env/bin/activate
+export FLASK_APP=./app/__init__.py
+python tests.py
