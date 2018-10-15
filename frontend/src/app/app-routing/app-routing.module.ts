@@ -19,7 +19,7 @@ import { UserAdminComponent } from '../user-admin/user-admin.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'admin/new_user', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
+  { path: 'admin/new_user', component: ProfileComponent, data: { title: 'Edit your iTHRIV profile' } },
   { path: 'admin/users', component: UserAdminComponent, data: { title: 'User Administration' } },
   { path: 'admin/users/:id', component: ProfileComponent, data: { title: 'User Administration - Edit User' } },
   { path: 'browse', component: BrowseComponent, data: { title: 'Browse' } },
@@ -27,17 +27,17 @@ const routes: Routes = [
   { path: 'category_form/:category', component: CategoryFormComponent, data: { title: 'Category Form' } },
   { path: 'category/:category', component: CategoryComponent, data: { title: 'Category' } },
   { path: 'consult_request', component: ConsultRequestFormComponent, data: { title: 'Request a Consult', hideHeader: true } },
-  { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iThriv password', hideHeader: true } },
-  { path: 'home', component: HomeComponent, data: { title: 'Welcome to iThriv' } },
-  { path: 'login', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
-  { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iThriv', hideHeader: true } },
+  { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iTHRIV password', hideHeader: true } },
+  { path: 'home', component: HomeComponent, data: { title: 'Welcome to iTHRIV' } },
+  { path: 'login', component: LoginComponent, data: { title: 'Log in to iTHRIV', hideHeader: true } },
+  { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iTHRIV', hideHeader: true } },
   { path: 'network', component: GraphComponent, data: { title: 'Category' } },
   { path: 'network/:category', component: GraphComponent, data: { title: 'Category' } },
-  { path: 'profile', component: ProfileComponent, data: { title: 'Edit your iThriv profile' } },
-  { path: 'register', component: LoginComponent, data: { title: 'Sign up for iThriv', hideHeader: true } },
+  { path: 'profile', component: ProfileComponent, data: { title: 'Edit your iTHRIV profile' } },
+  { path: 'register', component: LoginComponent, data: { title: 'Sign up for iTHRIV', hideHeader: true } },
   {
     path: 'reset_password/:email_token', component: ResetPasswordComponent,
-    data: { title: 'Reset your iThriv password', hideHeader: true }
+    data: { title: 'Reset your iTHRIV password', hideHeader: true }
   },
   { path: 'resource/:resource', component: ResourceComponent, data: { title: 'Resource' } },
   { path: 'resource/:resource/edit', component: ResourceFormComponent, data: { title: 'Edit Resource' } },

@@ -4,6 +4,7 @@ import {FormField} from '../form-field';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ResourceApiService} from '../shared/resource-api/resource-api.service';
 import {IThrivForm} from '../shared/IThrivForm';
+import { ErrorMatcher } from '../error-matcher';
 
 @Component({
   selector: 'app-reset-password',
@@ -17,6 +18,7 @@ export class ResetPasswordComponent {
   formState = 'form';
   errorMessage = '';
   linkFromConfirmEmail = false;
+  errorMatcher = new ErrorMatcher();
 
   fields = {
     password: new FormField({
@@ -63,12 +65,12 @@ export class ResetPasswordComponent {
       this.changeDetectorRef.detectChanges();
       this.api.openSession(auth_token['token']);
       this.router.navigate(['']);
-      console.log("We are all done!")
+      console.log('We are all done!');
     }, error1 => {
       this.formState = 'form';
       this.errorMessage = error1;
       this.changeDetectorRef.detectChanges();
-      console.log("We had a terrible terrible error!")
+      console.log('We had a terrible terrible error!');
     });
   }
 

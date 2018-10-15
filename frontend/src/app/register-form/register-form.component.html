@@ -1,6 +1,6 @@
 <mat-card>
   <mat-card-content>
-    <h1 class="mat-display-1" color="primary">Create an iThriv account</h1>
+    <h1 class="mat-display-1" color="primary">Create an iTHRIV account</h1>
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
         [field]="field" [formGroup]="registerForm" [errorMatcher]="errorMatcher"></app-form-field>

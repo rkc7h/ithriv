@@ -45,7 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
   login_url = environment.api + '/api/login';
   mobileQuery: MediaQueryList;
   session: User;
-  title = 'iThriv';
+  title = 'iTHRIV';
   trustUrl;
 
   private _mobileQueryListener: () => void;
@@ -71,7 +71,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (e instanceof ActivationStart || e instanceof ActivationEnd) {
         if (e.snapshot && e.snapshot.data) {
           const data = e.snapshot.data;
-          this.title = data.title ? `iThriv - ${data.title}` : 'iThriv';
+          this.title = data.title ? `iTHRIV - ${data.title}` : 'iTHRIV';
           this.titleService.setTitle(this.title);
           this.categoryId = e.snapshot && e.snapshot.params && e.snapshot.params.category;
           this.hideHeader = !!data.hideHeader;
