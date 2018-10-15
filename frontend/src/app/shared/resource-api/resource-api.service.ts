@@ -5,12 +5,13 @@ import {
   HttpEventType,
   HttpHeaders,
   HttpParams
-} from '@angular/common/http';
+  } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgProgressComponent } from '@ngx-progressbar/core';
 import { Observable, throwError } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { catchError, last, map } from 'rxjs/operators';
+import { catchError, last, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Availability } from '../../availability';
 import { Category } from '../../category';
@@ -76,15 +77,28 @@ export class ResourceApiService {
   private hasSession: boolean;
   private sessionSubject = new BehaviorSubject<User>(null);
 
-  constructor(private httpClient: HttpClient) {
-    this.getSession().subscribe();  // Try to set up the session when starting up.
+  constructor(
+    private httpClient: HttpClient,
+    private router: Router
+  ) {
+    this.getSession().subscribe(); // Try to set up the session when starting up.
   }
 
   public getSession(): Observable<User> {
     if (!this.hasSession && localStorage.getItem('token')) {
       this._fetchSession();
     }
-    return this.sessionSubject.asObservable();
+    return this.sessionSubject.asObservable().pipe(
+      tap(() => {
+        const prevUrl = localStorage.getItem('prev_url');
+        if (prevUrl) {
+          console.log({ prevUrl });
+          this.router.navigateByUrl(prevUrl).then(() => {
+            localStorage.removeItem('prev_url');
+          });
+        }
+      })
+    );
   }
 
   public _fetchSession(): void {

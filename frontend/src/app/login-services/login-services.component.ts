@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { Institution } from '../institution';
 import { LoginService } from '../login-service';
@@ -14,11 +14,14 @@ export class LoginServicesComponent implements OnInit {
   loginServices: LoginService[] = [];
   loginUrl = environment.api + '/api/login';
   institution: Institution;
+  selectedTabIndex = 0;
 
   constructor(
     private api: ResourceApiService,
-    private router: Router
-    ) {
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    this.selectedTabIndex = (this.route.routeConfig.path === 'register') ? 1 : 0;
   }
 
   ngOnInit() {
@@ -57,6 +60,12 @@ export class LoginServicesComponent implements OnInit {
   }
 
   goLoginService(loginService: LoginService) {
+    if (this.router.url !== '/login') {
+      const prevUrl = this.router.url;
+      console.log({ prevUrl });
+      localStorage.setItem('prev_url', prevUrl);
+    }
+
     if (loginService.url) {
       window.location.href = loginService.url;
     } else {

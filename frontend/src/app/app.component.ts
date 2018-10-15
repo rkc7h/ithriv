@@ -133,6 +133,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   goLogin($event) {
     $event.preventDefault();
+    const prevUrl = this.router.url;
+    console.log({ prevUrl });
+    localStorage.setItem('prev_url', prevUrl);
     this.router.navigate(['login']);
   }
 
