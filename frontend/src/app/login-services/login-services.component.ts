@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { ResourceApiService } from "../shared/resource-api/resource-api.service";
+import { Institution } from '../institution';
 import { LoginService } from '../login-service';
-import { Router } from "@angular/router";
-import { Institution } from "../institution";
-import {Category} from "../category";
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-login-services',
@@ -38,8 +37,8 @@ export class LoginServicesComponent implements OnInit {
   }
 
   getInstitution() {
-    if (sessionStorage.getItem("institution_id")) {
-      this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+    if (sessionStorage.getItem('institution_id')) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem('institution_id'), 10)).subscribe(
         (inst) => {
           this.institution = inst;
         }
@@ -65,7 +64,7 @@ export class LoginServicesComponent implements OnInit {
         for (const id in institutions) {
           if (institutions.hasOwnProperty(id)) {
             const inst = institutions[id];
-            if (inst.name == loginService.name) {
+            if (inst.name === loginService.name) {
               sessionStorage.setItem('institution_id', inst.id.toString());
               sessionStorage.setItem('institution_name', loginService.name);
               this.getInstitution();
