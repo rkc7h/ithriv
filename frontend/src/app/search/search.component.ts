@@ -127,7 +127,7 @@ export class SearchComponent implements OnInit {
   updateUrl(query: ResourceQuery) {
     const queryArray: string[] = [];
 
-    if (query.hasOwnProperty('query') && (query.query !== '')) {
+    if (query.hasOwnProperty('query') && query.query) {
       queryArray.push(`query=${query.query}`);
     }
 
@@ -135,9 +135,8 @@ export class SearchComponent implements OnInit {
       queryArray.push(`${filter.field}=${filter.value}`);
     }
 
-    if (queryArray.length > 0) {
-      this.router.navigateByUrl(`/search/filter?${queryArray.join('&')}`);
-    }
+    const url = queryArray.length > 0 ? `/search/filter?${queryArray.join('&')}` : '/search';
+    this.router.navigateByUrl(url);
   }
 
   doSearch() {
