@@ -1,13 +1,20 @@
-import { Component, Input, OnInit, Renderer2, ViewChild, HostBinding } from '@angular/core';
+import {
+  Component,
+  HostBinding,
+  Input,
+  OnInit,
+  Renderer2,
+  ViewChild
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, MatSidenav } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { Category } from '../category';
 import { Resource } from '../resource';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { Filter, ResourceQuery } from '../resource-query';
 import { fadeTransition } from '../shared/animations';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
 
 @Component({
@@ -64,6 +71,7 @@ export class SearchComponent implements OnInit {
         sort: '_score'
       };
     });
+
     this.renderer.listen(window, 'resize', (event) => {
       this.checkWindowWidth();
     });

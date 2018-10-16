@@ -5,7 +5,7 @@ import {
   HttpEventType,
   HttpHeaders,
   HttpParams
-  } from '@angular/common/http';
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgressComponent } from '@ngx-progressbar/core';
@@ -92,7 +92,6 @@ export class ResourceApiService {
       tap(() => {
         const prevUrl = localStorage.getItem('prev_url');
         if (prevUrl) {
-          console.log({ prevUrl });
           this.router.navigateByUrl(prevUrl).then(() => {
             localStorage.removeItem('prev_url');
           });

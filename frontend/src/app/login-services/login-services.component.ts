@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { Institution } from '../institution';
 import { LoginService } from '../login-service';
@@ -62,7 +62,6 @@ export class LoginServicesComponent implements OnInit {
   goLoginService(loginService: LoginService) {
     if (this.router.url !== '/login') {
       const prevUrl = this.router.url;
-      console.log({ prevUrl });
       localStorage.setItem('prev_url', prevUrl);
     }
 
