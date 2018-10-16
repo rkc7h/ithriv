@@ -44,6 +44,7 @@ export class SearchComponent implements OnInit {
   constructor(
     private api: ResourceApiService,
     private route: ActivatedRoute,
+    private router: Router,
     private renderer: Renderer2
   ) {
     this.loadUser();
@@ -57,12 +58,21 @@ export class SearchComponent implements OnInit {
       }
     );
 
-    this.route.params.subscribe(params => {
-      const query = ('query' in params ? params['query'] : '');
-      const filter = ('field' && 'value' in params ? [{ field: params['field'], value: params['value'] }] : [] );
+    this.route.queryParamMap.subscribe(qParams => {
+      let query = '';
+      const filters: Filter[] = [];
+
+      for (const key of qParams.keys) {
+        if (key === 'query') {
+          query = qParams.get(key);
+        } else {
+          filters.push({ field: key, value: qParams.get(key) });
+        }
+      }
+
       this.resourceQuery = {
         query: query,
-        filters: filter,
+        filters: filters,
         facets: [],
         total: 0,
         size: this.pageSize,
@@ -114,7 +124,25 @@ export class SearchComponent implements OnInit {
     this.doSearch();
   }
 
+  updateUrl(query: ResourceQuery) {
+    const queryArray: string[] = [];
+
+    if (query.hasOwnProperty('query') && (query.query !== '')) {
+      queryArray.push(`query=${query.query}`);
+    }
+
+    for (const filter of query.filters) {
+      queryArray.push(`${filter.field}=${filter.value}`);
+    }
+
+    if (queryArray.length > 0) {
+      this.router.navigateByUrl(`/search/filter?${queryArray.join('&')}`);
+    }
+  }
+
   doSearch() {
+    this.updateUrl(this.resourceQuery);
+
     this.api.searchResources(this.resourceQuery).subscribe(
       (query) => {
         this.resourceQuery = query;

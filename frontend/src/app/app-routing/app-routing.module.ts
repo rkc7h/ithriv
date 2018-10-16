@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, UrlMatcher, UrlSegment } from '@angular/router';
 import { BrowseComponent } from '../browse/browse.component';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 import { CategoryComponent } from '../category/category.component';
@@ -16,6 +16,17 @@ import { ResourceComponent } from '../resource/resource.component';
 import { SearchComponent } from '../search/search.component';
 import { SessionRedirectComponent } from '../session-redirect/session-redirect.component';
 import { UserAdminComponent } from '../user-admin/user-admin.component';
+
+const searchFilterMatcher = (url: UrlSegment[]) => {
+  if (
+    (url.length === 2) &&
+    (url[0].path === ('search')) &&
+    (url[1].path === ('filter'))
+  ) {
+    return { consumed: url };
+  }
+  return null;
+};
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -44,7 +55,7 @@ const routes: Routes = [
   { path: 'resource/add/:category', component: ResourceFormComponent, data: { title: 'Add Resource' } },
   { path: 'search', component: SearchComponent, data: { title: 'Search' } },
   { path: 'search/:query', component: SearchComponent, data: { title: 'Search' } },
-  { path: 'search/filter/:field/:value', component: SearchComponent, data: { title: 'Search' } },
+  { matcher: searchFilterMatcher, component: SearchComponent, data: { title: 'Search' } },
   { path: 'session/:token', component: SessionRedirectComponent, data: { title: 'Logging in...' } },
   { path: '**', component: NotFoundComponent }
 ];
