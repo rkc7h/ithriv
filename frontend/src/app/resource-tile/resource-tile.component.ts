@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Institution } from '../institution';
 import { Resource } from '../resource';
-import { ResourceType } from "../resourceType";
+import { ResourceType } from '../resourceType';
 
 @Component({
   selector: 'app-resource-tile',
@@ -22,14 +22,14 @@ export class ResourceTileComponent implements OnInit {
     this.router.navigate(['resource', resource.id]);
   }
 
-  goInstitution($event, institutuion: Institution) {
+  goInstitution($event, institution: Institution) {
     $event.preventDefault();
-    this.router.navigate(['search/filter', 'Institution', institutuion.name]);
+    this.router.navigateByUrl(`/search/filter?Institution=${institution.name}`);
   }
 
   goType($event, type: ResourceType) {
     $event.preventDefault();
-    this.router.navigate(['search/filter', 'Type', type.name]);
+    this.router.navigateByUrl(`/search/filter?Type=${type.name}`);
   }
 
   typeIconId(resource: Resource) {

@@ -36,9 +36,7 @@
         <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
       </mat-card-header>
       <mat-card-content (click)="goResource($event, resource)">
-        <p>
-          {{truncateWords(resource.description, 20)}}
-        </p>
+        <markdown [data]="truncateWords(resource.description, 20)"></markdown>
       </mat-card-content>
     </div>
   </div>

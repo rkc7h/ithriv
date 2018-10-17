@@ -8,7 +8,7 @@ def requires_roles(*roles):
         @wraps(f)
         def wrapped(*args, **kwargs):
             if g.user.role not in roles:
-                raise RestException(RestException.PERMISSON_DENIED, 403)
+                raise RestException(RestException.PERMISSION_DENIED, 403)
             return f(*args, **kwargs)
         return wrapped
     return wrapper

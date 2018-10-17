@@ -7,10 +7,11 @@ import {
   HttpParams
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgProgressComponent } from '@ngx-progressbar/core';
 import { Observable, throwError } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { catchError, last, map } from 'rxjs/operators';
+import { catchError, last, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Availability } from '../../availability';
 import { Category } from '../../category';
@@ -76,8 +77,11 @@ export class ResourceApiService {
   private hasSession: boolean;
   private sessionSubject = new BehaviorSubject<User>(null);
 
-  constructor(private httpClient: HttpClient) {
-    this.getSession().subscribe();  // Try to set up the session when starting up.
+  constructor(
+    private httpClient: HttpClient,
+    private router: Router
+  ) {
+    this.getSession().subscribe(); // Try to set up the session when starting up.
   }
 
   public getSession(): Observable<User> {
@@ -107,10 +111,12 @@ export class ResourceApiService {
   closeSession(): Observable<User> {
     this.httpClient.delete<User>(this.apiRoot + this.endpoints.session).subscribe(x => {
       localStorage.removeItem('token');
+      sessionStorage.clear();
       this.hasSession = false;
       this.sessionSubject.next(null);
     }, (error) => {
       localStorage.removeItem('token');
+      sessionStorage.clear();
       this.hasSession = false;
       this.sessionSubject.error(error);
     });

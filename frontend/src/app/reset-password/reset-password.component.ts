@@ -1,10 +1,10 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
-import {FormField} from '../form-field';
-import {ActivatedRoute, Router} from '@angular/router';
-import {ResourceApiService} from '../shared/resource-api/resource-api.service';
-import {IThrivForm} from '../shared/IThrivForm';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorMatcher } from '../error-matcher';
+import { FormField } from '../form-field';
+import { IThrivForm } from '../shared/IThrivForm';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -44,7 +44,7 @@ export class ResetPasswordComponent {
     private api: ResourceApiService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef) {
-    this.route.params.subscribe( params => {
+    this.route.params.subscribe(params => {
       this.token = params['email_token'];
       this.iThrivForm.loadForm();
     }
@@ -60,18 +60,24 @@ export class ResetPasswordComponent {
     this.errorMessage = '';
 
     this.api.resetPassword(this.fields.password.formControl.value,
-                            this.token).subscribe(auth_token => {
-      this.formState = 'complete';
-      this.changeDetectorRef.detectChanges();
-      this.api.openSession(auth_token['token']);
-      this.router.navigate(['']);
-      console.log('We are all done!');
-    }, error1 => {
-      this.formState = 'form';
-      this.errorMessage = error1;
-      this.changeDetectorRef.detectChanges();
-      console.log('We had a terrible terrible error!');
-    });
+      this.token).subscribe(auth_token => {
+        this.formState = 'complete';
+        this.changeDetectorRef.detectChanges();
+        this.api.openSession(auth_token['token']).subscribe(session => {
+          const prevUrl = localStorage.getItem('prev_url');
+          if (prevUrl) {
+            this.router.navigateByUrl(prevUrl).then(() => {
+              localStorage.removeItem('prev_url');
+            });
+          } else {
+            // this.router.navigate(['']);
+          }
+        });
+      }, error1 => {
+        this.formState = 'form';
+        this.errorMessage = error1;
+        this.changeDetectorRef.detectChanges();
+      });
   }
 
   onCancel() {

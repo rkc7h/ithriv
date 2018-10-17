@@ -56,8 +56,6 @@ export class BrowseComponent implements OnInit {
 
   scrollToRouteCategory() {
     this.route.queryParams.subscribe(queryParams => {
-      console.log('queryParams', queryParams);
-
       if (queryParams && queryParams.hasOwnProperty('scrollTo')) {
         const config: ScrollToConfigOptions = {
           target: `category_${queryParams['scrollTo']}`

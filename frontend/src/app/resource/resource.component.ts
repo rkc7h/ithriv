@@ -78,7 +78,7 @@ export class ResourceComponent implements OnInit {
 
   goInstitution($event, institution: Institution) {
     $event.preventDefault();
-    this.router.navigate(['search/filter', 'Institution', institution.name]);
+    this.router.navigateByUrl(`/search/filter?Institution=${institution.name}`);
   }
 
   goCategory($event, category: Category) {
@@ -94,7 +94,7 @@ export class ResourceComponent implements OnInit {
 
   goResourceType($event, type: ResourceType) {
     $event.preventDefault();
-    this.router.navigate(['search/filter', 'Type', type.name]);
+    this.router.navigateByUrl(`/search/filter?Type=${type.name}`);
   }
 
   goWebsite($event) {

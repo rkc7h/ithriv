@@ -1,11 +1,11 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
-import {ResourceApiService} from '../shared/resource-api/resource-api.service';
-import {IThrivForm} from '../shared/IThrivForm';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { IThrivForm } from '../shared/IThrivForm';
 
 @Component({
   selector: 'app-forgot-password',
@@ -13,7 +13,6 @@ import {IThrivForm} from '../shared/IThrivForm';
   styleUrls: ['./forgot-password.component.scss']
 })
 export class ForgotPasswordComponent implements OnInit {
-  login_url = environment.api + '/api/login';
   errorMessage: string;
   errorMatcher = new ErrorMatcher();
   forgotPasswordForm: FormGroup = new FormGroup({});
@@ -29,7 +28,7 @@ export class ForgotPasswordComponent implements OnInit {
   iThrivForm = new IThrivForm(this.fields, this.forgotPasswordForm);
 
   constructor(private router: Router, private api: ResourceApiService,
-              private changeDetectorRef: ChangeDetectorRef) {
+    private changeDetectorRef: ChangeDetectorRef) {
     this.iThrivForm.loadForm();
   }
 
@@ -45,15 +44,15 @@ export class ForgotPasswordComponent implements OnInit {
     if (!this.forgotPasswordForm.valid) { return; }
     this.formStatus = 'submitting';
     this.api.sendResetPasswordEmail(this.fields.email.formControl.value).subscribe(e => {
-        this.formStatus = 'complete';
-        }, error1 => {
-          if (error1) {
-            this.errorMessage = error1;
-          } else {
-            this.errorMessage = 'We encountered an error resetting your password.  Please contact support.';
-          }
-          this.formStatus = 'form';
-          this.changeDetectorRef.detectChanges();
+      this.formStatus = 'complete';
+    }, error1 => {
+      if (error1) {
+        this.errorMessage = error1;
+      } else {
+        this.errorMessage = 'We encountered an error resetting your password.  Please contact support.';
+      }
+      this.formStatus = 'form';
+      this.changeDetectorRef.detectChanges();
     });
   }
 
