@@ -1,3 +1,14 @@
+<div *ngIf="resources && (resources.length > 0)">
+  <angular2csv
+    *appIsAdmin
+    mat-button
+    color="primary"
+    [data]="getCsvData()"
+    [filename]="getCsvFilename()"
+    [options]="getCsvOptions()"
+  ></angular2csv>
+</div>
+
 <div
   class="resource-list"
   fxLayout="row wrap"
