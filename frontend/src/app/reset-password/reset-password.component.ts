@@ -70,7 +70,7 @@ export class ResetPasswordComponent {
               localStorage.removeItem('prev_url');
             });
           } else {
-            this.router.navigate(['']);
+            // this.router.navigate(['']);
           }
         });
       }, error1 => {

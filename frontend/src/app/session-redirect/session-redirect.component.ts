@@ -24,7 +24,7 @@ export class SessionRedirectComponent {
             localStorage.removeItem('prev_url');
           });
         } else {
-          this.router.navigate(['']);
+          // this.router.navigate(['']);
         }
       });
     });
