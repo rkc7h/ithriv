@@ -23,8 +23,6 @@ export class UserResourceListComponent implements OnInit {
 
   getUserResources() {
     this.api.getSession().subscribe(user => {
-      console.log({ user });
-
       if (user) {
         this.api.getUserResources().subscribe(
           (resources) => {
@@ -47,7 +45,6 @@ export class UserResourceListComponent implements OnInit {
 
   ngOnInit() {
     this.api.getSession().subscribe(user => {
-      console.log({ user });
       this.session = user;
     });
     this.getUserResources();

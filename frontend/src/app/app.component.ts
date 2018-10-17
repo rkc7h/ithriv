@@ -115,7 +115,6 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getInstitution();
     this.api.getSession().subscribe(user => {
-      console.log({ user });
       this.session = user;
     }, error1 => {
       this.session = null;

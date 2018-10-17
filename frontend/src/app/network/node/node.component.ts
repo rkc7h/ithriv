@@ -23,10 +23,6 @@ export class NodeComponent implements OnInit {
   ngOnInit() {
   }
 
-  animatedLog() {
-    console.log('Animation call back occured.');
-  }
-
   rotate(angle: number) {
     return `rotate(${angle})`;
   }

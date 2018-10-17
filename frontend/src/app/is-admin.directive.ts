@@ -17,7 +17,6 @@ export class IsAdminDirective implements OnInit {
 
   private applyPermission(): void {
     this.api.getSession().subscribe(user => {
-      console.log({ user });
       if (user && user.role === 'Admin') {
         this.viewContainer.clear();
         this.viewContainer.createEmbeddedView(this.templateRef);

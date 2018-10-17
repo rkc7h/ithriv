@@ -20,7 +20,6 @@ export class FavoriteResourceButtonComponent implements OnInit {
 
   ngOnInit() {
     this.api.getSession().subscribe(user => {
-      console.log({ user });
       this.user = user;
     });
   }

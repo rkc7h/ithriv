@@ -23,7 +23,6 @@ export class FavoriteResourceListComponent implements OnInit {
 
   getFavoriteResources() {
     this.api.getSession().subscribe(user => {
-      console.log({ user });
       if (user) {
         this.api.getUserFavorites().subscribe(
           (favorites) => {
@@ -48,7 +47,6 @@ export class FavoriteResourceListComponent implements OnInit {
 
   ngOnInit() {
     this.api.getSession().subscribe(user => {
-      console.log({ user });
       this.session = user;
     });
     this.getFavoriteResources();

@@ -22,7 +22,6 @@ export class EditResourceButtonComponent implements OnInit {
 
   ngOnInit() {
     this.api.getSession().subscribe(user => {
-      console.log({ user });
       this.session = user;
     });
   }
