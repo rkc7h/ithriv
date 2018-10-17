@@ -114,10 +114,12 @@ export class ResourceApiService {
   closeSession(): Observable<User> {
     this.httpClient.delete<User>(this.apiRoot + this.endpoints.session).subscribe(x => {
       localStorage.removeItem('token');
+      sessionStorage.clear();
       this.hasSession = false;
       this.sessionSubject.next(null);
     }, (error) => {
       localStorage.removeItem('token');
+      sessionStorage.clear();
       this.hasSession = false;
       this.sessionSubject.error(error);
     });
