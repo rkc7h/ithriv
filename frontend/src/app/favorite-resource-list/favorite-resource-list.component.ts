@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { Institution } from "../institution";
+import { Institution } from '../institution';
 import { Resource } from '../resource';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
 
 @Component({
@@ -23,6 +23,7 @@ export class FavoriteResourceListComponent implements OnInit {
 
   getFavoriteResources() {
     this.api.getSession().subscribe(user => {
+      console.log({ user });
       if (user) {
         this.api.getUserFavorites().subscribe(
           (favorites) => {
@@ -36,8 +37,8 @@ export class FavoriteResourceListComponent implements OnInit {
   }
 
   getInstitution() {
-    if (sessionStorage.getItem("institution_id")) {
-      this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+    if (sessionStorage.getItem('institution_id')) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem('institution_id'), 10)).subscribe(
         (inst) => {
           this.institution = inst;
         }
@@ -47,6 +48,7 @@ export class FavoriteResourceListComponent implements OnInit {
 
   ngOnInit() {
     this.api.getSession().subscribe(user => {
+      console.log({ user });
       this.session = user;
     });
     this.getFavoriteResources();

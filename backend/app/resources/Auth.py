@@ -47,7 +47,11 @@ def login(user_info):
     g.user = user
     # redirect users back to the front end, include the new auth token.
     auth_token = user.encode_auth_token().decode()
+    print(auth_token)
+
     response_url = ("%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
+    print(response_url)
+
     return redirect(response_url)
 
 

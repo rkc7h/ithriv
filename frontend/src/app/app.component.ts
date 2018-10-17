@@ -42,7 +42,6 @@ export class AppComponent implements OnInit, OnDestroy {
   isHome = false;
   isNetworkView: boolean;
   isResourceView = false;
-  login_url = environment.api + '/api/login';
   mobileQuery: MediaQueryList;
   session: User;
   title = 'iTHRIV';
@@ -116,6 +115,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getInstitution();
     this.api.getSession().subscribe(user => {
+      console.log({ user });
       this.session = user;
     }, error1 => {
       this.session = null;

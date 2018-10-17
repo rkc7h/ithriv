@@ -65,7 +65,14 @@ export class LoginFormComponent {
       this.fields['password'].formControl.value,
       this.emailToken).subscribe(token => {
         this.api.openSession(token['token']).subscribe(user => {
-          this.router.navigate(['']);
+          const prevUrl = localStorage.getItem('prev_url');
+          if (prevUrl) {
+            this.router.navigateByUrl(prevUrl).then(() => {
+              localStorage.removeItem('prev_url');
+            });
+          } else {
+            this.router.navigate(['']);
+          }
         });
       }, error1 => {
         if (error1) {

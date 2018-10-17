@@ -81,27 +81,21 @@ export class ResourceApiService {
     private httpClient: HttpClient,
     private router: Router
   ) {
-    this.getSession().subscribe(); // Try to set up the session when starting up.
+    this.getSession().subscribe(user => console.log({ user })); // Try to set up the session when starting up.
   }
 
   public getSession(): Observable<User> {
     if (!this.hasSession && localStorage.getItem('token')) {
       this._fetchSession();
     }
-    return this.sessionSubject.asObservable().pipe(
-      tap(() => {
-        const prevUrl = localStorage.getItem('prev_url');
-        if (prevUrl) {
-          this.router.navigateByUrl(prevUrl).then(() => {
-            localStorage.removeItem('prev_url');
-          });
-        }
-      })
-    );
+    return this.sessionSubject.asObservable();
   }
 
   public _fetchSession(): void {
+    console.log('=== _fetchSession() ===');
+
     this.httpClient.get<User>(this.apiRoot + this.endpoints.session).subscribe(user => {
+      console.log('=== httpClient.get<User> callback ===');
       this.hasSession = true;
       this.sessionSubject.next(user);
     }, (error) => {
