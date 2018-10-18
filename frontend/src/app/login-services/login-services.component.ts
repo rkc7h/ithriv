@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { ResourceApiService } from "../shared/resource-api/resource-api.service";
+import { Institution } from '../institution';
 import { LoginService } from '../login-service';
-import { Router } from "@angular/router";
-import { Institution } from "../institution";
-import {Category} from "../category";
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-login-services',
@@ -15,11 +14,14 @@ export class LoginServicesComponent implements OnInit {
   loginServices: LoginService[] = [];
   loginUrl = environment.api + '/api/login';
   institution: Institution;
+  selectedTabIndex = 0;
 
   constructor(
     private api: ResourceApiService,
-    private router: Router
-    ) {
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    this.selectedTabIndex = (this.route.routeConfig.path === 'register') ? 1 : 0;
   }
 
   ngOnInit() {
@@ -38,8 +40,8 @@ export class LoginServicesComponent implements OnInit {
   }
 
   getInstitution() {
-    if (sessionStorage.getItem("institution_id")) {
-      this.api.getInstitution(parseInt(sessionStorage.getItem("institution_id"), 10)).subscribe(
+    if (sessionStorage.getItem('institution_id')) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem('institution_id'), 10)).subscribe(
         (inst) => {
           this.institution = inst;
         }
@@ -58,6 +60,11 @@ export class LoginServicesComponent implements OnInit {
   }
 
   goLoginService(loginService: LoginService) {
+    if (this.router.url !== '/login') {
+      const prevUrl = this.router.url;
+      localStorage.setItem('prev_url', prevUrl);
+    }
+
     if (loginService.url) {
       window.location.href = loginService.url;
     } else {
@@ -65,7 +72,7 @@ export class LoginServicesComponent implements OnInit {
         for (const id in institutions) {
           if (institutions.hasOwnProperty(id)) {
             const inst = institutions[id];
-            if (inst.name == loginService.name) {
+            if (inst.name === loginService.name) {
               sessionStorage.setItem('institution_id', inst.id.toString());
               sessionStorage.setItem('institution_name', loginService.name);
               this.getInstitution();

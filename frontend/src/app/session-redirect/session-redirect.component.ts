@@ -11,13 +11,21 @@ export class SessionRedirectComponent {
   // to the home page.  This allows single sign on through
   // Shibboleth.
 
-  constructor(private api: ResourceApiService,
+  constructor(
+    private api: ResourceApiService,
     private route: ActivatedRoute,
     private router: Router) {
 
     this.route.params.subscribe(params => {
-      api.openSession(params['token']).subscribe(session => {
-        this.router.navigate(['']);
+      this.api.openSession(params['token']).subscribe(session => {
+        const prevUrl = localStorage.getItem('prev_url');
+        if (prevUrl) {
+          this.router.navigateByUrl(prevUrl).then(() => {
+            localStorage.removeItem('prev_url');
+          });
+        } else {
+          // this.router.navigate(['']);
+        }
       });
     });
   }

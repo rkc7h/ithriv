@@ -56,8 +56,8 @@ export class HomeComponent implements OnInit {
   }
 
   loadUser() {
-    this.api.getSession().subscribe(s => {
-      this.user = s;
+    this.api.getSession().subscribe(user => {
+      this.user = user;
     });
   }
 

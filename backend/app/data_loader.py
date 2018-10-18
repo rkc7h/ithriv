@@ -39,9 +39,9 @@ class DataLoader:
             reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
             next(reader, None)  # skip the headers
             for row in reader:
-                type = self.get_type_by_name(row[3])
+                resource_type = self.get_type_by_name(row[3]) if row[3] else None
                 institution = self.get_inst_by_name(row[2])
-                resource = ThrivResource(id=row[0], name=row[1], description=row[10], type=type, institution=institution,
+                resource = ThrivResource(id=row[0], name=row[1], description=row[10], type=resource_type, institution=institution,
                                          owner=row[8], website=row[9], contact_notes=row[4])
                 resource.approved = "Unapproved"
                 db.session.add(resource)
@@ -88,10 +88,10 @@ class DataLoader:
                 icon.url = file_server.save_icon(data, icon, extension, mime_type)
                 db.session.add(icon)
 
-                type = self.get_type_by_name(row[3])
-                if type:
-                    type.icon = icon
-                    db.session.add(type)
+                resource_type = self.get_type_by_name(row[3]) if row[3] else None
+                if resource_type:
+                    resource_type.icon = icon
+                    db.session.add(resource_type)
         db.session.commit()
 
     def load_categories(self):

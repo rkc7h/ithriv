@@ -20,11 +20,11 @@ import {
   RouterOutlet
 } from '@angular/router';
 import { environment } from '../environments/environment';
-import { Institution } from './institution';
-import { User } from './user';
 import { Icon } from './icon';
+import { Institution } from './institution';
 import { fadeTransition } from './shared/animations';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
+import { User } from './user';
 
 @Component({
   selector: 'app-root',
@@ -42,10 +42,9 @@ export class AppComponent implements OnInit, OnDestroy {
   isHome = false;
   isNetworkView: boolean;
   isResourceView = false;
-  login_url = environment.api + '/api/login';
   mobileQuery: MediaQueryList;
   session: User;
-  title = 'iThriv';
+  title = 'iTHRIV';
   trustUrl;
 
   private _mobileQueryListener: () => void;
@@ -71,7 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (e instanceof ActivationStart || e instanceof ActivationEnd) {
         if (e.snapshot && e.snapshot.data) {
           const data = e.snapshot.data;
-          this.title = data.title ? `iThriv - ${data.title}` : 'iThriv';
+          this.title = data.title ? `iTHRIV - ${data.title}` : 'iTHRIV';
           this.titleService.setTitle(this.title);
           this.categoryId = e.snapshot && e.snapshot.params && e.snapshot.params.category;
           this.hideHeader = !!data.hideHeader;
@@ -133,6 +132,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   goLogin($event) {
     $event.preventDefault();
+    const prevUrl = this.router.url;
+    localStorage.setItem('prev_url', prevUrl);
     this.router.navigate(['login']);
   }
 

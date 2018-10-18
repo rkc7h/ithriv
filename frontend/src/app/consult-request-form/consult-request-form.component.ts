@@ -49,7 +49,7 @@ export class ConsultRequestFormComponent implements OnInit {
   iThrivForm = new IThrivForm(this.fields, this.requestConsultForm);
 
   constructor(private router: Router, private api: ResourceApiService,
-              private changeDetectorRef: ChangeDetectorRef) {
+    private changeDetectorRef: ChangeDetectorRef) {
     this.iThrivForm.loadForm();
   }
 
@@ -67,16 +67,20 @@ export class ConsultRequestFormComponent implements OnInit {
     this.iThrivForm.validate();
     if (!this.requestConsultForm.valid) { return; }
     this.formStatus = 'submitting';
-    this.api.sendConsultRequestEmail(this.user, this.fields.request_category.formControl.value, this.fields.request_text.formControl.value).subscribe(e => {
-        this.formStatus = 'complete';
-        }, error1 => {
-          if (error1) {
-            this.errorMessage = error1;
-          } else {
-            this.errorMessage = 'We encountered an error resetting your password.  Please contact support.';
-          }
-          this.formStatus = 'form';
-          this.changeDetectorRef.detectChanges();
+    this.api.sendConsultRequestEmail(
+      this.user,
+      this.fields.request_category.formControl.value,
+      this.fields.request_text.formControl.value
+    ).subscribe(e => {
+      this.formStatus = 'complete';
+    }, error1 => {
+      if (error1) {
+        this.errorMessage = error1;
+      } else {
+        this.errorMessage = 'We encountered an error resetting your password.  Please contact support.';
+      }
+      this.formStatus = 'form';
+      this.changeDetectorRef.detectChanges();
     });
   }
 

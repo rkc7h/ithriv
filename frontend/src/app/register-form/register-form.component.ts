@@ -1,5 +1,5 @@
-import {ChangeDetectorRef, Component, EventEmitter, HostBinding, OnInit} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import { ChangeDetectorRef, Component, EventEmitter, HostBinding, OnInit } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
@@ -7,8 +7,8 @@ import { FormField } from '../form-field';
 import { User } from '../user';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { fadeTransition } from '../shared/animations';
-import {ValidatePasswordsMatch} from '../shared/validators/password_match.validator';
-import {IThrivForm} from '../shared/IThrivForm';
+import { ValidatePasswordsMatch } from '../shared/validators/password_match.validator';
+import { IThrivForm } from '../shared/IThrivForm';
 
 @Component({
   selector: 'app-register-form',
@@ -16,10 +16,9 @@ import {IThrivForm} from '../shared/IThrivForm';
   styleUrls: ['./register-form.component.scss'],
   animations: [fadeTransition()]
 })
-export class RegisterFormComponent  {
+export class RegisterFormComponent {
   @HostBinding('@fadeTransition')
   title: string;
-  login_url = environment.api + '/api/register';
   errorMatcher = new ErrorMatcher();
   user: User;
   registerForm: FormGroup = new FormGroup({});
@@ -73,9 +72,11 @@ export class RegisterFormComponent  {
     private changeDetectorRef: ChangeDetectorRef
   ) {
     this.iThrivForm.loadForm();
-    this.user = { id: null, display_name: this.fields.display_name.formControl.value,
+    this.user = {
+      id: null, display_name: this.fields.display_name.formControl.value,
       email: this.fields.email.formControl.value, institution_id: this.fields.institution_id.formControl.value,
-      password: this.fields.password.formControl.value, role: 'User' };
+      password: this.fields.password.formControl.value, role: 'User'
+    };
   }
 
   getFields() {

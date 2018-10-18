@@ -1,13 +1,20 @@
-import { Component, Input, OnInit, Renderer2, ViewChild, HostBinding } from '@angular/core';
+import {
+  Component,
+  HostBinding,
+  Input,
+  OnInit,
+  Renderer2,
+  ViewChild
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, MatSidenav } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { Category } from '../category';
 import { Resource } from '../resource';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { Filter, ResourceQuery } from '../resource-query';
 import { fadeTransition } from '../shared/animations';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
 
 @Component({
@@ -37,6 +44,7 @@ export class SearchComponent implements OnInit {
   constructor(
     private api: ResourceApiService,
     private route: ActivatedRoute,
+    private router: Router,
     private renderer: Renderer2
   ) {
     this.loadUser();
@@ -50,11 +58,30 @@ export class SearchComponent implements OnInit {
       }
     );
 
-    this.route.params.subscribe(params => {
-      const query = ('query' in params ? params['query'] : '');
-      const filter = ('field' && 'value' in params ? [{ field: params['field'], value: params['value'] }] : [] );
-      this.resourceQuery = { query: query, filters: filter, facets: [], total: 0, size: this.pageSize, start: 0, resources: [], sort: '_score' };
+    this.route.queryParamMap.subscribe(qParams => {
+      let query = '';
+      const filters: Filter[] = [];
+
+      for (const key of qParams.keys) {
+        if (key === 'query') {
+          query = qParams.get(key);
+        } else {
+          filters.push({ field: key, value: qParams.get(key) });
+        }
+      }
+
+      this.resourceQuery = {
+        query: query,
+        filters: filters,
+        facets: [],
+        total: 0,
+        size: this.pageSize,
+        start: 0,
+        resources: [],
+        sort: '_score'
+      };
     });
+
     this.renderer.listen(window, 'resize', (event) => {
       this.checkWindowWidth();
     });
@@ -85,8 +112,8 @@ export class SearchComponent implements OnInit {
   }
 
   loadUser() {
-    this.api.getSession().subscribe(s => {
-      this.user = s;
+    this.api.getSession().subscribe(user => {
+      this.user = user;
     });
   }
 
@@ -97,7 +124,24 @@ export class SearchComponent implements OnInit {
     this.doSearch();
   }
 
+  updateUrl(query: ResourceQuery) {
+    const queryArray: string[] = [];
+
+    if (query.hasOwnProperty('query') && query.query) {
+      queryArray.push(`query=${query.query}`);
+    }
+
+    for (const filter of query.filters) {
+      queryArray.push(`${filter.field}=${filter.value}`);
+    }
+
+    const url = queryArray.length > 0 ? `/search/filter?${queryArray.join('&')}` : '/search';
+    this.router.navigateByUrl(url);
+  }
+
   doSearch() {
+    this.updateUrl(this.resourceQuery);
+
     this.api.searchResources(this.resourceQuery).subscribe(
       (query) => {
         this.resourceQuery = query;

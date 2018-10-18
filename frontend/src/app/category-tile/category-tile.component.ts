@@ -22,8 +22,6 @@ export class CategoryTileComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('category', this.category);
-    console.log('fromCategory', this.fromCategory);
   }
 
   goCategory(category: Category) {
