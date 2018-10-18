@@ -1,4 +1,5 @@
 <div
+  *ngIf="resources && (resources.length > 0)"
   class="resource-list"
   fxLayout="row wrap"
   fxLayout.xs="column"
@@ -7,7 +8,7 @@
   fxLayoutGap="20px grid"
 >
   <div
-    *ngIf="resources && (resources.length > 0)"
+    *appIsAdmin
     fxFlex="100%"
     fxFlexFill
     fxLayout="row"
@@ -34,7 +35,6 @@
     </div>
     <div *ngIf="csvDataReady">
       <app-csv-export-button
-        *appIsAdmin
         [data]="csvData"
         [filename]="getCsvFilename()"
         [options]="getCsvOptions()"
