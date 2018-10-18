@@ -3,3 +3,17 @@
   min-width: 50vw;
   max-width: 100vw;
 }
+
+.preparingCsvData {
+  ::ng-deep .mat-button-wrapper {
+    color: #666;
+  }
+
+  .mat-progress-spinner, .mat-spinner {
+    display: inline-block;
+
+    ::ng-deep circle {
+      stroke: #666;
+    }
+  }
+}

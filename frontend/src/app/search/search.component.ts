@@ -70,7 +70,7 @@ export class SearchComponent implements OnInit {
         }
       }
 
-      this.resourceQuery = {
+      this.resourceQuery = new ResourceQuery({
         query: query,
         filters: filters,
         facets: [],
@@ -79,7 +79,7 @@ export class SearchComponent implements OnInit {
         start: 0,
         resources: [],
         sort: '_score'
-      };
+      });
     });
 
     this.renderer.listen(window, 'resize', (event) => {

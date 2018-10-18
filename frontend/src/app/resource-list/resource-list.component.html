@@ -13,12 +13,33 @@
     fxLayout="row"
     fxLayoutAlign="end end"
   >
-    <app-csv-export-button
-      *appIsAdmin
-      [data]="getCsvData()"
-      [filename]="getCsvFilename()"
-      [options]="getCsvOptions()"
-    ></app-csv-export-button>
+    <div *ngIf="!csvDataReady">
+      <button
+        mat-raised-button
+        (click)="getCsvData()"
+        *ngIf="!preparingCsvData"
+      >
+        <mat-icon>save_alt</mat-icon>
+        Download this list as a CSV file
+      </button>
+      <button
+        *ngIf="preparingCsvData"
+        mat-raised-button
+        disabled
+        class="preparingCsvData"
+      >
+        <mat-spinner [diameter]="24"></mat-spinner>
+        Generating CSV file...
+      </button>
+    </div>
+    <div *ngIf="csvDataReady">
+      <app-csv-export-button
+        *appIsAdmin
+        [data]="csvData"
+        [filename]="getCsvFilename()"
+        [options]="getCsvOptions()"
+      ></app-csv-export-button>
+    </div>
   </div>
   <app-resource-tile
     *ngFor="let resource of resources"
