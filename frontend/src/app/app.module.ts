@@ -41,6 +41,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CovalentTextEditorModule } from '@covalent/text-editor';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { ScrollToModule } from '@nicky-lenaers/ngx-scroll-to';
+import { Angular2CsvModule } from 'angular2-csv';
 import { InlineSVGModule } from 'ng-inline-svg';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { DeviceDetectorModule } from 'ngx-device-detector';
@@ -59,6 +60,7 @@ import { CategoryFormComponent } from './category-form/category-form.component';
 import { CategoryTileComponent } from './category-tile/category-tile.component';
 import { CategoryComponent } from './category/category.component';
 import { ConsultRequestFormComponent } from './consult-request-form/consult-request-form.component';
+import { CsvExportButtonComponent } from './csv-export-button/csv-export-button.component';
 import { EditCategoryButtonComponent } from './edit-category-button/edit-category-button.component';
 import { EditResourceButtonComponent } from './edit-resource-button/edit-resource-button.component';
 import { FavoriteResourceButtonComponent } from './favorite-resource-button/favorite-resource-button.component';
@@ -106,6 +108,7 @@ import { UserResourceListComponent } from './user-resource-list/user-resource-li
     CategoryFormComponent,
     CategoryTileComponent,
     ConsultRequestFormComponent,
+    CsvExportButtonComponent,
     EditCategoryButtonComponent,
     EditResourceButtonComponent,
     FavoriteResourceButtonComponent,
@@ -140,6 +143,7 @@ import { UserResourceListComponent } from './user-resource-list/user-resource-li
     UserResourceListComponent
   ],
   imports: [
+    Angular2CsvModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     BrowserModule,

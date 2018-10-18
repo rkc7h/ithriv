@@ -1,6 +1,6 @@
 import { Resource } from './resource';
 
-export interface ResourceQuery {
+export class ResourceQuery {
   query: string;
   filters: Array<Filter>;
   facets: Array<Facet>;
@@ -9,6 +9,14 @@ export interface ResourceQuery {
   start: number;
   sort?: string;
   resources: Array<Resource>;
+
+  constructor(private _props) {
+    for (const propName in this._props) {
+      if (this._props.hasOwnProperty(propName)) {
+        this[propName] = this._props[propName];
+      }
+    }
+  }
 }
 
 export interface Filter {

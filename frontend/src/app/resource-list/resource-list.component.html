@@ -1,4 +1,5 @@
 <div
+  *ngIf="resources && (resources.length > 0)"
   class="resource-list"
   fxLayout="row wrap"
   fxLayout.xs="column"
@@ -6,6 +7,40 @@
   fxLayoutAlign.xs="start start"
   fxLayoutGap="20px grid"
 >
+  <div
+    *appIsAdmin
+    fxFlex="100%"
+    fxFlexFill
+    fxLayout="row"
+    fxLayoutAlign="end end"
+  >
+    <div *ngIf="!csvDataReady">
+      <button
+        mat-raised-button
+        (click)="getCsvData()"
+        *ngIf="!preparingCsvData"
+      >
+        <mat-icon>save_alt</mat-icon>
+        Download this list as a CSV file
+      </button>
+      <button
+        *ngIf="preparingCsvData"
+        mat-raised-button
+        disabled
+        class="preparingCsvData"
+      >
+        <mat-spinner [diameter]="24"></mat-spinner>
+        Generating CSV file...
+      </button>
+    </div>
+    <div *ngIf="csvDataReady">
+      <app-csv-export-button
+        [data]="csvData"
+        [filename]="getCsvFilename()"
+        [options]="getCsvOptions()"
+      ></app-csv-export-button>
+    </div>
+  </div>
   <app-resource-tile
     *ngFor="let resource of resources"
     class="resource-tile-container"
