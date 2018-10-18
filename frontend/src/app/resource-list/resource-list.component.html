@@ -1,14 +1,3 @@
-<div *ngIf="resources && (resources.length > 0)">
-  <angular2csv
-    *appIsAdmin
-    mat-button
-    color="primary"
-    [data]="getCsvData()"
-    [filename]="getCsvFilename()"
-    [options]="getCsvOptions()"
-  ></angular2csv>
-</div>
-
 <div
   class="resource-list"
   fxLayout="row wrap"
@@ -17,6 +6,20 @@
   fxLayoutAlign.xs="start start"
   fxLayoutGap="20px grid"
 >
+  <div
+    *ngIf="resources && (resources.length > 0)"
+    fxFlex="100%"
+    fxFlexFill
+    fxLayout="row"
+    fxLayoutAlign="end end"
+  >
+    <app-csv-export-button
+      *appIsAdmin
+      [data]="getCsvData()"
+      [filename]="getCsvFilename()"
+      [options]="getCsvOptions()"
+    ></app-csv-export-button>
+  </div>
   <app-resource-tile
     *ngFor="let resource of resources"
     class="resource-tile-container"

@@ -93,6 +93,7 @@ import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
 import { UserResourceListComponent } from './user-resource-list/user-resource-list.component';
+import { CsvExportButtonComponent } from './csv-export-button/csv-export-button.component';
 
 @NgModule({
   declarations: [
@@ -138,7 +139,8 @@ import { UserResourceListComponent } from './user-resource-list/user-resource-li
     SessionRedirectComponent,
     TreeSelectComponent,
     UserAdminComponent,
-    UserResourceListComponent
+    UserResourceListComponent,
+    CsvExportButtonComponent
   ],
   imports: [
     Angular2CsvModule,
