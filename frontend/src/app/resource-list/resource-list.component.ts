@@ -18,10 +18,29 @@ export class ResourceListComponent implements OnInit {
   csvDataReady = false;
   preparingCsvData = false;
   csvData = [];
+  redactFields = [
+    '_links',
+    'owner',
+    'contact_email',
+    'contact_phone',
+    'type_id',
+    'institution_id'
+  ];
 
   constructor(private api: ResourceApiService) { }
 
   ngOnInit() {
+  }
+
+  getCsvKeys(resources: Resource[]): string[] {
+    if (resources && (resources.length > 0)) {
+      return Object
+        .keys(resources[0])
+        .filter(k => !this.redactFields.includes(k))
+        .sort();
+    } else {
+      return [];
+    }
   }
 
   getCsvOptions() {
@@ -39,12 +58,9 @@ export class ResourceListComponent implements OnInit {
     };
 
     if (this.resources && (this.resources.length > 0)) {
-      for (const fieldname in this.resources[0]) {
-        if (this.resources[0].hasOwnProperty(fieldname) && (fieldname !== '_links')) {
-          csvOptions.headers.push(fieldname);
-          csvOptions.keys.push(fieldname);
-        }
-      }
+      const keys = this.getCsvKeys(this.resources);
+      csvOptions.headers = keys;
+      csvOptions.keys = keys;
     }
     return csvOptions;
   }
@@ -88,11 +104,14 @@ export class ResourceListComponent implements OnInit {
   }
 
   prepareCsvData(resources: Resource[]) {
+    if (!resources || resources.length === 0) { return []; }
+    const keys = this.getCsvKeys(resources);
+
     return resources.map(r => {
       const returnObj = {};
 
-      for (const key in r) {
-        if (r.hasOwnProperty(key) && (key !== '_links')) {
+      for (const key of keys) {
+        if (r.hasOwnProperty(key)) {
           const val = r[key];
 
           if (key === 'availabilities') {
