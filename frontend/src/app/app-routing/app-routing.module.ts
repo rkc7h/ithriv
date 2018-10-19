@@ -17,7 +17,7 @@ import { SearchComponent } from '../search/search.component';
 import { SessionRedirectComponent } from '../session-redirect/session-redirect.component';
 import { UserAdminComponent } from '../user-admin/user-admin.component';
 
-const searchFilterMatcher = (url: UrlSegment[]) => {
+export function searchFilterMatcher(url: UrlSegment[]) {
   if (
     (url.length === 2) &&
     (url[0].path === ('search')) &&
