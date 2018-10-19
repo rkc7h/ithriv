@@ -82,6 +82,16 @@ mat-card-title, mat-card-title.mat-card-title {
 mat-card-content {
   overflow: hidden;
   margin-left: 8px;
+
+  ::ng-deep markdown * {
+    font-weight: normal;
+    font-size: 1em;
+    margin: 0px;
+    padding: 0px;
+    text-indent: 0px;
+    font-style: normal;
+    display: inline-block;
+  }
 }
 
 app-favorite-resource-button {
