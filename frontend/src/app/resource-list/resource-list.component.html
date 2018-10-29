@@ -6,7 +6,15 @@
   fxLayoutAlign="start stretch"
   fxLayoutAlign.xs="start start"
   fxLayoutGap="20px grid"
-  [ngClass]="{'resource-list': true, 'resource-list-narrow': sidenavExpanded}"
+  [ngClass]="{
+    'resource-list': true,
+    'resource-list-narrow': sidenavExpanded,
+    'resource-list-xl': breakpoint === 'xl',
+    'resource-list-lg': breakpoint === 'lg',
+    'resource-list-md': breakpoint === 'md',
+    'resource-list-sm': breakpoint === 'sm',
+    'resource-list-xs': breakpoint === 'xs'
+  }"
 >
   <div
     *appIsAdmin

@@ -1,8 +1,9 @@
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Input } from '@angular/core';
 import { Resource } from '../resource';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { ResourceQuery } from '../resource-query';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   // changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,10 +27,29 @@ export class ResourceListComponent implements OnInit {
     'type_id',
     'institution_id'
   ];
+  breakpoint: string;
 
-  constructor(private api: ResourceApiService) { }
+  constructor(
+    private api: ResourceApiService,
+    public breakpointObserver: BreakpointObserver
+  ) { }
 
   ngOnInit() {
+    this.breakpointObserver
+      .observe([
+        Breakpoints.XLarge,
+        Breakpoints.Large,
+        Breakpoints.Medium,
+        Breakpoints.Small,
+        Breakpoints.XSmall
+      ])
+      .subscribe((state: BreakpointState) => {
+        if (state.breakpoints[Breakpoints.XLarge]) { this.breakpoint = 'xl'; }
+        if (state.breakpoints[Breakpoints.Large]) { this.breakpoint = 'lg'; }
+        if (state.breakpoints[Breakpoints.Medium]) { this.breakpoint = 'md'; }
+        if (state.breakpoints[Breakpoints.Small]) { this.breakpoint = 'sm'; }
+        if (state.breakpoints[Breakpoints.XSmall]) { this.breakpoint = 'xs'; }
+      });
   }
 
   getCsvKeys(resources: Resource[]): string[] {

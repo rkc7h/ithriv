@@ -4,7 +4,11 @@
   max-width: 100vw;
 
   &.resource-list-narrow {
-    min-width: 50vw;
+    &.resource-list-xl { min-width: 75vw; }
+    &.resource-list-lg { min-width: 67vw; }
+    &.resource-list-md { min-width: 50vw; }
+    &.resource-list-sm { min-width: 100vw; }
+    &.resource-list-xs { min-width: 100vw; }
   }
 }
 
