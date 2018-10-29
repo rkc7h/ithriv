@@ -3,6 +3,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { LayoutModule } from '@angular/cdk/layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   MatBadgeModule,
@@ -155,6 +156,7 @@ import { UserResourceListComponent } from './user-resource-list/user-resource-li
     FlexLayoutModule,
     HttpClientModule,
     InlineSVGModule.forRoot(),
+    LayoutModule,
     MarkdownModule.forRoot(),
     MatBadgeModule,
     MatButtonModule,

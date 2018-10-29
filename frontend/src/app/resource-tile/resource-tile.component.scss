@@ -92,6 +92,10 @@ mat-card-content {
     font-style: normal;
     display: inline-block;
   }
+
+  ::ng-deep markdown img {
+    display: none;
+  }
 }
 
 app-favorite-resource-button {
