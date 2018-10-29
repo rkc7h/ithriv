@@ -1,7 +1,11 @@
 .resource-list {
   padding: 40px;
-  min-width: 50vw;
+  min-width: 100vw;
   max-width: 100vw;
+
+  &.resource-list-narrow {
+    min-width: 50vw;
+  }
 }
 
 .preparingCsvData {
