@@ -25,9 +25,10 @@ id,name,local_file,type
 202,Center Type,type/center_type.svg,Center or Initiative
 203,Education Type,type/education.svg,Education
 204,Funding Type,type/funding.svg,Funding Resource
-205,Health Type,type/health.svg,Health System 
+205,Health Type,type/health.svg,Health System
 206,Other Facility Type,type/other_facility.svg,Other Facility
 207,Regulations Type,type/regulations.svg,Regulatory and Compliance
 208,Research Facility Type,type/research_facility.svg,Research Facility
 209,Research Cores Type,type/research_cores.svg,Research Cores and Labs
 210,Research Resource Type,type/research_resource.svg,Research Resource
+211,Learning Shot Type,type/learning_shots.svg,Learning Shot
