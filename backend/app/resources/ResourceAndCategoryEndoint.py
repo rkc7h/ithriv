@@ -20,9 +20,10 @@ class ResourceByCategoryEndpoint(flask_restful.Resource):
         resource_categories = db.session.query(ResourceCategory)\
             .join(ResourceCategory.resource)\
             .filter(ResourceCategory.category_id == category_id)\
-            .order_by(ThrivResource.favorite_count, ThrivResource.name)\
+            .order_by(ThrivResource.name)\
             .all()
         viewable_resource_categories = []
+        resource_categories = sorted(resource_categories, key=lambda rc: rc.resource.favorite_count(), reverse=True)
         for rc in resource_categories:
             if rc.resource.user_may_view():
                     viewable_resource_categories.append(rc)
