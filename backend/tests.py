@@ -98,10 +98,18 @@ class TestCase(unittest.TestCase):
         elastic_index.add_resource(resource)
         return resource
 
-    def construct_category(self, name="Test Category", description="A category to test with!", parent=None):
+    def construct_category(
+            self,
+            name="Test Category",
+            description="A category to test with!",
+            parent=None,
+            display_order=None
+    ):
         category = Category(name=name, description=description)
         if parent is not None:
             category.parent = parent
+        if display_order is not None:
+            category.display_order = display_order
         db.session.add(category)
         return category
 
@@ -506,6 +514,44 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(2, len(response))
+
+    def test_list_categories(self):
+        self.construct_category(name="c1", description="c1 description", parent=None)
+        self.construct_category(name="c2", description="c2 description", parent=None)
+        self.construct_category(name="c3", description="c3 description", parent=None)
+
+        rv = self.app.get('/api/category',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response[0]['name'], 'c1')
+        self.assertEqual(response[1]['name'], 'c2')
+        self.assertEqual(response[2]['name'], 'c3')
+
+    def test_list_categories_sorts_in_display_order(self):
+        self.construct_category(name="M", description="M description", display_order=1)
+        self.construct_category(name="O", description="O description")
+        self.construct_category(name="N", description="N description", display_order=0)
+        self.construct_category(name="K", description="K description")
+        self.construct_category(name="E", description="E description", display_order=2)
+        self.construct_category(name="Y", description="Y description")
+
+        rv = self.app.get('/api/category',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+
+        # Items with an explicit display order are listed first
+        self.assertEqual(response[0]['name'], 'N')
+        self.assertEqual(response[1]['name'], 'M')
+        self.assertEqual(response[2]['name'], 'E')
+
+        # Items with same display order are sorted by name
+        self.assertEqual(response[3]['name'], 'K')
+        self.assertEqual(response[4]['name'], 'O')
+        self.assertEqual(response[5]['name'], 'Y')
 
     def test_category_has_links(self):
         self.construct_category()
