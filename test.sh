@@ -35,10 +35,10 @@ pause_for 3
 elasticsearch -d
 
 # Pause for 10 seconds to allow Elasticsearch to start
-pause_for 10
+pause_for 15
 
-echo -e '\n\n*** Running backend tests... ***\n\n'
-cd $BACKEND_PATH
-source python-env/bin/activate
-export FLASK_APP=./app/__init__.py
-python tests.py
+# echo -e '\n\n*** Running backend tests... ***\n\n'
+# cd $BACKEND_PATH
+# source python-env/bin/activate
+# export FLASK_APP=./app/__init__.py
+# python tests.py

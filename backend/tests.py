@@ -1,20 +1,22 @@
-# Set enivoronment variable to testing before loading.
-import datetime
-import os
+# Set environment variable to testing before loading.
 # IMPORTANT - Environment must be loaded before app, models, etc....
+import os
+os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
+
+import datetime
 import quopri
 import re
+import time
 
 from botocore.vendored import requests
 
-os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 import random
 import string
 from app.email_service import TEST_MESSAGES
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema, UserSchema, \
-     FileSchema
+     FileSchema, FavoriteSchema
 import unittest
 import json
 from app.model.availability import Availability
@@ -29,22 +31,20 @@ from app.model.email_log import EmailLog
 from app.model.uploaded_file import UploadedFile
 from app import app, db, elastic_index
 
-
-
 class TestCase(unittest.TestCase):
-
     test_eppn = "dhf8rtest@virginia.edu"
     admin_eppn = "dhf8admin@virginia.edu"
 
     def setUp(self):
         self.ctx = app.test_request_context()
         self.app = app.test_client()
+        db.session.remove()
+        db.drop_all()
         db.create_all()
         self.ctx.push()
 
     def tearDown(self):
-        db.session.commit()
-        db.session.close()
+        db.session.remove()
         db.drop_all()
         elastic_index.clear()
         self.ctx.pop()
@@ -929,12 +929,12 @@ class TestCase(unittest.TestCase):
         self.assertEqual("c1", response[0]["resource"]["resource_categories"][0]["category"]["name"])
 
     def test_get_resource_by_category_sorts_by_favorite_count(self):
+        u = User(id=6, display_name="Jar Jar Binks", email="jjb@senate.galaxy.gov")
         c = self.construct_category(name="c1")
         r1 = self.construct_resource(name="r1")
         r2 = self.construct_resource(name="r2")
         cr1 = ResourceCategory(resource=r1, category=c)
         cr2 = ResourceCategory(resource=r2, category=c)
-        u = User(id=1, display_name="Oscar the Grouch", email="oscar@sesamestreet.org")
         db.session.add_all([u, cr1, cr2])
         db.session.commit()
 
@@ -1088,9 +1088,10 @@ class TestCase(unittest.TestCase):
         self.assertEqual(404, rv.status_code)
 
     def test_add_favorite(self):
-        r = self.construct_resource()
-        u = User(id=1, display_name="Oscar the Grouch")
+        self.createTestUsers()
 
+        r = self.construct_resource()
+        u = User.query.filter_by(eppn=self.test_eppn).first()
         favorite_data = {"resource_id": r.id, "user_id": u.id}
 
         rv = self.app.post('/api/favorite', data=json.dumps(favorite_data), content_type="application/json")
@@ -1306,6 +1307,10 @@ class TestCase(unittest.TestCase):
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
         participant = User.query.filter_by(eppn=eppn).first()
+
+        if not participant:
+            participant = User(id=7, eppn=eppn, display_name="Rey", email="rey@jakkujunk.com")
+
         if user:
             participant.role = user.role
         else:
