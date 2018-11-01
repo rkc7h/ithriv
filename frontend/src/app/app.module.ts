@@ -95,6 +95,7 @@ import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
 import { UserResourceListComponent } from './user-resource-list/user-resource-list.component';
+import { MoveCategoryButtonComponent } from './move-category-button/move-category-button.component';
 
 @NgModule({
   declarations: [
@@ -127,6 +128,7 @@ import { UserResourceListComponent } from './user-resource-list/user-resource-li
     LoginFormComponent,
     LoginServicesComponent,
     LogoComponent,
+    MoveCategoryButtonComponent,
     NodeComponent,
     NotFoundComponent,
     ProfileComponent,

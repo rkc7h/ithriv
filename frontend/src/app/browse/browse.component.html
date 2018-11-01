@@ -23,6 +23,20 @@
         svgIcon="{{categoryIcon(rootCategory)}}"
       ></mat-icon>
       {{rootCategory.name}}
+      <app-move-category-button
+        [category]="rootCategory"
+        [siblings]="allCategories"
+        (updatedCategory)="updateCategory($event)"
+        [direction]="'up'"
+        class="up"
+      ></app-move-category-button>
+      <app-move-category-button
+        [category]="rootCategory"
+        [siblings]="allCategories"
+        (updatedCategory)="updateCategory($event)"
+        [direction]="'down'"
+        class="down"
+      ></app-move-category-button>
       <app-edit-category-button
         [category]="rootCategory"
         (updatedCategory)="updateCategory($event)"
@@ -64,6 +78,20 @@
         [category]="category"
         (updatedCategory)="addCategory($event)"
       ></app-add-category-button>
+      <app-move-category-button
+        [category]="category"
+        [siblings]="getSiblings(category)"
+        (updatedCategory)="updateCategory($event)"
+        [direction]="'up'"
+        class="up"
+      ></app-move-category-button>
+      <app-move-category-button
+        [category]="category"
+        [siblings]="getSiblings(category)"
+        (updatedCategory)="updateCategory($event)"
+        [direction]="'down'"
+        class="down"
+      ></app-move-category-button>
     </h1>
     <markdown>{{category.description || dummyText.category}}</markdown>
     <div
@@ -104,6 +132,20 @@
         [category]="c"
         (updatedCategory)="addCategory($event)"
       ></app-add-category-button>
+      <app-move-category-button
+        [category]="c"
+        [siblings]="category.children"
+        (updatedCategory)="updateCategory($event)"
+        [direction]="'up'"
+        class="up"
+      ></app-move-category-button>
+      <app-move-category-button
+        [category]="c"
+        [siblings]="category.children"
+        (updatedCategory)="updateCategory($event)"
+        [direction]="'down'"
+        class="down"
+      ></app-move-category-button>
       <markdown>{{c.description || dummyText.c}}</markdown>
 
       <div
@@ -144,6 +186,20 @@
             [parent]="c"
             (updatedCategory)="updateCategory($event)"
           ></app-edit-category-button>
+          <app-move-category-button
+            [category]="sc"
+            [siblings]="c.children"
+            (updatedCategory)="updateCategory($event)"
+            [direction]="'up'"
+            class="up"
+          ></app-move-category-button>
+          <app-move-category-button
+            [category]="sc"
+            [siblings]="c.children"
+            (updatedCategory)="updateCategory($event)"
+            [direction]="'down'"
+            class="down"
+          ></app-move-category-button>
         </mat-card>
       </div>
     </section>

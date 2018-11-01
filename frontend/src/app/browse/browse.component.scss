@@ -57,6 +57,14 @@
         top: -12px;
         right: 0px;
       }
+
+      app-move-category-button {
+        position: absolute;
+        top: -12px;
+
+        &.up { right: 150px; }
+        &.down { right: 100px; }
+      }
     }
 
     markdown {
@@ -138,6 +146,14 @@
       top: 6px;
       right: 70px;
     }
+
+    app-move-category-button {
+      position: absolute;
+      top: 6px;
+
+      &.up { right: 220px; }
+      &.down { right: 170px; }
+    }
   }
 
   mat-card.sub-sub-category {
@@ -191,6 +207,14 @@
       position: absolute;
       top: 6px;
       right: 6px;
+    }
+
+    app-move-category-button {
+      position: absolute;
+      top: 6px;
+
+      &.up { right: 106px; }
+      &.down { right: 56px; }
     }
   }
 }

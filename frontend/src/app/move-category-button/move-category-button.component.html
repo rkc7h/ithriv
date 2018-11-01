@@ -1,0 +1,18 @@
+<div *appIsAdmin>
+  <button
+    *ngIf="direction === 'up'"
+    mat-mini-fab
+    (click)="moveUp($event)"
+    aria-label="Move Category Up"
+  >
+    <mat-icon>arrow_upward</mat-icon>
+  </button>
+  <button
+    *ngIf="direction === 'down'"
+    mat-mini-fab
+    (click)="moveDown($event)"
+    aria-label="Move Category Down"
+  >
+    <mat-icon>arrow_downward</mat-icon>
+  </button>
+</div>

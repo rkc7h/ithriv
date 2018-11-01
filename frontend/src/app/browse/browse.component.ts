@@ -186,4 +186,15 @@ export class BrowseComponent implements OnInit {
     }
   }
 
+  getSiblings(cat: Category) {
+    if (cat.level === 0) {
+      return this.allCategories;
+    } else if (cat.level === 1) {
+      for (const parent of this.allCategories) {
+        if (parent.id === cat.parent_id) {
+          return parent;
+        }
+      }
+    }
+  }
 }
