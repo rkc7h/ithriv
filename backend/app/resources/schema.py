@@ -57,13 +57,16 @@ class ParentCategorySchema(ModelSchema):
     """Provides a view of the parent category, all the way to the top, but ignores children"""
     class Meta:
         model = Category
-        fields = ('id', 'name', 'parent', 'level', 'color', 'icon_id', 'icon', 'image', '_links', 'brief_description', 'description')
+        fields = ('id', 'name', 'parent', 'level', 'color', 'icon_id',
+                  'icon', 'image', '_links', 'brief_description',
+                  'description', 'display_order')
     parent = fields.Nested('self', dump_only=True)
     level = fields.Function(lambda obj: obj.calculate_level())
     color = fields.Function(lambda obj: obj.calculate_color())
     icon_id = fields.Integer(required=False, allow_none=True)
     icon = fields.Nested(IconSchema, allow_none=True, dump_only=True)
     image = fields.String(required=False, allow_none=True)
+    display_order = fields.Integer(required=True, allow_none=False, default=999)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.categoryendpoint', id='<id>'),
         'collection': ma.URLFor('api.categorylistendpoint'),
@@ -138,7 +141,7 @@ class CategorySchema(ModelSchema):
         fields = ('id', 'name', 'brief_description', 'description',
                   'color', 'level', 'image', 'icon_id', 'icon',
                   'children', 'parent_id', 'parent', 'resource_count',
-                  '_links')
+                  'display_order','_links')
     id = fields.Integer(required=False, allow_none=True)
     icon_id = fields.Integer(required=False, allow_none=True)
     icon = fields.Nested(IconSchema,  allow_none=True, dump_only=True)
@@ -149,6 +152,7 @@ class CategorySchema(ModelSchema):
     color = fields.Function(lambda obj: obj.calculate_color())
     level = fields.Function(lambda obj: obj.calculate_level(), dump_only=True)
     resource_count = fields.Method('get_resource_count')
+    display_order = fields.Integer(required=False, allow_none=False, default=999)
     _links = ma.Hyperlinks({
         'self': ma.URLFor('api.categoryendpoint', id='<id>'),
         'collection': ma.URLFor('api.categorylistendpoint'),
