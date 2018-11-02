@@ -28,7 +28,7 @@ const parked = {
   opacity: 0
 };
 
-Node.prototype.contains = function(arg) {
+Node.prototype.contains = function (arg) {
   return this === arg || !!(this.compareDocumentPosition(arg) & 16);
 };
 
@@ -170,7 +170,8 @@ export class GraphComponent {
         nodeCount++;
       }
 
-      const angle = base_angle + (360 / nodeCount * index);
+      // Start drawing level 1 categories at 12 o'clock
+      const angle = base_angle + (360 / nodeCount * index) - 90;
       return this.calcCoords(angle, radius);
     } else {
       return new NodeOptions({ x: 0, y: 0 });
