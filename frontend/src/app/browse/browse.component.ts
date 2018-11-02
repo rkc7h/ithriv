@@ -5,6 +5,7 @@ import { ScrollToConfigOptions, ScrollToService } from '@nicky-lenaers/ngx-scrol
 import { Category } from '../category';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { ScrollingVisibility } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-browse',
@@ -18,6 +19,7 @@ export class BrowseComponent implements OnInit {
   allCategories: Category[];
   categoryId = 1;
   isDataLoaded = false;
+  scrolling = false;
   dummyText = {
     category: `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
@@ -61,7 +63,9 @@ export class BrowseComponent implements OnInit {
           target: `category_${queryParams['scrollTo']}`
         };
 
-        this.scrollToService.scrollTo(config);
+        this.scrollToService.scrollTo(config).subscribe(result => {
+          console.log('scrollTo result:', result);
+        });
       }
     });
   }
@@ -105,10 +109,24 @@ export class BrowseComponent implements OnInit {
     }
   }
 
-  updateCategory(category) {
-    // This is very lazy, we could replace the category in place.
-    this.isDataLoaded = false;
-    this.loadCategory(this.categoryId);
+  updateCategory(category: Category) {
+    if (category.level === 0) {
+      this.loadAllCategories();
+    } else {
+      this.loadCategory(this.categoryId);
+    }
+
+    const config: ScrollToConfigOptions = {
+      target: `category_${category.id}`
+    };
+
+    // Only one scrolling action at a time
+    if (!this.scrolling) {
+      this.scrolling = true;
+      this.scrollToService.scrollTo(config).subscribe(result => {
+        this.scrolling = false;
+      });
+    }
   }
 
   addCategory(category) {

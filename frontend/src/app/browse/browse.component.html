@@ -26,14 +26,14 @@
       <app-move-category-button
         [category]="rootCategory"
         [siblings]="allCategories"
-        (updatedCategory)="updateCategory($event)"
+        (updatedCategory)="updateCategory(rootCategory)"
         [direction]="'up'"
         class="up"
       ></app-move-category-button>
       <app-move-category-button
         [category]="rootCategory"
         [siblings]="allCategories"
-        (updatedCategory)="updateCategory($event)"
+        (updatedCategory)="updateCategory(rootCategory)"
         [direction]="'down'"
         class="down"
       ></app-move-category-button>
@@ -64,7 +64,10 @@
   *ngIf="isDataLoaded && category"
 >
   <div class="header">
-    <h1 class="mat-display-1">
+    <h1
+      class="mat-display-1"
+      id="category_{{category.id}}"
+    >
       <mat-icon
         *ngIf="category.icon"
         svgIcon="{{categoryIcon(category)}}"
@@ -81,14 +84,14 @@
       <app-move-category-button
         [category]="category"
         [siblings]="getSiblings(category)"
-        (updatedCategory)="updateCategory($event)"
+        (updatedCategory)="updateCategory(category)"
         [direction]="'up'"
         class="up"
       ></app-move-category-button>
       <app-move-category-button
         [category]="category"
         [siblings]="getSiblings(category)"
-        (updatedCategory)="updateCategory($event)"
+        (updatedCategory)="updateCategory(category)"
         [direction]="'down'"
         class="down"
       ></app-move-category-button>
@@ -121,7 +124,7 @@
           (mouseleave)="c.hover=false"
           (click)="goCategory($event, c)"
         ></mat-icon>
-        <h2>{{c.name}}</h2>
+        <h2 id="category_{{c.id}}">{{c.name}}</h2>
       </div>
       <app-edit-category-button
         [category]="c"
@@ -135,14 +138,14 @@
       <app-move-category-button
         [category]="c"
         [siblings]="category.children"
-        (updatedCategory)="updateCategory($event)"
+        (updatedCategory)="updateCategory(c)"
         [direction]="'up'"
         class="up"
       ></app-move-category-button>
       <app-move-category-button
         [category]="c"
         [siblings]="category.children"
-        (updatedCategory)="updateCategory($event)"
+        (updatedCategory)="updateCategory(c)"
         [direction]="'down'"
         class="down"
       ></app-move-category-button>
@@ -160,6 +163,7 @@
           class="sub-sub-category"
           fxFlex="30%"
           (click)="goCategory($event, sc)"
+          id="category_{{sc.id}}"
         >
           <mat-card-header>
             <div
@@ -189,14 +193,14 @@
           <app-move-category-button
             [category]="sc"
             [siblings]="c.children"
-            (updatedCategory)="updateCategory($event)"
+            (updatedCategory)="updateCategory(sc)"
             [direction]="'up'"
             class="up"
           ></app-move-category-button>
           <app-move-category-button
             [category]="sc"
             [siblings]="c.children"
-            (updatedCategory)="updateCategory($event)"
+            (updatedCategory)="updateCategory(sc)"
             [direction]="'down'"
             class="down"
           ></app-move-category-button>

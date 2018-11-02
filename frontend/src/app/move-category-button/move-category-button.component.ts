@@ -38,7 +38,7 @@ export class MoveCategoryButtonComponent implements OnInit {
         child.display_order = i;
       }
 
-      this.api.updateCategory(child).subscribe();
+      this.api.updateCategory(child).subscribe(c => this.updatedCategory.emit(c));
     });
   }
 
@@ -63,7 +63,7 @@ export class MoveCategoryButtonComponent implements OnInit {
         child.display_order = i;
       }
 
-      this.api.updateCategory(child).subscribe();
+      this.api.updateCategory(child).subscribe(c => this.updatedCategory.emit(c));
     });
   }
 }
