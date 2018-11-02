@@ -553,6 +553,44 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response[4]['name'], 'O')
         self.assertEqual(response[5]['name'], 'Y')
 
+    def test_list_root_categories(self):
+        self.construct_category(name="c1", description="c1 description", parent=None)
+        self.construct_category(name="c2", description="c2 description", parent=None)
+        self.construct_category(name="c3", description="c3 description", parent=None)
+
+        rv = self.app.get('/api/category/root',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response[0]['name'], 'c1')
+        self.assertEqual(response[1]['name'], 'c2')
+        self.assertEqual(response[2]['name'], 'c3')
+
+    def test_list_root_categories_sorts_in_display_order(self):
+        self.construct_category(name="Z", description="Z description", display_order=1)
+        self.construct_category(name="O", description="O description")
+        self.construct_category(name="M", description="M description", display_order=0)
+        self.construct_category(name="B", description="B description")
+        self.construct_category(name="I", description="I description", display_order=2)
+        self.construct_category(name="E", description="E description")
+
+        rv = self.app.get('/api/category/root',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+
+        # Items with an explicit display order are listed first
+        self.assertEqual(response[0]['name'], 'M')
+        self.assertEqual(response[1]['name'], 'Z')
+        self.assertEqual(response[2]['name'], 'I')
+
+        # Items with same display order are sorted by name
+        self.assertEqual(response[3]['name'], 'B')
+        self.assertEqual(response[4]['name'], 'E')
+        self.assertEqual(response[5]['name'], 'O')
+
     def test_category_has_links(self):
         self.construct_category()
         rv = self.app.get('/api/category/1',
