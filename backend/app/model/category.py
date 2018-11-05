@@ -12,11 +12,12 @@ class Category(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
     color = db.Column(db.String)  # Should be a CSS color specification
     image = db.Column(db.String)  # Should be the url for a large background image
+    display_order = db.Column(db.Integer, default=999)
     children = db.relationship("Category",
                                backref=db.backref('parent', remote_side=[id]),
                                lazy="joined",
                                join_depth=2,
-                               order_by = "Category.name")
+                               order_by="Category.display_order, Category.name")
     icon_id = db.Column(db.Integer, db.ForeignKey('icon.id'))
     icon = db.relationship("Icon")
 

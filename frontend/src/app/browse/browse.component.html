@@ -23,6 +23,22 @@
         svgIcon="{{categoryIcon(rootCategory)}}"
       ></mat-icon>
       {{rootCategory.name}}
+      <app-move-category-button
+        *ngIf="showMoveButtons()"
+        [category]="rootCategory"
+        [siblings]="allCategories"
+        (updatedCategory)="updateCategory(rootCategory)"
+        [direction]="'up'"
+        class="up"
+      ></app-move-category-button>
+      <app-move-category-button
+        *ngIf="showMoveButtons()"
+        [category]="rootCategory"
+        [siblings]="allCategories"
+        (updatedCategory)="updateCategory(rootCategory)"
+        [direction]="'down'"
+        class="down"
+      ></app-move-category-button>
       <app-edit-category-button
         [category]="rootCategory"
         (updatedCategory)="updateCategory($event)"
@@ -50,7 +66,10 @@
   *ngIf="isDataLoaded && category"
 >
   <div class="header">
-    <h1 class="mat-display-1">
+    <h1
+      class="mat-display-1"
+      id="category_{{category.id}}"
+    >
       <mat-icon
         *ngIf="category.icon"
         svgIcon="{{categoryIcon(category)}}"
@@ -64,6 +83,22 @@
         [category]="category"
         (updatedCategory)="addCategory($event)"
       ></app-add-category-button>
+      <app-move-category-button
+        *ngIf="showMoveButtons()"
+        [category]="category"
+        [siblings]="getSiblings(category)"
+        (updatedCategory)="updateCategory(category)"
+        [direction]="'up'"
+        class="up"
+      ></app-move-category-button>
+      <app-move-category-button
+        *ngIf="showMoveButtons()"
+        [category]="category"
+        [siblings]="getSiblings(category)"
+        (updatedCategory)="updateCategory(category)"
+        [direction]="'down'"
+        class="down"
+      ></app-move-category-button>
     </h1>
     <markdown>{{category.description || dummyText.category}}</markdown>
     <div
@@ -93,7 +128,7 @@
           (mouseleave)="c.hover=false"
           (click)="goCategory($event, c)"
         ></mat-icon>
-        <h2>{{c.name}}</h2>
+        <h2 id="category_{{c.id}}">{{c.name}}</h2>
       </div>
       <app-edit-category-button
         [category]="c"
@@ -104,6 +139,22 @@
         [category]="c"
         (updatedCategory)="addCategory($event)"
       ></app-add-category-button>
+      <app-move-category-button
+        *ngIf="showMoveButtons()"
+        [category]="c"
+        [siblings]="category.children"
+        (updatedCategory)="updateCategory(c)"
+        [direction]="'up'"
+        class="up"
+      ></app-move-category-button>
+      <app-move-category-button
+        *ngIf="showMoveButtons()"
+        [category]="c"
+        [siblings]="category.children"
+        (updatedCategory)="updateCategory(c)"
+        [direction]="'down'"
+        class="down"
+      ></app-move-category-button>
       <markdown>{{c.description || dummyText.c}}</markdown>
 
       <div
@@ -118,6 +169,7 @@
           class="sub-sub-category"
           fxFlex="30%"
           (click)="goCategory($event, sc)"
+          id="category_{{sc.id}}"
         >
           <mat-card-header>
             <div
@@ -144,6 +196,22 @@
             [parent]="c"
             (updatedCategory)="updateCategory($event)"
           ></app-edit-category-button>
+          <app-move-category-button
+            *ngIf="showMoveButtons()"
+            [category]="sc"
+            [siblings]="c.children"
+            (updatedCategory)="updateCategory(sc)"
+            [direction]="'up'"
+            class="up"
+          ></app-move-category-button>
+          <app-move-category-button
+            *ngIf="showMoveButtons()"
+            [category]="sc"
+            [siblings]="c.children"
+            (updatedCategory)="updateCategory(sc)"
+            [direction]="'down'"
+            class="down"
+          ></app-move-category-button>
         </mat-card>
       </div>
     </section>

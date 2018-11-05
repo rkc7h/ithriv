@@ -1,12 +1,11 @@
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Input } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceQuery } from '../resource-query';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
-  // changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-resource-list',
   templateUrl: './resource-list.component.html',
   styleUrls: ['./resource-list.component.scss']

@@ -1,20 +1,22 @@
-# Set enivoronment variable to testing before loading.
-import datetime
-import os
+# Set environment variable to testing before loading.
 # IMPORTANT - Environment must be loaded before app, models, etc....
+import os
+os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
+
+import datetime
 import quopri
 import re
+import time
 
 from botocore.vendored import requests
 
-os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 import random
 import string
 from app.email_service import TEST_MESSAGES
 from io import BytesIO
 from app.model.resource_category import ResourceCategory
 from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema, UserSchema, \
-     FileSchema
+     FileSchema, FavoriteSchema
 import unittest
 import json
 from app.model.availability import Availability
@@ -29,22 +31,20 @@ from app.model.email_log import EmailLog
 from app.model.uploaded_file import UploadedFile
 from app import app, db, elastic_index
 
-
-
 class TestCase(unittest.TestCase):
-
     test_eppn = "dhf8rtest@virginia.edu"
     admin_eppn = "dhf8admin@virginia.edu"
 
     def setUp(self):
         self.ctx = app.test_request_context()
         self.app = app.test_client()
+        db.session.remove()
+        db.drop_all()
         db.create_all()
         self.ctx.push()
 
     def tearDown(self):
-        db.session.commit()
-        db.session.close()
+        db.session.remove()
         db.drop_all()
         elastic_index.clear()
         self.ctx.pop()
@@ -98,10 +98,18 @@ class TestCase(unittest.TestCase):
         elastic_index.add_resource(resource)
         return resource
 
-    def construct_category(self, name="Test Category", description="A category to test with!", parent=None):
+    def construct_category(
+            self,
+            name="Test Category",
+            description="A category to test with!",
+            parent=None,
+            display_order=None
+    ):
         category = Category(name=name, description=description)
         if parent is not None:
             category.parent = parent
+        if display_order is not None:
+            category.display_order = display_order
         db.session.add(category)
         return category
 
@@ -506,6 +514,82 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(2, len(response))
+
+    def test_list_categories(self):
+        self.construct_category(name="c1", description="c1 description", parent=None)
+        self.construct_category(name="c2", description="c2 description", parent=None)
+        self.construct_category(name="c3", description="c3 description", parent=None)
+
+        rv = self.app.get('/api/category',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response[0]['name'], 'c1')
+        self.assertEqual(response[1]['name'], 'c2')
+        self.assertEqual(response[2]['name'], 'c3')
+
+    def test_list_categories_sorts_in_display_order(self):
+        self.construct_category(name="M", description="M description", display_order=1)
+        self.construct_category(name="O", description="O description")
+        self.construct_category(name="N", description="N description", display_order=0)
+        self.construct_category(name="K", description="K description")
+        self.construct_category(name="E", description="E description", display_order=2)
+        self.construct_category(name="Y", description="Y description")
+
+        rv = self.app.get('/api/category',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+
+        # Items with an explicit display order are listed first
+        self.assertEqual(response[0]['name'], 'N')
+        self.assertEqual(response[1]['name'], 'M')
+        self.assertEqual(response[2]['name'], 'E')
+
+        # Items with same display order are sorted by name
+        self.assertEqual(response[3]['name'], 'K')
+        self.assertEqual(response[4]['name'], 'O')
+        self.assertEqual(response[5]['name'], 'Y')
+
+    def test_list_root_categories(self):
+        self.construct_category(name="c1", description="c1 description", parent=None)
+        self.construct_category(name="c2", description="c2 description", parent=None)
+        self.construct_category(name="c3", description="c3 description", parent=None)
+
+        rv = self.app.get('/api/category/root',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(response[0]['name'], 'c1')
+        self.assertEqual(response[1]['name'], 'c2')
+        self.assertEqual(response[2]['name'], 'c3')
+
+    def test_list_root_categories_sorts_in_display_order(self):
+        self.construct_category(name="Z", description="Z description", display_order=1)
+        self.construct_category(name="O", description="O description")
+        self.construct_category(name="M", description="M description", display_order=0)
+        self.construct_category(name="B", description="B description")
+        self.construct_category(name="I", description="I description", display_order=2)
+        self.construct_category(name="E", description="E description")
+
+        rv = self.app.get('/api/category/root',
+                          follow_redirects=True,
+                          content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+
+        # Items with an explicit display order are listed first
+        self.assertEqual(response[0]['name'], 'M')
+        self.assertEqual(response[1]['name'], 'Z')
+        self.assertEqual(response[2]['name'], 'I')
+
+        # Items with same display order are sorted by name
+        self.assertEqual(response[3]['name'], 'B')
+        self.assertEqual(response[4]['name'], 'E')
+        self.assertEqual(response[5]['name'], 'O')
 
     def test_category_has_links(self):
         self.construct_category()
@@ -929,12 +1013,12 @@ class TestCase(unittest.TestCase):
         self.assertEqual("c1", response[0]["resource"]["resource_categories"][0]["category"]["name"])
 
     def test_get_resource_by_category_sorts_by_favorite_count(self):
+        u = User(id=6, display_name="Jar Jar Binks", email="jjb@senate.galaxy.gov")
         c = self.construct_category(name="c1")
         r1 = self.construct_resource(name="r1")
         r2 = self.construct_resource(name="r2")
         cr1 = ResourceCategory(resource=r1, category=c)
         cr2 = ResourceCategory(resource=r2, category=c)
-        u = User(id=1, display_name="Oscar the Grouch", email="oscar@sesamestreet.org")
         db.session.add_all([u, cr1, cr2])
         db.session.commit()
 
@@ -1088,9 +1172,10 @@ class TestCase(unittest.TestCase):
         self.assertEqual(404, rv.status_code)
 
     def test_add_favorite(self):
-        r = self.construct_resource()
-        u = User(id=1, display_name="Oscar the Grouch")
+        self.createTestUsers()
 
+        r = self.construct_resource()
+        u = User.query.filter_by(eppn=self.test_eppn).first()
         favorite_data = {"resource_id": r.id, "user_id": u.id}
 
         rv = self.app.post('/api/favorite', data=json.dumps(favorite_data), content_type="application/json")
@@ -1306,6 +1391,10 @@ class TestCase(unittest.TestCase):
         rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
                           content_type="application/json")
         participant = User.query.filter_by(eppn=eppn).first()
+
+        if not participant:
+            participant = User(id=7, eppn=eppn, display_name="Rey", email="rey@jakkujunk.com")
+
         if user:
             participant.role = user.role
         else:

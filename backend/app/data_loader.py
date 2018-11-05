@@ -45,7 +45,7 @@ class DataLoader:
                                          owner=row[8], website=row[9], contact_notes=row[4])
                 resource.approved = "Unapproved"
                 db.session.add(resource)
-            print("Resources loaded.  There are now %i resources into the database." % db.session.query(ThrivResource).count())
+            print("Resources loaded.  There are now %i resources in the database." % db.session.query(ThrivResource).count())
         db.session.commit()
         db.session.execute("SELECT setval('resource_id_seq', "
                            "COALESCE((SELECT MAX(id) + 1 FROM resource), 1), false);")
@@ -101,13 +101,18 @@ class DataLoader:
 
             for row in reader:
                 id = eval(row[0])
-                category = Category(id=id, brief_description=row[4], name=row[3], description=row[5], color=row[7], image=row[8])
+                category = Category(
+                    id=id, brief_description=row[4], name=row[3],
+                    description=row[5], color=row[7], image=row[8])
                 if row[2] != '':
                     parent_id = eval(row[2])
                     category.parent_id = parent_id
                 if row[6] != '':
                     icon_id = eval(row[6])
                     category.icon_id = icon_id
+                if row[9] != '':
+                    display_order = eval(row[9])
+                    category.display_order = display_order
                 db.session.add(category)
             # As we manually set the ids, we need to update the sequence manually as well.
             db.session.commit()

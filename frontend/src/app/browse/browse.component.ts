@@ -1,3 +1,4 @@
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,6 +19,8 @@ export class BrowseComponent implements OnInit {
   allCategories: Category[];
   categoryId = 1;
   isDataLoaded = false;
+  scrolling = false;
+  breakpoint: string;
   dummyText = {
     category: `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
@@ -42,7 +45,8 @@ export class BrowseComponent implements OnInit {
     private route: ActivatedRoute,
     private api: ResourceApiService,
     private titleService: Title,
-    private scrollToService: ScrollToService
+    private scrollToService: ScrollToService,
+    public breakpointObserver: BreakpointObserver
   ) {
 
     this.route.params.subscribe(params => {
@@ -61,7 +65,9 @@ export class BrowseComponent implements OnInit {
           target: `category_${queryParams['scrollTo']}`
         };
 
-        this.scrollToService.scrollTo(config);
+        this.scrollToService.scrollTo(config).subscribe(result => {
+          console.log('scrollTo result:', result);
+        });
       }
     });
   }
@@ -105,10 +111,24 @@ export class BrowseComponent implements OnInit {
     }
   }
 
-  updateCategory(category) {
-    // This is very lazy, we could replace the category in place.
-    this.isDataLoaded = false;
-    this.loadCategory(this.categoryId);
+  updateCategory(category: Category) {
+    if (category.level === 0) {
+      this.loadAllCategories();
+    } else {
+      this.loadCategory(this.categoryId);
+    }
+
+    const config: ScrollToConfigOptions = {
+      target: `category_${category.id}`
+    };
+
+    // Only one scrolling action at a time
+    if (!this.scrolling) {
+      this.scrolling = true;
+      this.scrollToService.scrollTo(config).subscribe(result => {
+        this.scrolling = false;
+      });
+    }
   }
 
   addCategory(category) {
@@ -119,6 +139,21 @@ export class BrowseComponent implements OnInit {
 
 
   ngOnInit() {
+    this.breakpointObserver
+      .observe([
+        Breakpoints.XLarge,
+        Breakpoints.Large,
+        Breakpoints.Medium,
+        Breakpoints.Small,
+        Breakpoints.XSmall
+      ])
+      .subscribe((state: BreakpointState) => {
+        if (state.breakpoints[Breakpoints.XLarge]) { this.breakpoint = 'xl'; }
+        if (state.breakpoints[Breakpoints.Large]) { this.breakpoint = 'lg'; }
+        if (state.breakpoints[Breakpoints.Medium]) { this.breakpoint = 'md'; }
+        if (state.breakpoints[Breakpoints.Small]) { this.breakpoint = 'sm'; }
+        if (state.breakpoints[Breakpoints.XSmall]) { this.breakpoint = 'xs'; }
+      });
   }
 
   headerImage(category) {
@@ -186,4 +221,19 @@ export class BrowseComponent implements OnInit {
     }
   }
 
+  getSiblings(cat: Category) {
+    if (cat.level === 0) {
+      return this.allCategories;
+    } else if (cat.level === 1) {
+      for (const parent of this.allCategories) {
+        if (parent.id === cat.parent_id) {
+          return parent;
+        }
+      }
+    }
+  }
+
+  showMoveButtons() {
+    return ['xl', 'lg', 'md'].includes(this.breakpoint);
+  }
 }

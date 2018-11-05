@@ -17,6 +17,7 @@ export interface Category {
   parent?: Category;
   _links?: Links;
   resource_count?: number;
+  display_order?: number;
 
   // Presentation options
   options?: NodeOptions;
