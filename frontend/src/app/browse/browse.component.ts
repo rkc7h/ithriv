@@ -1,3 +1,4 @@
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -5,7 +6,6 @@ import { ScrollToConfigOptions, ScrollToService } from '@nicky-lenaers/ngx-scrol
 import { Category } from '../category';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { ScrollingVisibility } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-browse',
@@ -20,6 +20,7 @@ export class BrowseComponent implements OnInit {
   categoryId = 1;
   isDataLoaded = false;
   scrolling = false;
+  breakpoint: string;
   dummyText = {
     category: `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
@@ -44,7 +45,8 @@ export class BrowseComponent implements OnInit {
     private route: ActivatedRoute,
     private api: ResourceApiService,
     private titleService: Title,
-    private scrollToService: ScrollToService
+    private scrollToService: ScrollToService,
+    public breakpointObserver: BreakpointObserver
   ) {
 
     this.route.params.subscribe(params => {
@@ -137,6 +139,21 @@ export class BrowseComponent implements OnInit {
 
 
   ngOnInit() {
+    this.breakpointObserver
+      .observe([
+        Breakpoints.XLarge,
+        Breakpoints.Large,
+        Breakpoints.Medium,
+        Breakpoints.Small,
+        Breakpoints.XSmall
+      ])
+      .subscribe((state: BreakpointState) => {
+        if (state.breakpoints[Breakpoints.XLarge]) { this.breakpoint = 'xl'; }
+        if (state.breakpoints[Breakpoints.Large]) { this.breakpoint = 'lg'; }
+        if (state.breakpoints[Breakpoints.Medium]) { this.breakpoint = 'md'; }
+        if (state.breakpoints[Breakpoints.Small]) { this.breakpoint = 'sm'; }
+        if (state.breakpoints[Breakpoints.XSmall]) { this.breakpoint = 'xs'; }
+      });
   }
 
   headerImage(category) {
@@ -214,5 +231,9 @@ export class BrowseComponent implements OnInit {
         }
       }
     }
+  }
+
+  showMoveButtons() {
+    return ['xl', 'lg', 'md'].includes(this.breakpoint);
   }
 }
