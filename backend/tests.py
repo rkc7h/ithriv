@@ -19,6 +19,7 @@ import unittest
 import json
 from app.model.availability import Availability
 from app.model.category import Category
+from app.model.favorite import Favorite
 from app.model.resource import ThrivResource
 from app.model.type import ThrivType
 from app.model.institution import ThrivInstitution
@@ -103,6 +104,12 @@ class TestCase(unittest.TestCase):
             category.parent = parent
         db.session.add(category)
         return category
+
+    def construct_favorite(self, user, resource):
+        favorite = Favorite(user_id=user.id, resource_id=resource.id)
+        db.session.add(favorite)
+        db.session.commit()
+        return favorite
 
     def index_resource(self, resource):
         elastic_index.add_resource(resource)
@@ -920,6 +927,31 @@ class TestCase(unittest.TestCase):
         self.assertEqual(r.id, response[0]["id"])
         self.assertEqual(2, len(response[0]["resource"]["resource_categories"]))
         self.assertEqual("c1", response[0]["resource"]["resource_categories"][0]["category"]["name"])
+
+    def test_get_resource_by_category_sorts_by_favorite_count(self):
+        c = self.construct_category(name="c1")
+        r1 = self.construct_resource(name="r1")
+        r2 = self.construct_resource(name="r2")
+        cr1 = ResourceCategory(resource=r1, category=c)
+        cr2 = ResourceCategory(resource=r2, category=c)
+        u = User(id=1, display_name="Oscar the Grouch", email="oscar@sesamestreet.org")
+        db.session.add_all([u, cr1, cr2])
+        db.session.commit()
+
+        # Should be sorted by name before any resources are favorited
+        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers=self.logged_in_headers())
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual("r1", response[0]["resource"]["name"])
+
+        # Should be sorted by favorite_count now
+        favorite = self.construct_favorite(user=u, resource=r2)
+        self.assertEqual(r2.id, favorite.resource_id)
+
+        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers=self.logged_in_headers())
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertEqual("r2", response[0]["resource"]["name"])
 
     def test_category_resource_count(self):
         c = self.construct_category()

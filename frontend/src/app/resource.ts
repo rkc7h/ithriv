@@ -15,6 +15,7 @@ export interface Resource {
   contact_notes?: string;
   contact_phone?: string;
   cost?: string;
+  favorite_count?: number;
   institution_id?: number;
   type_id?: number;
   website?: string;
