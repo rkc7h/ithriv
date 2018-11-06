@@ -50,7 +50,7 @@ export class ResourceFormComponent implements OnInit {
       required: true,
       maxLength: 140,
       minLength: 1,
-      placeholder: 'Name',
+      placeholder: 'Resource Name',
       type: 'text',
       helpText: `
         You must be one of the persons responsible for a research resource to add it.
