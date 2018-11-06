@@ -151,7 +151,7 @@ export class ResourceFormComponent implements OnInit {
     }),
     'availabilities.institution_id': new FormField({
       formControl: new FormControl(),
-      required: false,
+      required: true,
       placeholder: 'Who can use this resource?',
       type: 'select',
       multiSelect: true,
