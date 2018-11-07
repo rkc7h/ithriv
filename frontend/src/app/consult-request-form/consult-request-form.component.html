@@ -14,11 +14,11 @@
         <p>Completing this web form will send a concierge services request which will be routed to the best specialist
           to address your need. We aim to respond within two business days.</p>
         <h3>Request Context:</h3>
-        <p>{{ user.display_name }}</p>
-        <p>{{ user.email }}</p>
-        <p>{{ user.institution.name }}</p>
-        <p>{{ user.institutional_role }}</p>
-        <p>{{ user.division }}</p>
+        <p *ngIf="user.display_name">{{ user.display_name }}</p>
+        <p *ngIf="user.email">{{ user.email }}</p>
+        <p *ngIf="user.institution && user.institution.name">{{ user.institution.name }}</p>
+        <p *ngIf="user.institutional_role">{{ user.institutional_role }}</p>
+        <p *ngIf="user.division">{{ user.division }}</p>
         <form
           [formGroup]="requestConsultForm"
           (ngSubmit)="onSubmit()"
@@ -38,6 +38,7 @@
             *ngIf="errorMessage"
           >{{errorMessage}}</div>
 
+
           <footer *ngIf="formStatus === 'form'">
             <button
               type="button"
@@ -45,16 +46,29 @@
               mat-raised-button
               (click)="onSubmit()"
             >Next</button>
+            <button
+              type="button"
+              (click)="onCancel()"
+              mat-button
+            >Cancel</button>
           </footer>
-          <footer *ngIf="formStatus === 'submitting'">
-            <mat-spinner></mat-spinner>
-          </footer>
+        </form>
+
+        <div
+          *ngIf="formStatus === 'submitting'"
+          fxLayout="column"
+          fxLayoutAlign="space-around center"
+        >
+          <mat-spinner [diameter]="48"></mat-spinner>
           <button
             type="button"
             (click)="onCancel()"
             mat-button
-          >Cancel</button>
-        </form>
+          >
+            Cancel
+          </button>
+        </div>
+
         <div *ngIf="formStatus === 'complete'">
           <p><b>Thank you for submitting your Consult Request. We aim to respond within two business days. </b></p>
           <button
