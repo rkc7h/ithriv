@@ -28,6 +28,15 @@
     [required]="field.required"
     type="{{field.type}}"
   >
+  <textarea
+    *ngIf="field.type === 'textarea'"
+    matInput
+    [formControl]="field.formControl"
+    [errorStateMatcher]="errorMatcher"
+    [placeholder]="field.placeholder"
+    [required]="field.required"
+    type="{{field.type}}"
+  ></textarea>
 
   <mat-select
     *ngIf="field.type === 'select'"
@@ -99,7 +108,7 @@
 </div>
 
 <div
-  *ngIf="field.type === 'textarea'"
+  *ngIf="field.type === 'richtexteditor'"
   class="mat-typography"
 >
   <app-form-field-label

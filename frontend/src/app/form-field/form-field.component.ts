@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, ValidationErrors } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material';
 import { FormField } from '../form-field';
@@ -66,6 +66,7 @@ export class FormFieldComponent implements OnInit {
   }
 
   isNormalField(field: FormField) {
-    return !(['tree', 'textarea', 'toggle', 'files'].indexOf(field.type) > -1);
+    return !(['tree', 'richtexteditor', 'toggle', 'files'].indexOf(field.type) > -1);
   }
 }
+

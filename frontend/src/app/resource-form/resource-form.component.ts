@@ -50,7 +50,7 @@ export class ResourceFormComponent implements OnInit {
       required: true,
       maxLength: 140,
       minLength: 1,
-      placeholder: 'Name',
+      placeholder: 'Resource Name',
       type: 'text',
       helpText: `
         You must be one of the persons responsible for a research resource to add it.
@@ -62,7 +62,7 @@ export class ResourceFormComponent implements OnInit {
       formControl: new FormControl(),
       required: false,
       placeholder: 'Description',
-      type: 'textarea',
+      type: 'richtexteditor',
       options: {
         status: ['words'],
       },
@@ -151,7 +151,7 @@ export class ResourceFormComponent implements OnInit {
     }),
     'availabilities.institution_id': new FormField({
       formControl: new FormControl(),
-      required: false,
+      required: true,
       placeholder: 'Who can use this resource?',
       type: 'select',
       multiSelect: true,

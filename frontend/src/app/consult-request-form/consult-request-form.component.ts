@@ -67,6 +67,7 @@ export class ConsultRequestFormComponent implements OnInit {
     this.iThrivForm.validate();
     if (!this.requestConsultForm.valid) { return; }
     this.formStatus = 'submitting';
+
     this.api.sendConsultRequestEmail(
       this.user,
       this.fields.request_category.formControl.value,
@@ -76,8 +77,6 @@ export class ConsultRequestFormComponent implements OnInit {
     }, error1 => {
       if (error1) {
         this.errorMessage = error1;
-      } else {
-        this.errorMessage = 'We encountered an error resetting your password.  Please contact support.';
       }
       this.formStatus = 'form';
       this.changeDetectorRef.detectChanges();
