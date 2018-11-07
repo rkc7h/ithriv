@@ -30,7 +30,7 @@
         (mouseover)="category.parent.hover=true"
         (mouseleave)="category.parent.hover=false"
         matTooltip="
-          {{category.name}}:
+          {{category.parent.name}}:
           {{category.parent.brief_description || category.parent.description}}
         "
       >
