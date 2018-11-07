@@ -34,7 +34,7 @@ export class CategoryFormComponent implements OnInit {
       formControl: new FormControl(),
       required: true,
       placeholder: 'Description',
-      type: 'textarea',
+      type: 'richtexteditor',
       options: {
         status: ['words']
       }

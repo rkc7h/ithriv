@@ -1,33 +1,68 @@
-<div class="container mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10px" fxLayoutAlign="center center">
+<div
+  class="container mat-typography"
+  fxLayout="row"
+  fxLayout.xs="column"
+  fxLayoutWrap
+  fxLayoutGap="10px"
+  fxLayoutAlign="center center"
+>
   <div fxFlex="50%">
     <app-logo></app-logo>
     <mat-card>
-      <mat-card-content>
+      <mat-card-content *ngIf="user">
         <h1>Request Research Concierge Services Consult</h1>
-        <p>Completing this web form will send a concierge services request which will be routed to the best specialist to address your need. We aim to respond within two business days.</p>
+        <p>Completing this web form will send a concierge services request which will be routed to the best specialist
+          to address your need. We aim to respond within two business days.</p>
         <h3>Request Context:</h3>
         <p>{{ user.display_name }}</p>
         <p>{{ user.email }}</p>
         <p>{{ user.institution.name }}</p>
         <p>{{ user.institutional_role }}</p>
         <p>{{ user.division }}</p>
-        <form [formGroup]="requestConsultForm" (ngSubmit)="onSubmit()" *ngIf="formStatus === 'form'">
-          <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
-            [field]="field" [formGroup]="requestConsultForm" [errorMatcher]="errorMatcher"></app-form-field>
+        <form
+          [formGroup]="requestConsultForm"
+          (ngSubmit)="onSubmit()"
+          *ngIf="formStatus === 'form'"
+        >
+          <app-form-field
+            *ngFor="let field of getFields()"
+            [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
+            [field]="field"
+            [formGroup]="requestConsultForm"
+            [errorMatcher]="errorMatcher"
+          ></app-form-field>
 
-          <div id="error_message" class="display mat-error" *ngIf="errorMessage">{{errorMessage}}</div>
+          <div
+            id="error_message"
+            class="display mat-error"
+            *ngIf="errorMessage"
+          >{{errorMessage}}</div>
 
           <footer *ngIf="formStatus === 'form'">
-            <button type="button" color="primary" mat-raised-button (click)="onSubmit()" >Next</button>
+            <button
+              type="button"
+              color="primary"
+              mat-raised-button
+              (click)="onSubmit()"
+            >Next</button>
           </footer>
           <footer *ngIf="formStatus === 'submitting'">
-              <mat-spinner></mat-spinner>
+            <mat-spinner></mat-spinner>
           </footer>
-          <button type="button" (click)="onCancel()" mat-button>Cancel</button>
+          <button
+            type="button"
+            (click)="onCancel()"
+            mat-button
+          >Cancel</button>
         </form>
         <div *ngIf="formStatus === 'complete'">
           <p><b>Thank you for submitting your Consult Request. We aim to respond within two business days. </b></p>
-          <button type="button" color="primary" mat-raised-button (click)="onCancel()">Continue</button>
+          <button
+            type="button"
+            color="primary"
+            mat-raised-button
+            (click)="onCancel()"
+          >Continue</button>
         </div>
 
       </mat-card-content>

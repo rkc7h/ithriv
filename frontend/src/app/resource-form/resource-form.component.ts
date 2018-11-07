@@ -62,7 +62,7 @@ export class ResourceFormComponent implements OnInit {
       formControl: new FormControl(),
       required: false,
       placeholder: 'Description',
-      type: 'textarea',
+      type: 'richtexteditor',
       options: {
         status: ['words'],
       },
