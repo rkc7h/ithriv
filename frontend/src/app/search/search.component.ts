@@ -1,5 +1,7 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
   HostBinding,
   Input,
   OnInit,
@@ -23,7 +25,7 @@ import { User } from '../user';
   styleUrls: ['./search.component.scss'],
   animations: [fadeTransition()],
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, AfterViewInit {
   @HostBinding('@fadeTransition')
   @Input() resourceQuery: ResourceQuery;
 
@@ -40,6 +42,7 @@ export class SearchComponent implements OnInit {
 
   @ViewChild('sidenav') public sideNav: MatSidenav;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('query') query: ElementRef;
 
   constructor(
     private api: ResourceApiService,
@@ -109,6 +112,10 @@ export class SearchComponent implements OnInit {
       debounceTime(300)).subscribe(query => {
         this.updateQuery(query);
       });
+  }
+
+  ngAfterViewInit(): void {
+    this.query.nativeElement.focus();
   }
 
   loadUser() {
