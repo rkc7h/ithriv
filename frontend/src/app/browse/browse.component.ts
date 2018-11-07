@@ -65,9 +65,7 @@ export class BrowseComponent implements OnInit {
           target: `category_${queryParams['scrollTo']}`
         };
 
-        this.scrollToService.scrollTo(config).subscribe(result => {
-          console.log('scrollTo result:', result);
-        });
+        this.scrollToService.scrollTo(config).subscribe();
       }
     });
   }
