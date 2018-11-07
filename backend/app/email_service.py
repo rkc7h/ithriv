@@ -125,3 +125,19 @@ class EmailService():
                         recipients=[self.app.config['MAIL_CONSULT_RECIPIENT']], text_body=text_body, html_body=html_body)
 
         return tracking_code
+
+    def approval_request_email(self, user, request_data):
+        tracking_code = self.tracking_code()
+
+        subject = "iThriv: Resource Approval Request"
+        logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
+        text_body = render_template("approval_request.txt",
+                                    user=user, request_data=request_data, tracking_code=tracking_code)
+
+        html_body = render_template("approval_request.html",
+                                    user=user, request_data=request_data, logo_url=logo_url, tracking_code=tracking_code)
+
+        self.send_email(subject,
+                        recipients=[self.app.config['MAIL_CONSULT_RECIPIENT']], text_body=text_body, html_body=html_body)
+
+        return tracking_code
