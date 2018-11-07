@@ -71,6 +71,7 @@ export class ResourceApiService {
     forgot_password: '/api/forgot_password',
     reset_password: '/api/reset_password',
     consult_request: '/api/consult_request',
+    approval_request: '/api/approval_request',
     session: '/api/session'
   };
 
@@ -523,6 +524,13 @@ export class ResourceApiService {
   sendConsultRequestEmail(user: User, request_category: string, request_text: string): Observable<any> {
     const request_data = { user_id: user.id, request_category: request_category, request_text: request_text };
     return this.httpClient.post<any>(this.apiRoot + this.endpoints.consult_request, request_data)
+      .pipe(catchError(this.handleError));
+  }
+
+  /** Request Resource Approval */
+  sendApprovalRequestEmail(user: User, resource: Resource): Observable<any> {
+    const request_data = { user_id: user.id, resource_id: resource.id };
+    return this.httpClient.post<any>(this.apiRoot + this.endpoints.approval_request, request_data)
       .pipe(catchError(this.handleError));
   }
 

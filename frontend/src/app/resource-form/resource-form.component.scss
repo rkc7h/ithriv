@@ -41,3 +41,7 @@ fieldset {
 ::ng-deep snack-bar-container.snackbar-warning {
   background-color: mat-color($ithriv-warn, default, 1);
 }
+
+mat-toolbar.mat-toolbar {
+  background-color: #CCCCCC;
+}

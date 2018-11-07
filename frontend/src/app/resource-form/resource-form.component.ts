@@ -368,7 +368,7 @@ export class ResourceFormComponent implements OnInit {
     return Object.entries(this.fields).map(f => f[1]);
   }
 
-  onSubmit($event) {
+  onSubmit($event, submitForApproval = false) {
     $event.preventDefault();
     this.validate();
 
@@ -382,7 +382,7 @@ export class ResourceFormComponent implements OnInit {
       }
 
       if (!this.resource.approved) {
-        this.resource.approved = 'Unapproved';
+        this.resource.approved = submitForApproval ? 'Requested' : 'Unapproved';
       }
 
       const fnName = this.createNew ? 'addResource' : 'updateResource';
@@ -404,7 +404,13 @@ export class ResourceFormComponent implements OnInit {
                 console.log(`${numDone} of ${numAttachments} complete.`);
 
                 if (numDone === numAttachments) {
-                  this.close();
+                  if (submitForApproval) {
+                    this.api
+                      .sendApprovalRequestEmail(this.resource)
+                      .subscribe(result => this.isDataLoaded = true);
+                  } else {
+                    this.close();
+                  }
                 }
               });
             })
@@ -419,7 +425,15 @@ export class ResourceFormComponent implements OnInit {
           .subscribe(
             result => console.log('result', result),
             error => console.error(error),
-            () => this.close()
+            () => {
+              if (submitForApproval) {
+                this.api
+                  .sendApprovalRequestEmail(this.resource)
+                  .subscribe(result => this.isDataLoaded = true);
+              } else {
+                this.close();
+              }
+            }
           );
       }
     } else {
