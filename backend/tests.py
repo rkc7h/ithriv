@@ -1548,9 +1548,13 @@ class TestCase(unittest.TestCase):
         # This test will send two emails. One confirming that the user is created:
         user = self.test_create_user_with_password()
         message_count = len(TEST_MESSAGES)
+        resource = self.construct_resource()
+
         data = {
-            "user_id": user.id
+            "user_id": user.id,
+            "resource_id": resource.id
         }
+
         # ...And a second email requesting the approval:
         rv = self.app.post('/api/approval_request', data=json.dumps(data), headers=self.logged_in_headers(),
                            content_type="application/json")

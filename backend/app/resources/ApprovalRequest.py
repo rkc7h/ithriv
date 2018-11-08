@@ -21,8 +21,8 @@ def approval_request():
     resource = ThrivResource.query.filter_by(id=resource_id).first_or_404()
 
     for admin in admins:
-      tracking_code = email_service.approval_email(user, admin, resource)
-      log = EmailLog(user_id=user.id, type="approval_request", tracking_code=tracking_code)
-      db.session.add(log)
-      db.session.commit()
+        tracking_code = email_service.approval_request_email(user, admin, resource)
+        log = EmailLog(user_id=user.id, type="approval_request", tracking_code=tracking_code)
+        db.session.add(log)
+        db.session.commit()
     return ''

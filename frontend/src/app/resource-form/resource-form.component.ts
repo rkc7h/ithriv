@@ -16,6 +16,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { FileAttachment } from '../file-attachment';
 import { NgProgressComponent } from '@ngx-progressbar/core';
+import { User } from '../user';
 
 @Component({
   selector: 'app-resource-form',
@@ -39,6 +40,7 @@ export class ResourceFormComponent implements OnInit {
   files = {};
   progress: NgProgressComponent;
   progressMessage: '';
+  user: User;
 
   // Field groupings
   fieldsets: Fieldset[] = [];
@@ -203,6 +205,7 @@ export class ResourceFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.api.getSession().subscribe(user => this.user = user);
   }
 
   loadData() {
@@ -406,7 +409,7 @@ export class ResourceFormComponent implements OnInit {
                 if (numDone === numAttachments) {
                   if (submitForApproval) {
                     this.api
-                      .sendApprovalRequestEmail(this.resource)
+                      .sendApprovalRequestEmail(this.user, this.resource)
                       .subscribe(result => this.isDataLoaded = true);
                   } else {
                     this.close();
@@ -428,7 +431,7 @@ export class ResourceFormComponent implements OnInit {
             () => {
               if (submitForApproval) {
                 this.api
-                  .sendApprovalRequestEmail(this.resource)
+                  .sendApprovalRequestEmail(this.user, this.resource)
                   .subscribe(result => this.isDataLoaded = true);
               } else {
                 this.close();
