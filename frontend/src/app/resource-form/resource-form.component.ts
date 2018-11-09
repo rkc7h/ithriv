@@ -386,6 +386,8 @@ export class ResourceFormComponent implements OnInit {
 
       if (!this.resource.approved) {
         this.resource.approved = submitForApproval ? 'Requested' : 'Unapproved';
+      } else if (submitForApproval && (this.resource.approved === 'Unapproved')) {
+        this.resource.approved = 'Requested';
       }
 
       const fnName = this.createNew ? 'addResource' : 'updateResource';
