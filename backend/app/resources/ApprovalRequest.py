@@ -17,7 +17,7 @@ def approval_request():
     user_id = request_data['user_id']
     resource_id = request_data['resource_id']
     user = User.query.filter_by(id=user_id).first_or_404()
-    admins = User.query.filter_by(role="Admin", institution_id=user.institution_id)
+    admins = User.query.filter_by(role="Admin", institution_id=user.institution_id).all()
     resource = ThrivResource.query.filter_by(id=resource_id).first_or_404()
 
     for admin in admins:
