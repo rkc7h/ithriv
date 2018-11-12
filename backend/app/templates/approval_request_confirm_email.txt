@@ -1,0 +1,8 @@
+Dear {{ user.display_name }},
+
+We've received your request for approval of this resource:
+
+Resource Name: {{ resource.name }}
+Resource URL: https://portal.ithriv.org/#/resource/{{ resource.id }}
+
+The iThriv administrator(s) for your institution have been notified of your request. If you have any questions, please contact the iThriv Research Concierge ({{ support_email }}).
