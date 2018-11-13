@@ -586,4 +586,8 @@ export class ResourceFormComponent implements OnInit {
       (this.fields.attachments.attachments.size > 0)
     );
   }
+
+  userIsOwner() {
+    return this.resource.owners.includes(this.user.email);
+  }
 }

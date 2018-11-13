@@ -50,7 +50,7 @@
         <button
           type="button"
           mat-raised-button
-          *ngIf="resource.approved === 'Unapproved'"
+          *ngIf="userIsOwner() && (resource.approved === 'Unapproved')"
           (click)="onSubmit($event, true)"
           color="primary"
         >Submit for approval</button>
@@ -58,7 +58,7 @@
         <button
           type="button"
           mat-raised-button
-          *ngIf="resource.approved === 'Requested'"
+          *ngIf="userIsOwner() && (resource.approved === 'Requested')"
           color="primary"
           disabled
         >Approval requested</button>
@@ -66,7 +66,7 @@
         <button
           type="button"
           mat-raised-button
-          *ngIf="resource.approved === 'Approved'"
+          *ngIf="userIsOwner() && (resource.approved === 'Approved')"
           color="primary"
           disabled
         >Approved</button>
