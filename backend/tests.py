@@ -1567,11 +1567,13 @@ class TestCase(unittest.TestCase):
         logs = EmailLog.query.all()
 
         # 2. Second email goes to the admin requesting approval:
-        self.assertEqual("iThriv: Resource Approval Request", self.decode(TEST_MESSAGES[-2]['subject']))
+        self.assertEqual("iThriv: Resource Approval Request", self.decode(TEST_MESSAGES[-2]['Subject']))
+        self.assertEqual(self.test_eppn, TEST_MESSAGES[-2]['To'])
         self.assertIsNotNone(logs[-2].tracking_code)
 
         # 3. Third email goes to the user confirming receipt of the approval request:
-        self.assertEqual("iThriv: Resource Approval Request Confirmed", self.decode(TEST_MESSAGES[-1]['subject']))
+        self.assertEqual("iThriv: Resource Approval Request Confirmed", self.decode(TEST_MESSAGES[-1]['Subject']))
+        self.assertEqual(user.email, TEST_MESSAGES[-1]['To'])
         self.assertIsNotNone(logs[-1].tracking_code)
 
     def test_get_current_participant(self):
