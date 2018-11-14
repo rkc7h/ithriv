@@ -125,3 +125,36 @@ class EmailService():
                         recipients=[self.app.config['MAIL_CONSULT_RECIPIENT']], text_body=text_body, html_body=html_body)
 
         return tracking_code
+
+    def approval_request_email(self, user, admin, resource):
+        tracking_code = self.tracking_code()
+
+        subject = "iThriv: Resource Approval Request"
+        logo_url = url_for('track.logo', user_id=admin.id, code=tracking_code, _external=True)
+        text_body = render_template("approval_request_email.txt",
+                                    user=user, admin=admin, resource=resource, tracking_code=tracking_code)
+
+        html_body = render_template("approval_request_email.html",
+                                    user=user, admin=admin, resource=resource, logo_url=logo_url, tracking_code=tracking_code)
+
+        self.send_email(subject,
+                        recipients=[admin.email], text_body=text_body, html_body=html_body)
+
+        return tracking_code
+
+    def approval_request_confirm_email(self, user, resource):
+        tracking_code = self.tracking_code()
+
+        subject = "iThriv: Resource Approval Request Confirmed"
+        support_email = self.app.config['MAIL_CONSULT_RECIPIENT']
+        logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
+        text_body = render_template("approval_request_confirm_email.txt",
+                                    user=user, resource=resource, support_email=support_email, tracking_code=tracking_code)
+
+        html_body = render_template("approval_request_confirm_email.html",
+                                    user=user, resource=resource, support_email=support_email, logo_url=logo_url, tracking_code=tracking_code)
+
+        self.send_email(subject,
+                        recipients=[user.email], text_body=text_body, html_body=html_body)
+
+        return tracking_code

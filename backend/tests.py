@@ -1543,6 +1543,39 @@ class TestCase(unittest.TestCase):
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
 
+
+    def test_approval_request_sends_email(self):
+        # This test will send three emails.
+        # 1. First email confirms that the user is created:
+        user = self.test_create_user_with_password()
+
+        message_count = len(TEST_MESSAGES)
+
+        # Create the resource
+        resource = self.construct_resource()
+
+        data = {
+            "user_id": user.id,
+            "resource_id": resource.id
+        }
+
+        # Request approval
+        rv = self.app.post('/api/approval_request', data=json.dumps(data), headers=self.logged_in_headers(),
+                           content_type="application/json")
+        self.assertSuccess(rv)
+        self.assertGreater(len(TEST_MESSAGES), message_count)
+        logs = EmailLog.query.all()
+
+        # 2. Second email goes to the admin requesting approval:
+        self.assertEqual("iThriv: Resource Approval Request", self.decode(TEST_MESSAGES[-2]['Subject']))
+        self.assertEqual(self.test_eppn, TEST_MESSAGES[-2]['To'])
+        self.assertIsNotNone(logs[-2].tracking_code)
+
+        # 3. Third email goes to the user confirming receipt of the approval request:
+        self.assertEqual("iThriv: Resource Approval Request Confirmed", self.decode(TEST_MESSAGES[-1]['Subject']))
+        self.assertEqual(user.email, TEST_MESSAGES[-1]['To'])
+        self.assertIsNotNone(logs[-1].tracking_code)
+
     def test_get_current_participant(self):
         """ Test for the current participant status """
         # Create the user

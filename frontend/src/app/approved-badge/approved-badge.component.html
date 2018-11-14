@@ -1,5 +1,5 @@
 <div
-  *ngIf="resource.user_may_edit && (resource.approved === 'Unapproved')"
+  *ngIf="resource.user_may_edit && (resource.approved !== 'Approved')"
   class="ribbon ribbon-top-right"
 >
   <span>
@@ -20,7 +20,7 @@
   </span>
   <span
     (click)="handleClick($event)"
-    *ngIf="resource.approved === 'Unapproved'"
+    *ngIf="resource.approved !== 'Approved'"
     matTooltip="{{instructions()}}"
   >
     Unapproved

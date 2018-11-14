@@ -34,7 +34,7 @@
     </fieldset>
 
     <footer>
-      <mat-toolbar color="primary">
+      <mat-toolbar>
         <button
           type="button"
           color="accent"
@@ -46,18 +46,46 @@
           mat-raised-button
           (click)="onCancel()"
         >Cancel</button>
+
+        <button
+          type="button"
+          mat-raised-button
+          *ngIf="userIsOwner() && (resource.approved === 'Unapproved')"
+          (click)="onSubmit($event, true)"
+          color="primary"
+        >Submit for approval</button>
+
+        <button
+          type="button"
+          mat-raised-button
+          *ngIf="userIsOwner() && (resource.approved === 'Requested')"
+          color="primary"
+          disabled
+        >Approval requested</button>
+
+        <button
+          type="button"
+          mat-raised-button
+          *ngIf="userIsOwner() && (resource.approved === 'Approved')"
+          color="primary"
+          disabled
+        >Approved</button>
+
         <button
           type="button"
           mat-raised-button
           *ngIf="!showConfirmDelete && !createNew"
           (click)="showDelete()"
+          color="warn"
         >Delete</button>
+
         <button
           *ngIf="showConfirmDelete"
           id="confirm_delete"
           type="button"
           mat-raised-button
           (click)="onDelete()"
+          color="warn"
         >Permanently Delete This Resource!!!</button>
 
         <div

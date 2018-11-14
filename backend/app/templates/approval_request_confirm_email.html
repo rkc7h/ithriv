@@ -1,0 +1,17 @@
+{% extends "base_email.html" %}
+{% block content %}
+<p style="font-family: sans-serif; font-size: 24px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
+    Resource Approval Request Confirmed
+</p>
+<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">
+    Dear {{ user.display_name }}, </p>
+
+<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">
+    We've received your request for approval of this resource:
+</p>
+<p><b>Resource Name:</b> {{ resource.name }}</p>
+<p><b>Resource URL:</b> https://portal.ithriv.org/#/resource/{{ resource.id }}</p>
+<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">
+    The iThriv administrator(s) for your institution have been notified of your request. If you have any questions, please contact <a href="mailto:{{ support_email }}">the iThriv Research Concierge</a>.
+</p>
+{% endblock %}

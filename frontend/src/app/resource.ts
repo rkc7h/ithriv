@@ -11,6 +11,7 @@ export interface Resource {
   name: string;
   description: string;
   owner?: string;
+  owners?: [string];
   contact_email?: string;
   contact_notes?: string;
   contact_phone?: string;

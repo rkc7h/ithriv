@@ -53,7 +53,7 @@ def login(user_info):
 
 def confirm_email(email_token):
     """When users create a new account with an email and a password, this
-    allows the front end ot confirm their email and log them into the system."""
+    allows the front end to confirm their email and log them into the system."""
     try:
         ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
         email = ts.loads(email_token, salt="email-confirm-key", max_age=86400)

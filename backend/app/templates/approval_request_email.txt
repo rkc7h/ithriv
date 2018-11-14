@@ -1,0 +1,10 @@
+Dear Research Concierge,
+
+{{ user.display_name }} just requested approval of a resource with the following details:
+User Email: {{ user.email }}
+User Id: {{ user.uid }}
+User Institution: {{ user.institution }}
+User Institutional Role: {{ user.institutional_role }}
+User Division: {{ user.division }}
+Resource Name: {{ resource.name }}
+Resource URL: https://portal.ithriv.org/#/resource/{{ resource.id }}

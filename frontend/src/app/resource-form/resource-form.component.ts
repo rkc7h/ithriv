@@ -16,6 +16,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 import { ValidateUrl } from '../shared/validators/url.validator';
 import { FileAttachment } from '../file-attachment';
 import { NgProgressComponent } from '@ngx-progressbar/core';
+import { User } from '../user';
 
 @Component({
   selector: 'app-resource-form',
@@ -39,6 +40,7 @@ export class ResourceFormComponent implements OnInit {
   files = {};
   progress: NgProgressComponent;
   progressMessage: '';
+  user: User;
 
   // Field groupings
   fieldsets: Fieldset[] = [];
@@ -203,6 +205,7 @@ export class ResourceFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.api.getSession().subscribe(user => this.user = user);
   }
 
   loadData() {
@@ -368,7 +371,7 @@ export class ResourceFormComponent implements OnInit {
     return Object.entries(this.fields).map(f => f[1]);
   }
 
-  onSubmit($event) {
+  onSubmit($event, submitForApproval = false) {
     $event.preventDefault();
     this.validate();
 
@@ -382,7 +385,9 @@ export class ResourceFormComponent implements OnInit {
       }
 
       if (!this.resource.approved) {
-        this.resource.approved = 'Unapproved';
+        this.resource.approved = submitForApproval ? 'Requested' : 'Unapproved';
+      } else if (submitForApproval && (this.resource.approved === 'Unapproved')) {
+        this.resource.approved = 'Requested';
       }
 
       const fnName = this.createNew ? 'addResource' : 'updateResource';
@@ -404,7 +409,13 @@ export class ResourceFormComponent implements OnInit {
                 console.log(`${numDone} of ${numAttachments} complete.`);
 
                 if (numDone === numAttachments) {
-                  this.close();
+                  if (submitForApproval) {
+                    this.api
+                      .sendApprovalRequestEmail(this.user, this.resource)
+                      .subscribe(result => this.isDataLoaded = true);
+                  } else {
+                    this.close();
+                  }
                 }
               });
             })
@@ -419,7 +430,15 @@ export class ResourceFormComponent implements OnInit {
           .subscribe(
             result => console.log('result', result),
             error => console.error(error),
-            () => this.close()
+            () => {
+              if (submitForApproval) {
+                this.api
+                  .sendApprovalRequestEmail(this.user, this.resource)
+                  .subscribe(result => this.isDataLoaded = true);
+              } else {
+                this.close();
+              }
+            }
           );
       }
     } else {
@@ -566,5 +585,9 @@ export class ResourceFormComponent implements OnInit {
       this.fields.attachments.attachments &&
       (this.fields.attachments.attachments.size > 0)
     );
+  }
+
+  userIsOwner() {
+    return this.resource.owners.includes(this.user.email);
   }
 }
