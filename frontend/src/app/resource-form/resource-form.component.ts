@@ -588,6 +588,10 @@ export class ResourceFormComponent implements OnInit {
   }
 
   userIsOwner() {
-    return this.resource.owners.includes(this.user.email);
+    if (this.resource && this.resource.owners && (this.resource.owners.length > 0)) {
+      return this.resource.owners.includes(this.user.email);
+    }
+
+    return false;
   }
 }
