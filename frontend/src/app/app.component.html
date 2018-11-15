@@ -29,6 +29,7 @@
           <button
             mat-button
             (click)="closeSidenav(); goLogin($event)"
+            id="login-button"
           >
             <mat-icon>account_circle</mat-icon>
             Log in
@@ -107,6 +108,7 @@
             mat-button
             *ngIf="!session"
             (click)="goLogin($event)"
+            id="login-button"
           >
             <mat-icon>account_circle</mat-icon>
             Log in
@@ -144,6 +146,7 @@
               href="#"
               (click)="goHome($event)"
               aria-label="Go Home"
+              id="logomark-link"
             >
               <img
                 src="/assets/logo/ithriv-logomark.png"
@@ -177,6 +180,7 @@
           <a
             href="http://www.ithriv.org"
             *ngIf="!mobileQuery.matches"
+            id="logo-horizontal-link"
           >
             <img
               src="/assets/logo/ithriv-logo.png"
