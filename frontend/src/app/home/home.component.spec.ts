@@ -4,6 +4,7 @@ import { ResourceListComponent } from '../resource-list/resource-list.component'
 import { MatSidenavModule, MatExpansionModule, MatListModule, MatIconModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 import { CategoryTileComponent } from '../category-tile/category-tile.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 
 
@@ -26,9 +27,10 @@ describe('HomeComponent', () => {
         MatListModule,
         MatSidenavModule,
         ReactiveFormsModule
-      ]
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

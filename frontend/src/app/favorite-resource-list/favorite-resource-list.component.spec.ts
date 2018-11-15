@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FavoriteResourceListComponent } from './favorite-resource-list.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('FavoriteResourceListComponent', () => {
   let component: FavoriteResourceListComponent;
@@ -8,9 +9,10 @@ describe('FavoriteResourceListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FavoriteResourceListComponent ]
+      declarations: [FavoriteResourceListComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserResourceListComponent } from './user-resource-list.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('UserResourceListComponent', () => {
   let component: UserResourceListComponent;
@@ -8,9 +9,10 @@ describe('UserResourceListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserResourceListComponent ]
+      declarations: [UserResourceListComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

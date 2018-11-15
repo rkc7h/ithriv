@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SessionRedirectComponent } from './session-redirect.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('SessionRedirectComponent', () => {
   let component: SessionRedirectComponent;
@@ -7,7 +8,8 @@ describe('SessionRedirectComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SessionRedirectComponent]
+      declarations: [SessionRedirectComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
   }));

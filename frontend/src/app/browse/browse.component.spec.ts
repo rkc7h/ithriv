@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowseComponent } from './browse.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('BrowseComponent', () => {
   let component: BrowseComponent;
@@ -8,7 +9,8 @@ describe('BrowseComponent', () => {
   beforeEach(async(() => {
     TestBed
       .configureTestingModule({
-        declarations: [BrowseComponent]
+        declarations: [BrowseComponent],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA]
       })
       .compileComponents();
   }));

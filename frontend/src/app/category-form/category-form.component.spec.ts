@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CategoryFormComponent } from './category-form.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('CategoryFormComponent', () => {
   let component: CategoryFormComponent;
@@ -8,9 +9,10 @@ describe('CategoryFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CategoryFormComponent ]
+      declarations: [CategoryFormComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

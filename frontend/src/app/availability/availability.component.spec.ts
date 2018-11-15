@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AvailabilityComponent } from './availability.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('AvailabilityComponent', () => {
   let component: AvailabilityComponent;
@@ -8,7 +9,8 @@ describe('AvailabilityComponent', () => {
   beforeEach(async(() => {
     TestBed
       .configureTestingModule({
-        declarations: [AvailabilityComponent]
+        declarations: [AvailabilityComponent],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA]
       })
       .compileComponents();
   }));

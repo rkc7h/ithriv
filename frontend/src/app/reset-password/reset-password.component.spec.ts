@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ResetPasswordComponent } from './reset-password.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('ResetPasswordComponent', () => {
   let component: ResetPasswordComponent;
@@ -8,9 +9,10 @@ describe('ResetPasswordComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ResetPasswordComponent ]
+      declarations: [ResetPasswordComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

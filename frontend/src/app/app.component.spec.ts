@@ -1,38 +1,45 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  MatButtonModule,
+  MatButtonToggleModule,
+  MatDividerModule,
+  MatIconModule,
+  MatToolbarModule
+} from '@angular/material';
+import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { RouterOutlet } from '@angular/router';
-import { MatButtonModule, MatIconModule, MatDividerModule, MatToolbarModule, MatButtonToggleModule } from '@angular/material';
-import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { MockResourceApiService } from './shared/resource-api/mocks/resource-api.service.mock';
-import { AppPage } from './app.po';
+import { ResourceApiService } from './shared/resource-api/resource-api.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Icon } from './icon';
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let mockResourceApiService: MockResourceApiService;
+  let api: MockResourceApiService;
 
   beforeEach(async(() => {
-    mockResourceApiService = new MockResourceApiService();
+    api = new MockResourceApiService();
 
     TestBed
       .configureTestingModule({
         imports: [
+          BrowserAnimationsModule,
           MatButtonModule,
           MatIconModule,
           MatDividerModule,
           MatToolbarModule,
           MatButtonToggleModule,
+          RouterTestingModule.withRoutes([])
         ],
         declarations: [
-          AppComponent,
-          RouterOutlet
+          AppComponent
         ],
         providers: [
-          {
-            provide: ResourceApiService,
-            useValue: mockResourceApiService
-          }
-        ]
+          { provide: ResourceApiService, useClass: MockResourceApiService }
+        ],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA]
       })
       .compileComponents()
       .then(() => {
@@ -51,7 +58,16 @@ describe('AppComponent', () => {
   }));
 
   it('should load icons', async(() => {
-    expect(component.icons).toBeTruthy();
+    const icons: Icon[] = [
+      { id: 0, name: 'jabba_the_hutt', url: 'some.website.com/icons/jabba' },
+      { id: 1, name: 'boba_fett', url: 'some.website.com/icons/boba' },
+      { id: 2, name: 'max_rebo', url: 'some.website.com/icons/max' },
+    ];
+
+    api.setResponse(icons);
+    api.getIconsSpy(result => {
+      expect(component.icons).toEqual(icons);
+    });
   }));
 
 });

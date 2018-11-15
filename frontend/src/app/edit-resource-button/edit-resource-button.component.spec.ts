@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditResourceButtonComponent } from './edit-resource-button.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('EditResourceButtonComponent', () => {
   let component: EditResourceButtonComponent;
@@ -8,9 +9,10 @@ describe('EditResourceButtonComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EditResourceButtonComponent ]
+      declarations: [EditResourceButtonComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

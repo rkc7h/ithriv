@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TreeSelectComponent } from './tree-select.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('TreeSelectComponent', () => {
   let component: TreeSelectComponent;
@@ -8,9 +9,10 @@ describe('TreeSelectComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TreeSelectComponent ]
+      declarations: [TreeSelectComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

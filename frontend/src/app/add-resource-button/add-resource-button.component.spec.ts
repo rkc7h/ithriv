@@ -1,7 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MatDialogModule, MatIconModule } from '@angular/material';
+import { RouterTestingModule } from '@angular/router/testing';
 import { AddResourceButtonComponent } from './add-resource-button.component';
-import { MatIconModule, MatDialogModule } from '@angular/material';
+import { MockResourceApiService } from '../shared/resource-api/mocks/resource-api.service.mock'
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 describe('AddResourceButtonComponent', () => {
   let component: AddResourceButtonComponent;
@@ -12,8 +14,10 @@ describe('AddResourceButtonComponent', () => {
       declarations: [AddResourceButtonComponent],
       imports: [
         MatDialogModule,
-        MatIconModule
-      ]
+        MatIconModule,
+        RouterTestingModule.withRoutes([])
+      ],
+      providers: [{ provide: ResourceApiService, useClass: MockResourceApiService }]
     })
       .compileComponents();
   }));

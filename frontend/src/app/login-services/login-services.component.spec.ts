@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoginServicesComponent } from './login-services.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('LoginServicesComponent', () => {
   let component: LoginServicesComponent;
@@ -8,9 +9,10 @@ describe('LoginServicesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoginServicesComponent ]
+      declarations: [LoginServicesComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

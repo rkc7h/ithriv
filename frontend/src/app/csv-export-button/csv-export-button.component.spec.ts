@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CsvExportButtonComponent } from './csv-export-button.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('CsvExportButtonComponent', () => {
   let component: CsvExportButtonComponent;
@@ -8,9 +9,10 @@ describe('CsvExportButtonComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CsvExportButtonComponent ]
+      declarations: [CsvExportButtonComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

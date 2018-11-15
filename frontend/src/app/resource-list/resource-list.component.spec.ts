@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ResourceListComponent } from './resource-list.component';
 import { ResourceTileComponent } from '../resource-tile/resource-tile.component';
@@ -16,7 +17,8 @@ describe('ResourceListComponent', () => {
         ],
         imports: [
           FormsModule
-        ]
+        ],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA]
       })
       .compileComponents();
   }));
