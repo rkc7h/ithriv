@@ -1,11 +1,6 @@
-import {
-  ElementRef,
-  Renderer2,
-  Component,
-  Type
-} from '@angular/core';
+import { Component, ElementRef, Renderer2, Type } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { CategoryColorBorderDirective } from './category-color-border.directive';
-import { async, TestBed, ComponentFixture } from '@angular/core/testing';
 
 class MockElementRef extends ElementRef { nativeElement = {}; constructor() { super(null); } }
 
@@ -14,7 +9,7 @@ class MockElementRef extends ElementRef { nativeElement = {}; constructor() { su
 })
 class TestCategoryColorComponent { }
 
-fdescribe('CategoryColorBorderDirective', () => {
+describe('CategoryColorBorderDirective', () => {
   const el = new MockElementRef();
   let renderer2: Renderer2;
   let fixture: ComponentFixture<TestCategoryColorComponent>;

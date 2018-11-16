@@ -1,7 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { EditCategoryButtonComponent } from './edit-category-button.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material';
+import { EditCategoryButtonComponent } from './edit-category-button.component';
 
 describe('EditCategoryButtonComponent', () => {
   let component: EditCategoryButtonComponent;
@@ -10,6 +10,9 @@ describe('EditCategoryButtonComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [EditCategoryButtonComponent],
+      imports: [
+        MatDialogModule
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
