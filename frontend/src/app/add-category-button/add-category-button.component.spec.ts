@@ -1,8 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { AddCategoryButtonComponent } from './add-category-button.component';
-import { MatIconModule, MatDialogModule } from '@angular/material';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule, MatIconModule } from '@angular/material';
+import { AddCategoryButtonComponent } from './add-category-button.component';
 
 describe('AddCategoryButtonComponent', () => {
   let component: AddCategoryButtonComponent;

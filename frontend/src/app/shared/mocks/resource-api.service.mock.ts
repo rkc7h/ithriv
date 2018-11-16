@@ -1,4 +1,4 @@
-import { ResourceApiService } from '../resource-api.service';
+import { ResourceApiService } from '../resource-api/resource-api.service';
 import { SpyObject } from './helper.mock';
 import Spy = jasmine.Spy;
 

@@ -9,7 +9,7 @@ import {
 } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { MockResourceApiService } from './shared/resource-api/mocks/resource-api.service.mock';
+import { MockResourceApiService } from './shared/mocks/resource-api.service.mock';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Icon } from './icon';
