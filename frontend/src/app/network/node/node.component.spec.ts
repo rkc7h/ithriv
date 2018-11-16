@@ -6,7 +6,7 @@ import { MatTooltipModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NodeOptions } from '../../node-options';
 
-fdescribe('NodeComponent', () => {
+describe('NodeComponent', () => {
   let component: NodeComponent;
   let fixture: ComponentFixture<NodeComponent>;
 
