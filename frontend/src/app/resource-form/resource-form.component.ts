@@ -333,7 +333,11 @@ export class ResourceFormComponent implements OnInit {
           selectedCatIds.push(+this.category);
 
           for (const cat of this.allCategories) {
-            const checked = selectedCatIds.includes(cat.id);
+            const checked = (
+              selectedCatIds &&
+              (selectedCatIds.length > 0) &&
+              selectedCatIds.includes(cat.id)
+            );
             const control = new FormControl();
             control.setValue(checked);
             this.fields.categories.formGroup.addControl(cat.id.toString(), control);
@@ -588,10 +592,13 @@ export class ResourceFormComponent implements OnInit {
   }
 
   userIsOwner() {
-    if (this.resource && this.resource.owners && (this.resource.owners.length > 0)) {
-      return this.resource.owners.includes(this.user.email);
-    }
-
-    return false;
+    return (
+      this.user &&
+      this.user.email &&
+      this.resource &&
+      this.resource.owners &&
+      (this.resource.owners.length > 0) &&
+      this.resource.owners.includes(this.user.email)
+    );
   }
 }
