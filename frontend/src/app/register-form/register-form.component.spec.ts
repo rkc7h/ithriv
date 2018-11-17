@@ -14,6 +14,7 @@ describe('RegisterFormComponent', () => {
 
   beforeEach(async(() => {
     api = new MockResourceApiService();
+
     TestBed.configureTestingModule({
       declarations: [RegisterFormComponent],
       imports: [

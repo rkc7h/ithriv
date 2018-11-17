@@ -33,7 +33,7 @@ export class ResourceFormComponent implements OnInit {
   errorMatcher = new ErrorMatcher();
   isDataLoaded = false;
   resource: Resource;
-  category: Category;
+  categoryId: string;
   resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
   savesInAction = 0;
@@ -212,7 +212,7 @@ export class ResourceFormComponent implements OnInit {
     this.isDataLoaded = false;
     this.route.params.subscribe(params => {
       const resourceId = params['resource'];
-      this.category = params['category'];
+      this.categoryId = params['category'];
 
       if (resourceId) {
         this.createNew = false;
@@ -330,7 +330,10 @@ export class ResourceFormComponent implements OnInit {
 
         if (fieldName === 'categories') {
           const selectedCatIds = this.resourceCategories.map(rc => rc.category.id);
-          selectedCatIds.push(+this.category);
+
+          if (this.categoryId) {
+            selectedCatIds.push(parseInt(this.categoryId, 10));
+          }
 
           for (const cat of this.allCategories) {
             const checked = (

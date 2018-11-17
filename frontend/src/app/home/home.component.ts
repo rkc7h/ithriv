@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Category } from '../category';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { Filter, ResourceQuery } from '../resource-query';
+import { ResourceQuery } from '../resource-query';
 import { fadeTransition } from '../shared/animations';
 
 import { User } from '../user';
@@ -28,8 +28,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private api: ResourceApiService,
-    private router: Router,
-    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.loadUser();
     this.categories = [];
