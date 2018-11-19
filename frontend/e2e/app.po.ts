@@ -10,4 +10,15 @@ export class AppPage {
     return element(by.css('app-root h1')).getText();
   }
 
+  clickElement(selector: string) {
+    element(by.css(selector)).click();
+  }
+
+  getElements(selector: string) {
+    return element.all(by.css(selector));
+  }
+
+  getUrl() {
+    return browser.getCurrentUrl();
+  }
 }

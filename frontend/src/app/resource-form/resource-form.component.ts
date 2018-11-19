@@ -33,7 +33,7 @@ export class ResourceFormComponent implements OnInit {
   errorMatcher = new ErrorMatcher();
   isDataLoaded = false;
   resource: Resource;
-  category: Category;
+  categoryId: string;
   resourceForm: FormGroup = new FormGroup({});
   showConfirmDelete = false;
   savesInAction = 0;
@@ -212,7 +212,7 @@ export class ResourceFormComponent implements OnInit {
     this.isDataLoaded = false;
     this.route.params.subscribe(params => {
       const resourceId = params['resource'];
-      this.category = params['category'];
+      this.categoryId = params['category'];
 
       if (resourceId) {
         this.createNew = false;
@@ -330,10 +330,17 @@ export class ResourceFormComponent implements OnInit {
 
         if (fieldName === 'categories') {
           const selectedCatIds = this.resourceCategories.map(rc => rc.category.id);
-          selectedCatIds.push(+this.category);
+
+          if (this.categoryId) {
+            selectedCatIds.push(parseInt(this.categoryId, 10));
+          }
 
           for (const cat of this.allCategories) {
-            const checked = selectedCatIds.includes(cat.id);
+            const checked = (
+              selectedCatIds &&
+              (selectedCatIds.length > 0) &&
+              selectedCatIds.includes(cat.id)
+            );
             const control = new FormControl();
             control.setValue(checked);
             this.fields.categories.formGroup.addControl(cat.id.toString(), control);
@@ -588,10 +595,13 @@ export class ResourceFormComponent implements OnInit {
   }
 
   userIsOwner() {
-    if (this.resource && this.resource.owners && (this.resource.owners.length > 0)) {
-      return this.resource.owners.includes(this.user.email);
-    }
-
-    return false;
+    return (
+      this.user &&
+      this.user.email &&
+      this.resource &&
+      this.resource.owners &&
+      (this.resource.owners.length > 0) &&
+      this.resource.owners.includes(this.user.email)
+    );
   }
 }

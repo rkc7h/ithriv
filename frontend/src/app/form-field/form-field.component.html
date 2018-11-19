@@ -1,10 +1,10 @@
 <mat-form-field
   *ngIf="isNormalField(field)"
-  [hideRequiredMarker]="formGroup.value.hideRequired"
-  [floatLabel]="formGroup.value.floatLabel"
+  [hideRequiredMarker]="formGroup && formGroup.value.hideRequired"
+  [floatLabel]="formGroup && formGroup.value.floatLabel"
 >
   <input
-    *ngIf="(field.type === 'color')"
+    *ngIf="(field.formControl && (field.type === 'color'))"
     matInput
     [formControl]="field.formControl"
     [errorStateMatcher]="errorMatcher"
@@ -132,6 +132,7 @@
     </span>
   </mat-error>
   <td-text-editor
+    *ngIf="field.formControl"
     [formControl]="field.formControl"
     [value]="field.formControl.value"
     [options]="field.options"

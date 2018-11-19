@@ -40,19 +40,25 @@ export class TreeSelectComponent implements OnInit {
   }
 
   updateSelection() {
-    const controls = this.field.formGroup.controls;
+    if (
+      this.field &&
+      this.field.formGroup &&
+      this.field.formGroup.controls
+    ) {
+      const controls = this.field.formGroup.controls;
 
-    for (const key in this.nodes) {
-      if (this.nodes.hasOwnProperty(key) && controls.hasOwnProperty(key)) {
-        if (controls[key].value) {
-          this.checklistSelection.select(this.nodes[key]);
-        } else {
-          this.checklistSelection.deselect(this.nodes[key]);
+      for (const key in this.nodes) {
+        if (this.nodes.hasOwnProperty(key) && controls.hasOwnProperty(key)) {
+          if (controls[key].value) {
+            this.checklistSelection.select(this.nodes[key]);
+          } else {
+            this.checklistSelection.deselect(this.nodes[key]);
+          }
         }
       }
-    }
 
-    this.dataLoaded = true;
+      this.dataLoaded = true;
+    }
   }
 
   getFormControl(node: Category) {
