@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
-import { User } from '../user';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-add-resource-button',
@@ -11,18 +9,12 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 })
 export class AddResourceButtonComponent implements OnInit {
   @Input() category: Category;
-  session: User;
 
   constructor(
-    private router: Router,
-    private api: ResourceApiService,
+    private router: Router
   ) { }
 
-  ngOnInit() {
-    this.api.getSession().subscribe(user => {
-      this.session = user;
-    });
-  }
+  ngOnInit() { }
 
   openAdd() {
     this.router.navigateByUrl(`resource/add/${this.category.id}`);

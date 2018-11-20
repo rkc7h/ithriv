@@ -213,6 +213,12 @@ $animationDuration: 500ms;
     background-color: mat-color($primary, 50);
   }
 
+  ::ng-deep .mat-tab-group.mat-primary.mat-background-primary .mat-ink-bar,
+  ::ng-deep .mat-tab-nav-bar.mat-primary.mat-background-primary .mat-ink-bar {
+    background-color: mat-color($ithriv-primary, 500, 1.0);
+  }
+
+
   #fileUpload {
     file-drop {
       .file-upload {

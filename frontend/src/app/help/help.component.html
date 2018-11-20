@@ -1,0 +1,72 @@
+<div
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  class="mat-typography"
+>
+  <div
+    *appIfSession
+    class="pad-sm"
+    fxLayout="column"
+    fxLayoutAlign="center center"
+  >
+    <h1>Need research assistance?</h1>
+    <button
+      mat-raised-button
+      (click)="goConsult($event)"
+      color="primary"
+    >
+      <mat-icon>help</mat-icon>
+      Request a consult
+    </button>
+  </div>
+
+  <mat-tab-group
+    mat-stretch-tabs
+    dynamicHeight
+    backgroundColor="primary"
+  >
+    <ng-container>
+      <mat-tab
+        *ngFor="let article of publicArticles"
+        label="{{article.title}}"
+      >
+        <div [ngClass]="{
+                'pad-xl': breakpoint === 'xl',
+                'pad-lg': breakpoint === 'lg',
+                'pad-md': breakpoint === 'md',
+                'pad-sm': breakpoint === 'sm',
+                'pad-xs': breakpoint === 'xs'
+              }">
+          <mat-card>
+            <mat-card-content>
+              <h1 class="mat-display-1">{{article.title}}</h1>
+              <markdown>{{article.description}}</markdown>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </ng-container>
+    <ng-container *appIfSession>
+      <mat-tab
+        *ngFor="let article of privateArticles"
+        label="{{article.title}}"
+      >
+        <div [ngClass]="{
+            'pad-xl': breakpoint === 'xl',
+            'pad-lg': breakpoint === 'lg',
+            'pad-md': breakpoint === 'md',
+            'pad-sm': breakpoint === 'sm',
+            'pad-xs': breakpoint === 'xs'
+          }">
+          <mat-card>
+            <mat-card-content>
+              <h1 class="mat-display-1">{{article.title}}</h1>
+              <markdown>{{article.description}}</markdown>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </ng-container>
+
+  </mat-tab-group>
+</div>

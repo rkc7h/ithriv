@@ -1,0 +1,14 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
+mat-tab-group {
+  background-color: mat-color($ithriv-primary, 800, 1.0);
+}
+
+.pad-xl { padding: 4em 8em 8em 8em; }
+.pad-lg { padding: 4em 6em 6em 6em; }
+.pad-md { padding: 4em 4em 4em 4em; }
+.pad-sm { padding: 2em 2em 2em 2em; }
+.pad-xs { padding: 1em 1em 1em 1em; }
