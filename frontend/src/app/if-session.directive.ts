@@ -5,12 +5,12 @@ import { ResourceApiService } from './shared/resource-api/resource-api.service';
   selector: '[appIfSession]'
 })
 export class IfSessionDirective implements OnInit {
+  api: ResourceApiService;
 
   constructor(
     private templateRef: TemplateRef<any>,
-    private viewContainer: ViewContainerRef,
-    private api: ResourceApiService) {
-  }
+    private viewContainer: ViewContainerRef
+  ) { }
 
   ngOnInit(): void {
     this.applyPermission();

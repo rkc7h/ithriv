@@ -18,8 +18,10 @@ export class HelpComponent implements OnInit {
     private router: Router,
     public breakpointObserver: BreakpointObserver
   ) {
-    this.privateArticles = articles.default.filter(a => !a.public);
-    this.publicArticles = articles.default.filter(a => a.public);
+    if (articles && articles.default && (articles.default.length > 0)) {
+      this.privateArticles = articles.default.filter(a => !a.public);
+      this.publicArticles = articles.default.filter(a => a.public);
+    }
   }
 
   ngOnInit() {
