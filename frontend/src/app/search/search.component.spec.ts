@@ -33,55 +33,55 @@ describe('SearchComponent', () => {
   beforeEach(async(() => {
     api = new MockResourceApiService();
 
-    TestBed.configureTestingModule({
-      declarations: [
-        SearchComponent,
-        ResourceListComponent,
-        CategoryTileComponent,
-        GradientBorderDirective
-      ],
-      imports: [
-        BrowserAnimationsModule,
-        MatExpansionModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatInputModule,
-        MatListModule,
-        MatSidenavModule,
-        MatTooltipModule,
-        ReactiveFormsModule,
-        RouterTestingModule.withRoutes([])
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParamMap: observableOf({ query: '' }),
-          }
-        },
-        { provide: ResourceApiService, useValue: api }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .compileComponents();
+    TestBed
+      .configureTestingModule({
+        declarations: [
+          SearchComponent,
+          ResourceListComponent,
+          CategoryTileComponent,
+          GradientBorderDirective
+        ],
+        imports: [
+          BrowserAnimationsModule,
+          MatExpansionModule,
+          MatFormFieldModule,
+          MatIconModule,
+          MatInputModule,
+          MatListModule,
+          MatSidenavModule,
+          MatTooltipModule,
+          ReactiveFormsModule,
+          RouterTestingModule.withRoutes([])
+        ],
+        providers: [
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              queryParamMap: observableOf({ query: '' }),
+            }
+          },
+          { provide: ResourceApiService, useValue: api }
+        ],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      })
+      .compileComponents()
+      .then(() => {
+        api.setResponse(resources);
+        api.searchResourcesSpy(() => fixture.detectChanges());
+
+        fixture = TestBed.createComponent(SearchComponent);
+        component = fixture.componentInstance;
+        component.resourceQuery = new ResourceQuery({
+          query: '',
+          filters: [],
+          facets: [],
+          total: 0,
+          size: 0,
+          start: 0,
+          resources: [],
+        });
+      });
   }));
-
-  beforeEach(() => {
-    api.setResponse(resources);
-    api.searchResourcesSpy(() => fixture.detectChanges());
-
-    fixture = TestBed.createComponent(SearchComponent);
-    component = fixture.componentInstance;
-    component.resourceQuery = new ResourceQuery({
-      query: '',
-      filters: [],
-      facets: [],
-      total: 0,
-      size: 0,
-      start: 0,
-      resources: [],
-    });
-  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

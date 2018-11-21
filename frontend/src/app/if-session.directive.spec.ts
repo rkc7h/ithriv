@@ -1,25 +1,28 @@
 import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
+  DebugElement,
   TemplateRef,
-  Type,
   ViewContainerRef
 } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { IfSessionDirective } from './if-session.directive';
+import { getDummyUser } from './shared/fixtures/user';
 import { MockResourceApiService } from './shared/mocks/resource-api.service.mock';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
+import { User } from './user';
 
 @Component({
-  template: `<div *appIfSession></div>`
+  template: `<div id="testComponent"><p *appIfSession id="userFound">User found</p></div>`
 })
 class TestIfSessionComponent { }
 
-describe('IfSessionDirective', () => {
-  let templateRef: TemplateRef<TestIfSessionComponent>;
-  let viewContainerRef: ViewContainerRef;
+fdescribe('IfSessionDirective', () => {
   let fixture: ComponentFixture<TestIfSessionComponent>;
   let api: MockResourceApiService;
+  const user: User = getDummyUser();
+  let inputEl: DebugElement;
 
   beforeEach(async(() => {
     api = new MockResourceApiService();
@@ -40,19 +43,27 @@ describe('IfSessionDirective', () => {
       .compileComponents()
       .then(() => {
         fixture = TestBed.createComponent(TestIfSessionComponent);
-        templateRef = fixture
-          .componentRef
-          .injector
-          .get<TemplateRef<TestIfSessionComponent>>(TemplateRef as Type<TemplateRef<TestIfSessionComponent>>);
-        viewContainerRef = fixture
-          .componentRef
-          .injector
-          .get<ViewContainerRef>(ViewContainerRef as Type<ViewContainerRef>);
       });
   }));
 
   it('should create an instance', () => {
-    const directive = new IfSessionDirective(templateRef, viewContainerRef);
-    expect(directive).toBeTruthy();
+    fixture.detectChanges();
+    inputEl = fixture.debugElement.query(By.css('#testComponent'));
+    expect(inputEl).toBeTruthy();
+  });
+
+  it('should hide element if no user is available', () => {
+    fixture.detectChanges();
+    const userFoundEl = fixture.debugElement.query(By.css('#userFound'));
+    expect(userFoundEl).toBeNull();
+  });
+
+  it('should show element if user is logged in', () => {
+    api.setResponse(user);
+    api.getSessionSpy(() => fixture.detectChanges());
+
+    fixture.detectChanges();
+    const userFoundEl = fixture.debugElement.query(By.css('#userFound'));
+    expect(userFoundEl).toBeTruthy();
   });
 });
