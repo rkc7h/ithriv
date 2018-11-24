@@ -7,17 +7,16 @@ import {
   MatIconModule,
   MatInputModule,
   MatListModule,
+  MatPaginatorModule,
   MatSidenavModule,
   MatTooltipModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of as observableOf } from 'rxjs';
-import { CategoryTileComponent } from '../category-tile/category-tile.component';
 import { GradientBorderDirective } from '../gradient-border.directive';
 import { Resource } from '../resource';
-import { ResourceListComponent } from '../resource-list/resource-list.component';
 import { ResourceQuery } from '../resource-query';
 import { getDummyResource } from '../shared/fixtures/resource';
 import { MockResourceApiService } from '../shared/mocks/resource-api.service.mock';
@@ -32,13 +31,12 @@ describe('SearchComponent', () => {
 
   beforeEach(async(() => {
     api = new MockResourceApiService();
+    const route: Route = { path: 'search', component: SearchComponent, data: { title: 'Search Resources' } };
 
     TestBed
       .configureTestingModule({
         declarations: [
           SearchComponent,
-          ResourceListComponent,
-          CategoryTileComponent,
           GradientBorderDirective
         ],
         imports: [
@@ -48,16 +46,17 @@ describe('SearchComponent', () => {
           MatIconModule,
           MatInputModule,
           MatListModule,
+          MatPaginatorModule,
           MatSidenavModule,
           MatTooltipModule,
           ReactiveFormsModule,
-          RouterTestingModule.withRoutes([])
+          RouterTestingModule.withRoutes([route])
         ],
         providers: [
           {
             provide: ActivatedRoute,
             useValue: {
-              queryParamMap: observableOf({ query: '' }),
+              queryParamMap: observableOf({ query: '', keys: [] }),
             }
           },
           { provide: ResourceApiService, useValue: api }
@@ -68,7 +67,6 @@ describe('SearchComponent', () => {
       .then(() => {
         api.setResponse(resources);
         api.searchResourcesSpy(() => fixture.detectChanges());
-
         fixture = TestBed.createComponent(SearchComponent);
         component = fixture.componentInstance;
         component.resourceQuery = new ResourceQuery({

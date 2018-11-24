@@ -18,7 +18,7 @@ import { User } from './user';
 })
 class TestIfSessionComponent { }
 
-fdescribe('IfSessionDirective', () => {
+describe('IfSessionDirective', () => {
   let fixture: ComponentFixture<TestIfSessionComponent>;
   let api: MockResourceApiService;
   const user: User = getDummyUser();

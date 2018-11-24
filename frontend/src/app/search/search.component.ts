@@ -17,7 +17,6 @@ import { Resource } from '../resource';
 import { Filter, ResourceQuery } from '../resource-query';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { User } from '../user';
 
 @Component({
   selector: 'app-search',
@@ -37,7 +36,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
   resources: Resource[];
   categories: Category[];
   publicId: number;
-  user: User;
   pageSize = 20;
 
   @ViewChild('sidenav') public sideNav: MatSidenav;
@@ -50,7 +48,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
     private router: Router,
     private renderer: Renderer2
   ) {
-    this.loadUser();
     this.resources = [];
     this.categories = [];
     this.publicId = 87;
@@ -90,16 +87,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private checkWindowWidth(): void {
-    if (window.innerWidth > 768) {
-      this.sideNav.mode = 'side';
-      this.sideNav.opened = false;
-    } else {
-      this.sideNav.mode = 'over';
-      this.sideNav.opened = false;
-    }
-  }
-
   ngOnInit() {
     this.doSearch();
     this.searchBox = new FormControl();
@@ -118,10 +105,15 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.query.nativeElement.focus();
   }
 
-  loadUser() {
-    this.api.getSession().subscribe(user => {
-      this.user = user;
-    });
+  private checkWindowWidth(): void {
+
+    if (window.innerWidth > 768) {
+      this.sideNav.mode = 'side';
+      this.sideNav.opened = false;
+    } else {
+      this.sideNav.mode = 'over';
+      this.sideNav.opened = false;
+    }
   }
 
   updateQuery(query) {
@@ -144,6 +136,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     const url = queryArray.length > 0 ? `/search/filter?${queryArray.join('&')}` : '/search';
     this.router.navigateByUrl(url);
+
   }
 
   doSearch() {
@@ -156,9 +149,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.checkWindowWidth();
       }
     );
-    (<any>window).gtag('event', this.resourceQuery.query, {
-      'event_category': 'search'
-    });
+    if ((<any>window).gtag) {
+      (<any>window).gtag('event', this.resourceQuery.query, {
+        'event_category': 'search'
+      });
+    }
   }
 
   sortByDate() {

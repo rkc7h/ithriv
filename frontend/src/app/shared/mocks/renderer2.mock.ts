@@ -1,4 +1,4 @@
-import { Renderer2, Type } from '@angular/core';
+import { Renderer2 } from '@angular/core';
 import { SpyObject } from './helper.mock';
 import Spy = jasmine.Spy;
 
