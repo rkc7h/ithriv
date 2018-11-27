@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { Institution } from '../institution';
 import { LoginService } from '../login-service';
+import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-login-services',
   templateUrl: './login-services.component.html',
-  styleUrls: ['./login-services.component.scss']
+  styleUrls: ['./login-services.component.scss'],
+  animations: [fadeTransition()]
 })
 export class LoginServicesComponent implements OnInit {
   loginServices: LoginService[] = [];
@@ -16,17 +18,19 @@ export class LoginServicesComponent implements OnInit {
   institution: Institution;
   selectedTabIndex = 0;
 
+  @HostBinding('@fadeTransition')
+  dataLoaded = false;
+
   constructor(
     private api: ResourceApiService,
     private router: Router,
     private route: ActivatedRoute
   ) {
     this.selectedTabIndex = (this.route.routeConfig.path === 'register') ? 1 : 0;
-  }
-
-  ngOnInit() {
     this.loadServices();
   }
+
+  ngOnInit() { }
 
   goNetworkBrowse() {
     const viewPrefs = this.api.getViewPreferences();
@@ -51,12 +55,22 @@ export class LoginServicesComponent implements OnInit {
 
   loadServices() {
     const services = [
-      { id: 1, color: 'orange', name: 'UVA NetBadge', image: '/assets/institutions/UVA.png', url: this.loginUrl },
-      { id: 2, color: 'navy', name: 'Carilion', image: '/assets/institutions/Carilion.png' },
-      { id: 3, color: 'purple', name: 'Virginia Tech', image: '/assets/institutions/Virginia Tech.png', url: this.loginUrl },
-      { id: 4, color: 'blue', name: 'Inova', image: '/assets/institutions/Inova.png' },
+      { id: null, color: 'orange', name: 'UVA', image: '/assets/institutions/UVA.png', url: this.loginUrl },
+      { id: null, color: 'navy', name: 'Carilion', image: '/assets/institutions/Carilion.png' },
+      { id: null, color: 'purple', name: 'Virginia Tech', image: '/assets/institutions/Virginia Tech.png', url: this.loginUrl },
+      { id: null, color: 'blue', name: 'Inova', image: '/assets/institutions/Inova.png' },
     ];
-    this.loginServices = services.map(s => new LoginService(s));
+
+    this.api.getInstitutions().subscribe(institutions => {
+      institutions.forEach(i => services.forEach(s => {
+        if (i.name === s.name) {
+          s.id = i.id;
+          this.loginServices.push(new LoginService(s));
+        }
+      }));
+
+      this.dataLoaded = this.loginServices.length > 0;
+    });
   }
 
   goLoginService(loginService: LoginService) {

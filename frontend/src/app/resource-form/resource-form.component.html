@@ -40,11 +40,13 @@
           color="accent"
           mat-raised-button
           (click)="onSubmit($event)"
+          id="save"
         >Save</button>
         <button
           type="button"
           mat-raised-button
           (click)="onCancel()"
+          id="cancel"
         >Cancel</button>
 
         <button
@@ -53,6 +55,7 @@
           *ngIf="userIsOwner() && (resource.approved === 'Unapproved')"
           (click)="onSubmit($event, true)"
           color="primary"
+          id="submitForApproval"
         >Submit for approval</button>
 
         <button

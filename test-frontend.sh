@@ -27,12 +27,14 @@ pause_for 3
 echo "Running from ${HOME_DIR}"
 
 echo -e '\n\n*** Starting postgresql and elasticsearch... ***\n\n'
-pg_ctl start -D $DATABASE_PATH -W
+pg_ctl start -D $DATABASE_PATH -W &
+POSTGRES_PID=$! # Save the process ID
 
 # Pause for 3 seconds to allow Postgres to start
 pause_for 3
 
-elasticsearch -d
+elasticsearch -d &
+ELASTIC_PID=$! # Save the process ID
 
 # Pause for 10 seconds to allow Elasticsearch to start
 pause_for 15
@@ -44,10 +46,16 @@ export FLASK_APP=./app/__init__.py
 flask run &
 FLASK_PID=$! # Save the process ID
 
-# Pause for 5 seconds to allow Flask to start
-pause_for 5
+# Pause for 10 seconds to allow Flask to start
+pause_for 10
 
-echo -e '\n\n*** Running frontend tests... ***\n\n'
-cd $FRONTEND_PATH
-ng e2e
+flask cleardb
+flask clearindex
+flask db upgrade
+flask db migrate
+flask loadicons
+flask initdb
+flask initindex
 
+echo -e '\n\n*** backend running. Start tests in frontend with "ng e2e" ***\n\n'
+wait $POSTGRES_PID $ELASTIC_PID $FLASK_PID

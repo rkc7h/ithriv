@@ -38,12 +38,12 @@ class DataLoader:
         with open(self.resource_file, newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=csv.excel.delimiter, quotechar=csv.excel.quotechar)
             next(reader, None)  # skip the headers
-            for row in reader:
+            for index, row in enumerate(reader):
                 resource_type = self.get_type_by_name(row[3]) if row[3] else None
                 institution = self.get_inst_by_name(row[2])
                 resource = ThrivResource(id=row[0], name=row[1], description=row[10], type=resource_type, institution=institution,
                                          owner=row[8], website=row[9], contact_notes=row[4])
-                resource.approved = "Unapproved"
+                resource.approved = "Approved" if (index % 2 == 0) else "Unapproved"
                 db.session.add(resource)
             print("Resources loaded.  There are now %i resources in the database." % db.session.query(ThrivResource).count())
         db.session.commit()
