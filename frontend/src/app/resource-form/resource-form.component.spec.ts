@@ -53,4 +53,9 @@ describe('ResourceFormComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should have a checkbox for private resource', () => {
+    expect(component.fields.hasOwnProperty('private')).toBeTruthy();
+    expect(component.fields.private.type).toEqual('checkbox');
+  });
 });

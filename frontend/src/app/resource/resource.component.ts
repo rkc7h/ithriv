@@ -8,6 +8,7 @@ import { zoomTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FileAttachment } from '../file-attachment';
 import { ResourceType } from '../resourceType';
+import { User } from '../user';
 
 @Component({
   selector: 'app-resource',
@@ -20,6 +21,7 @@ export class ResourceComponent implements OnInit {
   @Input() resource: Resource;
   @Input() categories: ResourceCategory[];
   attachments: FileAttachment[];
+  user: User;
 
   transitionState = '';
   isDataLoaded = false;
@@ -32,6 +34,7 @@ export class ResourceComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.resourceId = params['resource'];
       this.loadResource();
+      this.loadUser();
     });
   }
 
@@ -61,6 +64,10 @@ export class ResourceComponent implements OnInit {
     this.attachments = resource.files;
     this.transitionState = 'zoom-in-enter';
     this.isDataLoaded = true;
+  }
+
+  loadUser() {
+    this.api.getSession().subscribe(user => this.user = user);
   }
 
   getCategoryIcon(category: Category) {
@@ -115,5 +122,11 @@ export class ResourceComponent implements OnInit {
     } else {
       return `/assets/filetypes/unknown.svg`;
     }
+  }
+
+  shouldHide() {
+    const userIsAdmin = this.user.role === 'Admin';
+    const userIsOwner = this.resource.owners.includes(this.user.email);
+    return (this.resource.private && !userIsOwner && !userIsAdmin);
   }
 }
