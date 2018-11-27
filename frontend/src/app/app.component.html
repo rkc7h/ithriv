@@ -29,7 +29,7 @@
           <button
             mat-button
             (click)="closeSidenav(); goLogin($event)"
-            id="login-button"
+            id="login-button-mobile"
           >
             <mat-icon>account_circle</mat-icon>
             Log in
@@ -48,6 +48,7 @@
           <button
             mat-button
             (click)="closeSidenav(); goLogout($event)"
+            id="logout-button-mobile"
           >
             <mat-icon>exit_to_app</mat-icon>
             Log Out
@@ -125,6 +126,7 @@
             mat-button
             *appIfSession
             (click)="goLogout($event)"
+            id="logout-button"
           >
             <mat-icon>exit_to_app</mat-icon>
             Log Out

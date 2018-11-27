@@ -1,6 +1,7 @@
 import { AppPage } from './app.po';
+import { by, element } from 'protractor';
 
-describe('Anonymous User app', () => {
+describe('Anonymous User', () => {
   let page: AppPage;
 
   beforeAll(() => {
@@ -31,8 +32,7 @@ describe('Anonymous User app', () => {
   it('should link back to the home page', () => {
     expect(
       page
-        .getElements('#logomark-link')
-        .first()
+        .getElement('#logomark-link')
         .getAttribute('href')
     ).toEqual('http://localhost:4200/#');
   });
@@ -40,8 +40,7 @@ describe('Anonymous User app', () => {
   it('should link back to www.ithriv.org', () => {
     expect(
       page
-        .getElements('#logo-horizontal-link')
-        .first()
+        .getElement('#logo-horizontal-link')
         .getAttribute('href')
     ).toEqual('http://www.ithriv.org/');
   });
@@ -51,12 +50,16 @@ describe('Anonymous User app', () => {
   });
 
   it('should display resources', () => {
-    page.clickElement('#mat-tab-label-0-1');
+    page.waitForVisible('.mat-tab-label');
+    const tabLabels = element.all(by.css('.mat-tab-label'));
+    expect(tabLabels.count()).toBeGreaterThan(0);
+    tabLabels.get(1).click();
+    page.waitForVisible('app-resource-tile');
     expect(page.getElements('app-resource-tile').count()).toBeGreaterThan(0);
   });
 
   it('should click on resource tile', () => {
-    const resourceElement = page.getElements('app-resource-tile').first();
+    const resourceElement = page.getElement('app-resource-tile');
     resourceElement.getAttribute('id').then(id => {
       const resourceId = id.split('resource-tile-')[1];
       resourceElement.click();
@@ -66,14 +69,19 @@ describe('Anonymous User app', () => {
     });
   });
 
-  it('should show resource details');
+  it('should link to resource website', () => {
+    page.waitForAnimations();
+    expect(page.getElements('#resource-website').count()).toBeGreaterThan(0);
+    expect(page.getElements('#resource-actions-website').count()).toBeGreaterThan(0);
+  });
 
-  it('should link to resource website');
+  it('should not show link to resource editing form', () => {
+    expect(page.getElements('#resource-edit').count()).toEqual(0);
+    expect(page.getElements('app-edit-resource-button button').count()).toEqual(0);
+  });
 
-  it('should link to suggest edits');
-
-  it('should link to discussion forum');
-
-  it('should request new login');
+  it('should not show resource approval status', async () => {
+    expect(page.getElements('app-approved-badge .ribbon').count()).toEqual(0);
+  });
 
 });

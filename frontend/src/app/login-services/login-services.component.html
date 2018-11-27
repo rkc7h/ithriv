@@ -1,4 +1,5 @@
 <div
+  *ngIf="dataLoaded"
   fxLayout="column"
   fxLayoutGap="10px"
   fxLayoutAlign="center center"
@@ -18,38 +19,44 @@
             'border-color': s.color
           }"
       class="service-logo"
-      matTooltip="{{s.name}}"
+      matTooltip="{{ s.name }}"
+      id="btn-service-{{s.id}}"
     >
       <img [src]="s.image">
     </button>
   </div>
   <div
-      *ngIf="institution"
+    *ngIf="institution"
+    id="institution-login"
+  >
+    <mat-tab-group
+      mat-stretch-tabs
+      dynamicHeight
+      [selectedIndex]="selectedTabIndex"
     >
-      <mat-tab-group
-        mat-stretch-tabs
-        dynamicHeight
-        [selectedIndex]="selectedTabIndex"
-      >
-        <mat-tab label="iTHRIV PORTAL {{ institution.name.toUpperCase() }} VIEW">
-          <div class="help">
-            <p>We are working to implement logins that will give you a personalized view of the portal using your
-              {{ institution.name }} login and password. In the meantime, click below to access the portal as a
-              {{ institution.name }} user.</p>
-            <button mat-stroked-button (click)="goNetworkBrowse($event)">
-              <span>
-                <img [src]="'/assets/institutions/' + institution.name + '.png'">
-              </span>
-               CONTINUE TO PORTAL {{ institution.name.toUpperCase() }} VIEW
-            </button>
-          </div>
-          <!--
+      <mat-tab label="iTHRIV PORTAL {{ institution.name.toUpperCase() }} VIEW">
+        <div class="help">
+          <p>We are working to implement logins that will give you a personalized view of the portal using your
+            {{ institution.name }} login and password. In the meantime, click below to access the portal as a
+            {{ institution.name }} user.</p>
+          <button
+            mat-stroked-button
+            (click)="goNetworkBrowse($event)"
+            id="btn-institution-{{institution.id}}"
+          >
+            <span>
+              <img [src]="'/assets/institutions/' + institution.name + '.png'">
+            </span>
+            CONTINUE TO PORTAL {{ institution.name.toUpperCase() }} VIEW
+          </button>
+        </div>
+        <!--
           <app-register-form></app-register-form>
           -->
-        </mat-tab>
-        <mat-tab label="SYSTEM ADMIN LOGIN">
-          <app-login-form></app-login-form>
-        </mat-tab>
-      </mat-tab-group>
-    </div>
+      </mat-tab>
+      <mat-tab label="SYSTEM ADMIN LOGIN">
+        <app-login-form></app-login-form>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </div>

@@ -18,16 +18,20 @@ export class ApprovedBadgeComponent implements OnInit {
   }
 
   handleClick($event) {
+    console.log('\n\n\n=== handleClick ===\n\n\n');
+
     $event.preventDefault();
     $event.stopPropagation();
     if (this.resource.approved === 'Approved') {
       this.resource.approved = 'Unapproved';
       this.api.updateResource(this.resource).subscribe(r => {
+        console.log('\n\n\n=== Unapprove updateResource callback ===\n\n\n');
         this.resource = r;
       });
     } else {
       this.resource.approved = 'Approved';
       this.api.updateResource(this.resource).subscribe(r => {
+        console.log('\n\n\n=== Approve updateResource callback ===\n\n\n');
         this.resource = r;
       });
     }

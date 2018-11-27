@@ -23,7 +23,7 @@
     >
       <h1
         *ngIf="resource.website"
-        class="mat-display-2"
+        class="mat-display-2 resource-name"
         (click)="goWebsite($event)"
       ><a [href]="resource.website">{{resource.name}}</a></h1>
       <h1
@@ -39,6 +39,7 @@
           mat-flat-button
           (click)="goWebsite($event)"
           color="primary"
+          id="resource-website"
         >
           <mat-icon>exit_to_app</mat-icon>
           Visit Website
@@ -48,6 +49,7 @@
           mat-flat-button
           (click)="openEdit($event)"
           color="accent"
+          id="resource-edit"
         >
           <mat-icon>edit</mat-icon>
           Edit Resource
@@ -182,6 +184,7 @@
           *ngIf="resource.website"
           mat-button
           (click)="goWebsite($event)"
+          id="resource-actions-website"
         >VISIT WEBSITE</button>
         <div fxFlex></div>
         <app-edit-resource-button [resource]="resource"></app-edit-resource-button>
