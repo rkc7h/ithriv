@@ -96,6 +96,8 @@ import { TreeSelectComponent } from './tree-select/tree-select.component';
 import { UserAdminComponent } from './user-admin/user-admin.component';
 import { UserResourceListComponent } from './user-resource-list/user-resource-list.component';
 import { MoveCategoryButtonComponent } from './move-category-button/move-category-button.component';
+import { HelpComponent } from './help/help.component';
+import { IfSessionDirective } from './if-session.directive';
 
 @NgModule({
   declarations: [
@@ -143,7 +145,9 @@ import { MoveCategoryButtonComponent } from './move-category-button/move-categor
     SessionRedirectComponent,
     TreeSelectComponent,
     UserAdminComponent,
-    UserResourceListComponent
+    UserResourceListComponent,
+    HelpComponent,
+    IfSessionDirective
   ],
   imports: [
     Angular2CsvModule,

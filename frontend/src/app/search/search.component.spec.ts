@@ -7,17 +7,16 @@ import {
   MatIconModule,
   MatInputModule,
   MatListModule,
+  MatPaginatorModule,
   MatSidenavModule,
   MatTooltipModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of as observableOf } from 'rxjs';
-import { CategoryTileComponent } from '../category-tile/category-tile.component';
 import { GradientBorderDirective } from '../gradient-border.directive';
 import { Resource } from '../resource';
-import { ResourceListComponent } from '../resource-list/resource-list.component';
 import { ResourceQuery } from '../resource-query';
 import { getDummyResource } from '../shared/fixtures/resource';
 import { MockResourceApiService } from '../shared/mocks/resource-api.service.mock';
@@ -32,56 +31,55 @@ describe('SearchComponent', () => {
 
   beforeEach(async(() => {
     api = new MockResourceApiService();
+    const route: Route = { path: 'search', component: SearchComponent, data: { title: 'Search Resources' } };
 
-    TestBed.configureTestingModule({
-      declarations: [
-        SearchComponent,
-        ResourceListComponent,
-        CategoryTileComponent,
-        GradientBorderDirective
-      ],
-      imports: [
-        BrowserAnimationsModule,
-        MatExpansionModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatInputModule,
-        MatListModule,
-        MatSidenavModule,
-        MatTooltipModule,
-        ReactiveFormsModule,
-        RouterTestingModule.withRoutes([])
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParamMap: observableOf({ query: '' }),
-          }
-        },
-        { provide: ResourceApiService, useValue: api }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-      .compileComponents();
+    TestBed
+      .configureTestingModule({
+        declarations: [
+          SearchComponent,
+          GradientBorderDirective
+        ],
+        imports: [
+          BrowserAnimationsModule,
+          MatExpansionModule,
+          MatFormFieldModule,
+          MatIconModule,
+          MatInputModule,
+          MatListModule,
+          MatPaginatorModule,
+          MatSidenavModule,
+          MatTooltipModule,
+          ReactiveFormsModule,
+          RouterTestingModule.withRoutes([route])
+        ],
+        providers: [
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              queryParamMap: observableOf({ query: '', keys: [] }),
+            }
+          },
+          { provide: ResourceApiService, useValue: api }
+        ],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      })
+      .compileComponents()
+      .then(() => {
+        api.setResponse(resources);
+        api.searchResourcesSpy(() => fixture.detectChanges());
+        fixture = TestBed.createComponent(SearchComponent);
+        component = fixture.componentInstance;
+        component.resourceQuery = new ResourceQuery({
+          query: '',
+          filters: [],
+          facets: [],
+          total: 0,
+          size: 0,
+          start: 0,
+          resources: [],
+        });
+      });
   }));
-
-  beforeEach(() => {
-    api.setResponse(resources);
-    api.searchResourcesSpy(() => fixture.detectChanges());
-
-    fixture = TestBed.createComponent(SearchComponent);
-    component = fixture.componentInstance;
-    component.resourceQuery = new ResourceQuery({
-      query: '',
-      filters: [],
-      facets: [],
-      total: 0,
-      size: 0,
-      start: 0,
-      resources: [],
-    });
-  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

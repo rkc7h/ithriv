@@ -35,7 +35,7 @@
             Log in
           </button>
         </mat-list-item>
-        <mat-list-item *ngIf="session">
+        <mat-list-item *appIfSession>
           <button
             mat-button
             (click)="closeSidenav(); goHome($event)"
@@ -44,7 +44,7 @@
             {{session.display_name}}
           </button>
         </mat-list-item>
-        <mat-list-item *ngIf="session">
+        <mat-list-item *appIfSession>
           <button
             mat-button
             (click)="closeSidenav(); goLogout($event)"
@@ -115,7 +115,7 @@
           </button>
           <button
             mat-button
-            *ngIf="session"
+            *appIfSession
             (click)="goHome($event)"
           >
             <mat-icon>account_circle</mat-icon>
@@ -123,7 +123,7 @@
           </button>
           <button
             mat-button
-            *ngIf="session"
+            *appIfSession
             (click)="goLogout($event)"
           >
             <mat-icon>exit_to_app</mat-icon>
@@ -169,13 +169,12 @@
             Search
           </button>
           <button
-            *ngIf="session"
             mat-stroked-button
-            (click)="goConsult($event)"
+            (click)="goHelp($event)"
             fxFlex.xs="calc(50% - 20px)"
           >
             <mat-icon>help</mat-icon>
-            Request a Consult
+            Help
           </button>
           <a
             href="http://www.ithriv.org"
@@ -196,7 +195,7 @@
           fxLayoutGap="20px"
           class="secondary-nav"
         >
-          <h1 *ngIf="!mobileQuery.matches">Find Resources</h1>
+          <h1 *ngIf="!mobileQuery.matches">{{pageTitle}}</h1>
           <span
             *ngIf="!mobileQuery.matches"
             class="fill-remaining-space"

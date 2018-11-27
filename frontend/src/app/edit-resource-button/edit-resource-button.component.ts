@@ -2,8 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
 import { Resource } from '../resource';
-import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import { User } from '../user';
 
 @Component({
   selector: 'app-edit-resource-button',
@@ -13,17 +11,12 @@ import { User } from '../user';
 export class EditResourceButtonComponent implements OnInit {
   @Input() resource: Resource;
   @Input() category: Category;
-  session: User;
 
   constructor(
-    private router: Router,
-    private api: ResourceApiService,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    this.api.getSession().subscribe(user => {
-      this.session = user;
-    });
   }
 
   openEdit() {

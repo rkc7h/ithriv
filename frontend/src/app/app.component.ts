@@ -45,6 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
   mobileQuery: MediaQueryList;
   session: User;
   title = 'iTHRIV';
+  pageTitle = 'Find Resources';
   trustUrl;
 
   private _mobileQueryListener: () => void;
@@ -74,6 +75,7 @@ export class AppComponent implements OnInit, OnDestroy {
           this.titleService.setTitle(this.title);
           this.categoryId = e.snapshot && e.snapshot.params && e.snapshot.params.category;
           this.hideHeader = !!data.hideHeader;
+          this.pageTitle = data.title || 'Find Resources';
         }
       }
 
@@ -137,9 +139,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.navigate(['login']);
   }
 
-  goConsult($event) {
+  goHelp($event) {
     $event.preventDefault();
-    this.router.navigate(['consult_request']);
+    this.router.navigate(['help']);
   }
 
   goUserAdmin($event) {
