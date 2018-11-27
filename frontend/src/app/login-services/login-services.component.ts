@@ -69,9 +69,7 @@ export class LoginServicesComponent implements OnInit {
         }
       }));
 
-      console.log('this.loginServices', this.loginServices);
       this.dataLoaded = this.loginServices.length > 0;
-
     });
   }
 

@@ -34,9 +34,15 @@ describe('LoginServicesComponent', () => {
     })
       .compileComponents()
       .then(() => {
+        api.setResponse([
+          { id: 1, name: 'UVA' },
+          { id: 2, name: 'Carilion' },
+          { id: 3, name: 'Virginia Tech' },
+          { id: 4, name: 'Inova' },
+        ]);
+        api.getInstitutionsSpy(() => fixture.detectChanges());
         fixture = TestBed.createComponent(LoginServicesComponent);
         component = fixture.componentInstance;
-        fixture.detectChanges();
       });
   }));
 
