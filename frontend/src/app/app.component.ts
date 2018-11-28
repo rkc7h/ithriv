@@ -88,6 +88,19 @@ export class AppComponent implements OnInit, OnDestroy {
     this.isNetworkView = this.getIsNetworkView();
   }
 
+  ngOnInit() {
+    this.getInstitution();
+    this.api.getSession().subscribe(user => {
+      this.session = user;
+    }, error1 => {
+      this.session = null;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.mobileQuery.removeListener(this._mobileQueryListener);
+  }
+
   loadIcons() {
     this.api.getIcons().subscribe(icons => {
       this.icons = icons;
@@ -112,19 +125,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   getState(outlet: RouterOutlet) {
     return outlet.activatedRouteData.state;
-  }
-
-  ngOnInit() {
-    this.getInstitution();
-    this.api.getSession().subscribe(user => {
-      this.session = user;
-    }, error1 => {
-      this.session = null;
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.mobileQuery.removeListener(this._mobileQueryListener);
   }
 
   goHome($event) {
