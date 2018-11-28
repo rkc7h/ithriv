@@ -43,10 +43,10 @@ describe('ResourceFormComponent', () => {
       })
       .compileComponents()
       .then(() => {
-        api.setResponse([category]);
-        api.getCategoriesSpy(() => fixture.detectChanges());
+        api.spyAndReturnFake('getCategories', [category]);
         fixture = TestBed.createComponent(ResourceFormComponent);
         component = fixture.componentInstance;
+        fixture.detectChanges();
       });
   }));
 

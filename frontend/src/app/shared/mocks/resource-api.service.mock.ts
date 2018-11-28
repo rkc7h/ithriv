@@ -136,5 +136,4 @@ export class MockResourceApiService extends SpyObject {
   spyAndReturnFake(methodName: string, fakeResponse: any) {
     this.spy(methodName).andReturn({ subscribe: callback => callback(fakeResponse) });
   }
-
 }

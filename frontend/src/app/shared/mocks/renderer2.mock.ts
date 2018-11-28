@@ -58,4 +58,8 @@ export class MockRenderer2 extends SpyObject {
   setResponse(json: any): void {
     this.data = json;
   }
+
+  spyAndReturnFake(methodName: string, fakeResponse: any) {
+    this.spy(methodName).andReturn({ subscribe: callback => callback(fakeResponse) });
+  }
 }

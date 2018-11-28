@@ -14,7 +14,7 @@ import { ResourceComponent } from './resource.component';
 import { getDummyCategory } from '../shared/fixtures/category';
 import { By } from '@angular/platform-browser';
 
-fdescribe('ResourceComponent', () => {
+describe('ResourceComponent', () => {
   let api: MockResourceApiService;
   let component: ResourceComponent;
   let fixture: ComponentFixture<ResourceComponent>;
