@@ -58,6 +58,10 @@ describe('Anonymous User', () => {
     expect(page.getElements('app-resource-tile').count()).toBeGreaterThan(0);
   });
 
+  it('should not be able to see private resource', async () => {
+    expect(page.getElements('app-resource-tile .resource.private').count()).toEqual(0);
+  });
+
   it('should click on resource tile', () => {
     const resourceElement = page.getElement('app-resource-tile');
     resourceElement.getAttribute('id').then(id => {

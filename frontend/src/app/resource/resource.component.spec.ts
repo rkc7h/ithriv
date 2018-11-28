@@ -72,9 +72,18 @@ describe('ResourceComponent', () => {
     expect(el.hasAttribute('hidden')).toEqual(false);
   });
 
+  it('should mark private resource', () => {
+    getDummyData(true);
+    const classes = fixture.debugElement.query(By.css('.resource')).classes;
+    expect(classes.private).toEqual(true);
+  });
+
   it('should hide private resource', () => {
     getDummyData(true);
     const el = fixture.debugElement.query(By.css('.resource')).nativeElement;
     expect(el.hasAttribute('hidden')).toEqual(true);
+
+    const classes = fixture.debugElement.query(By.css('.resource')).classes;
+    expect(classes.hidden).toEqual(true);
   });
 });

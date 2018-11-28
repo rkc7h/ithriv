@@ -1,5 +1,5 @@
 <div
-  [ngClass]="{'mat-typography': true, 'resource': true, 'hidden': shouldHide()}"
+  [ngClass]="{'mat-typography': true, 'resource': true, 'hidden': shouldHide(), 'private': resource.private}"
   class="mat-typography resource"
   [hidden]="shouldHide()"
   [@zoomTransition]="transitionState"

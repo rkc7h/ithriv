@@ -2,13 +2,35 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatTooltipModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownModule, MarkdownService } from 'ngx-markdown';
 import { CategoryColorBorderDirective } from '../category-color-border.directive';
+import { getDummyCategory } from '../shared/fixtures/category';
+import { getDummyResource } from '../shared/fixtures/resource';
+import { MockMarkdownService } from '../shared/mocks/markdown.service.mock';
 import { ResourceTileComponent } from './resource-tile.component';
+import { By } from '@angular/platform-browser';
 
 describe('ResourceTileComponent', () => {
   let component: ResourceTileComponent;
   let fixture: ComponentFixture<ResourceTileComponent>;
+
+  const getDummyData = function (makePrivate = false) {
+    fixture = TestBed.createComponent(ResourceTileComponent);
+    component = fixture.componentInstance;
+
+    const resource = getDummyResource();
+    resource.private = makePrivate;
+    resource.resource_categories = [{
+      id: 0,
+      category_id: 123,
+      resource_id: 999,
+      category: getDummyCategory(),
+      _links: null
+    }];
+    component.resource = resource;
+
+    fixture.detectChanges();
+  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -21,18 +43,23 @@ describe('ResourceTileComponent', () => {
         MatTooltipModule,
         RouterTestingModule.withRoutes([])
       ],
+      providers: [
+        { provide: MarkdownService, useClass: MockMarkdownService },
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
   }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ResourceTileComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
   it('should create', () => {
+    getDummyData(false);
     expect(component).toBeTruthy();
   });
+
+  it('should mark private resource', () => {
+    getDummyData(true);
+    const classes = fixture.debugElement.query(By.css('.resource')).classes;
+    expect(classes.private).toEqual(true);
+  });
+
 });

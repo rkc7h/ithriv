@@ -1,7 +1,7 @@
 <mat-card
-  class="resource"
   *ngIf="resource && resource.id"
   (click)="goResource($event, resource)"
+  [ngClass]="{'resource': true, 'private': resource.private}"
 >
   <div
     class="category-color"

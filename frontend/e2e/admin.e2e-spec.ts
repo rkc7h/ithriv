@@ -172,6 +172,19 @@ describe('Admin User', () => {
     expect(websiteField.getAttribute('value')).toEqual(website);
   });
 
+  it('should mark resource as private', async () => {
+    const privateField = page.getElement('[placeholder="Private"]');
+    const isSelected = await privateField.isSelected();
+
+    if (isSelected) {
+      privateField.click();
+      expect(privateField.isSelected()).toEqual(false);
+    }
+
+    privateField.click();
+    expect(privateField.isSelected()).toEqual(true);
+  });
+
   it('should save changes to resource', () => {
     page.clickElement('#save');
     page.waitForVisible('#resource-edit');
@@ -195,6 +208,11 @@ describe('Admin User', () => {
     page.waitForAnimations();
     expect(approvalBadge.getText()).toEqual('APPROVED');
   });
+
+  it('should be able to see private resource', async () => {
+    expect(page.getElements('app-resource-tile .resource.private').count()).toBeGreaterThan(0);
+  });
+
 
   it('should log out', async () => {
     const urlBefore = await page.getUrl();
