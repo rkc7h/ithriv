@@ -100,7 +100,7 @@ class ThrivResourceSchema(ModelSchema):
         fields = ('id', 'name', 'description', 'last_updated', 'owner',
                   'website', 'cost', 'institution_id', 'type_id', 'type',
                   'institution', 'availabilities', 'approved', 'files',
-                  'contact_email', 'contact_phone', 'contact_notes',
+                  'contact_email', 'contact_phone', 'contact_notes', 'private',
                   '_links', 'favorites', 'favorite_count', 'resource_categories',
                   'owners', 'user_may_view', 'user_may_edit')
     id = fields.Integer(required=False, allow_none=True)
@@ -114,6 +114,7 @@ class ThrivResourceSchema(ModelSchema):
     type_id = fields.Integer(required=False, allow_none=True)
     approved = fields.String(required=False, allow_none=True)
     favorite_count = fields.Integer(required=False, allow_none=True)
+    private = fields.Boolean(required=False, allow_none=True)
 
     type = fields.Nested(ThrivTypeSchema(), dump_only=True)
     institution = fields.Nested(ThrivInstitutionSchema(), dump_only=True, allow_none=True)

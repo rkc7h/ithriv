@@ -78,14 +78,14 @@ class TestCase(unittest.TestCase):
                            owner="Mac Daddy Test", website="testy.edu", cost='$100 or your firstborn', available_to=None,
                            contact_email='mac@daddy.com', contact_phone='540-457-0024',
                            contact_notes='No robo-calls if you please.',
-                           approved='Unapproved'):
+                           approved='Unapproved', private=False):
         type_obj = ThrivType(name=type)
         inst_obj = ThrivInstitution(name=institution)
         resource = ThrivResource(name=name, description=description,
                                  type=type_obj, institution=inst_obj,
                                  owner=owner, website=website, cost=cost, contact_email=contact_email,
                                  contact_phone=contact_phone, contact_notes=contact_notes,
-                                 approved=approved)
+                                 approved=approved, private=private)
         db.session.add(resource)
 
         if available_to is not None:
@@ -507,7 +507,7 @@ class TestCase(unittest.TestCase):
         self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com",
                                 approved="Unapproved")
         self.construct_resource(name="Snuffy's Balloon Collection",
-                                owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
+                                owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unapproved")
 
         # When there is no user logged in, they should only see the two approved resources
         rv = self.app.get('/api/resource', content_type="application/json")
@@ -1534,7 +1534,7 @@ class TestCase(unittest.TestCase):
             "user_id": user.id
         }
         # ...And a second email requesting the consult:
-        rv = self.app.post('/api/consult_request', data=json.dumps(data), headers=self.logged_in_headers(),
+        rv = self.app.post('/api/consult_request', data=json.dumps(data), headers=self.logged_in_headers(user),
                            content_type="application/json")
         self.assertSuccess(rv)
         self.assertGreater(len(TEST_MESSAGES), message_count)
@@ -1684,6 +1684,37 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
         self.assertEqual(5, len(result))
+
+    def test_private_resources_not_listed_for_normal_user(self):
+        self.construct_resource(name="Verily, A New Hope", approved="Unapproved", private=False)
+        self.construct_resource(name="The Empire Striketh Back", approved="Unapproved", private=True)
+        self.construct_resource(name="The Jedi Doth Return", approved="Approved", private=False)
+        self.construct_resource(name="The Phantom of Menace", approved="Approved", private=True)
+
+        rv = self.app.get(
+          '/api/resource',
+          follow_redirects=True,
+          content_type="application/json"
+        )
+        self.assertSuccess(rv)
+        result = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(1, len(result))
+
+    def test_private_resources_listed_for_admin(self):
+        self.construct_resource(name="The Clone Army Attacketh", approved="Unapproved", private=False)
+        self.construct_resource(name="Tragedy of the Sith's Revenge", approved="Unapproved", private=True)
+        self.construct_resource(name="The Force Doth Awaken", approved="Approved", private=False)
+        self.construct_resource(name="Jedi The Last", approved="Approved", private=True)
+
+        rv = self.app.get(
+          '/api/resource',
+          follow_redirects=True,
+          content_type="application/json",
+          headers=self.logged_in_headers()
+        )
+        self.assertSuccess(rv)
+        result = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(4, len(result))
 
 if __name__ == '__main__':
     unittest.main()

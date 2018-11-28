@@ -29,6 +29,7 @@ class ThrivResource(db.Model):
     files = db.relationship("UploadedFile", back_populates="resource")
     categories = db.relationship("ResourceCategory", back_populates="resource")
     approved = db.Column(db.String)
+    private = db.Column(db.Boolean(), default=False)
 
     def favorite_count(self):
         return len(self.favorites)
@@ -41,12 +42,18 @@ class ThrivResource(db.Model):
 
     def user_may_view(self):
         try:
-            if self.approved == "Approved":
+            if 'user' not in g or not g.user:
+                return ((not self.private) and (self.approved == "Approved"))
+            elif g.user.role == "Admin":
                 return True
-            if g.user.role == "Admin":
+            elif g.user.email in self.owners():
                 return True
-            if g.user.email in self.owners():
+            elif self.private == True:
+                return False
+            elif self.approved == "Approved":
                 return True
+            else:
+                return False
         except:
             return False
 
@@ -56,5 +63,7 @@ class ThrivResource(db.Model):
                 return True
             if g.user.email in self.owners():
                 return True
+            else:
+                return False
         except:
             return False
