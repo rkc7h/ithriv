@@ -27,12 +27,14 @@ pause_for 3
 echo "Running from ${HOME_DIR}"
 
 echo -e '\n\n*** Starting postgresql and elasticsearch... ***\n\n'
-pg_ctl start -D $DATABASE_PATH -W
+pg_ctl start -D $DATABASE_PATH -W &
+POSTGRES_PID=$! # Save the process ID
 
 # Pause for 3 seconds to allow Postgres to start
 pause_for 3
 
-elasticsearch -d
+elasticsearch -d &
+ELASTIC_PID=$! # Save the process ID
 
 # Pause for 10 seconds to allow Elasticsearch to start
 pause_for 15
@@ -42,3 +44,6 @@ pause_for 15
 # source python-env/bin/activate
 # export FLASK_APP=./app/__init__.py
 # python tests.py
+
+echo -e '\n\n*** postgres & elastic running. ***\n\n'
+wait $POSTGRES_PID $ELASTIC_PID
