@@ -142,13 +142,6 @@ export class ResourceFormComponent implements OnInit {
       type: 'select',
       apiSource: 'getTypes'
     }),
-    private: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      placeholder: 'Private?',
-      type: 'checkbox',
-      helpText: `If this box is checked, this resource will only be visible to iTHRIV administrators.`
-    }),
     institution_id: new FormField({
       formControl: new FormControl(),
       required: true,
@@ -184,6 +177,13 @@ export class ResourceFormComponent implements OnInit {
         Provide the primary URL associated with this resource. This is an optional
         field.
       `
+    }),
+    private: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      placeholder: 'Private',
+      type: 'checkbox',
+      helpText: `If this box is checked, this resource will only be visible to iTHRIV administrators.`
     }),
     categories: new FormField({
       formGroup: new FormGroup({}),

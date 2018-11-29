@@ -66,7 +66,7 @@ export class FormFieldComponent implements OnInit {
   }
 
   isNormalField(field: FormField) {
-    return !(['tree', 'richtexteditor', 'toggle', 'files'].indexOf(field.type) > -1);
+    return !(['tree', 'richtexteditor', 'toggle', 'files', 'checkbox'].indexOf(field.type) > -1);
   }
 }
 

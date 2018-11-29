@@ -1,10 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { Institution } from '../institution';
 import { Resource } from '../resource';
 import { ResourceCategory } from '../resource-category';
-import { zoomTransition } from '../shared/animations';
+import { zoomTransition, fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FileAttachment } from '../file-attachment';
 import { ResourceType } from '../resourceType';
@@ -14,7 +14,7 @@ import { User } from '../user';
   selector: 'app-resource',
   templateUrl: './resource.component.html',
   styleUrls: ['./resource.component.scss'],
-  animations: [zoomTransition()]
+  animations: [zoomTransition(), fadeTransition()]
 })
 export class ResourceComponent implements OnInit {
   resourceId: number;
@@ -24,6 +24,8 @@ export class ResourceComponent implements OnInit {
   user: User;
 
   transitionState = '';
+
+  @HostBinding('@fadeTransition')
   isDataLoaded = false;
 
   constructor(
@@ -124,9 +126,8 @@ export class ResourceComponent implements OnInit {
     }
   }
 
-  shouldHide() {
-    const userIsAdmin = this.user.role === 'Admin';
-    const userIsOwner = this.resource.owners.includes(this.user.email);
-    return (this.resource.private && !userIsOwner && !userIsAdmin);
+  togglePrivate(isPrivate: boolean) {
+    this.resource.private = isPrivate;
+    this.api.updateResource(this.resource).subscribe();
   }
 }

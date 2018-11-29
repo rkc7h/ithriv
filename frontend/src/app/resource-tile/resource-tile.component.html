@@ -2,6 +2,7 @@
   *ngIf="resource && resource.id"
   (click)="goResource($event, resource)"
   [ngClass]="{'resource': true, 'private': resource.private}"
+  [hidden]="!resource.user_may_view"
 >
   <div
     class="category-color"

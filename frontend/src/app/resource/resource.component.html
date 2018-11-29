@@ -1,7 +1,16 @@
+<h1
+  *ngIf="isDataLoaded && !resource.user_may_view"
+  [hidden]="resource.user_may_view"
+  class="mat-h1"
+  color="warn"
+>
+  You do not have permission to view this Resource.
+</h1>
 <div
-  [ngClass]="{'mat-typography': true, 'resource': true, 'hidden': shouldHide(), 'private': resource.private}"
+  *ngIf="isDataLoaded"
+  [ngClass]="{'mat-typography': true, 'resource': true, 'private': resource.private}"
   class="mat-typography resource"
-  [hidden]="shouldHide()"
+  [hidden]="!resource.user_may_view"
   [@zoomTransition]="transitionState"
 >
   <div
@@ -90,6 +99,26 @@
         Information
       </mat-card-title>
       <mat-card-content>
+        <mat-chip-list *ngIf="resource.user_may_view">
+          <mat-chip
+            *ngIf="resource.private"
+            matTooltip="This Resource is only visible to iTHRIV administrators. Click to make it non-private."
+            (click)="togglePrivate(!resource.private)"
+            id="button-not-private"
+          >
+            <mat-icon style="margin-right: 8px;">visibility_off</mat-icon>
+            PRIVATE
+          </mat-chip>
+          <mat-chip
+            *ngIf="!resource.private"
+            matTooltip="This Resource will be visible to non-administrators if approved. Click to make it private."
+            (click)="togglePrivate(!resource.private)"
+            id="button-private"
+          >
+            <mat-icon style="margin-right: 8px;">visibility</mat-icon>
+            NOT PRIVATE
+          </mat-chip>
+        </mat-chip-list>
         <mat-list dense>
           <mat-list-item *ngIf="resource.type">
             <h4 mat-line>Type</h4>

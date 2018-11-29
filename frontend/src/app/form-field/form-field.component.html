@@ -37,7 +37,6 @@
     [required]="field.required"
     type="{{field.type}}"
   ></textarea>
-
   <mat-select
     *ngIf="field.type === 'select'"
     [multiple]="field.multiSelect"
@@ -160,4 +159,35 @@
     [errors]="errors"
   ></app-form-field-label>
   <app-file-upload [field]="field"></app-file-upload>
+</div>
+
+<div *ngIf="field.type === 'checkbox'">
+  <app-form-field-label
+    [field]="field"
+    [errors]="errors"
+  ></app-form-field-label>
+  <mat-checkbox
+    [formControl]="field.formControl"
+    [required]="field.required"
+    title="{{field.placeholder}}"
+  >
+    {{field.helpText}}
+  </mat-checkbox>
+  <mat-error *ngIf="field.formControl.errors && (field.formControl.dirty || field.formControl.touched)">
+    <span *ngIf="field.required && field.formControl.hasError('required')">
+      {{field.placeholder}} is
+      <strong>required</strong>
+    </span>
+    <span *ngIf="field.minLength && field.formControl.hasError('minlength')">
+      Must be at least
+      <strong>{{field.minLength}}</strong> characters long. You only entered
+      <strong>{{currentLength()}}</strong> characters.
+    </span>
+    <span *ngIf="field.maxLength && field.formControl.hasError('maxlength')">
+      Maximum length is
+      <strong>"{{field.maxLength}}"</strong> characters. You entered
+      <strong>{{currentLength()}}</strong> characters.
+    </span>
+  </mat-error>
+
 </div>
