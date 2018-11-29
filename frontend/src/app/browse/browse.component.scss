@@ -3,6 +3,11 @@
 @import '../../ithriv_material';
 @include ithriv-theme($ithriv-theme);
 
+h1, h2 {
+  padding: 10px 10px;
+  margin: 0 0 10px 0;
+}
+
 #browse-top-level, #browse {
   .header {
     min-height: 200px;
@@ -131,8 +136,17 @@
     border-radius: 2px;
     @include mat-elevation(1);
 
-    & > h1 {
+    h2 {
       font-weight: bolder;
+      margin-left: 16px;
+      margin-top: 16px;
+      margin-bottom: 0px;
+      padding: 0px;
+    }
+
+    ::ng-deep markdown.sub-category-description p {
+      margin-top: 0px;
+      margin-left: 16px;
     }
 
     app-edit-category-button {
