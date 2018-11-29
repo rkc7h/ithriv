@@ -98,6 +98,16 @@ class TestCase(unittest.TestCase):
         elastic_index.add_resource(resource)
         return resource
 
+    def construct_various_resources(self):
+        self.construct_resource(name="The Phantom of Menace", approved="Approved", private=False, institution="Binks College of Bantha Poodology")
+        self.construct_resource(name="The Clone Army Attacketh", approved="Unapproved", private=False, institution="Binks College of Bantha Poodology")
+        self.construct_resource(name="Tragedy of the Sith's Revenge", approved="Approved", private=True, institution="Binks College of Bantha Poodology")
+        self.construct_resource(name="Verily, A New Hope", approved="Unapproved", private=True, institution="Binks College of Bantha Poodology")
+        self.construct_resource(name="The Empire Striketh Back", approved="Approved", private=False, institution="Organa School for Rebellious Orphans")
+        self.construct_resource(name="The Jedi Doth Return", approved="Unapproved", private=False, institution="Organa School for Rebellious Orphans")
+        self.construct_resource(name="The Force Doth Awaken", approved="Approved", private=True, institution="Organa School for Rebellious Orphans")
+        self.construct_resource(name="Jedi The Last", approved="Unapproved", private=True, institution="Organa School for Rebellious Orphans")
+
     def construct_category(
             self,
             name="Test Category",
@@ -1685,11 +1695,9 @@ class TestCase(unittest.TestCase):
         result = json.loads(rv.get_data(as_text=True))
         self.assertEqual(5, len(result))
 
-    def test_private_resources_not_listed_for_normal_user(self):
-        self.construct_resource(name="Verily, A New Hope", approved="Unapproved", private=False)
-        self.construct_resource(name="The Empire Striketh Back", approved="Unapproved", private=True)
-        self.construct_resource(name="The Jedi Doth Return", approved="Approved", private=False)
-        self.construct_resource(name="The Phantom of Menace", approved="Approved", private=True)
+    def test_private_resources_not_listed_for_anonymous_user(self):
+        # Should only return 2 approved, non-private resources out of a total 8 resources
+        self.construct_various_resources()
 
         rv = self.app.get(
           '/api/resource',
@@ -1698,23 +1706,40 @@ class TestCase(unittest.TestCase):
         )
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(1, len(result))
+        self.assertEqual(2, len(result))
 
-    def test_private_resources_listed_for_admin(self):
-        self.construct_resource(name="The Clone Army Attacketh", approved="Unapproved", private=False)
-        self.construct_resource(name="Tragedy of the Sith's Revenge", approved="Unapproved", private=True)
-        self.construct_resource(name="The Force Doth Awaken", approved="Approved", private=False)
-        self.construct_resource(name="Jedi The Last", approved="Approved", private=True)
+    def test_private_resources_listed_for_general_user_with_matching_institution(self):
+        u = User(id=1, eppn=self.test_eppn, display_name="Finn", email="FN-2187@first-order.mil", role="User", institution="Organa School for Rebellious Orphans")
+
+        # Should only return 3 approved resources (one private from user's institution)
+        # out of a total 8 resources
+        self.construct_various_resources()
 
         rv = self.app.get(
           '/api/resource',
           follow_redirects=True,
           content_type="application/json",
-          headers=self.logged_in_headers()
+          headers=self.logged_in_headers(u)
         )
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(4, len(result))
+        self.assertEqual(3, len(result))
+
+    def test_private_resources_listed_for_admin(self):
+        u = User(id=1, eppn=self.admin_eppn, display_name="Princess Leia Organa", email="princess.leia@alderaan.gov", role="Admin", institution="Organa School for Rebellious Orphans")
+
+        # Should return all 8 resources
+        self.construct_various_resources()
+
+        rv = self.app.get(
+          '/api/resource',
+          follow_redirects=True,
+          content_type="application/json",
+          headers=self.logged_in_headers(u)
+        )
+        self.assertSuccess(rv)
+        result = json.loads(rv.get_data(as_text=True))
+        self.assertEqual(8, len(result))
 
 if __name__ == '__main__':
     unittest.main()

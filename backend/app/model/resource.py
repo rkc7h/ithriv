@@ -42,18 +42,18 @@ class ThrivResource(db.Model):
 
     def user_may_view(self):
         try:
+            # if resource is private,
+            # user institution must match resource institution
             if 'user' not in g or not g.user:
-                return ((not self.private) and (self.approved == "Approved"))
+                return (self.approved == "Approved") and not self.private
             elif g.user.role == "Admin":
                 return True
             elif g.user.email in self.owners():
                 return True
-            elif self.private == True:
-                return False
-            elif self.approved == "Approved":
-                return True
+            elif self.private:
+                return (self.approved == "Approved") and (self.institution_id == g.user.institution_id)
             else:
-                return False
+                return (self.approved == "Approved")
         except:
             return False
 
