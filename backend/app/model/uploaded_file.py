@@ -12,5 +12,6 @@ class UploadedFile(db.Model):
     size = db.Column(db.Integer)
     md5 = db.Column(db.String)
     url = db.Column(db.String)
-    resource_id = db.Column(db.Integer, db.ForeignKey(ThrivResource.id), nullable=True)
+    resource_id = db.Column(
+        db.Integer, db.ForeignKey(ThrivResource.id), nullable=True)
     resource = db.relationship(ThrivResource)

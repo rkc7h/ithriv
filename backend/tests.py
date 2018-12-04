@@ -1,24 +1,17 @@
-# Set environment variable to testing before loading.
-# IMPORTANT - Environment must be loaded before app, models, etc....
-import os
-os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
-
 import datetime
-import quopri
-import re
-import time
-
-from botocore.vendored import requests
-
-import random
-import string
-from app.email_service import TEST_MESSAGES
-from io import BytesIO
-from app.model.resource_category import ResourceCategory
-from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema, UserSchema, \
-     FileSchema, FavoriteSchema
-import unittest
 import json
+import math
+import os
+import quopri
+import random
+import re
+import string
+import time
+import unittest
+
+from app import app, db, elastic_index
+from app.email_service import TEST_MESSAGES
+from app.model.resource_category import ResourceCategory
 from app.model.availability import Availability
 from app.model.category import Category
 from app.model.favorite import Favorite
@@ -29,32 +22,47 @@ from app.model.icon import Icon
 from app.model.user import User
 from app.model.email_log import EmailLog
 from app.model.uploaded_file import UploadedFile
-from app import app, db, elastic_index
+from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema, \
+    UserSchema, FileSchema, FavoriteSchema
+from botocore.vendored import requests
+from io import BytesIO
+
+# Set environment variable to testing before loading.
+# IMPORTANT - Environment must be loaded before app, models, etc....
+os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
+
 
 class TestCase(unittest.TestCase):
     test_eppn = "dhf8rtest@virginia.edu"
     admin_eppn = "dhf8admin@virginia.edu"
 
     def setUp(self):
-        self.ctx = app.test_request_context()
-        self.app = app.test_client()
-        db.session.remove()
-        db.drop_all()
         db.create_all()
+        self.app = app.test_client()
+        self.ctx = app.test_request_context()
         self.ctx.push()
 
     def tearDown(self):
+        self.ctx.pop()
+        elastic_index.clear()
         db.session.remove()
         db.drop_all()
-        elastic_index.clear()
-        self.ctx.pop()
+        db.drop_all()
+        db.drop_all()
+        db.drop_all()
+        db.drop_all()
+        db.drop_all()
+        db.drop_all()
+        db.drop_all()
+        db.drop_all()
+        db.drop_all()
 
     def assertSuccess(self, rv):
         try:
             data = json.loads(rv.get_data(as_text=True))
-            self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
-                            "BAD Response: %i. \n %s" %
-                            (rv.status_code, json.dumps(data)))
+            self.assertTrue(
+                rv.status_code >= 200 and rv.status_code < 300,
+                "BAD Response: %i. \n %s" % (rv.status_code, json.dumps(data)))
         except:
             self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
                             "BAD Response: %i." % rv.status_code)
@@ -63,58 +71,166 @@ class TestCase(unittest.TestCase):
         char_set = string.ascii_uppercase + string.digits
         return ''.join(random.sample(char_set * 6, 6))
 
-    def test_base_endpoint(self):
-        rv = self.app.get('/',
-                          follow_redirects=True,
-                          content_type="application/json")
-        self.assertSuccess(rv)
-        response = json.loads(rv.get_data(as_text=True))
-        self.assertTrue("_links" in response)
-        self.assertTrue("categories" in response['_links'])
-        self.assertTrue("resources" in response['_links'])
+    def construct_user(self,
+                       id=1,
+                       eppn="poe.resistance@rebels.org",
+                       display_name="Poe Dameron",
+                       email="poe.resistance@rebels.org",
+                       role="User"):
+        u = User(
+            id=id,
+            eppn=eppn,
+            display_name=display_name,
+            email=email,
+            role=role)
+        db.session.add(u)
+        db.session.commit()
+        return db.session.query(User).filter_by(eppn=u.eppn).first()
 
-    def construct_resource(self, type="TestyType", institution="TestyU",
-                           name="Test Resource", description="Some stuff bout it",
-                           owner="Mac Daddy Test", website="testy.edu", cost='$100 or your firstborn', available_to=None,
-                           contact_email='mac@daddy.com', contact_phone='540-457-0024',
-                           contact_notes='No robo-calls if you please.',
-                           approved='Unapproved', private=False):
+    def construct_admin_user(self,
+                             id=2,
+                             eppn="general.organa@rebels.org",
+                             display_name="General Organa",
+                             email="general.organa@rebels.org",
+                             role="Admin"):
+        u = User(
+            id=id,
+            eppn=eppn,
+            display_name=display_name,
+            email=email,
+            role=role)
+        db.session.add(u)
+        db.session.commit()
+        return db.session.query(User).filter_by(eppn=u.eppn).first()
+
+    def construct_various_users(self):
+        u1 = self.construct_user(
+            id=1,
+            eppn=self.test_eppn,
+            display_name="Oscar the Grouch",
+            email=self.test_eppn)
+        u2 = self.construct_user(
+            id=2,
+            eppn=self.admin_eppn,
+            display_name="Big Bird",
+            email=self.admin_eppn,
+            role="Admin")
+        u3 = self.construct_user(
+            id=3,
+            eppn="stuff123@vt.edu",
+            display_name="Elmo",
+            email="stuff123@vt.edu")
+
+    def construct_institution(self, name="TestyU", domain="testy.edu"):
+        institution = ThrivInstitution(name=name, domain=domain)
+
+        # Check database for existing institution
+        existing_institution = db.session\
+            .query(ThrivInstitution) \
+            .filter_by(name=name).first()
+        if not existing_institution:
+            existing_institution = db.session \
+                .query(ThrivInstitution) \
+                .filter_by(domain=domain).first()
+
+        if not existing_institution:
+            db.session.add(institution)
+            db.session.commit()
+            return institution
+        else:
+            return existing_institution
+
+    def construct_resource(self,
+                           type="Starfighter",
+                           institution=None,
+                           name="T-70 X-Wing",
+                           description="Small. Fast. Blows stuff up.",
+                           owner="poe.resistance@rebels.org",
+                           website="rebels.org",
+                           cost='$100B credits',
+                           available_to=None,
+                           contact_email='poe.resistance@rebels.org',
+                           contact_phone='111-222-3333',
+                           contact_notes='I have a bad feeling about this.',
+                           approved='Unapproved',
+                           private=False):
         type_obj = ThrivType(name=type)
-        inst_obj = ThrivInstitution(name=institution)
-        resource = ThrivResource(name=name, description=description,
-                                 type=type_obj, institution=inst_obj,
-                                 owner=owner, website=website, cost=cost, contact_email=contact_email,
-                                 contact_phone=contact_phone, contact_notes=contact_notes,
-                                 approved=approved, private=private)
+
+        if available_to is not None:
+            institution = self.construct_institution(name=available_to)
+
+        resource = ThrivResource(
+            name=name,
+            description=description,
+            type=type_obj,
+            institution=institution,
+            owner=owner,
+            website=website,
+            cost=cost,
+            contact_email=contact_email,
+            contact_phone=contact_phone,
+            contact_notes=contact_notes,
+            approved=approved,
+            private=private)
         db.session.add(resource)
 
         if available_to is not None:
-            institution = ThrivInstitution(name=available_to)
-            db.session.add(institution)
-            availability = Availability(resource=resource, institution=institution,
-                                        available=True)
+            availability = Availability(
+                resource=resource, institution=institution, available=True)
             db.session.add(availability)
         db.session.commit()
         elastic_index.add_resource(resource)
         return resource
 
-    def construct_various_resources(self):
-        self.construct_resource(name="The Phantom of Menace", approved="Approved", private=False, institution="Binks College of Bantha Poodology")
-        self.construct_resource(name="The Clone Army Attacketh", approved="Unapproved", private=False, institution="Binks College of Bantha Poodology")
-        self.construct_resource(name="Tragedy of the Sith's Revenge", approved="Approved", private=True, institution="Binks College of Bantha Poodology")
-        self.construct_resource(name="Verily, A New Hope", approved="Unapproved", private=True, institution="Binks College of Bantha Poodology")
-        self.construct_resource(name="The Empire Striketh Back", approved="Approved", private=False, institution="Organa School for Rebellious Orphans")
-        self.construct_resource(name="The Jedi Doth Return", approved="Unapproved", private=False, institution="Organa School for Rebellious Orphans")
-        self.construct_resource(name="The Force Doth Awaken", approved="Approved", private=True, institution="Organa School for Rebellious Orphans")
-        self.construct_resource(name="Jedi The Last", approved="Unapproved", private=True, institution="Organa School for Rebellious Orphans")
+    def construct_various_resources(self, institution=None, owner=None):
+        i1_name = "Binks College of Bantha Poodology"
+        i1_domain = "first-order.mil"
+        i2_name = "Organa School for Rebellious Orphans"
+        i2_domain = "rebels.org"
+        o1 = "kylo.ren@first-order.mil"
+        o2 = "mon.mothma@rebels.org"
 
-    def construct_category(
-            self,
-            name="Test Category",
-            description="A category to test with!",
-            parent=None,
-            display_order=None
-    ):
+        if institution is not None:
+            # Assign institution to half of the resources
+            i1 = institution
+        else:
+            i1 = self.construct_institution(name=i1_name, domain=i1_domain)
+        i2 = self.construct_institution(name=i2_name, domain=i2_domain)
+
+        if owner is not None:
+            # Assign owner to half of the resources
+            o1 = owner
+
+        resource_names = [
+            "The Phantom of Menace", "The Clone Army Attacketh",
+            "Tragedy of the Sith's Revenge", "Verily, A New Hope",
+            "The Empire Striketh Back", "The Jedi Doth Return",
+            "The Force Doth Awaken", "Jedi The Last",
+            "The Ewok Quest of Courage's Caravan", "Hurlyburly for Endor",
+            "Wars of Yonder Stars Midwinter's Celebration",
+            "Cloning of the Soldiers", "Rebellion-Upon-Mandalore",
+            "Resistance's Tale", "MacSolo", "Rogue The First"
+        ]
+
+        for index, name in enumerate(resource_names):
+            n = index + 1
+            r_approved = "Approved" if (n % 2 == 0) else "Unapproved"
+            r_private = (math.ceil(n / 2) % 2 == 0)
+            r_institution = i1 if (math.ceil(n / 4) % 2 == 0) else i2
+            r_owner = o1 if (math.ceil(n / 8) % 2 == 0) else o2
+
+            self.construct_resource(
+                name=name,
+                approved=r_approved,
+                private=r_private,
+                institution=r_institution,
+                owner=r_owner)
+
+    def construct_category(self,
+                           name="Test Category",
+                           description="A category to test with!",
+                           parent=None,
+                           display_order=None):
         category = Category(name=name, description=description)
         if parent is not None:
             category.parent = parent
@@ -132,16 +248,29 @@ class TestCase(unittest.TestCase):
     def index_resource(self, resource):
         elastic_index.add_resource(resource)
 
+    def test_base_endpoint(self):
+        rv = self.app.get(
+            '/', follow_redirects=True, content_type="application/json")
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertTrue("_links" in response)
+        self.assertTrue("categories" in response['_links'])
+        self.assertTrue("resources" in response['_links'])
+
     def test_resource_basics(self):
-        self.construct_resource()
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        r_name = "Speeder Bike"
+        r_description = "Thou and I have thirty miles to" \
+                        "ride yet ere dinner time."
+        self.construct_resource(name=r_name, description=r_description)
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["id"], 1)
-        self.assertEqual(response["name"], 'Test Resource')
-        self.assertEqual(response["description"], 'Some stuff bout it')
+        self.assertEqual(response["name"], r_name)
+        self.assertEqual(response["description"], r_description)
 
     def test_modify_resource_basics(self):
         self.construct_resource()
@@ -153,33 +282,44 @@ class TestCase(unittest.TestCase):
         response['cost'] = '$.25 or the going rate'
         response['owner'] = 'Daniel GG Dog Da Funk-a-funka'
         orig_date = response['last_updated']
-        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json", headers=self.logged_in_headers(), follow_redirects=True)
+        rv = self.app.put(
+            '/api/resource/1',
+            data=json.dumps(response),
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response['name'], 'Edwarardos Lemonade and Oil Change')
-        self.assertEqual(response['description'], 'Better fluids for you and your car.')
+        self.assertEqual(response['name'],
+                         'Edwarardos Lemonade and Oil Change')
+        self.assertEqual(response['description'],
+                         'Better fluids for you and your car.')
         self.assertEqual(response['website'], 'http://sartography.com')
         self.assertEqual(response['cost'], '$.25 or the going rate')
         self.assertEqual(response['owner'], 'Daniel GG Dog Da Funk-a-funka')
         self.assertNotEqual(orig_date, response['last_updated'])
 
     def test_set_resource_institution(self):
+        institution_name = "Billy Bob Thorton's School for" \
+                           "mean short men with big heads"
+        inst = self.construct_institution(name=institution_name)
         self.construct_resource()
-        inst = ThrivInstitution(name="Billy Bob Thorton's School for mean short men with big heads")
-        db.session.add(inst)
-        db.session.commit()
         rv = self.app.get('/api/resource/1', content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         response['institution_id'] = inst.id
-        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json",
-                          headers=self.logged_in_headers(), follow_redirects=True)
+        rv = self.app.put(
+            '/api/resource/1',
+            data=json.dumps(response),
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response['institution']['name'], "Billy Bob Thorton's School for mean short men with big heads")
+        self.assertEqual(response['institution']['name'], institution_name)
         self.assertEqual(response['institution_id'], inst.id)
 
     def test_set_resource_type(self):
@@ -190,13 +330,18 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/resource/1', content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         response['type_id'] = type.id
-        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json",
-                          headers=self.logged_in_headers(), follow_redirects=True)
+        rv = self.app.put(
+            '/api/resource/1',
+            data=json.dumps(response),
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response['type']['name'], "A sort of greenish purple apricot like thing. ")
+        self.assertEqual(response['type']['name'],
+                         "A sort of greenish purple apricot like thing. ")
         self.assertEqual(response['type_id'], type.id)
 
     def test_delete_resource(self):
@@ -204,15 +349,29 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertSuccess(rv)
 
-        rv = self.app.delete('/api/resource/1', content_type="application/json", headers=self.logged_in_headers(), follow_redirects=True)
+        rv = self.app.delete(
+            '/api/resource/1',
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
 
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertEqual(404, rv.status_code)
 
     def test_user_edit_resource(self):
-        u1 = User(id=1, eppn="peter@cottontail", display_name="Peter Cottontail", email="peter@cottontail", role="User")
-        u2 = User(id=2, eppn="rabbit@velveteen.com", display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
+        u1 = User(
+            id=1,
+            eppn="peter@cottontail",
+            display_name="Peter Cottontail",
+            email="peter@cottontail",
+            role="User")
+        u2 = User(
+            id=2,
+            eppn="rabbit@velveteen.com",
+            display_name="The Velveteen Rabbit",
+            email="rabbit@velveteen.com",
+            role="Admin")
         r1 = self.construct_resource(owner=u1.email)
         r2 = self.construct_resource(owner="flopsy@cottontail.com")
         db.session.add_all([u1, u2, r1, r2])
@@ -225,14 +384,19 @@ class TestCase(unittest.TestCase):
         orig_date = response['last_updated']
 
         # Peter should be able to edit his own resource
-        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json",
-                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        rv = self.app.put(
+            '/api/resource/1',
+            data=json.dumps(response),
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u1),
+            follow_redirects=True)
         self.assertSuccess(rv)
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response['name'], 'Farm Fresh Carrots')
-        self.assertEqual(response['owner'], 'peter@cottontail, flopsy@cottontail.com')
+        self.assertEqual(response['owner'],
+                         'peter@cottontail, flopsy@cottontail.com')
         self.assertNotEqual(orig_date, response['last_updated'])
 
         # But Peter should not be able to edit anyone else's resources.
@@ -241,24 +405,38 @@ class TestCase(unittest.TestCase):
         response['name'] = 'Farm Fresh Carrots'
         response['owner'] = 'peter@cottontail, flopsy@cottontail.com'
         orig_date = response['last_updated']
-        rv = self.app.put('/api/resource/2', data=json.dumps(response), content_type="application/json",
-                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        rv = self.app.put(
+            '/api/resource/2',
+            data=json.dumps(response),
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u1),
+            follow_redirects=True)
         self.assertEqual(400, rv.status_code)
 
         # The Velveteen Rabbit can edit others' resources though, as an Admin:
         rv = self.app.get('/api/resource/2', content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         response['name'] = 'All the Carrots and Love'
-        response['owner'] = 'rabbit@velveteen.com, peter@cottontail, flopsy@cottontail.com'
-        rv = self.app.put('/api/resource/2', data=json.dumps(response), content_type="application/json",
-                          headers=self.logged_in_headers(user=u2), follow_redirects=True)
+        response['owner'] = 'rabbit@velveteen.com,' \
+                            'peter@cottontail,' \
+                            'flopsy@cottontail.com'
+        rv = self.app.put(
+            '/api/resource/2',
+            data=json.dumps(response),
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u2),
+            follow_redirects=True)
         self.assertSuccess(rv)
 
     def test_general_user_delete_resource(self):
-        u1 = User(id=1, display_name="Peter Cottontail", email="peter@cottontail", role="User")
+        u1 = self.construct_user(
+            eppn="peter@cottontail",
+            display_name="Peter Cottontail",
+            email="peter@cottontail",
+            role="User")
         r1 = self.construct_resource(owner=u1.email)
         r2 = self.construct_resource(owner="flopsy@cottontail.com")
-        db.session.add_all([u1, r1, r2])
+        db.session.add_all([r1, r2])
         db.session.commit()
 
         rv = self.app.get('/api/resource/1', content_type="application/json")
@@ -269,23 +447,30 @@ class TestCase(unittest.TestCase):
         self.assertEqual(2, db.session.query(ThrivResource).count())
 
         # We shouldn't be able to delete a resource when not logged in
-        rv = self.app.delete('/api/resource/1', content_type="application/json")
+        rv = self.app.delete(
+            '/api/resource/1', content_type="application/json")
         self.assertEqual(401, rv.status_code)
         self.assertEqual(2, db.session.query(ThrivResource).count())
 
         # A general user should be able to delete their own resources
-        rv = self.app.delete('/api/resource/1', content_type="application/json", headers=self.logged_in_headers(user=u1),
-                             follow_redirects=True)
+        rv = self.app.delete(
+            '/api/resource/1',
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u1),
+            follow_redirects=True)
         self.assertSuccess(rv)
 
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertEqual(404, rv.status_code)
         self.assertEqual(1, db.session.query(ThrivResource).count())
 
-        # And a user shouldn't be able to delete a resource that doesn't belong to them
-        # (Flopsy might not want Peter deleting that thing)
-        rv = self.app.delete('/api/resource/2', content_type="application/json", headers=self.logged_in_headers(user=u1),
-                             follow_redirects=True)
+        # And a user shouldn't be able to delete a resource that doesn't
+        # belong to them (Flopsy might not want Peter deleting that thing)
+        rv = self.app.delete(
+            '/api/resource/2',
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u1),
+            follow_redirects=True)
         self.assertEqual(400, rv.status_code)
 
         rv = self.app.get('/api/resource/2', content_type="application/json")
@@ -293,18 +478,27 @@ class TestCase(unittest.TestCase):
         self.assertEqual(1, db.session.query(ThrivResource).count())
 
     def test_admin_user_delete_resource(self):
-        # Remember -- A user shouldn't be able to delete a resource that doesn't belong to them...
-        # ...Unless that user is a superuser, in which case they can delete whatever they want
-        # (The Velveteen Rabbit is all-powerful)
+        # Remember -- A user shouldn't be able to delete a resource that
+        # doesn't belong to them...
+        # ...Unless that user is a superuser, in which case they can delete
+        # whatever they want (The Velveteen Rabbit is all-powerful)
         r1 = self.construct_resource(owner="mopsy@cottontail.com")
-        u = User(id=2, eppn=self.admin_eppn, display_name="The Velveteen Rabbit", email="rabbit@velveteen.com", role="Admin")
+        u = self.construct_user(
+            id=2,
+            eppn="rabbit@velveteen.com",
+            display_name="The Velveteen Rabbit",
+            email="rabbit@velveteen.com",
+            role="Admin")
 
         rv = self.app.get('/api/resource/1', content_type="application/json")
         self.assertSuccess(rv)
         self.assertEqual(1, db.session.query(ThrivResource).count())
 
-        rv = self.app.delete('/api/resource/1', content_type="application/json", headers=self.logged_in_headers(user=u),
-                             follow_redirects=True)
+        rv = self.app.delete(
+            '/api/resource/1',
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u),
+            follow_redirects=True)
         self.assertSuccess(rv)
 
         rv = self.app.get('/api/resource/1', content_type="application/json")
@@ -312,20 +506,29 @@ class TestCase(unittest.TestCase):
         self.assertEqual(0, db.session.query(ThrivResource).count())
 
     def test_create_resource(self):
-        resource = {'name':"Barbarella's Funky Gun", 'description':"A thing. In a movie, or something."}
-        rv = self.app.post('/api/resource', data=json.dumps(resource), content_type="application/json",
-                           headers=self.logged_in_headers(), follow_redirects=True)
+        resource = {
+            'name': "Barbarella's Funky Gun",
+            'description': "A thing. In a movie, or something."
+        }
+        rv = self.app.post(
+            '/api/resource',
+            data=json.dumps(resource),
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response['name'], 'Barbarella\'s Funky Gun')
-        self.assertEqual(response['description'], 'A thing. In a movie, or something.')
+        self.assertEqual(response['description'],
+                         'A thing. In a movie, or something.')
         self.assertEqual(response['id'], 1)
 
     def test_category_basics(self):
         category = self.construct_category()
-        rv = self.app.get('/api/category/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/category/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["id"], 1)
@@ -333,54 +536,65 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response["description"], 'A category to test with!')
 
     def test_resource_has_type(self):
-        self.construct_resource()
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        type_name = "Human-Cyborg Relations"
+        self.construct_resource(type=type_name)
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response["type"]["name"], 'TestyType')
+        self.assertEqual(response["type"]["name"], type_name)
 
     def test_proper_error_on_no_resource(self):
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["code"], "not_found")
 
     def test_resource_has_institution(self):
-        self.construct_resource()
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        institution_name = "Hoth Center for Limb Reconstruction"
+        institution = self.construct_institution(name=institution_name)
+        self.construct_resource(institution=institution)
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response["institution"]["name"], 'TestyU')
+        self.assertEqual(response["institution"]["name"], institution_name)
 
     def test_resource_has_website(self):
         self.construct_resource(website='testy.edu')
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["website"], 'testy.edu')
 
     def test_resource_has_owner(self):
         self.construct_resource(owner="Mac Daddy Test")
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["owner"], 'Mac Daddy Test')
 
     def test_resource_has_contact_information(self):
-        self.construct_resource(contact_email='thor@disney.com', contact_phone='555-123-4321',
-                                contact_notes='Valhala calling!')
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        self.construct_resource(
+            contact_email='thor@disney.com',
+            contact_phone='555-123-4321',
+            contact_notes='Valhala calling!')
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["contact_email"], 'thor@disney.com')
@@ -389,150 +603,258 @@ class TestCase(unittest.TestCase):
 
     def test_resource_has_approval(self):
         resource = self.construct_resource()
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["approved"], 'Unapproved')
-        response["approved"] = 'Approved';
-        rv = self.app.put('/api/resource/%i' % 1, data=json.dumps(response), content_type="application/json",
-                          headers=self.logged_in_headers(), follow_redirects=True)
+        response["approved"] = 'Approved'
+        rv = self.app.put(
+            '/api/resource/%i' % 1,
+            data=json.dumps(response),
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["approved"], 'Approved')
 
     def test_resource_has_availability(self):
         self.construct_resource(owner="Mac Daddy Test", available_to="UVA")
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertIsNotNone(response["availabilities"])
         self.assertIsNotNone(response["availabilities"][0])
         self.assertEqual(True, response["availabilities"][0]["available"])
-        self.assertEqual("UVA", response["availabilities"][0]["institution"]["name"])
-        print(str(response['availabilities']))
+        self.assertEqual("UVA",
+                         response["availabilities"][0]["institution"]["name"])
 
     def test_resource_has_links(self):
         self.construct_resource()
-        rv = self.app.get('/api/resource/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/resource/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["_links"]["self"], '/api/resource/1')
         self.assertEqual(response["_links"]["collection"], '/api/resource')
 
     def test_my_resources_list(self):
-        # Testing that the resource owner is correctly split with ; , or spaces between email addresses
-        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com")
-        self.construct_resource(name="Slimy the worm's flying school", owner="oscar@sesamestreet.com; bigbird@sesamestreet.com")
-        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com, bigbird@sesamestreet.com")
-        self.construct_resource(name="Snuffy's Balloon Collection", owner="oscar@sesamestreet.com bigbird@sesamestreet.com")
-        u1 = User(id=1, role="User", display_name="Oscar the Grouch", email="oscar@sesamestreet.com", eppn="oscar@sesamestreet.com")
-        u2 = User(id=2, role="Admin", display_name="Big Bird", email="bigbird@sesamestreet.com", eppn="bigbird@sesamestreet.com")
+        # Testing that the resource owner is correctly split
+        # with ; , or spaces between email addresses
+        self.construct_resource(
+            name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com")
+        self.construct_resource(
+            name="Slimy the worm's flying school",
+            owner="oscar@sesamestreet.com; "
+            "bigbird@sesamestreet.com")
+        self.construct_resource(
+            name="Oscar's Trash Orchestra",
+            owner="oscar@sesamestreet.com, "
+            "bigbird@sesamestreet.com")
+        self.construct_resource(
+            name="Snuffy's Balloon Collection",
+            owner="oscar@sesamestreet.com "
+            "bigbird@sesamestreet.com")
+        u1 = User(
+            id=1,
+            role="User",
+            display_name="Oscar the Grouch",
+            email="oscar@sesamestreet.com",
+            eppn="oscar@sesamestreet.com")
+        u2 = User(
+            id=2,
+            role="Admin",
+            display_name="Big Bird",
+            email="bigbird@sesamestreet.com",
+            eppn="bigbird@sesamestreet.com")
         db.session.add_all([u1, u2])
         db.session.commit()
 
-        # Testing that the correct amount of user-owned resources show up for the correct user
-        rv = self.app.get('/api/session/resource', content_type="application/json",
-                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        # Testing that the correct amount of user-owned resources
+        # show up for the correct user
+        rv = self.app.get(
+            '/api/session/resource',
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u1),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(3, len(response))
 
-        rv = self.app.get('/api/session/resource', content_type="application/json",
-                          headers=self.logged_in_headers(user=u2), follow_redirects=True)
+        rv = self.app.get(
+            '/api/session/resource',
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u2),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(4, len(response))
 
-        # Testing to see that user-owned resources are not viewable when logged out
-        rv = self.app.get('/api/session/resource', content_type="application/json")
+        # Testing to see that user-owned resources are not
+        # viewable when logged out
+        rv = self.app.get(
+            '/api/session/resource', content_type="application/json")
         self.assertEqual(401, rv.status_code)
 
     def test_approved_resources_list_with_general_users(self):
-        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com",
-                                approved="Approved")
-        self.construct_resource(name="Slimy the worm's flying school",
-                                owner="oscar@sesamestreet.com; bigbird@sesamestreet.com", approved="Approved")
-        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com", approved="Unapproved")
-        self.construct_resource(name="Snuffy's Balloon Collection",
-                                owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
-        u1 = User(id=1, eppn='oscar@sesamestreet.com', display_name="Oscar the Grouch", email="oscar@sesamestreet.com", role="User")
-        u2 = User(id=2, eppn='bigbird@sesamestreet.com', display_name="Big Bird", email="bigbird@sesamestreet.com", role="User")
-        u3 = User(id=3, eppn='grover@sesamestreet.com', display_name="Grover", email="grover@sesamestreet.com", role="User")
+        self.construct_resource(
+            name="Birdseed sale at Hooper's",
+            owner="bigbird@sesamestreet.com",
+            approved="Approved")
+        self.construct_resource(
+            name="Slimy the worm's flying school",
+            owner="oscar@sesamestreet.com; "
+            "bigbird@sesamestreet.com",
+            approved="Approved")
+        self.construct_resource(
+            name="Oscar's Trash Orchestra",
+            owner="oscar@sesamestreet.com",
+            approved="Unapproved")
+        self.construct_resource(
+            name="Snuffy's Balloon Collection",
+            owner="oscar@sesamestreet.com "
+            "bigbird@sesamestreet.com",
+            approved="Unpproved")
+        u1 = User(
+            id=1,
+            eppn='oscar@sesamestreet.com',
+            display_name="Oscar the Grouch",
+            email="oscar@sesamestreet.com",
+            role="User")
+        u2 = User(
+            id=2,
+            eppn='bigbird@sesamestreet.com',
+            display_name="Big Bird",
+            email="bigbird@sesamestreet.com",
+            role="User")
+        u3 = User(
+            id=3,
+            eppn='grover@sesamestreet.com',
+            display_name="Grover",
+            email="grover@sesamestreet.com",
+            role="User")
         db.session.add_all([u1, u2, u3])
         db.session.commit()
 
-        # Testing that the correct amount of resources show up for the correct user
-        # Oscar should see all four resources -- the three he owns and the Approved one he doesn't
-        rv = self.app.get('/api/resource', content_type="application/json",
-                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        # Testing that the correct amount of resources show up
+        # for the correct user. Oscar should see all four
+        # resources -- the three he owns and the Approved
+        # one he doesn't
+        rv = self.app.get(
+            '/api/resource',
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u1),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(4, len(response))
 
-        # Big Bird should see the three resources he owns, and not the Unapproved one he doesn't
-        rv = self.app.get('/api/resource', content_type="application/json",
-                          headers=self.logged_in_headers(user=u2), follow_redirects=True)
+        # Big Bird should see the three resources he owns, and
+        # not the Unapproved one he doesn't
+        rv = self.app.get(
+            '/api/resource',
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u2),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(3, len(response))
 
         # Grover should see the two approved resources and nothing else
-        rv = self.app.get('/api/resource', content_type="application/json",
-                          headers=self.logged_in_headers(user=u3), follow_redirects=True)
+        rv = self.app.get(
+            '/api/resource',
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u3),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(2, len(response))
 
     def test_approved_resources_list_with_admin_user(self):
-        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com",
-                                approved="Approved")
-        self.construct_resource(name="Slimy the worm's flying school",
-                                owner="oscar@sesamestreet.com; bigbird@sesamestreet.com", approved="Approved")
-        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com",
-                                approved="Unapproved")
-        self.construct_resource(name="Snuffy's Balloon Collection",
-                                owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unpproved")
-        u1 = User(id=4, eppn='maria@seseme.edu', display_name="Maria", email="maria@sesamestreet.com", role="Admin")
+        self.construct_resource(
+            name="Birdseed sale at Hooper's",
+            owner="bigbird@sesamestreet.com",
+            approved="Approved")
+        self.construct_resource(
+            name="Slimy the worm's flying school",
+            owner="oscar@sesamestreet.com; "
+            "bigbird@sesamestreet.com",
+            approved="Approved")
+        self.construct_resource(
+            name="Oscar's Trash Orchestra",
+            owner="oscar@sesamestreet.com",
+            approved="Unapproved")
+        self.construct_resource(
+            name="Snuffy's Balloon Collection",
+            owner="oscar@sesamestreet.com "
+            "bigbird@sesamestreet.com",
+            approved="Unpproved")
+        u1 = User(
+            id=4,
+            eppn='maria@seseme.edu',
+            display_name="Maria",
+            email="maria@sesamestreet.com",
+            role="Admin")
         db.session.add(u1)
         db.session.commit()
 
         # Maria should see all the resources as an Admin
-        rv = self.app.get('/api/resource', content_type="application/json",
-                          headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        rv = self.app.get(
+            '/api/resource',
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u1),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(4, len(response))
 
     def test_approved_resources_list_with_no_user(self):
-        self.construct_resource(name="Birdseed sale at Hooper's", owner="bigbird@sesamestreet.com",
-                                approved="Approved")
-        self.construct_resource(name="Slimy the worm's flying school",
-                                owner="oscar@sesamestreet.com; bigbird@sesamestreet.com", approved="Approved")
-        self.construct_resource(name="Oscar's Trash Orchestra", owner="oscar@sesamestreet.com",
-                                approved="Unapproved")
-        self.construct_resource(name="Snuffy's Balloon Collection",
-                                owner="oscar@sesamestreet.com bigbird@sesamestreet.com", approved="Unapproved")
+        self.construct_resource(
+            name="Birdseed sale at Hooper's",
+            owner="bigbird@sesamestreet.com",
+            approved="Approved")
+        self.construct_resource(
+            name="Slimy the worm's flying school",
+            owner="oscar@sesamestreet.com; "
+            "bigbird@sesamestreet.com",
+            approved="Approved")
+        self.construct_resource(
+            name="Oscar's Trash Orchestra",
+            owner="oscar@sesamestreet.com",
+            approved="Unapproved")
+        self.construct_resource(
+            name="Snuffy's Balloon Collection",
+            owner="oscar@sesamestreet.com "
+            "bigbird@sesamestreet.com",
+            approved="Unapproved")
 
-        # When there is no user logged in, they should only see the two approved resources
+        # When there is no user logged in, they should only see
+        # the two approved resources
         rv = self.app.get('/api/resource', content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(2, len(response))
 
     def test_list_categories(self):
-        self.construct_category(name="c1", description="c1 description", parent=None)
-        self.construct_category(name="c2", description="c2 description", parent=None)
-        self.construct_category(name="c3", description="c3 description", parent=None)
+        self.construct_category(
+            name="c1", description="c1 description", parent=None)
+        self.construct_category(
+            name="c2", description="c2 description", parent=None)
+        self.construct_category(
+            name="c3", description="c3 description", parent=None)
 
-        rv = self.app.get('/api/category',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/category',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response[0]['name'], 'c1')
@@ -540,16 +862,20 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response[2]['name'], 'c3')
 
     def test_list_categories_sorts_in_display_order(self):
-        self.construct_category(name="M", description="M description", display_order=1)
+        self.construct_category(
+            name="M", description="M description", display_order=1)
         self.construct_category(name="O", description="O description")
-        self.construct_category(name="N", description="N description", display_order=0)
+        self.construct_category(
+            name="N", description="N description", display_order=0)
         self.construct_category(name="K", description="K description")
-        self.construct_category(name="E", description="E description", display_order=2)
+        self.construct_category(
+            name="E", description="E description", display_order=2)
         self.construct_category(name="Y", description="Y description")
 
-        rv = self.app.get('/api/category',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/category',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
 
@@ -564,13 +890,17 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response[5]['name'], 'Y')
 
     def test_list_root_categories(self):
-        self.construct_category(name="c1", description="c1 description", parent=None)
-        self.construct_category(name="c2", description="c2 description", parent=None)
-        self.construct_category(name="c3", description="c3 description", parent=None)
+        self.construct_category(
+            name="c1", description="c1 description", parent=None)
+        self.construct_category(
+            name="c2", description="c2 description", parent=None)
+        self.construct_category(
+            name="c3", description="c3 description", parent=None)
 
-        rv = self.app.get('/api/category/root',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/category/root',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response[0]['name'], 'c1')
@@ -578,16 +908,20 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response[2]['name'], 'c3')
 
     def test_list_root_categories_sorts_in_display_order(self):
-        self.construct_category(name="Z", description="Z description", display_order=1)
+        self.construct_category(
+            name="Z", description="Z description", display_order=1)
         self.construct_category(name="O", description="O description")
-        self.construct_category(name="M", description="M description", display_order=0)
+        self.construct_category(
+            name="M", description="M description", display_order=0)
         self.construct_category(name="B", description="B description")
-        self.construct_category(name="I", description="I description", display_order=2)
+        self.construct_category(
+            name="I", description="I description", display_order=2)
         self.construct_category(name="E", description="E description")
 
-        rv = self.app.get('/api/category/root',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/category/root',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
 
@@ -603,9 +937,10 @@ class TestCase(unittest.TestCase):
 
     def test_category_has_links(self):
         self.construct_category()
-        rv = self.app.get('/api/category/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/category/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["_links"]["self"], '/api/category/1')
@@ -613,10 +948,12 @@ class TestCase(unittest.TestCase):
 
     def test_category_has_children(self):
         c1 = self.construct_category()
-        c2 = self.construct_category(name="I'm the kid", description="A Child Category", parent=c1)
-        rv = self.app.get('/api/category/1',
-                          follow_redirects=True,
-                          content_type="application/json")
+        c2 = self.construct_category(
+            name="I'm the kid", description="A Child Category", parent=c1)
+        rv = self.app.get(
+            '/api/category/1',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["children"][0]['id'], 2)
@@ -624,11 +961,16 @@ class TestCase(unittest.TestCase):
 
     def test_category_has_parents_and_that_parent_has_no_children(self):
         c1 = self.construct_category()
-        c2 = self.construct_category(name="I'm the kid", description="A Child Category", parent=c1)
-        c3 = self.construct_category(name="I'm the grand kid", description="A Child Category", parent=c2)
-        rv = self.app.get('/api/category/3',
-                          follow_redirects=True,
-                          content_type="application/json")
+        c2 = self.construct_category(
+            name="I'm the kid", description="A Child Category", parent=c1)
+        c3 = self.construct_category(
+            name="I'm the grand kid",
+            description="A Child Category",
+            parent=c2)
+        rv = self.app.get(
+            '/api/category/3',
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response["parent"]['id'], 2)
@@ -636,13 +978,21 @@ class TestCase(unittest.TestCase):
 
     def test_category_depth_is_limited(self):
         c1 = self.construct_category()
-        c2 = self.construct_category(name="I'm the kid", description="A Child Category", parent=c1)
-        c3 = self.construct_category(name="I'm the grand kid", description="A Child Category", parent=c2)
-        c4 = self.construct_category(name="I'm the great grand kid", description="A Child Category", parent=c3)
+        c2 = self.construct_category(
+            name="I'm the kid", description="A Child Category", parent=c1)
+        c3 = self.construct_category(
+            name="I'm the grand kid",
+            description="A Child Category",
+            parent=c2)
+        c4 = self.construct_category(
+            name="I'm the great grand kid",
+            description="A Child Category",
+            parent=c3)
 
-        rv = self.app.get('/api/category',
-                          follow_redirects=True,
-                          content_type="application/json")
+        rv = self.app.get(
+            '/api/category',
+            follow_redirects=True,
+            content_type="application/json")
 
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
@@ -659,8 +1009,12 @@ class TestCase(unittest.TestCase):
 
     def search(self, query):
         '''Executes a query, returning the resulting search results object.'''
-        rv = self.app.post('/api/search', data=json.dumps(query), follow_redirects=True,
-                           content_type="application/json", headers=self.logged_in_headers(),)
+        rv = self.app.post(
+            '/api/search',
+            data=json.dumps(query),
+            follow_redirects=True,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
 
@@ -672,13 +1026,12 @@ class TestCase(unittest.TestCase):
         search_results = self.search(world_query)
         self.assertEqual(len(search_results["resources"]), 0)
 
-        resource = self.construct_resource(name='space unicorn',
-                                           description="delivering rainbows")
+        resource = self.construct_resource(
+            name='space unicorn', description="delivering rainbows")
         elastic_index.add_resource(resource)
         search_results = self.search(rainbow_query)
         self.assertEqual(len(search_results["resources"]), 1)
-        self.assertEqual(search_results['resources'][0]['id'],
-                         resource.id)
+        self.assertEqual(search_results['resources'][0]['id'], resource.id)
         search_results = self.search(world_query)
         self.assertEqual(len(search_results["resources"]), 0)
 
@@ -689,8 +1042,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(search_results["resources"]), 0)
         search_results = self.search(world_query)
         self.assertEqual(len(search_results["resources"]), 1)
-        self.assertEqual(search_results['resources'][0]['id'],
-                         resource.id)
+        self.assertEqual(search_results['resources'][0]['id'], resource.id)
 
         elastic_index.remove_resource(resource)
         search_results = self.search(rainbow_query)
@@ -706,24 +1058,34 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(search_results["resources"]), 1)
 
     def test_search_unapproved_resource(self):
-        # Unapproved resources should only appear in search results for Admin users
-        resource = self.construct_resource(name="space kittens", approved="Unapproved")
-        self.index_resource(resource)
+        # Unapproved resources should only appear in
+        # search results for Admin users
+        r = self.construct_resource(
+            name="space kittens", approved="Unapproved")
+        self.index_resource(r)
         data = {'query': 'kittens', 'filters': []}
-        rv = self.app.post('/api/search', data=json.dumps(data), follow_redirects=True,
-                           content_type="application/json")
+        rv = self.app.post(
+            '/api/search',
+            data=json.dumps(data),
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         results = json.loads(rv.get_data(as_text=True))
         self.assertEqual(len(results["resources"]), 0)
-        rv = self.app.post('/api/search', data=json.dumps(data), follow_redirects=True,
-                           content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.post(
+            '/api/search',
+            data=json.dumps(data),
+            follow_redirects=True,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
         results = json.loads(rv.get_data(as_text=True))
         self.assertEqual(len(results["resources"]), 1)
 
     def test_search_resource_by_description(self):
-        resource = self.construct_resource(name="space kittens", description="Flight of the fur puff")
-        self.index_resource(resource)
+        r = self.construct_resource(
+            name="space kittens", description="Flight of the fur puff")
+        self.index_resource(r)
         data = {'query': 'fur puff', 'filters': []}
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
@@ -743,47 +1105,82 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(search_results["resources"]), 1)
 
     def test_search_filters(self):
-        resource = self.construct_resource(type="hgttg", description="There is a theory which states that if ever anyone discovers exactly what the Universe is for and why it is here, it will instantly disappear and be replaced by something even more bizarre and inexplicable. There is another theory which states that this has already happened.")
-        self.index_resource(resource)
+        r = self.construct_resource(
+            type="hgttg",
+            description="There is a theory which "
+            "states that if ever anyone discovers exactly what "
+            "the Universe is for and why it is here, it will "
+            "instantly disappear and be replaced by something "
+            "even more bizarre and inexplicable. There is another "
+            "theory which states that this has already happened.")
+        self.index_resource(r)
         data = {'query': '', 'filters': [{'field': 'Type', 'value': 'hgttg'}]}
 
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
 
     def test_search_filter_on_approval(self):
-        resource = self.construct_resource(type="Woods", description="A short trip on the river.", approved="Approved")
-        self.index_resource(resource)
-        data = {'query': '', 'filters': [{'field': 'Approved', 'value': "Approved"}]}
+        r = self.construct_resource(
+            type="Woods",
+            description="A short trip on the river.",
+            approved="Approved")
+        self.index_resource(r)
+        data = {
+            'query': '',
+            'filters': [{
+                'field': 'Approved',
+                'value': "Approved"
+            }]
+        }
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
 
     def test_search_facet_counts(self):
-        resource = self.construct_resource(type="hgttg", description="There is a theory which states that if ever anyone discovers exactly what the Universe is for and why it is here, it will instantly disappear and be replaced by something even more bizarre and inexplicable. There is another theory which states that this has already happened.")
-        resource2 = self.construct_resource(type="brazil", description="Information Transit got the wrong man. I got the *right* man. The wrong one was delivered to me as the right man, I accepted him on good faith as the right man. Was I wrong?")
-        self.index_resource(resource)
-        self.index_resource(resource2)
+        r1 = self.construct_resource(
+            type="hgttg",
+            description="There is a theory which states that if ever "
+            "anyone discovers exactly what the Universe is "
+            "for and why it is here, it will instantly "
+            "disappear and be replaced by something even more "
+            "bizarre and inexplicable. There is another "
+            "theory which states that this has already "
+            "happened.")
+        r2 = self.construct_resource(
+            type="brazil",
+            description="Information Transit got the wrong man. I got the "
+            "*right* man. The wrong one was delivered to me "
+            "as the right man, I accepted him on good faith "
+            "as the right man. Was I wrong?")
+        self.index_resource(r1)
+        self.index_resource(r2)
         data = {'query': ''}
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 2)
         self.assertTrue("facets" in search_results)
         self.assertEqual(3, len(search_results["facets"]))
         self.assertTrue("facetCounts" in search_results["facets"][0])
-        self.assertTrue("category" in search_results["facets"][0]["facetCounts"][0])
-        self.assertTrue("hit_count" in search_results["facets"][0]["facetCounts"][0])
-        self.assertTrue("is_selected" in search_results["facets"][0]["facetCounts"][0])
+        self.assertTrue(
+            "category" in search_results["facets"][0]["facetCounts"][0])
+        self.assertTrue(
+            "hit_count" in search_results["facets"][0]["facetCounts"][0])
+        self.assertTrue(
+            "is_selected" in search_results["facets"][0]["facetCounts"][0])
 
     def test_resource_add_search(self):
         data = {'query': "Flash Gordon", 'filters': []}
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 0)
 
-        resource = {'name' : "Flash Gordon's zippy ship",
-                    'description' : "Another thing. In a movie, or something."}
-        rv = self.app.post('/api/resource',
-                           data=json.dumps(resource),
-                           content_type="application/json",
-                           headers=self.logged_in_headers(),
-                           follow_redirects=True)
+        resource = {
+            'name': "Flash Gordon's zippy ship",
+            'description': "Another thing. In a movie, or something."
+        }
+        rv = self.app.post(
+            '/api/resource',
+            data=json.dumps(resource),
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
 
         search_results = self.search(data)
@@ -791,17 +1188,20 @@ class TestCase(unittest.TestCase):
 
     def test_resource_delete_search(self):
         data = {'query': "Flash Gordon", 'filters': []}
-        resource = {'name' : "Flash Gordon's zippy ship",
-                    'description' : "Another thing. In a movie, or something."}
+        resource = {
+            'name': "Flash Gordon's zippy ship",
+            'description': "Another thing. In a movie, or something."
+        }
 
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 0)
 
-        rv = self.app.post('/api/resource',
-                           data=json.dumps(resource),
-                           content_type="application/json",
-                           headers=self.logged_in_headers(),
-                           follow_redirects=True)
+        rv = self.app.post(
+            '/api/resource',
+            data=json.dumps(resource),
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         resource_id = response['id']
@@ -809,10 +1209,11 @@ class TestCase(unittest.TestCase):
         search_results = self.search(data)
         self.assertEqual(len(search_results["resources"]), 1)
 
-        rv = self.app.delete('/api/resource/{}'.format(resource_id),
-                             content_type="application/json",
-                             headers=self.logged_in_headers(),
-                             follow_redirects=True)
+        rv = self.app.delete(
+            '/api/resource/{}'.format(resource_id),
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
 
         search_results = self.search(data)
@@ -834,8 +1235,12 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(response['name'], "Flash Gordon's zappy raygun")
         response['name'] = "Flash Gordon's zorpy raygun"
-        rv = self.app.put('/api/resource/1', data=json.dumps(response), content_type="application/json",
-                          headers=self.logged_in_headers(), follow_redirects=True)
+        rv = self.app.put(
+            '/api/resource/1',
+            data=json.dumps(response),
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
 
         search_results = self.search(zappy_query)
@@ -844,18 +1249,28 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(search_results["resources"]), 1)
 
     def test_create_institution(self):
-        institution = {"name":"Ender's Academy for wayward space boys", "description":"A school, in outerspace, with weightless games"}
-        rv = self.app.post('/api/institution', data=json.dumps(institution), content_type="application/json")
+        institution = {
+            "name": "Ender's Academy for wayward space boys",
+            "description": "A school, in outerspace, with weightless games"
+        }
+        rv = self.app.post(
+            '/api/institution',
+            data=json.dumps(institution),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(response['name'], 'Ender\'s Academy for wayward space boys')
-        self.assertEqual(response['description'], 'A school, in outerspace, with weightless games')
+        self.assertEqual(response['name'],
+                         'Ender\'s Academy for wayward space boys')
+        self.assertEqual(response['description'],
+                         'A school, in outerspace, with weightless games')
         self.assertEqual(response['id'], 1)
-        self.assertIsNotNone(db.session.query(ThrivInstitution).filter_by(id=1).first())
+        self.assertIsNotNone(
+            db.session.query(ThrivInstitution).filter_by(id=1).first())
 
     def test_list_instititions(self):
         i1 = ThrivInstitution(name="Delmar's", description="autobody")
-        i2 = ThrivInstitution(name="News Leader", description="A once formidablele news source")
+        i2 = ThrivInstitution(
+            name="News Leader", description="A once formidable news source")
         db.session.add(i1)
         db.session.add(i2)
         db.session.commit()
@@ -865,34 +1280,55 @@ class TestCase(unittest.TestCase):
         self.assertEqual(2, len(response))
 
     def test_list_instititions_with_availability(self):
-        i1 = ThrivInstitution(name="Delmar's", description="autobody", hide_availability=True)
-        i2 = ThrivInstitution(name="News Leader", description="A once formidablele news source", hide_availability=False)
-        i3 = ThrivInstitution(name="Baja", description="Yum. Is it lunch time?")
+        i1 = ThrivInstitution(
+            name="Delmar's", description="autobody", hide_availability=True)
+        i2 = ThrivInstitution(
+            name="News Leader",
+            description="A once formidable news source",
+            hide_availability=False)
+        i3 = ThrivInstitution(
+            name="Baja", description="Yum. Is it lunch time?")
         db.session.add_all([i1, i2, i3])
         db.session.commit()
-        rv = self.app.get('/api/institution/availability', content_type="application/json")
+        rv = self.app.get(
+            '/api/institution/availability', content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(2, len(response))
 
     def test_delete_institution(self):
-        institution = {"name": "Ender's Academy for wayward space boys",
-                       "description": "A school, in outerspace, with weightless games"}
-        rv = self.app.post('/api/institution', data=json.dumps(institution), content_type="application/json")
+        institution = {
+            "name": "Ender's Academy for wayward space boys",
+            "description": "A school, in outerspace, with weightless games"
+        }
+        rv = self.app.post(
+            '/api/institution',
+            data=json.dumps(institution),
+            content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         rv = self.app.delete('/api/institution/%i' % response['id'])
         self.assertSuccess(rv)
-        self.assertEqual(0, db.session.query(ThrivInstitution).filter_by(id=1).count())
+        self.assertEqual(
+            0,
+            db.session.query(ThrivInstitution).filter_by(id=1).count())
 
     def test_modify_institution(self):
-        institution = {"name": "Ender's Academy for wayward space boys",
-                       "description": "A school, in outerspace, with weightless games"}
-        rv = self.app.post('/api/institution', data=json.dumps(institution), content_type="application/json")
+        institution = {
+            "name": "Ender's Academy for wayward space boys",
+            "description": "A school, in outerspace, with weightless games"
+        }
+        rv = self.app.post(
+            '/api/institution',
+            data=json.dumps(institution),
+            content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         response["name"] = "My little bronnie"
-        response["description"] = "A biopic on the best and brightest adults who are 'My Little Pony' fans."
-        rv = self.app.put('/api/institution/%i' % response['id'],
-                          data=json.dumps(response), content_type="application/json")
+        response["description"] = "A biopic on the best and brightest " \
+                                  "adults who are 'My Little Pony' fans."
+        rv = self.app.put(
+            '/api/institution/%i' % response['id'],
+            data=json.dumps(response),
+            content_type="application/json")
         self.assertSuccess(rv)
         rv = self.app.get('/api/institution/%i' % response["id"])
         response = json.loads(rv.get_data(as_text=True))
@@ -900,7 +1336,10 @@ class TestCase(unittest.TestCase):
 
     def test_create_type(self):
         type = {"name": "A typey typer type"}
-        rv = self.app.post('/api/type', data=json.dumps(type), content_type="application/json")
+        rv = self.app.post(
+            '/api/type',
+            data=json.dumps(type),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         response["name"] = "A typey typer type"
@@ -910,10 +1349,14 @@ class TestCase(unittest.TestCase):
         type = ThrivType(name="one way")
         db.session.add(type)
         db.session.commit()
-        rv = self.app.get('/api/type/%i' % type.id, content_type="application/json")
+        rv = self.app.get(
+            '/api/type/%i' % type.id, content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         response['name'] = "or another"
-        rv = self.app.put('/api/type/%i' % type.id, data=json.dumps(response), content_type="application/json")
+        rv = self.app.put(
+            '/api/type/%i' % type.id,
+            data=json.dumps(response),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         response["name"] = "or another"
@@ -923,7 +1366,8 @@ class TestCase(unittest.TestCase):
         db.session.add(type)
         db.session.commit()
         self.assertEqual(1, db.session.query(ThrivType).count())
-        rv = self.app.delete('/api/type/%i' % type.id, content_type="application/json")
+        rv = self.app.delete(
+            '/api/type/%i' % type.id, content_type="application/json")
         self.assertEqual(0, db.session.query(ThrivType).count())
 
     def test_list_types(self):
@@ -936,19 +1380,26 @@ class TestCase(unittest.TestCase):
         self.assertEqual(3, len(response))
 
     def test_add_file(self):
-        file = UploadedFile(file_name='happy_coconuts.svg', display_name='Happy Coconuts',
-                                date_modified=datetime.datetime.now(),
-                            md5="3399")
-        rv = self.app.post('/api/file', data=json.dumps(FileSchema().dump(file).data), content_type="application/json")
+        file = UploadedFile(
+            file_name='happy_coconuts.svg',
+            display_name='Happy Coconuts',
+            date_modified=datetime.datetime.now(),
+            md5="3399")
+        rv = self.app.post(
+            '/api/file',
+            data=json.dumps(FileSchema().dump(file).data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         file_id = response["id"]
-        raw_data = BytesIO(b"<svg xmlns=\"http://www.w3.org/2000/svg\"/>");
-        rv = self.app.put('/api/file/%i' % file_id,
-                          data=raw_data, content_type='image/svg')
+        raw_data = BytesIO(b"<svg xmlns=\"http://www.w3.org/2000/svg\"/>")
+        rv = self.app.put(
+            '/api/file/%i' % file_id, data=raw_data, content_type='image/svg')
         self.assertSuccess(rv)
         data = json.loads(rv.get_data(as_text=True))
-        self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/resource/attachment/%i.svg" % file_id, data["url"])
+        self.assertEqual(
+            "https://s3.amazonaws.com/edplatform-ithriv-test-bucket/"
+            "ithriv/resource/attachment/%i.svg" % file_id, data["url"])
         self.assertEqual('happy_coconuts.svg', data['file_name'])
         self.assertEqual('Happy Coconuts', data['display_name'])
         self.assertIsNotNone(data['date_modified'])
@@ -957,7 +1408,7 @@ class TestCase(unittest.TestCase):
         return data
 
     def test_remove_file(self):
-        file_data = self.test_add_file();
+        file_data = self.test_add_file()
         response = requests.get(file_data['url'])
         self.assertEqual(200, response.status_code)
         rv = self.app.delete('/api/file/%i' % file_data['id'])
@@ -969,26 +1420,40 @@ class TestCase(unittest.TestCase):
         r = self.construct_resource()
         file = self.test_add_file()
         file['resource_id'] = r.id
-        rv = self.app.put('/api/file/%i' % file['id'], data=json.dumps(file), content_type="application/json")
+        rv = self.app.put(
+            '/api/file/%i' % file['id'],
+            data=json.dumps(file),
+            content_type="application/json")
         self.assertSuccess(rv)
-        rv = self.app.get('/api/resource/%i' % r.id, content_type="application/json")
+        rv = self.app.get(
+            '/api/resource/%i' % r.id, content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(1, len(response['files']))
-        self.assertEqual("happy_coconuts.svg", response['files'][0]['file_name'])
+        self.assertEqual("happy_coconuts.svg",
+                         response['files'][0]['file_name'])
 
-    def addFile(self, file_name='happy_coconuts.svg', display_name='Happy Coconuts', md5="3399"):
-        file = UploadedFile(file_name=file_name, display_name=display_name,
-                                date_modified=datetime.datetime.now(),
-                            md5=md5)
-        rv = self.app.post('/api/file', data=json.dumps(FileSchema().dump(file).data), content_type="application/json")
+    def addFile(self,
+                file_name='happy_coconuts.svg',
+                display_name='Happy Coconuts',
+                md5="3399"):
+        file = UploadedFile(
+            file_name=file_name,
+            display_name=display_name,
+            date_modified=datetime.datetime.now(),
+            md5=md5)
+        rv = self.app.post(
+            '/api/file',
+            data=json.dumps(FileSchema().dump(file).data),
+            content_type="application/json")
         return rv
 
     def test_find_attachement_by_md5(self):
         file = self.addFile()
         file = self.addFile(md5='123412341234')
         file = self.addFile(md5='666666666666', display_name="Lots a 6s")
-        rv = self.app.get('/api/file?md5=666666666666', content_type="application/json")
+        rv = self.app.get(
+            '/api/file?md5=666666666666', content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(1, len(response))
@@ -1000,7 +1465,10 @@ class TestCase(unittest.TestCase):
         cr = ResourceCategory(resource=r, category=c)
         db.session.add(cr)
         db.session.commit()
-        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers = self.logged_in_headers())
+        rv = self.app.get(
+            '/api/category/%i/resource' % c.id,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(1, len(response))
@@ -1013,17 +1481,24 @@ class TestCase(unittest.TestCase):
         r = self.construct_resource()
         cr = ResourceCategory(resource=r, category=c)
         cr2 = ResourceCategory(resource=r, category=c2)
-        db.session.add_all([cr, cr2]);
-        db.session.commit();
-        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers=self.logged_in_headers())
+        db.session.add_all([cr, cr2])
+        db.session.commit()
+        rv = self.app.get(
+            '/api/category/%i/resource' % c.id,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(r.id, response[0]["id"])
-        self.assertEqual(2, len(response[0]["resource"]["resource_categories"]))
-        self.assertEqual("c1", response[0]["resource"]["resource_categories"][0]["category"]["name"])
+        self.assertEqual(2,
+                         len(response[0]["resource"]["resource_categories"]))
+        self.assertEqual(
+            "c1", response[0]["resource"]["resource_categories"][0]["category"]
+            ["name"])
 
     def test_get_resource_by_category_sorts_by_favorite_count(self):
-        u = User(id=6, display_name="Jar Jar Binks", email="jjb@senate.galaxy.gov")
+        u = User(
+            id=6, display_name="Jar Jar Binks", email="jjb@senate.galaxy.gov")
         c = self.construct_category(name="c1")
         r1 = self.construct_resource(name="r1")
         r2 = self.construct_resource(name="r2")
@@ -1033,7 +1508,10 @@ class TestCase(unittest.TestCase):
         db.session.commit()
 
         # Should be sorted by name before any resources are favorited
-        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.get(
+            '/api/category/%i/resource' % c.id,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual("r1", response[0]["resource"]["name"])
@@ -1042,7 +1520,10 @@ class TestCase(unittest.TestCase):
         favorite = self.construct_favorite(user=u, resource=r2)
         self.assertEqual(r2.id, favorite.resource_id)
 
-        rv = self.app.get('/api/category/%i/resource' % c.id, content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.get(
+            '/api/category/%i/resource' % c.id,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual("r2", response[0]["resource"]["name"])
@@ -1053,7 +1534,8 @@ class TestCase(unittest.TestCase):
         cr = ResourceCategory(resource=r, category=c)
         db.session.add(cr)
         db.session.commit()
-        rv = self.app.get('/api/category/%i' % c.id, content_type="application/json")
+        rv = self.app.get(
+            '/api/category/%i' % c.id, content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(1, response["resource_count"])
@@ -1064,7 +1546,9 @@ class TestCase(unittest.TestCase):
         cr = ResourceCategory(resource=r, category=c)
         db.session.add(cr)
         db.session.commit()
-        rv = self.app.get('/api/resource/%i/category' % r.id, content_type="application/json")
+        rv = self.app.get(
+            '/api/resource/%i/category' % r.id,
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(1, len(response))
@@ -1077,7 +1561,10 @@ class TestCase(unittest.TestCase):
 
         rc_data = {"resource_id": r.id, "category_id": c.id}
 
-        rv = self.app.post('/api/resource_category', data=json.dumps(rc_data), content_type="application/json")
+        rv = self.app.post(
+            '/api/resource_category',
+            data=json.dumps(rc_data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(c.id, response["category_id"])
@@ -1090,19 +1577,29 @@ class TestCase(unittest.TestCase):
         r = self.construct_resource()
 
         rc_data = [
-            {"category_id": c1.id},
-            {"category_id": c2.id},
-            {"category_id": c3.id},
+            {
+                "category_id": c1.id
+            },
+            {
+                "category_id": c2.id
+            },
+            {
+                "category_id": c3.id
+            },
         ]
-        rv = self.app.post('/api/resource/%i/category' % r.id, data=json.dumps(rc_data), content_type="application/json")
+        rv = self.app.post(
+            '/api/resource/%i/category' % r.id,
+            data=json.dumps(rc_data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(3, len(response))
 
-        rc_data = [
-            {"category_id": c1.id}
-        ]
-        rv = self.app.post('/api/resource/%i/category' % r.id, data=json.dumps(rc_data), content_type="application/json")
+        rc_data = [{"category_id": c1.id}]
+        rv = self.app.post(
+            '/api/resource/%i/category' % r.id,
+            data=json.dumps(rc_data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(1, len(response))
@@ -1111,18 +1608,27 @@ class TestCase(unittest.TestCase):
         self.test_add_category_to_resource()
         rv = self.app.delete('/api/resource_category/%i' % 1)
         self.assertSuccess(rv)
-        rv = self.app.get('/api/resource/%i/category' % 1, content_type="application/json")
+        rv = self.app.get(
+            '/api/resource/%i/category' % 1, content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(0, len(response))
 
     def test_add_availability(self):
         r = self.construct_resource()
-        institution = ThrivInstitution(id=1, name="Delmar's", description="autobody")
+        institution = ThrivInstitution(
+            id=1, name="Delmar's", description="autobody")
 
-        availability_data = {"resource_id": r.id, "institution_id": institution.id, "available": True}
+        availability_data = {
+            "resource_id": r.id,
+            "institution_id": institution.id,
+            "available": True
+        }
 
-        rv = self.app.post('/api/availability', data=json.dumps(availability_data), content_type="application/json")
+        rv = self.app.post(
+            '/api/availability',
+            data=json.dumps(availability_data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(institution.id, response["institution_id"])
@@ -1131,11 +1637,19 @@ class TestCase(unittest.TestCase):
 
     def test_add_availability_via_resource(self):
         r = self.construct_resource()
-        institution = ThrivInstitution(id=1, name="Delmar's", description="autobody")
+        institution = ThrivInstitution(
+            id=1, name="Delmar's", description="autobody")
 
-        availability_data = [{"resource_id": r.id, "institution_id": institution.id, "available": True}]
+        availability_data = [{
+            "resource_id": r.id,
+            "institution_id": institution.id,
+            "available": True
+        }]
 
-        rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
+        rv = self.app.post(
+            '/api/resource/%i/availability' % r.id,
+            data=json.dumps(availability_data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(institution.id, response[0]["institution_id"])
@@ -1144,51 +1658,80 @@ class TestCase(unittest.TestCase):
 
     def test_remove_availability(self):
         self.test_add_availability()
-        rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
+        rv = self.app.get(
+            '/api/availability/%i' % 1, content_type="application/json")
         self.assertSuccess(rv)
         rv = self.app.delete('/api/availability/%i' % 1)
         self.assertSuccess(rv)
-        rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
+        rv = self.app.get(
+            '/api/availability/%i' % 1, content_type="application/json")
         self.assertEqual(404, rv.status_code)
 
     def test_set_all_availability(self):
         r = self.construct_resource()
         i1 = ThrivInstitution(id=1, name="Delmar's", description="autobody")
-        i2 = ThrivInstitution(id=2, name="Frank's", description="printers n stuff")
-        i3 = ThrivInstitution(id=3, name="Rick's", description="custom cabinets")
+        i2 = ThrivInstitution(
+            id=2, name="Frank's", description="printers n stuff")
+        i3 = ThrivInstitution(
+            id=3, name="Rick's", description="custom cabinets")
 
-        availability_data = [{"institution_id": i1.id, "resource_id": r.id, "available": True},
-                             {"institution_id": i2.id, "resource_id": r.id, "available": True},
-                             {"institution_id": i3.id, "resource_id": r.id, "available": True}]
+        availability_data = [{
+            "institution_id": i1.id,
+            "resource_id": r.id,
+            "available": True
+        }, {
+            "institution_id": i2.id,
+            "resource_id": r.id,
+            "available": True
+        }, {
+            "institution_id": i3.id,
+            "resource_id": r.id,
+            "available": True
+        }]
 
-        rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
+        rv = self.app.post(
+            '/api/resource/%i/availability' % r.id,
+            data=json.dumps(availability_data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(3, len(response))
 
-        availability_data = [{"institution_id": i2.id, "resource_id": r.id, "available": True}]
+        availability_data = [{
+            "institution_id": i2.id,
+            "resource_id": r.id,
+            "available": True
+        }]
 
-        rv = self.app.post('/api/resource/%i/availability' % r.id, data=json.dumps(availability_data), content_type="application/json")
+        rv = self.app.post(
+            '/api/resource/%i/availability' % r.id,
+            data=json.dumps(availability_data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(1, len(response))
         self.assertEqual(2, response[0]["institution_id"])
 
-        rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
+        rv = self.app.get(
+            '/api/availability/%i' % 1, content_type="application/json")
         self.assertSuccess(rv)
         rv = self.app.delete('/api/availability/%i' % 1)
         self.assertSuccess(rv)
-        rv = self.app.get('/api/availability/%i' % 1, content_type="application/json")
+        rv = self.app.get(
+            '/api/availability/%i' % 1, content_type="application/json")
         self.assertEqual(404, rv.status_code)
 
     def test_add_favorite(self):
-        self.createTestUsers()
+        self.construct_various_users()
 
         r = self.construct_resource()
         u = User.query.filter_by(eppn=self.test_eppn).first()
         favorite_data = {"resource_id": r.id, "user_id": u.id}
 
-        rv = self.app.post('/api/favorite', data=json.dumps(favorite_data), content_type="application/json")
+        rv = self.app.post(
+            '/api/favorite',
+            data=json.dumps(favorite_data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(u.id, response["user_id"])
@@ -1197,11 +1740,13 @@ class TestCase(unittest.TestCase):
 
     def test_remove_favorite(self):
         self.test_add_favorite()
-        rv = self.app.get('/api/favorite/%i' % 1, content_type="application/json")
+        rv = self.app.get(
+            '/api/favorite/%i' % 1, content_type="application/json")
         self.assertSuccess(rv)
         rv = self.app.delete('/api/favorite/%i' % 1)
         self.assertSuccess(rv)
-        rv = self.app.get('/api/favorite/%i' % 1, content_type="application/json")
+        rv = self.app.get(
+            '/api/favorite/%i' % 1, content_type="application/json")
         self.assertEqual(404, rv.status_code)
 
     def test_delete_resource_deletes_favorite(self):
@@ -1210,12 +1755,18 @@ class TestCase(unittest.TestCase):
 
         favorite_data = {"resource_id": r.id, "user_id": u.id}
 
-        rv = self.app.post('/api/favorite', data=json.dumps(favorite_data), content_type="application/json")
+        rv = self.app.post(
+            '/api/favorite',
+            data=json.dumps(favorite_data),
+            content_type="application/json")
         self.assertSuccess(rv)
         self.assertEqual(1, len(r.favorites))
 
-        rv = self.app.delete('/api/resource/1', content_type="application/json", headers=self.logged_in_headers(),
-                             follow_redirects=True)
+        rv = self.app.delete(
+            '/api/resource/1',
+            content_type="application/json",
+            headers=self.logged_in_headers(),
+            follow_redirects=True)
         self.assertSuccess(rv)
 
         rv = self.app.get('/api/resource/1', content_type="application/json")
@@ -1228,43 +1779,79 @@ class TestCase(unittest.TestCase):
         r1 = self.construct_resource(name="Birdseed sale at Hooper's")
         r2 = self.construct_resource(name="Slimy the worm's flying school")
         r3 = self.construct_resource(name="Oscar's Trash Orchestra")
-        u1 = User(id=1, eppn=self.test_eppn, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
-        u2 = User(id=2, eppn=self.admin_eppn, display_name="Big Bird", email="bigbird@sesamestreet.com")
+        u1 = User(
+            id=1,
+            eppn=self.test_eppn,
+            display_name="Oscar the Grouch",
+            email="oscar@sesamestreet.com")
+        u2 = User(
+            id=2,
+            eppn=self.admin_eppn,
+            display_name="Big Bird",
+            email="bigbird@sesamestreet.com")
 
         db.session.commit()
 
         favorite_data_u1 = [
-            {"resource_id": r2.id},
-            {"resource_id": r3.id},
+            {
+                "resource_id": r2.id
+            },
+            {
+                "resource_id": r3.id
+            },
         ]
 
         favorite_data_u2 = [
-            {"resource_id": r1.id},
-            {"resource_id": r2.id},
-            {"resource_id": r3.id},
+            {
+                "resource_id": r1.id
+            },
+            {
+                "resource_id": r2.id
+            },
+            {
+                "resource_id": r3.id
+            },
         ]
 
-        # Creating Favorites and testing that the correct amount show up for the correct user
-        rv = self.app.post('/api/session/favorite', data=json.dumps(favorite_data_u1),
-                           content_type="application/json", headers=self.logged_in_headers(user=u1), follow_redirects=True)
+        # Creating Favorites and testing that the correct amount
+        # show up for the correct user
+        rv = self.app.post(
+            '/api/session/favorite',
+            data=json.dumps(favorite_data_u1),
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u1),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(2, len(response))
 
-        rv = self.app.post('/api/session/favorite', data=json.dumps(favorite_data_u2),
-                           content_type="application/json", headers=self.logged_in_headers(user=u2), follow_redirects=True)
+        rv = self.app.post(
+            '/api/session/favorite',
+            data=json.dumps(favorite_data_u2),
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u2),
+            follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(3, len(response))
 
         # Testing to see that favorites are not viewable when logged out
-        rv = self.app.get('/api/session/favorite', content_type="application/json")
+        rv = self.app.get(
+            '/api/session/favorite', content_type="application/json")
         self.assertEqual(401, rv.status_code)
 
     def test_create_category(self):
-        c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!",
-             "color": "#000", "brief_description":"Funky Bowls!", "image":"image.png"}
-        rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
+        c = {
+            "name": "Old bowls",
+            "description": "Funky bowls of yuck still on my desk. Ews!",
+            "color": "#000",
+            "brief_description": "Funky Bowls!",
+            "image": "image.png"
+        }
+        rv = self.app.post(
+            '/api/category',
+            data=json.dumps(c),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(c["name"], response["name"])
@@ -1274,11 +1861,19 @@ class TestCase(unittest.TestCase):
         self.assertEqual(c["image"], response["image"])
 
     def test_create_child_category(self):
-        parent = Category(name= "Desk Stuffs", description = "The many stuffs on my desk")
+        parent = Category(
+            name="Desk Stuffs", description="The many stuffs on my desk")
         db.session.add(parent)
         db.session.commit()
-        c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!", "parent_id": parent.id}
-        rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
+        c = {
+            "name": "Old bowls",
+            "description": "Funky bowls of yuck still on my desk. Ews!",
+            "parent_id": parent.id
+        }
+        rv = self.app.post(
+            '/api/category',
+            data=json.dumps(c),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(parent.id, response["parent"]["id"])
@@ -1286,39 +1881,66 @@ class TestCase(unittest.TestCase):
         self.assertEqual(1, response["level"])
 
     def test_update_category(self):
-        c = Category(name="Desk Stuffs",
-                     description="The many stuffs on my desk",
-                     color="#ABC222")
+        c = Category(
+            name="Desk Stuffs",
+            description="The many stuffs on my desk",
+            color="#ABC222")
         db.session.add(c)
         db.session.commit()
-        c.description="A new better description of the crap all over my desk right now.  It's a mess."
-        rv = self.app.put('/api/category/%i' % c.id, data=json.dumps(CategorySchema().dump(c).data), content_type="application/json")
+        c.description = "A new better description of the crap all over my " \
+                        "desk right now.  It's a mess."
+        rv = self.app.put(
+            '/api/category/%i' % c.id,
+            data=json.dumps(CategorySchema().dump(c).data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(c.description, response["description"])
 
     def test_category_has_parents_color_if_not_set(self):
-        parent = Category(name= "Beer", description = "There are lots of types of beer.", color="#A52A2A")
+        parent = Category(
+            name="Beer",
+            description="There are lots of types of beer.",
+            color="#A52A2A")
         db.session.add(parent)
         db.session.commit()
-        c = {"name":"Old bowls", "description":"Funky bowls of yuck still on my desk. Ews!", "parent_id": parent.id}
-        rv = self.app.post('/api/category', data=json.dumps(c), content_type="application/json")
+        c = {
+            "name": "Old bowls",
+            "description": "Funky bowls of yuck still on my desk. Ews!",
+            "parent_id": parent.id
+        }
+        rv = self.app.post(
+            '/api/category',
+            data=json.dumps(c),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual("#A52A2A", response["color"])
 
     def test_category_has_ordered_children(self):
-        parent = Category(name= "Beer", description = "There are lots of types of beer.", color="#A52A2A")
-        c1 = Category(name= "Zinger", description = "Orange flavoered crap beer, served with shame and an unbrella",
-                      parent=parent)
-        c2 = Category(name= "Ale", description = "Includes the Indian Pale Ale, which comes in 120,000 different "
-                                                 "varieties now.", parent=parent)
-        c3 = Category(name= "Hefeweizen", description = "Smells of bananas, best drunk in a German garden",
-                      parent=parent)
+        parent = Category(
+            name="Beer",
+            description="There are lots of types of beer.",
+            color="#A52A2A")
+        c1 = Category(
+            name="Zinger",
+            description="Orange flavoered crap beer, served with shame "
+            "and an umbrella",
+            parent=parent)
+        c2 = Category(
+            name="Ale",
+            description="Includes the Indian Pale Ale, which comes in "
+            "120,000 different varieties now.",
+            parent=parent)
+        c3 = Category(
+            name="Hefeweizen",
+            description="Smells of bananas, best drunk in a German garden",
+            parent=parent)
 
         db.session.add_all([parent, c1, c2, c3])
         db.session.commit()
-        rv = self.app.get('/api/category/%i' % parent.id, content_type="application/json")
+        rv = self.app.get(
+            '/api/category/%i' % parent.id, content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(3, len(response["children"]))
@@ -1343,35 +1965,45 @@ class TestCase(unittest.TestCase):
         db.session.add(i)
         db.session.commit()
         i.name = "Happier Coconuts"
-        rv = self.app.put('/api/icon/%i' % i.id, data=json.dumps(IconSchema().dump(i).data), content_type="application/json")
+        rv = self.app.put(
+            '/api/icon/%i' % i.id,
+            data=json.dumps(IconSchema().dump(i).data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual("Happier Coconuts", i.name)
 
     def test_upload_icon(self):
         i = {"name": "Happy Coconuts"}
-        rv = self.app.post('/api/icon', data=json.dumps(i), content_type="application/json")
+        rv = self.app.post(
+            '/api/icon', data=json.dumps(i), content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         icon_id = response["id"]
 
-        rv = self.app.put('/api/icon/%i' % icon_id,
-                          data=dict(
-                              image=(BytesIO(b"hi everyone"), 'test.svg'),
-                          ))
+        rv = self.app.put(
+            '/api/icon/%i' % icon_id,
+            data=dict(image=(BytesIO(b"hi everyone"), 'test.svg'), ))
         self.assertSuccess(rv)
         data = json.loads(rv.get_data(as_text=True))
-        self.assertEqual("https://s3.amazonaws.com/edplatform-ithriv-test-bucket/ithriv/icon/%i.svg" % icon_id, data["url"])
+        self.assertEqual(
+            "https://s3.amazonaws.com/edplatform-ithriv-test-bucket/"
+            "ithriv/icon/%i.svg" % icon_id, data["url"])
 
     def test_set_category_icon(self):
-        category = Category(name="City Museum", description="A wickedly cool amazing place in St Louis",
-                            color="blue")
+        category = Category(
+            name="City Museum",
+            description="A wickedly cool amazing place in St Louis",
+            color="blue")
         db.session.add(category)
         icon = Icon(name="Cool Places")
         db.session.add(icon)
         db.session.commit()
         category.icon_id = icon.id
-        rv = self.app.post('/api/category', data=json.dumps(CategorySchema().dump(category).data), content_type="application/json")
+        rv = self.app.post(
+            '/api/category',
+            data=json.dumps(CategorySchema().dump(category).data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(icon.id, response["icon_id"])
@@ -1384,35 +2016,56 @@ class TestCase(unittest.TestCase):
         db.session.add(icon)
         db.session.commit()
         thrivtype.icon_id = icon.id
-        rv = self.app.post('/api/category', data=json.dumps(ThrivTypeSchema().dump(thrivtype).data), content_type="application/json")
+        rv = self.app.post(
+            '/api/category',
+            data=json.dumps(ThrivTypeSchema().dump(thrivtype).data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(icon.id, response["icon_id"])
         self.assertEqual("Cool Places", response["icon"]["name"])
 
     def logged_in_headers(self, user=None):
+
+        # If no user is provided, generate a dummy Admin user
         if not user:
-            eppn = self.test_eppn
-            headers = {'eppn': eppn, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
-        else:
-            eppn = user.eppn
-            headers = {'eppn': eppn, 'givenName': user.display_name, 'mail': user.email}
+            user = User(
+                id=7,
+                eppn=self.admin_eppn,
+                display_name="Admin",
+                email=self.admin_eppn,
+                role="Admin")
 
-        rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
-                          content_type="application/json")
-        participant = User.query.filter_by(eppn=eppn).first()
+        # Add institution if it's not already in database
+        domain = user.email.split("@")[1]
+        institution = self.construct_institution(name=domain, domain=domain)
 
-        if not participant:
-            participant = User(id=7, eppn=eppn, display_name="Rey", email="rey@jakkujunk.com")
+        # Add user if it's not already in database
+        if user.eppn:
+            existing_user = User.query.filter_by(eppn=user.eppn).first()
+        if not existing_user and user.email:
+            existing_user = User.query.filter_by(email=user.email).first()
 
-        if user:
-            participant.role = user.role
-        else:
-            participant.role = "Admin"
-        db.session.add(participant)
-        db.session.commit()
+        if not existing_user:
+            user.institution_id = institution.id
+            db.session.add(user)
+            db.session.commit()
 
-        return dict(Authorization='Bearer ' + participant.encode_auth_token().decode())
+        headers = {
+            'eppn': user.eppn,
+            'givenName': user.display_name,
+            'mail': user.email
+        }
+
+        rv = self.app.get(
+            "/api/login",
+            headers=headers,
+            follow_redirects=True,
+            content_type="application/json")
+
+        db_user = User.query.filter_by(eppn=user.eppn).first()
+        return dict(
+            Authorization='Bearer ' + db_user.encode_auth_token().decode())
 
     def test_create_user_with_password(self):
         data = {
@@ -1421,26 +2074,36 @@ class TestCase(unittest.TestCase):
             "email": "tyrion@got.com",
             "role": "User"
         }
-        rv = self.app.post('/api/user', data=json.dumps(data), follow_redirects=True, headers=self.logged_in_headers(),
-                           content_type="application/json")
+        rv = self.app.post(
+            '/api/user',
+            data=json.dumps(data),
+            follow_redirects=True,
+            headers=self.logged_in_headers(),
+            content_type="application/json")
         self.assertSuccess(rv)
         user = User.query.filter_by(eppn=data["eppn"]).first()
         user.password = "peterpass"
         db.session.add(user)
         db.session.commit()
 
-        rv = self.app.get('/api/user/%i' % user.id, content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.get(
+            '/api/user/%i' % user.id,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual("Peter Dinklage", response["display_name"])
         self.assertEqual("tyrion@got.com", response["email"])
         self.assertEqual("User", response["role"])
         self.assertEqual(True, user.is_correct_password("peterpass"))
-        return user;
+        return user
 
     def test_sso_login_sets_institution_to_uva_correctly(self):
         inst_obj = ThrivInstitution(name="UVA", domain='virginia.edu')
-        db.session.add(inst_obj);
-        user = User(eppn="dhf8r@virginia.edu", display_name='Dan Funk', email='dhf8r@virginia.edu')
+        db.session.add(inst_obj)
+        user = User(
+            eppn="dhf8r@virginia.edu",
+            display_name='Dan Funk',
+            email='dhf8r@virginia.edu')
         self.logged_in_headers(user)
         dbu = User.query.filter_by(eppn='dhf8r@virginia.edu').first()
         self.assertIsNotNone(dbu)
@@ -1449,28 +2112,38 @@ class TestCase(unittest.TestCase):
 
     def test_sso_login_with_existing_email_address_doesnt_bomb_out(self):
         # There is an existing user in the database, but it has no eppn.
-        user = User(display_name='Engelbert Humperdinck', email='ehb11@virginia.edu')
+        user = User(
+            display_name='Engelbert Humperdinck', email='ehb11@virginia.edu')
         db.session.add(user)
         db.session.commit()
-        # Log in via sso as a user with an eppn that matches an existing users email address.
-        user2 = User(eppn="ehb11@virginia.edu", display_name='Engelbert Humperdinck', email='ehb11@virginia.edu')
-        self.logged_in_headers(user2);
-        # No errors occur when this user logs in, and we only have one account with that email address.
-        self.assertEqual(1, len(User.query.filter(User.email == 'ehb11@virginia.edu').all()));
-
+        # Log in via sso as a user with an eppn that matches an
+        # existing users email address.
+        user2 = User(
+            eppn="ehb11@virginia.edu",
+            display_name='Engelbert Humperdinck',
+            email='ehb11@virginia.edu')
+        self.logged_in_headers(user=user2)
+        # No errors occur when this user logs in, and we only have one
+        # account with that email address.
+        self.assertEqual(
+            1, len(
+                User.query.filter(User.email == 'ehb11@virginia.edu').all()))
 
     def test_login_user(self):
         user = self.test_create_user_with_password()
-        data = {
-            "email": "tyrion@got.com",
-            "password": "peterpass"
-        }
+        data = {"email": "tyrion@got.com", "password": "peterpass"}
         # Login shouldn't work with email not yet verified
-        rv = self.app.post('/api/login_password', data=json.dumps(data), content_type="application/json")
+        rv = self.app.post(
+            '/api/login_password',
+            data=json.dumps(data),
+            content_type="application/json")
         self.assertEqual(400, rv.status_code)
 
         user.email_verified = True
-        rv = self.app.post('/api/login_password', data=json.dumps(data), content_type="application/json")
+        rv = self.app.post(
+            '/api/login_password',
+            data=json.dumps(data),
+            content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertIsNotNone(response["token"])
@@ -1479,32 +2152,48 @@ class TestCase(unittest.TestCase):
         rv = self.app.get('/api/user')
         self.assertEqual(rv.status, "401 UNAUTHORIZED")
 
-        rv = self.app.get('/api/user', content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.get(
+            '/api/user',
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
 
     def test_admin_update_user(self):
         user = self.test_create_user_with_password()
         user.name = "The Artist Formerly Known As Prince"
-        rv = self.app.put('/api/user/%i' % user.id, data=json.dumps(UserSchema().dump(user).data),
-                          content_type="application/json")
+        rv = self.app.put(
+            '/api/user/%i' % user.id,
+            data=json.dumps(UserSchema().dump(user).data),
+            content_type="application/json")
         self.assertEqual(rv.status, "401 UNAUTHORIZED")
 
-        rv = self.app.put('/api/user/%i' % user.id, data=json.dumps(UserSchema().dump(user).data),
-                          content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.put(
+            '/api/user/%i' % user.id,
+            data=json.dumps(UserSchema().dump(user).data),
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
 
     def test_admin_delete_user(self):
         user = self.test_create_user_with_password()
-        rv = self.app.delete('/api/user/%i' % user.id, content_type="application/json")
+        rv = self.app.delete(
+            '/api/user/%i' % user.id, content_type="application/json")
         self.assertEqual(rv.status, "401 UNAUTHORIZED")
 
-        rv = self.app.delete('/api/user/%i' % user.id, content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.delete(
+            '/api/user/%i' % user.id,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
 
     def decode(self, encoded_words):
-        """Useful for checking the content of email messages (which we store in an array for testing"""
+        """
+        Useful for checking the content of email messages
+        (which we store in an array for testing)
+        """
         encoded_word_regex = r'=\?{1}(.+)\?{1}([b|q])\?{1}(.+)\?{1}='
-        charset, encoding, encoded_text = re.match(encoded_word_regex, encoded_words).groups()
+        charset, encoding, encoded_text = re.match(encoded_word_regex,
+                                                   encoded_words).groups()
         if encoding is 'b':
             byte_string = base64.b64decode(encoded_text)
         elif encoding is 'q':
@@ -1517,7 +2206,8 @@ class TestCase(unittest.TestCase):
         message_count = len(TEST_MESSAGES)
         self.test_create_user_with_password()
         self.assertGreater(len(TEST_MESSAGES), message_count)
-        self.assertEqual("iThriv: Confirm Email", self.decode(TEST_MESSAGES[-1]['subject']))
+        self.assertEqual("iThriv: Confirm Email",
+                         self.decode(TEST_MESSAGES[-1]['subject']))
 
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
@@ -1525,117 +2215,144 @@ class TestCase(unittest.TestCase):
     def test_forgot_password_sends_email(self):
         user = self.test_create_user_with_password()
         message_count = len(TEST_MESSAGES)
-        data = {
-            "email": user.email
-        }
-        rv = self.app.post('/api/forgot_password', data=json.dumps(data), content_type="application/json")
+        data = {"email": user.email}
+        rv = self.app.post(
+            '/api/forgot_password',
+            data=json.dumps(data),
+            content_type="application/json")
         self.assertSuccess(rv)
         self.assertGreater(len(TEST_MESSAGES), message_count)
-        self.assertEqual("iThriv: Password Reset Email", self.decode(TEST_MESSAGES[-1]['subject']))
+        self.assertEqual("iThriv: Password Reset Email",
+                         self.decode(TEST_MESSAGES[-1]['subject']))
 
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
 
     def test_consult_request_sends_email(self):
-        # This test will send two emails. One confirming that the user is created:
+        # This test will send two emails. One confirming
+        # that the user is created:
         user = self.test_create_user_with_password()
         message_count = len(TEST_MESSAGES)
-        data = {
-            "user_id": user.id
-        }
+        data = {"user_id": user.id}
         # ...And a second email requesting the consult:
-        rv = self.app.post('/api/consult_request', data=json.dumps(data), headers=self.logged_in_headers(user),
-                           content_type="application/json")
+        rv = self.app.post(
+            '/api/consult_request',
+            data=json.dumps(data),
+            headers=self.logged_in_headers(user),
+            content_type="application/json")
         self.assertSuccess(rv)
         self.assertGreater(len(TEST_MESSAGES), message_count)
-        self.assertEqual("iThriv: Consult Request", self.decode(TEST_MESSAGES[-1]['subject']))
+        self.assertEqual("iThriv: Consult Request",
+                         self.decode(TEST_MESSAGES[-1]['subject']))
 
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
 
-
     def test_approval_request_sends_email(self):
         # This test will send three emails.
         # 1. First email confirms that the user is created:
-        user = self.test_create_user_with_password()
-
+        user = self.construct_user()
+        admin_user = self.construct_admin_user()
         message_count = len(TEST_MESSAGES)
 
         # Create the resource
         resource = self.construct_resource()
 
-        data = {
-            "user_id": user.id,
-            "resource_id": resource.id
-        }
+        data = {"user_id": user.id, "resource_id": resource.id}
 
         # Request approval
-        rv = self.app.post('/api/approval_request', data=json.dumps(data), headers=self.logged_in_headers(),
-                           content_type="application/json")
+        rv = self.app.post(
+            '/api/approval_request',
+            data=json.dumps(data),
+            headers=self.logged_in_headers(user=user),
+            content_type="application/json")
         self.assertSuccess(rv)
         self.assertGreater(len(TEST_MESSAGES), message_count)
         logs = EmailLog.query.all()
 
         # 2. Second email goes to the admin requesting approval:
-        self.assertEqual("iThriv: Resource Approval Request", self.decode(TEST_MESSAGES[-2]['Subject']))
-        self.assertEqual(self.test_eppn, TEST_MESSAGES[-2]['To'])
+        self.assertEqual("iThriv: Resource Approval Request",
+                         self.decode(TEST_MESSAGES[-2]['Subject']))
+        self.assertEqual(admin_user.email, TEST_MESSAGES[-2]['To'])
         self.assertIsNotNone(logs[-2].tracking_code)
 
-        # 3. Third email goes to the user confirming receipt of the approval request:
-        self.assertEqual("iThriv: Resource Approval Request Confirmed", self.decode(TEST_MESSAGES[-1]['Subject']))
+        # 3. Third email goes to the user confirming
+        # receipt of the approval request:
+        self.assertEqual("iThriv: Resource Approval Request Confirmed",
+                         self.decode(TEST_MESSAGES[-1]['Subject']))
         self.assertEqual(user.email, TEST_MESSAGES[-1]['To'])
         self.assertIsNotNone(logs[-1].tracking_code)
 
     def test_get_current_participant(self):
         """ Test for the current participant status """
         # Create the user
-        headers = {'eppn': self.test_eppn, 'givenName': 'Daniel', 'mail': 'dhf8r@virginia.edu'}
-        rv = self.app.get("/api/login", headers=headers, follow_redirects=True,
-                          content_type="application/json")
-        # Don't check success, login does a redirect to the front end that might not be running.
+        headers = {
+            'eppn': self.test_eppn,
+            'givenName': 'Daniel',
+            'mail': 'dhf8r@virginia.edu'
+        }
+        rv = self.app.get(
+            "/api/login",
+            headers=headers,
+            follow_redirects=True,
+            content_type="application/json")
+        # Don't check success, login does a redirect to the
+        # front end that might not be running.
         # self.assert_success(rv)
 
         user = User.query.filter_by(eppn=self.test_eppn).first()
 
         # Now get the user back.
-        response = self.app.get('/api/session', headers=dict(
-            Authorization='Bearer ' +
-                          user.encode_auth_token().decode()
-        )
-                                )
+        response = self.app.get(
+            '/api/session',
+            headers=dict(
+                Authorization='Bearer ' + user.encode_auth_token().decode()))
         self.assertSuccess(response)
         return json.loads(response.data.decode())
 
     def searchUsers(self, query):
         '''Executes a query, returning the resulting search results object.'''
-        rv = self.app.get('/api/user', query_string=query, follow_redirects=True,
-                          content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.get(
+            '/api/user',
+            query_string=query,
+            follow_redirects=True,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
 
-    def createTestUsers(self):
-        u1 = User(id=1, eppn=self.test_eppn, display_name="Oscar the Grouch", email="oscar@sesamestreet.com")
-        u2 = User(id=2, eppn=self.admin_eppn, display_name="Big Bird", email="bigbird@sesamestreet.com")
-        u3 = User(id=3, eppn="stuff123@vt.edu", display_name="Elmo", email="elmo@sesamestreet.com")
-        db.session.add_all([u1, u2, u3])
-        db.session.commit()
-
     def test_find_users_respects_pageSize(self):
-        self.createTestUsers()
+        self.construct_various_users()
 
-        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '1'}
+        query = {
+            'filter': '',
+            'sortOrder': 'asc',
+            'pageNumber': '0',
+            'pageSize': '1'
+        }
         response = self.searchUsers(query)
         self.assertEqual(1, len(response['items']))
 
-        query = {'filter' : '', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '2'}
+        query = {
+            'filter': '',
+            'sortOrder': 'asc',
+            'pageNumber': '0',
+            'pageSize': '2'
+        }
         response = self.searchUsers(query)
         self.assertEqual(2, len(response['items']))
 
     def test_find_users_respects_pageNumber(self):
-        self.createTestUsers()
+        self.construct_various_users()
         self.assertEqual(3, len(db.session.query(User).all()))
 
-        query = {'filter' : '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '2'}
+        query = {
+            'filter': '',
+            'sort': 'display_name',
+            'sortOrder': 'asc',
+            'pageNumber': '0',
+            'pageSize': '2'
+        }
         response = self.searchUsers(query)
         self.assertEqual(2, len(response['items']))
         self.assertEqual(3, response['total'])
@@ -1644,102 +2361,234 @@ class TestCase(unittest.TestCase):
         query['pageNumber'] = 1
         response = self.searchUsers(query)
         self.assertEqual(1, len(response['items']))
-        self.assertEqual('Oscar the Grouch', response['items'][0]['display_name'])
+        self.assertEqual('Oscar the Grouch',
+                         response['items'][0]['display_name'])
 
         query['pageNumber'] = 2
         response = self.searchUsers(query)
         self.assertEqual(0, len(response['items']))
 
     def test_find_users_respects_filter(self):
-        self.createTestUsers()
-        query = {'filter': 'big', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
+        self.construct_various_users()
+        query = {
+            'filter': 'big',
+            'sortOrder': 'asc',
+            'pageNumber': '0',
+            'pageSize': '20'
+        }
         response = self.searchUsers(query)
         self.assertEqual(1, len(response['items']))
 
-        query = {'filter': 'Grouch', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
+        query = {
+            'filter': 'Grouch',
+            'sortOrder': 'asc',
+            'pageNumber': '0',
+            'pageSize': '20'
+        }
         response = self.searchUsers(query)
         self.assertEqual(1, len(response['items']))
 
-        query = {'filter': '123', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
+        query = {
+            'filter': '123',
+            'sortOrder': 'asc',
+            'pageNumber': '0',
+            'pageSize': '20'
+        }
         response = self.searchUsers(query)
         self.assertEqual(1, len(response['items']))
 
-        query = {'filter': 'Ididnputthisinthedata', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
+        query = {
+            'filter': 'Ididnputthisinthedata',
+            'sortOrder': 'asc',
+            'pageNumber': '0',
+            'pageSize': '20'
+        }
         response = self.searchUsers(query)
         self.assertEqual(0, len(response['items']))
 
     def test_find_users_orders_results(self):
-        self.createTestUsers()
-        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'asc', 'pageNumber': '0', 'pageSize': '20'}
+        self.construct_various_users()
+        query = {
+            'filter': '',
+            'sort': 'display_name',
+            'sortOrder': 'asc',
+            'pageNumber': '0',
+            'pageSize': '20'
+        }
         response = self.searchUsers(query)
         self.assertEqual("Big Bird", response['items'][0]['display_name'])
 
-        query = {'filter': '', 'sort': 'display_name', 'sortOrder': 'desc', 'pageNumber': '0', 'pageSize': '20'}
+        query = {
+            'filter': '',
+            'sort': 'display_name',
+            'sortOrder': 'desc',
+            'pageNumber': '0',
+            'pageSize': '20'
+        }
         response = self.searchUsers(query)
-        self.assertEqual("Oscar the Grouch", response['items'][0]['display_name'])
+        self.assertEqual("Oscar the Grouch",
+                         response['items'][0]['display_name'])
 
     def test_resource_list_limits_to_10_by_default(self):
         for i in range(20):
             self.construct_resource()
-        rv = self.app.get('/api/resource', follow_redirects=True,
-                          content_type="application/json", headers=self.logged_in_headers())
+        rv = self.app.get(
+            '/api/resource',
+            follow_redirects=True,
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
         self.assertEqual(10, len(result))
 
-        rv = self.app.get('/api/resource', follow_redirects=True,
-                          query_string={'limit':'5'},
-                          content_type="application/json",
-                          headers=self.logged_in_headers())
+        rv = self.app.get(
+            '/api/resource',
+            follow_redirects=True,
+            query_string={'limit': '5'},
+            content_type="application/json",
+            headers=self.logged_in_headers())
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
         self.assertEqual(5, len(result))
 
     def test_private_resources_not_listed_for_anonymous_user(self):
-        # Should only return 2 approved, non-private resources out of a total 8 resources
         self.construct_various_resources()
 
         rv = self.app.get(
-          '/api/resource',
-          follow_redirects=True,
-          content_type="application/json"
-        )
+            '/api/resource',
+            query_string={'limit': '16'},
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(2, len(result))
 
-    def test_private_resources_listed_for_general_user_with_matching_institution(self):
-        u = User(id=1, eppn=self.test_eppn, display_name="Finn", email="FN-2187@first-order.mil", role="User", institution="Organa School for Rebellious Orphans")
+        # Should only return 4 approved, non-private resources
+        # out of a total 16 resources
+        self.assertEqual(4, len(result))
 
-        # Should only return 3 approved resources (one private from user's institution)
-        # out of a total 8 resources
-        self.construct_various_resources()
+    def test_private_resources_for_general_user(self):
+        institution_name = "General Leia's Institute for Social Justice"
+        inst_obj = self.construct_institution(
+            name=institution_name, domain="resistance.org")
+        self.construct_various_resources(institution=inst_obj)
+
+        u = User(
+            id=1,
+            eppn="FN-2187@resistance.org",
+            display_name="Finn",
+            email="FN-2187@resistance.org",
+            role="User",
+            institution=inst_obj)
+        db.session.add(u)
+        db.session.commit()
 
         rv = self.app.get(
-          '/api/resource',
-          follow_redirects=True,
-          content_type="application/json",
-          headers=self.logged_in_headers(u)
-        )
+            '/api/resource',
+            query_string={'limit': '16'},
+            follow_redirects=True,
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u))
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(3, len(result))
+
+        # Should only return 6 approved resources (4 approved non-private,
+        # 2 approved private from user's own institution) out of a total
+        # 16 resources
+        self.assertEqual(6, len(result))
 
     def test_private_resources_listed_for_admin(self):
-        u = User(id=1, eppn=self.admin_eppn, display_name="Princess Leia Organa", email="princess.leia@alderaan.gov", role="Admin", institution="Organa School for Rebellious Orphans")
+        inst_name = "Alderaanian Association of Astrological Anthropology"
+        inst_obj = self.construct_institution(
+            name=inst_name, domain="alderaan.gov")
+        self.construct_various_resources(institution=inst_obj)
 
-        # Should return all 8 resources
-        self.construct_various_resources()
+        u = User(
+            id=1,
+            eppn="princess.leia@alderaan.gov",
+            display_name="Princess Leia Organa",
+            email="princess.leia@alderaan.gov",
+            role="Admin",
+            institution=inst_obj)
+        db.session.add(u)
+        db.session.commit()
 
         rv = self.app.get(
-          '/api/resource',
-          follow_redirects=True,
-          content_type="application/json",
-          headers=self.logged_in_headers(u)
-        )
+            '/api/resource',
+            query_string={'limit': '16'},
+            follow_redirects=True,
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u))
         self.assertSuccess(rv)
         result = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(8, len(result))
+
+        # Should return only 12 out of 16 resources, since 4 are
+        # private to a different institution
+        self.assertEqual(12, len(result))
+
+    def test_admin_owner_should_always_be_able_to_view_their_own_resources(
+            self):
+        institution_name = "University of Galactic Domination"
+        inst_obj = self.construct_institution(
+            name=institution_name, domain="empire.galaxy.gov")
+        self.construct_various_resources(
+            institution=inst_obj, owner="emperor@empire.galaxy.gov")
+
+        u = User(
+            id=1,
+            eppn="emperor@empire.galaxy.gov",
+            display_name="Emperor Palpatine",
+            email="emperor@empire.galaxy.gov",
+            role="Admin",
+            institution=inst_obj)
+        db.session.add(u)
+        db.session.commit()
+
+        rv = self.app.get(
+            '/api/resource',
+            query_string={'limit': '16'},
+            follow_redirects=True,
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u))
+        self.assertSuccess(rv)
+        result = json.loads(rv.get_data(as_text=True))
+
+        # General user owns 8 of the 16 resources, half of
+        # which are from a different institution.
+        # They can see all but the 2 private resources from
+        # a different institution that they don't own.
+        self.assertEqual(14, len(result))
+
+    def test_user_owner_should_always_be_able_to_view_their_own_resources(
+            self):
+        institution_name = "University of Galactic Domination"
+        inst_obj = self.construct_institution(
+            name=institution_name, domain="senate.galaxy.gov")
+        self.construct_various_resources(
+            institution=inst_obj, owner="jjb@senate.galaxy.gov")
+
+        u = User(
+            id=1,
+            eppn="jjb@senate.galaxy.gov",
+            display_name="Jar Jar Binks",
+            email="jjb@senate.galaxy.gov",
+            role="User",
+            institution=inst_obj)
+        db.session.add(u)
+        db.session.commit()
+
+        rv = self.app.get(
+            '/api/resource',
+            query_string={'limit': '16'},
+            follow_redirects=True,
+            content_type="application/json",
+            headers=self.logged_in_headers(user=u))
+        self.assertSuccess(rv)
+        result = json.loads(rv.get_data(as_text=True))
+
+        # General user owns only 8 of the 16 resources, but can also
+        # see the 3 approved resources from other institutions
+        self.assertEqual(11, len(result))
+
 
 if __name__ == '__main__':
     unittest.main()

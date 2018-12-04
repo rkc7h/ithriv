@@ -1,9 +1,9 @@
 import datetime
 import re
+from flask import g
 from app.model.availability import Availability
 from app.model.favorite import Favorite
 from app import db
-from flask import g
 
 
 class ThrivResource(db.Model):
@@ -20,16 +20,21 @@ class ThrivResource(db.Model):
     contact_notes = db.Column(db.String)
     website = db.Column(db.String)
     cost = db.Column(db.String)
-    type_id = db.Column('type_id', db.Integer(), db.ForeignKey('type.id'))
-    institution_id = db.Column('institution_id', db.Integer(), db.ForeignKey('institution.id'))
-    availabilities = db.relationship(lambda: Availability,  cascade="all, delete-orphan",
-                                     backref=db.backref('resource', lazy=True))
-    favorites = db.relationship(lambda: Favorite, cascade="all, delete-orphan",
-                                backref=db.backref('resource', lazy=True))
+    type_id = db.Column('type_id', db.Integer, db.ForeignKey('type.id'))
+    institution_id = db.Column('institution_id', db.Integer,
+                               db.ForeignKey('institution.id'))
+    availabilities = db.relationship(
+        lambda: Availability,
+        cascade="all, delete-orphan",
+        backref=db.backref('resource', lazy=True))
+    favorites = db.relationship(
+        lambda: Favorite,
+        cascade="all, delete-orphan",
+        backref=db.backref('resource', lazy=True))
     files = db.relationship("UploadedFile", back_populates="resource")
     categories = db.relationship("ResourceCategory", back_populates="resource")
     approved = db.Column(db.String)
-    private = db.Column(db.Boolean(), default=False)
+    private = db.Column(db.Boolean, default=False)
 
     def favorite_count(self):
         return len(self.favorites)
@@ -44,25 +49,35 @@ class ThrivResource(db.Model):
         try:
             # if resource is private,
             # user institution must match resource institution
-            if 'user' not in g or not g.user:
-                return (self.approved == "Approved") and not self.private
+            if not hasattr(g, 'user') or not g.user:
+                return ((self.approved == "Approved") and (not self.private))
+            elif self.owners() and g.user.email in self.owners():
+                return True
             elif g.user.role == "Admin":
-                return True
-            elif g.user.email in self.owners():
-                return True
-            elif self.private:
-                return (self.approved == "Approved") and (self.institution_id == g.user.institution_id)
+                if self.private:
+                    return (self.institution_id == g.user.institution_id)
+                else:
+                    return True
             else:
-                return (self.approved == "Approved")
+                if self.private:
+                    return ((self.approved == "Approved")
+                            and (self.institution_id == g.user.institution_id))
+                else:
+                    return (self.approved == "Approved")
         except:
             return False
 
     def user_may_edit(self):
         try:
-            if g.user.role == "Admin":
+            if not hasattr(g, 'user') or not g.user:
+                return False
+            elif self.owners() and g.user.email in self.owners():
                 return True
-            if g.user.email in self.owners():
-                return True
+            elif g.user.role == "Admin":
+                if self.private:
+                    return (self.institution_id == g.user.institution_id)
+                else:
+                    return True
             else:
                 return False
         except:
