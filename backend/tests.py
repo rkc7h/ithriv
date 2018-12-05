@@ -26,6 +26,7 @@ from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema, \
     UserSchema, FileSchema, FavoriteSchema
 from botocore.vendored import requests
 from io import BytesIO
+from sqlalchemy import or_
 
 # Set environment variable to testing before loading.
 # IMPORTANT - Environment must be loaded before app, models, etc....
@@ -33,7 +34,7 @@ os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
 
 
 class TestCase(unittest.TestCase):
-    test_eppn = "dhf8rtest@virginia.edu"
+    test_eppn = "dhf8r@virginia.edu"
     admin_eppn = "dhf8admin@virginia.edu"
 
     def setUp(self):
@@ -46,15 +47,6 @@ class TestCase(unittest.TestCase):
         self.ctx.pop()
         elastic_index.clear()
         db.session.remove()
-        db.drop_all()
-        db.drop_all()
-        db.drop_all()
-        db.drop_all()
-        db.drop_all()
-        db.drop_all()
-        db.drop_all()
-        db.drop_all()
-        db.drop_all()
         db.drop_all()
 
     def assertSuccess(self, rv):
@@ -72,73 +64,114 @@ class TestCase(unittest.TestCase):
         return ''.join(random.sample(char_set * 6, 6))
 
     def construct_user(self,
-                       id=1,
+                       id=421,
                        eppn="poe.resistance@rebels.org",
                        display_name="Poe Dameron",
                        email="poe.resistance@rebels.org",
-                       role="User"):
+                       role="User",
+                       institution=None):
         u = User(
             id=id,
             eppn=eppn,
             display_name=display_name,
             email=email,
             role=role)
+
+        if institution:
+            u.institution_id = institution.id
+
         db.session.add(u)
         db.session.commit()
-        return db.session.query(User).filter_by(eppn=u.eppn).first()
+
+        db_user = db.session.query(User).filter_by(eppn=u.eppn).first()
+        self.assertEqual(db_user.display_name, u.display_name)
+        return db_user
 
     def construct_admin_user(self,
-                             id=2,
+                             id=1138,
                              eppn="general.organa@rebels.org",
                              display_name="General Organa",
                              email="general.organa@rebels.org",
-                             role="Admin"):
+                             role="Admin",
+                             institution=None):
         u = User(
             id=id,
             eppn=eppn,
             display_name=display_name,
             email=email,
             role=role)
+
+        if institution:
+            u.institution_id = institution.id
+
         db.session.add(u)
         db.session.commit()
-        return db.session.query(User).filter_by(eppn=u.eppn).first()
+
+        db_user = db.session.query(User).filter_by(eppn=u.eppn).first()
+        self.assertEqual(db_user.display_name, u.display_name)
+        return db_user
 
     def construct_various_users(self):
-        u1 = self.construct_user(
-            id=1,
-            eppn=self.test_eppn,
-            display_name="Oscar the Grouch",
-            email=self.test_eppn)
-        u2 = self.construct_user(
-            id=2,
-            eppn=self.admin_eppn,
-            display_name="Big Bird",
-            email=self.admin_eppn,
-            role="Admin")
-        u3 = self.construct_user(
-            id=3,
-            eppn="stuff123@vt.edu",
-            display_name="Elmo",
-            email="stuff123@vt.edu")
+        users = [
+            self.construct_user(
+                id=123,
+                eppn=self.test_eppn,
+                display_name="Oscar the Grouch",
+                email=self.test_eppn),
+            self.construct_user(
+                id=456,
+                eppn=self.admin_eppn,
+                display_name="Big Bird",
+                email=self.admin_eppn,
+                role="Admin"),
+            self.construct_user(
+                id=789,
+                eppn="stuff123@vt.edu",
+                display_name="Elmo",
+                email="stuff123@vt.edu")
+        ]
 
-    def construct_institution(self, name="TestyU", domain="testy.edu"):
-        institution = ThrivInstitution(name=name, domain=domain)
+        db_users = []
+
+        for user in users:
+            db_user = db.session\
+                .query(User) \
+                .filter_by(display_name=user.display_name).first()
+            self.assertEqual(db_user.email, user.email)
+            db_users.append(db_user)
+
+        self.assertEqual(len(db_users), len(users))
+        return db_users
+
+    def construct_institution(
+            self,
+            name="School for Exceptionally Talented Mynocks",
+            domain="asete.edu",
+            description="The asteroid's premiere exogorth parasite education"):
+        institution = ThrivInstitution(
+            name=name, domain=domain, description=description)
 
         # Check database for existing institution
-        existing_institution = db.session\
+        existing_inst = db.session\
             .query(ThrivInstitution) \
-            .filter_by(name=name).first()
-        if not existing_institution:
-            existing_institution = db.session \
-                .query(ThrivInstitution) \
-                .filter_by(domain=domain).first()
+            .filter(or_(
+                (ThrivInstitution.name == name),
+                (ThrivInstitution.domain == domain))).first()
+        # if not existing_inst:
+        #     existing_inst = db.session \
+        #         .query(ThrivInstitution) \
+        #         .filter_by(domain=domain).first()
 
-        if not existing_institution:
+        if not existing_inst:
             db.session.add(institution)
             db.session.commit()
-            return institution
+            db_inst = db.session\
+                .query(ThrivInstitution) \
+                .filter_by(name=name).first()
         else:
-            return existing_institution
+            db_inst = existing_inst
+
+        return db_inst
 
     def construct_resource(self,
                            type="Starfighter",
@@ -360,22 +393,16 @@ class TestCase(unittest.TestCase):
         self.assertEqual(404, rv.status_code)
 
     def test_user_edit_resource(self):
-        u1 = User(
-            id=1,
+        u1 = self.construct_user(
             eppn="peter@cottontail",
             display_name="Peter Cottontail",
-            email="peter@cottontail",
-            role="User")
-        u2 = User(
-            id=2,
+            email="peter@cottontail")
+        u2 = self.construct_admin_user(
             eppn="rabbit@velveteen.com",
             display_name="The Velveteen Rabbit",
-            email="rabbit@velveteen.com",
-            role="Admin")
+            email="rabbit@velveteen.com")
         r1 = self.construct_resource(owner=u1.email)
         r2 = self.construct_resource(owner="flopsy@cottontail.com")
-        db.session.add_all([u1, u2, r1, r2])
-        db.session.commit()
 
         rv = self.app.get('/api/resource/1', content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
@@ -663,20 +690,16 @@ class TestCase(unittest.TestCase):
             name="Snuffy's Balloon Collection",
             owner="oscar@sesamestreet.com "
             "bigbird@sesamestreet.com")
-        u1 = User(
-            id=1,
+        u1 = self.construct_user(
             role="User",
             display_name="Oscar the Grouch",
             email="oscar@sesamestreet.com",
             eppn="oscar@sesamestreet.com")
-        u2 = User(
-            id=2,
+        u2 = self.construct_admin_user(
             role="Admin",
             display_name="Big Bird",
             email="bigbird@sesamestreet.com",
             eppn="bigbird@sesamestreet.com")
-        db.session.add_all([u1, u2])
-        db.session.commit()
 
         # Testing that the correct amount of user-owned resources
         # show up for the correct user
@@ -705,44 +728,38 @@ class TestCase(unittest.TestCase):
         self.assertEqual(401, rv.status_code)
 
     def test_approved_resources_list_with_general_users(self):
+        big_bird = self.construct_user(
+            id=123,
+            display_name="Big Bird",
+            email="bigbird@sesamestreet.com",
+            eppn="bigbird@sesamestreet.com")
+        oscar = self.construct_user(
+            id=456,
+            display_name="Oscar",
+            email="oscar@sesamestreet.com",
+            eppn="oscar@sesamestreet.com")
+        grover = self.construct_user(
+            id=789,
+            display_name="Grover",
+            email="grover@sesamestreet.com",
+            eppn="grover@sesamestreet.com")
+
         self.construct_resource(
             name="Birdseed sale at Hooper's",
-            owner="bigbird@sesamestreet.com",
+            owner=big_bird.email,
             approved="Approved")
         self.construct_resource(
             name="Slimy the worm's flying school",
-            owner="oscar@sesamestreet.com; "
-            "bigbird@sesamestreet.com",
+            owner=oscar.email + "; " + big_bird.email,
             approved="Approved")
         self.construct_resource(
             name="Oscar's Trash Orchestra",
-            owner="oscar@sesamestreet.com",
+            owner=oscar.email,
             approved="Unapproved")
         self.construct_resource(
             name="Snuffy's Balloon Collection",
-            owner="oscar@sesamestreet.com "
-            "bigbird@sesamestreet.com",
-            approved="Unpproved")
-        u1 = User(
-            id=1,
-            eppn='oscar@sesamestreet.com',
-            display_name="Oscar the Grouch",
-            email="oscar@sesamestreet.com",
-            role="User")
-        u2 = User(
-            id=2,
-            eppn='bigbird@sesamestreet.com',
-            display_name="Big Bird",
-            email="bigbird@sesamestreet.com",
-            role="User")
-        u3 = User(
-            id=3,
-            eppn='grover@sesamestreet.com',
-            display_name="Grover",
-            email="grover@sesamestreet.com",
-            role="User")
-        db.session.add_all([u1, u2, u3])
-        db.session.commit()
+            owner=oscar.email + " " + big_bird.email,
+            approved="Unapproved")
 
         # Testing that the correct amount of resources show up
         # for the correct user. Oscar should see all four
@@ -751,7 +768,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.get(
             '/api/resource',
             content_type="application/json",
-            headers=self.logged_in_headers(user=u1),
+            headers=self.logged_in_headers(user=oscar),
             follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
@@ -762,7 +779,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.get(
             '/api/resource',
             content_type="application/json",
-            headers=self.logged_in_headers(user=u2),
+            headers=self.logged_in_headers(user=big_bird),
             follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
@@ -772,7 +789,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.get(
             '/api/resource',
             content_type="application/json",
-            headers=self.logged_in_headers(user=u3),
+            headers=self.logged_in_headers(user=grover),
             follow_redirects=True)
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
@@ -1497,14 +1514,14 @@ class TestCase(unittest.TestCase):
             ["name"])
 
     def test_get_resource_by_category_sorts_by_favorite_count(self):
-        u = User(
-            id=6, display_name="Jar Jar Binks", email="jjb@senate.galaxy.gov")
+        u = self.construct_user(
+            display_name="Jar Jar Binks", email="jjb@senate.galaxy.gov")
         c = self.construct_category(name="c1")
         r1 = self.construct_resource(name="r1")
         r2 = self.construct_resource(name="r2")
         cr1 = ResourceCategory(resource=r1, category=c)
         cr2 = ResourceCategory(resource=r2, category=c)
-        db.session.add_all([u, cr1, cr2])
+        db.session.add_all([cr1, cr2])
         db.session.commit()
 
         # Should be sorted by name before any resources are favorited
@@ -1616,8 +1633,8 @@ class TestCase(unittest.TestCase):
 
     def test_add_availability(self):
         r = self.construct_resource()
-        institution = ThrivInstitution(
-            id=1, name="Delmar's", description="autobody")
+        institution = self.construct_institution(
+            name="Delmar's", description="autobody")
 
         availability_data = {
             "resource_id": r.id,
@@ -1637,8 +1654,8 @@ class TestCase(unittest.TestCase):
 
     def test_add_availability_via_resource(self):
         r = self.construct_resource()
-        institution = ThrivInstitution(
-            id=1, name="Delmar's", description="autobody")
+        institution = self.construct_institution(
+            name="Delmar's", description="autobody")
 
         availability_data = [{
             "resource_id": r.id,
@@ -1669,11 +1686,12 @@ class TestCase(unittest.TestCase):
 
     def test_set_all_availability(self):
         r = self.construct_resource()
-        i1 = ThrivInstitution(id=1, name="Delmar's", description="autobody")
-        i2 = ThrivInstitution(
-            id=2, name="Frank's", description="printers n stuff")
-        i3 = ThrivInstitution(
-            id=3, name="Rick's", description="custom cabinets")
+        i1 = self.construct_institution(
+            name="Delmar's", description="autobody")
+        i2 = self.construct_institution(
+            name="Frank's", description="printers n stuff")
+        i3 = self.construct_institution(
+            name="Rick's", description="custom cabinets")
 
         availability_data = [{
             "institution_id": i1.id,
@@ -1709,16 +1727,22 @@ class TestCase(unittest.TestCase):
             content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
+
         self.assertEqual(1, len(response))
-        self.assertEqual(2, response[0]["institution_id"])
+        self.assertEqual(i2.id, response[0]["institution_id"])
+
+        av = db.session.query(Availability).first()
+        self.assertIsNotNone(av)
+
+        av_id = av.id
 
         rv = self.app.get(
-            '/api/availability/%i' % 1, content_type="application/json")
+            '/api/availability/%i' % av_id, content_type="application/json")
         self.assertSuccess(rv)
-        rv = self.app.delete('/api/availability/%i' % 1)
+        rv = self.app.delete('/api/availability/%i' % av_id)
         self.assertSuccess(rv)
         rv = self.app.get(
-            '/api/availability/%i' % 1, content_type="application/json")
+            '/api/availability/%i' % av_id, content_type="application/json")
         self.assertEqual(404, rv.status_code)
 
     def test_add_favorite(self):
@@ -1751,7 +1775,7 @@ class TestCase(unittest.TestCase):
 
     def test_delete_resource_deletes_favorite(self):
         r = self.construct_resource()
-        u = User(id=1, display_name="Oscar the Grouch")
+        u = self.construct_user(display_name="Oscar the Grouch")
 
         favorite_data = {"resource_id": r.id, "user_id": u.id}
 
@@ -2026,7 +2050,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual("Cool Places", response["icon"]["name"])
 
     def logged_in_headers(self, user=None):
-
         # If no user is provided, generate a dummy Admin user
         if not user:
             user = User(
@@ -2122,7 +2145,24 @@ class TestCase(unittest.TestCase):
             eppn="ehb11@virginia.edu",
             display_name='Engelbert Humperdinck',
             email='ehb11@virginia.edu')
-        self.logged_in_headers(user=user2)
+
+        headers = {
+            'eppn': user.eppn,
+            'givenName': user.display_name,
+            'mail': user.email
+        }
+
+        rv = self.app.get(
+            "/api/login",
+            headers=headers,
+            follow_redirects=True,
+            content_type="application/json")
+        self.assertSuccess(rv)
+
+        db_user = User.query.filter_by(eppn=user.eppn).first()
+        auth_token = dict(
+            Authorization='Bearer ' + db_user.encode_auth_token().decode())
+
         # No errors occur when this user logs in, and we only have one
         # account with that email address.
         self.assertEqual(
@@ -2175,7 +2215,8 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
 
     def test_admin_delete_user(self):
-        user = self.test_create_user_with_password()
+        admin_user = self.construct_admin_user()
+        user = self.construct_user()
         rv = self.app.delete(
             '/api/user/%i' % user.id, content_type="application/json")
         self.assertEqual(rv.status, "401 UNAUTHORIZED")
@@ -2183,7 +2224,7 @@ class TestCase(unittest.TestCase):
         rv = self.app.delete(
             '/api/user/%i' % user.id,
             content_type="application/json",
-            headers=self.logged_in_headers())
+            headers=self.logged_in_headers(user=admin_user))
         self.assertSuccess(rv)
 
     def decode(self, encoded_words):
@@ -2310,14 +2351,14 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(response)
         return json.loads(response.data.decode())
 
-    def searchUsers(self, query):
+    def searchUsers(self, query, user=None):
         '''Executes a query, returning the resulting search results object.'''
         rv = self.app.get(
             '/api/user',
             query_string=query,
             follow_redirects=True,
             content_type="application/json",
-            headers=self.logged_in_headers())
+            headers=self.logged_in_headers(user=user))
         self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
 
@@ -2407,26 +2448,47 @@ class TestCase(unittest.TestCase):
         self.assertEqual(0, len(response['items']))
 
     def test_find_users_orders_results(self):
-        self.construct_various_users()
-        query = {
+        db.session.query(User).delete()
+        users_before = db.session.query(User).all()
+        self.assertEqual(len(users_before), 0)
+
+        users = self.construct_various_users()
+        users_next = db.session.query(User).all()
+        self.assertEqual(len(users_next), 3)
+
+        admin_user = users[1]
+        self.assertEqual(admin_user.role, "Admin")
+
+        normal_user = users[0]
+        self.assertEqual(normal_user.role, "User")
+
+        q1 = {
             'filter': '',
             'sort': 'display_name',
             'sortOrder': 'asc',
             'pageNumber': '0',
             'pageSize': '20'
         }
-        response = self.searchUsers(query)
-        self.assertEqual("Big Bird", response['items'][0]['display_name'])
+        response = self.searchUsers(query=q1, user=admin_user)
+        # users_after1 = db.session.query(User).all()
+        # self.assertEqual(len(users_after1), 3)
 
-        query = {
+        self.assertEqual(admin_user.display_name,
+                         response['items'][0]['display_name'])
+
+        q2 = {
             'filter': '',
             'sort': 'display_name',
             'sortOrder': 'desc',
             'pageNumber': '0',
             'pageSize': '20'
         }
-        response = self.searchUsers(query)
-        self.assertEqual("Oscar the Grouch",
+        response = self.searchUsers(query=q2, user=admin_user)
+
+        # users_after2 = db.session.query(User).all()
+        # self.assertEqual(len(users_after2), 3)
+
+        self.assertEqual(normal_user.display_name,
                          response['items'][0]['display_name'])
 
     def test_resource_list_limits_to_10_by_default(self):
@@ -2467,20 +2529,16 @@ class TestCase(unittest.TestCase):
         self.assertEqual(4, len(result))
 
     def test_private_resources_for_general_user(self):
-        institution_name = "General Leia's Institute for Social Justice"
-        inst_obj = self.construct_institution(
-            name=institution_name, domain="resistance.org")
-        self.construct_various_resources(institution=inst_obj)
+        institution = self.construct_institution(
+            name="General Leia's Institute for Social Justice",
+            domain="resistance.org")
+        self.construct_various_resources(institution=institution)
 
-        u = User(
-            id=1,
+        u = self.construct_user(
             eppn="FN-2187@resistance.org",
             display_name="Finn",
             email="FN-2187@resistance.org",
-            role="User",
-            institution=inst_obj)
-        db.session.add(u)
-        db.session.commit()
+            institution=institution)
 
         rv = self.app.get(
             '/api/resource',
@@ -2497,20 +2555,17 @@ class TestCase(unittest.TestCase):
         self.assertEqual(6, len(result))
 
     def test_private_resources_listed_for_admin(self):
-        inst_name = "Alderaanian Association of Astrological Anthropology"
-        inst_obj = self.construct_institution(
-            name=inst_name, domain="alderaan.gov")
-        self.construct_various_resources(institution=inst_obj)
+        institution = self.construct_institution(
+            name="Alderaanian Association of Astrological Anthropology",
+            domain="alderaan.gov")
 
-        u = User(
-            id=1,
+        u = self.construct_admin_user(
             eppn="princess.leia@alderaan.gov",
             display_name="Princess Leia Organa",
             email="princess.leia@alderaan.gov",
-            role="Admin",
-            institution=inst_obj)
-        db.session.add(u)
-        db.session.commit()
+            institution=institution)
+
+        self.construct_various_resources(institution=institution)
 
         rv = self.app.get(
             '/api/resource',
@@ -2525,23 +2580,19 @@ class TestCase(unittest.TestCase):
         # private to a different institution
         self.assertEqual(12, len(result))
 
-    def test_admin_owner_should_always_be_able_to_view_their_own_resources(
-            self):
-        institution_name = "University of Galactic Domination"
-        inst_obj = self.construct_institution(
-            name=institution_name, domain="empire.galaxy.gov")
-        self.construct_various_resources(
-            institution=inst_obj, owner="emperor@empire.galaxy.gov")
+    def test_admin_owner_should_be_able_to_view_their_own_resources(self):
+        institution = self.construct_institution(
+            name="University of Galactic Domination",
+            domain="empire.galaxy.gov")
 
-        u = User(
-            id=1,
+        u = self.construct_admin_user(
             eppn="emperor@empire.galaxy.gov",
             display_name="Emperor Palpatine",
             email="emperor@empire.galaxy.gov",
-            role="Admin",
-            institution=inst_obj)
-        db.session.add(u)
-        db.session.commit()
+            institution=institution)
+
+        self.construct_various_resources(
+            institution=institution, owner=u.email)
 
         rv = self.app.get(
             '/api/resource',
@@ -2560,21 +2611,18 @@ class TestCase(unittest.TestCase):
 
     def test_user_owner_should_always_be_able_to_view_their_own_resources(
             self):
-        institution_name = "University of Galactic Domination"
-        inst_obj = self.construct_institution(
-            name=institution_name, domain="senate.galaxy.gov")
-        self.construct_various_resources(
-            institution=inst_obj, owner="jjb@senate.galaxy.gov")
+        institution = self.construct_institution(
+            name="University of Galactic Domination",
+            domain="senate.galaxy.gov")
 
-        u = User(
-            id=1,
+        u = self.construct_user(
             eppn="jjb@senate.galaxy.gov",
             display_name="Jar Jar Binks",
             email="jjb@senate.galaxy.gov",
-            role="User",
-            institution=inst_obj)
-        db.session.add(u)
-        db.session.commit()
+            institution=institution)
+
+        self.construct_various_resources(
+            institution=institution, owner=u.email)
 
         rv = self.app.get(
             '/api/resource',
