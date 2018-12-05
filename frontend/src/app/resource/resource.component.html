@@ -99,10 +99,10 @@
         Information
       </mat-card-title>
       <mat-card-content>
-        <mat-chip-list *ngIf="resource.user_may_view">
+        <mat-chip-list *ngIf="resource.user_may_edit">
           <mat-chip
             *ngIf="resource.private"
-            matTooltip="This Resource is only visible to iTHRIV administrators. Click to make it non-private."
+            matTooltip="This Resource is only visible to users from {{resource.institution.name}}. Click here to change this setting."
             (click)="togglePrivate(!resource.private)"
             id="button-not-private"
           >
@@ -111,7 +111,7 @@
           </mat-chip>
           <mat-chip
             *ngIf="!resource.private"
-            matTooltip="This Resource will be visible to non-administrators if approved. Click to make it private."
+            matTooltip="This Resource will be visible to all iTHRIV users if approved. Click to restrict it to {{resource.institution.name}}."
             (click)="togglePrivate(!resource.private)"
             id="button-private"
           >

@@ -88,4 +88,9 @@ describe('Anonymous User', () => {
     expect(page.getElements('app-approved-badge .ribbon').count()).toEqual(0);
   });
 
+  it('should not show resource private setting', async () => {
+    expect(page.getElements('#button-not-private').count()).toEqual(0);
+    expect(page.getElements('#button-private').count()).toEqual(0);
+  });
+
 });
