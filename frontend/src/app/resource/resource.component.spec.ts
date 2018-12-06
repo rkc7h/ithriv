@@ -14,18 +14,25 @@ import { ResourceComponent } from './resource.component';
 import { getDummyCategory } from '../shared/fixtures/category';
 import { By } from '@angular/platform-browser';
 
+interface ComponentOptions {
+  makePrivate?: boolean;
+  userMayView?: boolean;
+  userMayEdit?: boolean;
+}
+
 describe('ResourceComponent', () => {
   let api: MockResourceApiService;
   let component: ResourceComponent;
   let fixture: ComponentFixture<ResourceComponent>;
 
-  const getDummyData = function (makePrivate = false, makeAdmin = false) {
+  const getDummyData = function (options: ComponentOptions) {
     const resource = getDummyResource();
-    resource.private = makePrivate;
-    resource.user_may_view = makeAdmin || !makePrivate;
+    resource.private = options.makePrivate;
+    resource.user_may_view = options.userMayView;
+    resource.user_may_edit = options.userMayEdit;
 
     const user = getDummyUser();
-    user.role = makeAdmin ? 'Admin' : 'User';
+    user.role = options.userMayEdit ? 'Admin' : 'User';
 
     api.spyAndReturnFake('getResource', resource);
     api.spyAndReturnFake('getSession', user);
@@ -66,30 +73,60 @@ describe('ResourceComponent', () => {
   }));
 
   it('should create', () => {
-    getDummyData(false);
+    const options: ComponentOptions = {
+      makePrivate: false,
+      userMayView: true,
+      userMayEdit: false
+    };
+
+    getDummyData(options);
     expect(component).toBeTruthy();
   });
 
   it('should show non-private resource', () => {
-    getDummyData(false); // Non-private resource, general user
+    const options: ComponentOptions = {
+      makePrivate: false,
+      userMayView: true,
+      userMayEdit: false
+    };
+
+    getDummyData(options); // Non-private resource, general user
     const el = fixture.debugElement.query(By.css('.resource')).nativeElement;
     expect(el.hasAttribute('hidden')).toEqual(false);
   });
 
   it('should mark private resource', () => {
-    getDummyData(true); // Private resource, general user
+    const options: ComponentOptions = {
+      makePrivate: true,
+      userMayView: true,
+      userMayEdit: false
+    };
+
+    getDummyData(options);
     const classes = fixture.debugElement.query(By.css('.resource')).classes;
     expect(classes.private).toEqual(true);
   });
 
   it('should hide private resource', () => {
-    getDummyData(true); // Private resource, general user
+    const options: ComponentOptions = {
+      makePrivate: true,
+      userMayView: false,
+      userMayEdit: false
+    };
+
+    getDummyData(options);
     const el = fixture.debugElement.query(By.css('.resource')).nativeElement;
     expect(el.hasAttribute('hidden')).toEqual(true);
   });
 
   it('should toggle private resource to non-private if non-private button is clicked', () => {
-    getDummyData(true, true); // Private resource, user is an Admin
+    const options: ComponentOptions = {
+      makePrivate: true,
+      userMayView: true,
+      userMayEdit: true
+    };
+
+    getDummyData(options);
     spyOn(component, 'togglePrivate');
 
     const btn: HTMLElement = fixture.debugElement.nativeElement.querySelector('#button-not-private');
@@ -102,7 +139,13 @@ describe('ResourceComponent', () => {
   });
 
   it('should toggle non-private resource to private if private button is clicked', async () => {
-    getDummyData(false, true); // Non-private resource, user is an Admin
+    const options: ComponentOptions = {
+      makePrivate: false,
+      userMayView: true,
+      userMayEdit: true
+    };
+
+    getDummyData(options);
     spyOn(component, 'togglePrivate');
 
     const btn: HTMLElement = fixture.debugElement.nativeElement.querySelector('#button-private');

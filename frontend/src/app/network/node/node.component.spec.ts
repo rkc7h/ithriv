@@ -5,6 +5,7 @@ import { InlineSVGDirective } from 'ng-inline-svg';
 import { MatTooltipModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NodeOptions } from '../../node-options';
+import { getDummyCategory } from '../../shared/fixtures/category';
 
 describe('NodeComponent', () => {
   let component: NodeComponent;
@@ -27,13 +28,16 @@ describe('NodeComponent', () => {
         fixture = TestBed.createComponent(NodeComponent);
         component = fixture.componentInstance;
         component.options = new NodeOptions({
-          relationship: 'root',
+          relationship: 'self',
           x: 0,
           y: 0,
           radius: 80,
           angle: 0,
           titleHeight: 40
         });
+
+        component.category = getDummyCategory();
+        component.numTotal = 1;
         fixture.detectChanges();
       });
   }));

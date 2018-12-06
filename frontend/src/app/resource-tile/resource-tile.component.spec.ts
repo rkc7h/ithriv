@@ -10,16 +10,24 @@ import { MockMarkdownService } from '../shared/mocks/markdown.service.mock';
 import { ResourceTileComponent } from './resource-tile.component';
 import { By } from '@angular/platform-browser';
 
+interface ComponentOptions {
+  makePrivate?: boolean;
+  userMayView?: boolean;
+  userMayEdit?: boolean;
+}
+
 describe('ResourceTileComponent', () => {
   let component: ResourceTileComponent;
   let fixture: ComponentFixture<ResourceTileComponent>;
 
-  const getDummyData = function (makePrivate = false) {
+  const getDummyData = function (options: ComponentOptions) {
     fixture = TestBed.createComponent(ResourceTileComponent);
     component = fixture.componentInstance;
 
     const resource = getDummyResource();
-    resource.private = makePrivate;
+    resource.private = options.makePrivate;
+    resource.user_may_edit = options.userMayView;
+    resource.user_may_view = options.userMayEdit;
     resource.resource_categories = [{
       id: 0,
       category_id: 123,
@@ -52,12 +60,23 @@ describe('ResourceTileComponent', () => {
   }));
 
   it('should create', () => {
-    getDummyData(false);
+    const options: ComponentOptions = {
+      makePrivate: false,
+      userMayEdit: false,
+      userMayView: true
+    };
+
+    getDummyData(options);
     expect(component).toBeTruthy();
   });
 
   it('should mark private resource', () => {
-    getDummyData(true);
+    const options: ComponentOptions = {
+      makePrivate: true,
+      userMayEdit: true,
+      userMayView: true
+    };
+    getDummyData(options);
     const classes = fixture.debugElement.query(By.css('.resource')).classes;
     expect(classes.private).toEqual(true);
   });

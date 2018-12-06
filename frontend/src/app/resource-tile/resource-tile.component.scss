@@ -17,16 +17,6 @@ mat-card.resource {
   padding-top: $border-top-size + $padding-size;
   position: relative;
 
-  &.private:before {
-    position: absolute;
-    bottom: 4px;
-    right: 8px;
-    font-size: 12px;
-    text-align: right;
-    color: #666666;
-    content: 'PRIVATE';
-  }
-
   &:hover {
     outline: 1px solid mat-color($ithriv-primary, 200, 1);
     background-color: mat-color($ithriv-primary, 100, 1);
