@@ -77,7 +77,6 @@ describe('SearchComponent', () => {
           start: 0,
           resources: [],
         });
-
         fixture.detectChanges();
       });
   }));
