@@ -18,7 +18,13 @@ class SearchEndpoint(flask_restful.Resource):
         if errors:
             raise RestException(RestException.INVALID_OBJECT, details=errors)
         try:
-            results = elastic_index.search_resources(search)
+            if 'user' not in g or not g.user or g.user.role != "Admin":
+                search.filters.append(
+                    Filter(field="Approved", value="Approved"))
+                results = elastic_index.search_resources(search)
+                search.filters = search.filters[:-1]
+            else:
+                results = elastic_index.search_resources(search)
         except elasticsearch.ElasticsearchException as e:
             raise RestException(RestException.ELASTIC_ERROR)
 
@@ -47,7 +53,7 @@ class SearchEndpoint(flask_restful.Resource):
         resources = []
         for hit in results:
             resource = ThrivResource.query.filter_by(id=hit.id).first()
-            if resource is not None and resource.user_may_view():
+            if resource is not None and resource.user_may_view:
                 resources.append(resource)
         search.resources = ThrivResourceSchema().dump(
             resources, many=True).data

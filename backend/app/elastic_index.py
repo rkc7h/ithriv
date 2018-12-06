@@ -82,7 +82,8 @@ class ElasticIndex:
             last_updated=r.last_updated,
             website=r.website,
             owner=r.owner,
-            approved=r.approved)
+            approved=r.approved,
+            institution_id=r.institution_id)
         if r.institution:
             er.institution = r.institution.name
         if r.type:
@@ -136,6 +137,7 @@ class ElasticResource(DocType):
     viewable_institution = Keyword(multi=True)
     approved = Keyword()
     favorite_count = Integer()
+    institution_id = Integer()
 
 
 class ResourceSearch(elasticsearch_dsl.FacetedSearch):
@@ -154,7 +156,8 @@ class ResourceSearch(elasticsearch_dsl.FacetedSearch):
     facets = {
         'Type': elasticsearch_dsl.TermsFacet(field='type'),
         'Institution': elasticsearch_dsl.TermsFacet(field='institution'),
-        'Approved': elasticsearch_dsl.TermsFacet(field='approved')
+        'Approved': elasticsearch_dsl.TermsFacet(field='approved'),
+        # 'InstitutionId': elasticsearch_dsl.TermsFacet(field='institution_id')
     }
 
     def search(self):
