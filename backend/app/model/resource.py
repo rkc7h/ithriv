@@ -7,8 +7,9 @@ from app import db
 
 
 class ThrivResource(db.Model):
-    '''A resource is meta data about a website, database, group, institution or other entity that might prove useful
-    to medical research, clinical application, or to educate and empower the community'''
+    '''A resource is meta data about a website, database, group, institution
+       or other entity that might prove useful to medical research, clinical
+       application, or to educate and empower the community'''
     __tablename__ = 'resource'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -58,12 +59,14 @@ class ThrivResource(db.Model):
                     return (self.institution_id == g.user.institution_id)
                 else:
                     return True
-            else:
+            elif g.user.role == "User":
                 if self.private:
                     return ((self.approved == "Approved")
                             and (self.institution_id == g.user.institution_id))
                 else:
                     return (self.approved == "Approved")
+            else:
+                return False
         except:
             return False
 
