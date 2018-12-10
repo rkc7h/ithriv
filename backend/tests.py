@@ -6,7 +6,7 @@ import quopri
 import random
 import re
 import string
-import time
+import base64
 import unittest
 
 from app import app, db, elastic_index
@@ -23,7 +23,7 @@ from app.model.user import User
 from app.model.email_log import EmailLog
 from app.model.uploaded_file import UploadedFile
 from app.resources.schema import CategorySchema, IconSchema, ThrivTypeSchema, \
-    UserSchema, FileSchema, FavoriteSchema
+    UserSchema, FileSchema
 from botocore.vendored import requests
 from io import BytesIO
 from sqlalchemy import or_
@@ -53,15 +53,12 @@ class TestCase(unittest.TestCase):
         try:
             data = json.loads(rv.get_data(as_text=True))
             self.assertTrue(
-                rv.status_code >= 200 and rv.status_code < 300,
-                "BAD Response: %i. \n %s" % (rv.status_code, json.dumps(data)))
+                200 <= rv.status_code < 300,
+                'BAD Response: %i. \n %s' % (rv.status_code, json.dumps(data)))
         except:
-            self.assertTrue(rv.status_code >= 200 and rv.status_code < 300,
-                            "BAD Response: %i." % rv.status_code)
-
-    def randomString(self):
-        char_set = string.ascii_uppercase + string.digits
-        return ''.join(random.sample(char_set * 6, 6))
+            self.assertTrue(
+                200 <= rv.status_code < 300,
+                'BAD Response: %i.' % rv.status_code)
 
     def construct_user(self,
                        id=421,
@@ -134,7 +131,7 @@ class TestCase(unittest.TestCase):
         db_users = []
 
         for user in users:
-            db_user = db.session\
+            db_user = db.session \
                 .query(User) \
                 .filter_by(display_name=user.display_name).first()
             self.assertEqual(db_user.email, user.email)
@@ -152,20 +149,16 @@ class TestCase(unittest.TestCase):
             name=name, domain=domain, description=description)
 
         # Check database for existing institution
-        existing_inst = db.session\
+        existing_inst = db.session \
             .query(ThrivInstitution) \
             .filter(or_(
-                (ThrivInstitution.name == name),
-                (ThrivInstitution.domain == domain))).first()
-        # if not existing_inst:
-        #     existing_inst = db.session \
-        #         .query(ThrivInstitution) \
-        #         .filter_by(domain=domain).first()
+            (ThrivInstitution.name == name),
+            (ThrivInstitution.domain == domain))).first()
 
         if not existing_inst:
             db.session.add(institution)
             db.session.commit()
-            db_inst = db.session\
+            db_inst = db.session \
                 .query(ThrivInstitution) \
                 .filter_by(name=name).first()
         else:
@@ -212,10 +205,15 @@ class TestCase(unittest.TestCase):
                 resource=resource, institution=institution, available=True)
             db.session.add(availability)
         db.session.commit()
-        elastic_index.add_resource(resource)
-        return resource
+
+        db_resource = db.session.query(ThrivResource).filter_by(name=name).first()
+        self.assertIsNotNone(db_resource)
+
+        elastic_index.add_resource(db_resource)
+        return db_resource
 
     def construct_various_resources(self, institution=None, owner=None):
+        resources = []
         i1_name = "Binks College of Bantha Poodology"
         i1_domain = "first-order.mil"
         i2_name = "Organa School for Rebellious Orphans"
@@ -252,12 +250,16 @@ class TestCase(unittest.TestCase):
             r_institution = i1 if (math.ceil(n / 4) % 2 == 0) else i2
             r_owner = o1 if (math.ceil(n / 8) % 2 == 0) else o2
 
-            self.construct_resource(
+            resource = self.construct_resource(
                 name=name,
                 approved=r_approved,
                 private=r_private,
                 institution=r_institution,
                 owner=r_owner)
+
+            resources.append(resource)
+
+        return resources
 
     def construct_category(self,
                            name="Test Category",
@@ -277,9 +279,6 @@ class TestCase(unittest.TestCase):
         db.session.add(favorite)
         db.session.commit()
         return favorite
-
-    def index_resource(self, resource):
-        elastic_index.add_resource(resource)
 
     def test_base_endpoint(self):
         rv = self.app.get(
@@ -681,15 +680,15 @@ class TestCase(unittest.TestCase):
         self.construct_resource(
             name="Slimy the worm's flying school",
             owner="oscar@sesamestreet.com; "
-            "bigbird@sesamestreet.com")
+                  "bigbird@sesamestreet.com")
         self.construct_resource(
             name="Oscar's Trash Orchestra",
             owner="oscar@sesamestreet.com, "
-            "bigbird@sesamestreet.com")
+                  "bigbird@sesamestreet.com")
         self.construct_resource(
             name="Snuffy's Balloon Collection",
             owner="oscar@sesamestreet.com "
-            "bigbird@sesamestreet.com")
+                  "bigbird@sesamestreet.com")
         u1 = self.construct_user(
             role="User",
             display_name="Oscar the Grouch",
@@ -803,7 +802,7 @@ class TestCase(unittest.TestCase):
         self.construct_resource(
             name="Slimy the worm's flying school",
             owner="oscar@sesamestreet.com; "
-            "bigbird@sesamestreet.com",
+                  "bigbird@sesamestreet.com",
             approved="Approved")
         self.construct_resource(
             name="Oscar's Trash Orchestra",
@@ -812,7 +811,7 @@ class TestCase(unittest.TestCase):
         self.construct_resource(
             name="Snuffy's Balloon Collection",
             owner="oscar@sesamestreet.com "
-            "bigbird@sesamestreet.com",
+                  "bigbird@sesamestreet.com",
             approved="Unpproved")
         u1 = User(
             id=4,
@@ -841,7 +840,7 @@ class TestCase(unittest.TestCase):
         self.construct_resource(
             name="Slimy the worm's flying school",
             owner="oscar@sesamestreet.com; "
-            "bigbird@sesamestreet.com",
+                  "bigbird@sesamestreet.com",
             approved="Approved")
         self.construct_resource(
             name="Oscar's Trash Orchestra",
@@ -850,7 +849,7 @@ class TestCase(unittest.TestCase):
         self.construct_resource(
             name="Snuffy's Balloon Collection",
             owner="oscar@sesamestreet.com "
-            "bigbird@sesamestreet.com",
+                  "bigbird@sesamestreet.com",
             approved="Unapproved")
 
         # When there is no user logged in, they should only see
@@ -1024,14 +1023,24 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         self.assertEqual(0, db.session.query(Category).count())
 
-    def search(self, query):
-        '''Executes a query, returning the resulting search results object.'''
+    def search(self, query, user=None):
+        """Executes a query as the given user, returning the resulting search results object."""
         rv = self.app.post(
             '/api/search',
             data=json.dumps(query),
             follow_redirects=True,
             content_type="application/json",
-            headers=self.logged_in_headers())
+            headers=self.logged_in_headers(user))
+        self.assertSuccess(rv)
+        return json.loads(rv.get_data(as_text=True))
+
+    def search_anonymous(self, query):
+        """Executes a query as an anonymous user, returning the resulting search results object."""
+        rv = self.app.post(
+            '/api/search',
+            data=json.dumps(query),
+            follow_redirects=True,
+            content_type="application/json")
         self.assertSuccess(rv)
         return json.loads(rv.get_data(as_text=True))
 
@@ -1039,109 +1048,93 @@ class TestCase(unittest.TestCase):
         rainbow_query = {'query': 'rainbows', 'filters': []}
         world_query = {'query': 'world', 'filters': []}
         search_results = self.search(rainbow_query)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
         search_results = self.search(world_query)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
 
         resource = self.construct_resource(
             name='space unicorn', description="delivering rainbows")
         elastic_index.add_resource(resource)
         search_results = self.search(rainbow_query)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
         self.assertEqual(search_results['resources'][0]['id'], resource.id)
         search_results = self.search(world_query)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
 
         resource.description = 'all around the world'
         elastic_index.update_resource(resource)
 
         search_results = self.search(rainbow_query)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
         search_results = self.search(world_query)
-        self.assertEqual(len(search_results["resources"]), 1)
-        self.assertEqual(search_results['resources'][0]['id'], resource.id)
+        self.assertEqual(1, len(search_results["resources"]))
+        self.assertEqual(resource.id, search_results['resources'][0]['id'])
 
         elastic_index.remove_resource(resource)
         search_results = self.search(rainbow_query)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
         search_results = self.search(world_query)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
 
     def test_search_resource_by_name(self):
         resource = self.construct_resource(name="space kittens")
-        self.index_resource(resource)
         data = {'query': 'kittens', 'filters': []}
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
 
     def test_search_unapproved_resource(self):
         # Unapproved resources should only appear in
         # search results for Admin users
         r = self.construct_resource(
             name="space kittens", approved="Unapproved")
-        self.index_resource(r)
-        data = {'query': 'kittens', 'filters': []}
-        rv = self.app.post(
-            '/api/search',
-            data=json.dumps(data),
-            follow_redirects=True,
-            content_type="application/json")
-        self.assertSuccess(rv)
-        results = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(len(results["resources"]), 0)
-        rv = self.app.post(
-            '/api/search',
-            data=json.dumps(data),
-            follow_redirects=True,
-            content_type="application/json",
-            headers=self.logged_in_headers())
-        self.assertSuccess(rv)
-        results = json.loads(rv.get_data(as_text=True))
-        self.assertEqual(len(results["resources"]), 1)
+        query = {'query': 'kittens', 'filters': []}
+
+        # Anonymous user gets 0 results
+        results_anon = self.search_anonymous(query)
+        self.assertEqual(0, len(results_anon["resources"]))
+
+        # Admin user gets 1 result
+        results_admin = self.search(query)
+        self.assertEqual(1, len(results_admin["resources"]))
 
     def test_search_resource_by_description(self):
         r = self.construct_resource(
             name="space kittens", description="Flight of the fur puff")
-        self.index_resource(r)
         data = {'query': 'fur puff', 'filters': []}
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
 
     def test_search_resource_by_website(self):
         resource = self.construct_resource(website="www.stuff.edu")
-        self.index_resource(resource)
         data = {'query': 'www.stuff.edu', 'filters': []}
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
 
     def test_search_resource_by_owner(self):
         resource = self.construct_resource(owner="Mr. McDoodle Pants")
-        self.index_resource(resource)
         data = {'query': 'McDoodle', 'filters': []}
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
 
     def test_search_filters(self):
         r = self.construct_resource(
             type="hgttg",
             description="There is a theory which "
-            "states that if ever anyone discovers exactly what "
-            "the Universe is for and why it is here, it will "
-            "instantly disappear and be replaced by something "
-            "even more bizarre and inexplicable. There is another "
-            "theory which states that this has already happened.")
-        self.index_resource(r)
+                        "states that if ever anyone discovers exactly what "
+                        "the Universe is for and why it is here, it will "
+                        "instantly disappear and be replaced by something "
+                        "even more bizarre and inexplicable. There is another "
+                        "theory which states that this has already happened.")
         data = {'query': '', 'filters': [{'field': 'Type', 'value': 'hgttg'}]}
 
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
 
     def test_search_filter_on_approval(self):
         r = self.construct_resource(
             type="Woods",
             description="A short trip on the river.",
             approved="Approved")
-        self.index_resource(r)
         data = {
             'query': '',
             'filters': [{
@@ -1150,29 +1143,33 @@ class TestCase(unittest.TestCase):
             }]
         }
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
 
     def test_search_facet_counts(self):
         r1 = self.construct_resource(
             type="hgttg",
+            name="Golgafrinchan Ark Fleet Ship B",
             description="There is a theory which states that if ever "
-            "anyone discovers exactly what the Universe is "
-            "for and why it is here, it will instantly "
-            "disappear and be replaced by something even more "
-            "bizarre and inexplicable. There is another "
-            "theory which states that this has already "
-            "happened.")
+                        "anyone discovers exactly what the Universe is "
+                        "for and why it is here, it will instantly "
+                        "disappear and be replaced by something even more "
+                        "bizarre and inexplicable. There is another "
+                        "theory which states that this has already "
+                        "happened.")
         r2 = self.construct_resource(
             type="brazil",
+            name="Spoor and Dowser",
             description="Information Transit got the wrong man. I got the "
-            "*right* man. The wrong one was delivered to me "
-            "as the right man, I accepted him on good faith "
-            "as the right man. Was I wrong?")
-        self.index_resource(r1)
-        self.index_resource(r2)
-        data = {'query': ''}
+                        "*right* man. The wrong one was delivered to me "
+                        "as the right man, I accepted him on good faith "
+                        "as the right man. Was I wrong?")
+
+        db_resources = db.session.query(ThrivResource).all()
+        self.assertEqual(2, len(db_resources))
+
+        data = {'query': '', 'filters': []}
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 2)
+        self.assertEqual(2, len(search_results["resources"]))
         self.assertTrue("facets" in search_results)
         self.assertEqual(3, len(search_results["facets"]))
         self.assertTrue("facetCounts" in search_results["facets"][0])
@@ -1186,7 +1183,7 @@ class TestCase(unittest.TestCase):
     def test_resource_add_search(self):
         data = {'query': "Flash Gordon", 'filters': []}
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
 
         resource = {
             'name': "Flash Gordon's zippy ship",
@@ -1201,7 +1198,7 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
 
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
 
     def test_resource_delete_search(self):
         data = {'query': "Flash Gordon", 'filters': []}
@@ -1211,7 +1208,7 @@ class TestCase(unittest.TestCase):
         }
 
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
 
         rv = self.app.post(
             '/api/resource',
@@ -1224,7 +1221,7 @@ class TestCase(unittest.TestCase):
         resource_id = response['id']
 
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
 
         rv = self.app.delete(
             '/api/resource/{}'.format(resource_id),
@@ -1234,19 +1231,18 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
 
         search_results = self.search(data)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
 
     def test_resource_modify_search(self):
         resource = self.construct_resource(
             name="Flash Gordon's zappy raygun",
             description="Yet another thing. In a movie, or something.")
-        self.index_resource(resource)
         zappy_query = {'query': 'zappy', 'filters': []}
         zorpy_query = {'query': 'zorpy', 'filters': []}
         search_results = self.search(zappy_query)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
         search_results = self.search(zorpy_query)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
 
         rv = self.app.get('/api/resource/1', content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
@@ -1261,9 +1257,9 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
 
         search_results = self.search(zappy_query)
-        self.assertEqual(len(search_results["resources"]), 0)
+        self.assertEqual(0, len(search_results["resources"]))
         search_results = self.search(zorpy_query)
-        self.assertEqual(len(search_results["resources"]), 1)
+        self.assertEqual(1, len(search_results["resources"]))
 
     def test_create_institution(self):
         institution = {
@@ -1280,11 +1276,11 @@ class TestCase(unittest.TestCase):
                          'Ender\'s Academy for wayward space boys')
         self.assertEqual(response['description'],
                          'A school, in outerspace, with weightless games')
-        self.assertEqual(response['id'], 1)
+        self.assertEqual(1, response['id'])
         self.assertIsNotNone(
             db.session.query(ThrivInstitution).filter_by(id=1).first())
 
-    def test_list_instititions(self):
+    def test_list_institutions(self):
         i1 = ThrivInstitution(name="Delmar's", description="autobody")
         i2 = ThrivInstitution(
             name="News Leader", description="A once formidable news source")
@@ -1296,7 +1292,7 @@ class TestCase(unittest.TestCase):
         response = json.loads(rv.get_data(as_text=True))
         self.assertEqual(2, len(response))
 
-    def test_list_instititions_with_availability(self):
+    def test_list_institutions_with_availability(self):
         i1 = ThrivInstitution(
             name="Delmar's", description="autobody", hide_availability=True)
         i2 = ThrivInstitution(
@@ -1352,10 +1348,10 @@ class TestCase(unittest.TestCase):
         self.assertEqual("My little bronnie", response["name"])
 
     def test_create_type(self):
-        type = {"name": "A typey typer type"}
+        r_type = {"name": "A typey typer type"}
         rv = self.app.post(
             '/api/type',
-            data=json.dumps(type),
+            data=json.dumps(r_type),
             content_type="application/json")
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
@@ -1363,15 +1359,15 @@ class TestCase(unittest.TestCase):
         self.assertEqual(1, db.session.query(ThrivType).count())
 
     def test_edit_type(self):
-        type = ThrivType(name="one way")
-        db.session.add(type)
+        r_type = ThrivType(name="one way")
+        db.session.add(r_type)
         db.session.commit()
         rv = self.app.get(
-            '/api/type/%i' % type.id, content_type="application/json")
+            '/api/type/%i' % r_type.id, content_type="application/json")
         response = json.loads(rv.get_data(as_text=True))
         response['name'] = "or another"
         rv = self.app.put(
-            '/api/type/%i' % type.id,
+            '/api/type/%i' % r_type.id,
             data=json.dumps(response),
             content_type="application/json")
         self.assertSuccess(rv)
@@ -1379,12 +1375,12 @@ class TestCase(unittest.TestCase):
         response["name"] = "or another"
 
     def test_delete_type(self):
-        type = ThrivType(name="one way")
-        db.session.add(type)
+        r_type = ThrivType(name="one way")
+        db.session.add(r_type)
         db.session.commit()
         self.assertEqual(1, db.session.query(ThrivType).count())
         rv = self.app.delete(
-            '/api/type/%i' % type.id, content_type="application/json")
+            '/api/type/%i' % r_type.id, content_type="application/json")
         self.assertEqual(0, db.session.query(ThrivType).count())
 
     def test_list_types(self):
@@ -1465,10 +1461,10 @@ class TestCase(unittest.TestCase):
             content_type="application/json")
         return rv
 
-    def test_find_attachement_by_md5(self):
-        file = self.addFile()
-        file = self.addFile(md5='123412341234')
-        file = self.addFile(md5='666666666666', display_name="Lots a 6s")
+    def test_find_attachment_by_md5(self):
+        f1 = self.addFile()
+        f2 = self.addFile(md5='123412341234')
+        f3 = self.addFile(md5='666666666666', display_name="Lots a 6s")
         rv = self.app.get(
             '/api/file?md5=666666666666', content_type="application/json")
         self.assertSuccess(rv)
@@ -1949,12 +1945,12 @@ class TestCase(unittest.TestCase):
         c1 = Category(
             name="Zinger",
             description="Orange flavoered crap beer, served with shame "
-            "and an umbrella",
+                        "and an umbrella",
             parent=parent)
         c2 = Category(
             name="Ale",
             description="Includes the Indian Pale Ale, which comes in "
-            "120,000 different varieties now.",
+                        "120,000 different varieties now.",
             parent=parent)
         c3 = Category(
             name="Hefeweizen",
@@ -2247,7 +2243,7 @@ class TestCase(unittest.TestCase):
         message_count = len(TEST_MESSAGES)
         self.test_create_user_with_password()
         self.assertGreater(len(TEST_MESSAGES), message_count)
-        self.assertEqual("iThriv: Confirm Email",
+        self.assertEqual("iTHRIV: Confirm Email",
                          self.decode(TEST_MESSAGES[-1]['subject']))
 
         logs = EmailLog.query.all()
@@ -2263,7 +2259,7 @@ class TestCase(unittest.TestCase):
             content_type="application/json")
         self.assertSuccess(rv)
         self.assertGreater(len(TEST_MESSAGES), message_count)
-        self.assertEqual("iThriv: Password Reset Email",
+        self.assertEqual("iTHRIV: Password Reset Email",
                          self.decode(TEST_MESSAGES[-1]['subject']))
 
         logs = EmailLog.query.all()
@@ -2283,7 +2279,7 @@ class TestCase(unittest.TestCase):
             content_type="application/json")
         self.assertSuccess(rv)
         self.assertGreater(len(TEST_MESSAGES), message_count)
-        self.assertEqual("iThriv: Consult Request",
+        self.assertEqual("iTHRIV: Consult Request",
                          self.decode(TEST_MESSAGES[-1]['subject']))
 
         logs = EmailLog.query.all()
@@ -2312,14 +2308,14 @@ class TestCase(unittest.TestCase):
         logs = EmailLog.query.all()
 
         # 2. Second email goes to the admin requesting approval:
-        self.assertEqual("iThriv: Resource Approval Request",
+        self.assertEqual("iTHRIV: Resource Approval Request",
                          self.decode(TEST_MESSAGES[-2]['Subject']))
         self.assertEqual(admin_user.email, TEST_MESSAGES[-2]['To'])
         self.assertIsNotNone(logs[-2].tracking_code)
 
         # 3. Third email goes to the user confirming
         # receipt of the approval request:
-        self.assertEqual("iThriv: Resource Approval Request Confirmed",
+        self.assertEqual("iTHRIV: Resource Approval Request Confirmed",
                          self.decode(TEST_MESSAGES[-1]['Subject']))
         self.assertEqual(user.email, TEST_MESSAGES[-1]['To'])
         self.assertIsNotNone(logs[-1].tracking_code)
@@ -2514,7 +2510,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(5, len(result))
 
     def test_private_resources_not_listed_for_anonymous_user(self):
-        self.construct_various_resources()
+        resources = self.construct_various_resources()
+        self.assertEqual(16, len(resources))
 
         rv = self.app.get(
             '/api/resource',
@@ -2527,6 +2524,10 @@ class TestCase(unittest.TestCase):
         # Should only return 4 approved, non-private resources
         # out of a total 16 resources
         self.assertEqual(4, len(result))
+
+        # Search endpoint should return the same number of results
+        search_results = self.search_anonymous({})
+        self.assertEqual(len(result), search_results['total'])
 
     def test_private_resources_for_general_user(self):
         institution = self.construct_institution(
@@ -2554,6 +2555,10 @@ class TestCase(unittest.TestCase):
         # 16 resources
         self.assertEqual(6, len(result))
 
+        # Search endpoint should return the same number of results
+        search_results = self.search({}, user=u)
+        self.assertEqual(len(result), search_results['total'])
+
     def test_private_resources_listed_for_admin(self):
         institution = self.construct_institution(
             name="Alderaanian Association of Astrological Anthropology",
@@ -2580,6 +2585,10 @@ class TestCase(unittest.TestCase):
         # private to a different institution
         self.assertEqual(12, len(result))
 
+        # Search endpoint should return the same number of results
+        search_results = self.search({}, user=u)
+        self.assertEqual(len(result), search_results['total'])
+
     def test_admin_owner_should_be_able_to_view_their_own_resources(self):
         institution = self.construct_institution(
             name="University of Galactic Domination",
@@ -2591,8 +2600,9 @@ class TestCase(unittest.TestCase):
             email="emperor@empire.galaxy.gov",
             institution=institution)
 
-        self.construct_various_resources(
+        resources = self.construct_various_resources(
             institution=institution, owner=u.email)
+        self.assertEqual(16, len(resources))
 
         rv = self.app.get(
             '/api/resource',
@@ -2609,6 +2619,10 @@ class TestCase(unittest.TestCase):
         # a different institution that they don't own.
         self.assertEqual(14, len(result))
 
+        # Search endpoint should return the same number of results
+        search_results = self.search(query={}, user=u)
+        self.assertEqual(len(result), search_results['total'])
+
     def test_user_owner_should_always_be_able_to_view_their_own_resources(
             self):
         institution = self.construct_institution(
@@ -2621,8 +2635,8 @@ class TestCase(unittest.TestCase):
             email="jjb@senate.galaxy.gov",
             institution=institution)
 
-        self.construct_various_resources(
-            institution=institution, owner=u.email)
+        resources = self.construct_various_resources(institution=institution, owner=u.email)
+        self.assertEqual(16, len(resources))
 
         rv = self.app.get(
             '/api/resource',
@@ -2636,6 +2650,10 @@ class TestCase(unittest.TestCase):
         # General user owns only 8 of the 16 resources, but can also
         # see the 3 approved resources from other institutions
         self.assertEqual(11, len(result))
+
+        # Search endpoint should return the same number of results
+        search_results = self.search({}, user=u)
+        self.assertEqual(len(result), search_results['total'])
 
 
 if __name__ == '__main__':

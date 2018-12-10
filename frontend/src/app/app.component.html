@@ -20,6 +20,7 @@
           <button
             mat-button
             (click)="closeSidenav(); goUserAdmin($event)"
+            id="user-admin-button-mobile"
           >
             <mat-icon>person_add</mat-icon>
             User Administration
@@ -94,6 +95,7 @@
             mat-button
             *appIsAdmin
             (click)="goUserAdmin($event)"
+            id="user-admin-button"
           >
             <mat-icon>person_add</mat-icon>
             User Administration
@@ -118,6 +120,8 @@
             mat-button
             *appIfSession
             (click)="goHome($event)"
+            id="user_{{session.id}}"
+            [ngClass]="{'user-name': true}"
           >
             <mat-icon>account_circle</mat-icon>
             {{session.display_name}}

@@ -44,29 +44,34 @@ class ThrivResource(db.Model):
         try:
             return re.split('; |, | ', self.owner)
         except:
-            pass
+            return []
 
     def user_may_view(self):
         try:
             # if resource is private,
             # user institution must match resource institution
-            if not hasattr(g, 'user') or not g.user:
-                return ((self.approved == "Approved") and (not self.private))
-            elif self.owners() and g.user.email in self.owners():
-                return True
-            elif g.user.role == "Admin":
-                if self.private:
-                    return (self.institution_id == g.user.institution_id)
-                else:
+            if 'user' in g and g.user:
+                owners = self.owners()
+                if owners and g.user.email in owners:
                     return True
-            elif g.user.role == "User":
+                elif g.user.role == "Admin":
+                    if self.private:
+                        return self.institution_id == g.user.institution_id
+                    else:
+                        return True
+                elif g.user.role == "User":
+                    if self.private:
+                        return (self.approved == "Approved") and (self.institution_id == g.user.institution_id)
+                    else:
+                        return (self.approved == "Approved")
+                else:
+                    return False
+            else:
                 if self.private:
-                    return ((self.approved == "Approved")
-                            and (self.institution_id == g.user.institution_id))
+                    return (self.approved == "Approved") and (not self.private)
                 else:
                     return (self.approved == "Approved")
-            else:
-                return False
+
         except:
             return False
 

@@ -1,11 +1,13 @@
-from elasticsearch import Elasticsearch
-from flask import logging
-
-from elasticsearch_dsl import DocType, Date, Float, Keyword, Text, \
-    Index, Search, analyzer, Nested, Integer, analysis, Q, tokenizer, Boolean
-import elasticsearch_dsl
-from elasticsearch_dsl.connections import connections
 import logging
+from typing import List, Any, Union
+
+import elasticsearch_dsl
+from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Boolean, DocType, Date, Keyword, Text, \
+    Index, analyzer, Integer, Q, tokenizer
+from elasticsearch_dsl.connections import connections
+from elasticsearch_dsl.query import Query
+from flask import g
 
 
 class ElasticIndex:
@@ -29,7 +31,7 @@ class ElasticIndex:
 
     def establish_connection(self, settings):
         """Establish connection to an ElasticSearch host, and initialize the Submission collection"""
-        if (settings["http_auth_user"] != ''):
+        if settings["http_auth_user"] != '':
             self.connection = connections.create_connection(
                 hosts=settings["hosts"],
                 port=settings["port"],
@@ -83,7 +85,8 @@ class ElasticIndex:
             website=r.website,
             owner=r.owner,
             approved=r.approved,
-            institution_id=r.institution_id)
+            institution_id=r.institution_id,
+            private=r.private)
         if r.institution:
             er.institution = r.institution.name
         if r.type:
@@ -138,6 +141,7 @@ class ElasticResource(DocType):
     approved = Keyword()
     favorite_count = Integer()
     institution_id = Integer()
+    private = Boolean()
 
 
 class ResourceSearch(elasticsearch_dsl.FacetedSearch):
@@ -156,11 +160,54 @@ class ResourceSearch(elasticsearch_dsl.FacetedSearch):
     facets = {
         'Type': elasticsearch_dsl.TermsFacet(field='type'),
         'Institution': elasticsearch_dsl.TermsFacet(field='institution'),
-        'Approved': elasticsearch_dsl.TermsFacet(field='approved'),
-        # 'InstitutionId': elasticsearch_dsl.TermsFacet(field='institution_id')
+        'Approved': elasticsearch_dsl.TermsFacet(field='approved')
     }
 
     def search(self):
-        ' Override search to add your own filters '
-        s = super(ResourceSearch, self).search()
+        criteria = []
+
+        if 'user' in g and g.user:
+            if g.user.email is not None:
+                criteria.append(
+                    Q('match', owner=g.user.email)
+                )
+
+            if g.user.role == 'Admin':
+                criteria.append(
+                    Q('term', private=False)
+                )
+
+                if g.user.institution_id is not None:
+                    criteria.append(
+                        Q('bool', must=[
+                            Q('term', private=True),
+                            Q('term', institution_id=g.user.institution_id)
+                        ])
+                    )
+
+            if g.user.role == 'User':
+                criteria.append(
+                    Q('bool', must=[
+                        Q('term', approved='Approved'),
+                        Q('term', private=False)
+                    ])
+                )
+
+                if g.user.institution_id is not None:
+                    criteria.append(
+                        Q('bool', must=[
+                            Q('term', approved='Approved'),
+                            Q('term', private=True),
+                            Q('term', institution_id=g.user.institution_id)
+                        ])
+                    )
+        else:
+            criteria.append(
+                Q('bool', must=[
+                    Q('term', approved='Approved'),
+                    Q('term', private=False)
+                ])
+            )
+
+        s = super(ResourceSearch, self).search().filter('bool', should=criteria)
         return s

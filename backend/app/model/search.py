@@ -28,6 +28,7 @@ class Search():
 
         return jfilter
 
+
 class Facet():
     field = ""
     facetCounts = []
@@ -37,11 +38,11 @@ class Facet():
 
 
 class FacetCount():
-
     def __init__(self, category, hit_count, is_selected):
         self.category = category
         self.hit_count = hit_count
         self.is_selected = is_selected
+
 
 class Filter():
     field = ""

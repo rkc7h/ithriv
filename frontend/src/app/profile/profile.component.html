@@ -1,25 +1,56 @@
-<div class="container mat-typography" fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="10px" fxLayoutAlign="center center">
+<div
+  class="container mat-typography"
+  fxLayout="row"
+  fxLayout.xs="column"
+  fxLayoutWrap
+  fxLayoutGap="10px"
+  fxLayoutAlign="center center"
+>
   <div fxFlex="50%">
     <app-logo></app-logo>
     <mat-card>
       <mat-card-content>
         <h1 *ngIf="!createNew">Edit User Profile</h1>
         <h1 *ngIf="createNew">Create a New User</h1>
-        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-          <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
-            [field]="field" [formGroup]="profileForm" [errorMatcher]="errorMatcher"></app-form-field>
+        <form
+          [formGroup]="profileForm"
+          (ngSubmit)="onSubmit()"
+        >
+          <app-form-field
+            *ngFor="let field of getFields()"
+            [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
+            [field]="field"
+            [formGroup]="profileForm"
+            [errorMatcher]="errorMatcher"
+          ></app-form-field>
 
-          <div id="error_message" class="display mat-error">{{errorEmitter | async}}</div>
+          <div
+            id="error_message"
+            class="display mat-error"
+          >{{errorEmitter | async}}</div>
 
           <footer>
-            <button *ngIf="!(submitEmitter | async)"  type="button" color="primary" mat-raised-button (click)="onSubmit()">Next</button>
-            <div *ngIf="submitEmitter | async" class="spinner-container">
+            <button
+              *ngIf="!(submitEmitter | async)"
+              type="button"
+              color="primary"
+              mat-raised-button
+              (click)="onSubmit()"
+              id="next_button"
+            >Next</button>
+            <div
+              *ngIf="submitEmitter | async"
+              class="spinner-container"
+            >
               <mat-spinner></mat-spinner>
             </div>
           </footer>
         </form>
-        <div *ngIf="createNew" class="note">When creating a new user, we will send an email to the address provided above,
-        which they can use to set their password and log in.</div>
+        <div
+          *ngIf="createNew"
+          class="note"
+        >When creating a new user, we will send an email to the address provided above,
+          which they can use to set their password and log in.</div>
       </mat-card-content>
     </mat-card>
   </div>

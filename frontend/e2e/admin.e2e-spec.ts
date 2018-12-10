@@ -207,6 +207,68 @@ describe('Admin User', () => {
     expect(approvalBadge.getText()).toEqual('APPROVED');
   });
 
+  it('should navigate to user admin screen', async () => {
+    await page.navigateToUserAdminScreen();
+  });
+
+  it('should navigate to user editing screen', async () => {
+    await page.navigateToUserEditingScreen();
+  });
+
+  it('should set institution to None', async () => {
+    page.clickDropdownItem('Home Institution', 1);
+    page.clickElement('#next_button');
+    page.waitForNotVisible('#next_button');
+
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/admin/users`);
+
+    const idStr = await page.getElement('.user-name').getAttribute('id');
+    const userId = idStr.split('_')[1];
+    expect(
+      page
+        .getElement(`#user_row_${userId} .mat-column-institution`)
+        .getText()
+    ).toBeFalsy();
+  });
+
+
+  it('should navigate to search screen', async () => {
+    page.clickElement('#search-button');
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/search`);
+  });
+
+  it('should not be able to see private resources if user has no institution', () => {
+    page.waitForVisible('app-resource-tile');
+    expect(page.getElements('app-resource-tile .resource.private').count()).toEqual(0);
+  });
+
+  it('should navigate to user admin screen', async () => {
+    await page.navigateToUserAdminScreen();
+  });
+
+  it('should navigate to user editing screen', async () => {
+    await page.navigateToUserEditingScreen();
+  });
+
+  it('should set institution to something', async () => {
+    page.clickDropdownItem('Home Institution', 2);
+    page.clickElement('#next_button');
+    page.waitForNotVisible('#next_button');
+
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/admin/users`);
+
+    const idStr = await page.getElement('.user-name').getAttribute('id');
+    const userId = idStr.split('_')[1];
+    expect(
+      page
+        .getElement(`#user_row_${userId} .mat-column-institution`)
+        .getText()
+    ).toBeTruthy();
+  });
+
   it('should navigate to search screen', async () => {
     page.clickElement('#search-button');
     const url = await page.getUrl();
@@ -214,6 +276,7 @@ describe('Admin User', () => {
   });
 
   it('should be able to see private resource', () => {
+    page.waitForVisible('app-resource-tile');
     expect(page.getElements('app-resource-tile .resource.private').count()).toBeGreaterThan(0);
   });
 

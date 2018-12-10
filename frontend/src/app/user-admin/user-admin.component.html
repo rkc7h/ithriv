@@ -1,58 +1,96 @@
 <div class="userList">
 
   <mat-form-field>
-    <input matInput placeholder="Search Users" #input>
+    <input
+      matInput
+      placeholder="Search Users"
+      #input
+    >
   </mat-form-field>
 
   <div>
-    <button mat-mini-fab color="primary" (click)="openAdd()" aria-label="Add User">
+    <button
+      mat-mini-fab
+      color="primary"
+      (click)="openAdd()"
+      aria-label="Add User"
+    >
       <mat-icon>add</mat-icon>
     </button>
   </div>
 
-  <div class="spinner-container" *ngIf="dataSource.loading$ | async">
+  <div
+    class="spinner-container"
+    *ngIf="dataSource.loading$ | async"
+  >
     <mat-spinner></mat-spinner>
   </div>
 
-  <mat-table class="users-table mat-elevation-z8" [dataSource]="dataSource"
-             matSort matSortActive="email" matSortDirection="asc" matSortDisableClear>
+  <mat-table
+    class="users-table mat-elevation-z8"
+    [dataSource]="dataSource"
+    matSort
+    matSortActive="email"
+    matSortDirection="asc"
+    matSortDisableClear
+  >
 
 
     <ng-container matColumnDef="display_name">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-      <mat-cell class="name-cell"
-                *matCellDef="let user">{{user.display_name}}
+      <mat-header-cell
+        *matHeaderCellDef
+        mat-sort-header
+      >Name</mat-header-cell>
+      <mat-cell
+        class="name-cell"
+        *matCellDef="let user"
+      >{{user.display_name}}
       </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="email">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>Email</mat-header-cell>
-      <mat-cell class="email-cell"
-                *matCellDef="let user">{{user.email}}
+      <mat-header-cell
+        *matHeaderCellDef
+        mat-sort-header
+      >Email</mat-header-cell>
+      <mat-cell
+        class="email-cell"
+        *matCellDef="let user"
+      >{{user.email}}
       </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="role">
       <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
-      <mat-cell class="role-cell"
-                *matCellDef="let user">{{user.role}}
+      <mat-cell
+        class="role-cell"
+        *matCellDef="let user"
+      >{{user.role}}
       </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="institution">
       <mat-header-cell *matHeaderCellDef>Institution</mat-header-cell>
-      <mat-cell class="role-cell"
-           *matCellDef="let user"><span *ngIf="user.institution">{{user.institution.name}}</span></mat-cell>
+      <mat-cell
+        class="role-cell"
+        *matCellDef="let user"
+      ><span *ngIf="user.institution">{{user.institution.name}}</span></mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
 
-    <mat-row *matRowDef="let row; columns: displayedColumns"
-             (click)="onRowClicked(row)">
+    <mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (click)="onRowClicked(row)"
+      id="user_row_{{row.id}}"
+    >
     </mat-row>
 
   </mat-table>
 
-  <mat-paginator [length]="dataSource.count$ | async" [pageSize]="default_page_size"
-                 [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+  <mat-paginator
+    [length]="dataSource.count$ | async"
+    [pageSize]="default_page_size"
+    [pageSizeOptions]="[5, 10, 20]"
+  ></mat-paginator>
 </div>
