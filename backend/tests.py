@@ -2086,12 +2086,13 @@ class TestCase(unittest.TestCase):
         return dict(
             Authorization='Bearer ' + db_user.encode_auth_token().decode())
 
-    def test_create_user_with_password(self):
+    def test_create_user_with_password(self, display_name="Peter Dinklage", eppn="tyrion@got.com",
+                                       email="tyrion@got.com", role="User", password="peterpass"):
         data = {
-            "display_name": "Peter Dinklage",
-            "eppn": "tyrion@got.com",
-            "email": "tyrion@got.com",
-            "role": "User"
+            "display_name": display_name,
+            "eppn": eppn,
+            "email": email,
+            "role": role
         }
         rv = self.app.post(
             '/api/user',
@@ -2100,8 +2101,8 @@ class TestCase(unittest.TestCase):
             headers=self.logged_in_headers(),
             content_type="application/json")
         self.assertSuccess(rv)
-        user = User.query.filter_by(eppn=data["eppn"]).first()
-        user.password = "peterpass"
+        user = User.query.filter_by(eppn=eppn).first()
+        user.password = password
         db.session.add(user)
         db.session.commit()
 
@@ -2110,10 +2111,10 @@ class TestCase(unittest.TestCase):
             content_type="application/json",
             headers=self.logged_in_headers())
         response = json.loads(rv.get_data(as_text=True))
-        self.assertEqual("Peter Dinklage", response["display_name"])
-        self.assertEqual("tyrion@got.com", response["email"])
-        self.assertEqual("User", response["role"])
-        self.assertEqual(True, user.is_correct_password("peterpass"))
+        self.assertEqual(display_name, response["display_name"])
+        self.assertEqual(email, response["email"])
+        self.assertEqual(role, response["role"])
+        self.assertEqual(True, user.is_correct_password(password))
         return user
 
     def test_sso_login_sets_institution_to_uva_correctly(self):
@@ -2165,9 +2166,12 @@ class TestCase(unittest.TestCase):
             1, len(
                 User.query.filter(User.email == 'ehb11@virginia.edu').all()))
 
-    def test_login_user(self):
-        user = self.test_create_user_with_password()
-        data = {"email": "tyrion@got.com", "password": "peterpass"}
+    def test_login_user(self, display_name="Kit Harington", eppn="jonsnow@got.com",
+                                       email="jonsnow@got.com", role="User", password="y0ukn0wn0th!ng"):
+        user = self.test_create_user_with_password(display_name=display_name, eppn=eppn,
+                                       email=email, role=role, password=password)
+        data = {"email": email, "password": password}
+
         # Login shouldn't work with email not yet verified
         rv = self.app.post(
             '/api/login_password',
@@ -2183,6 +2187,21 @@ class TestCase(unittest.TestCase):
         self.assertSuccess(rv)
         response = json.loads(rv.get_data(as_text=True))
         self.assertIsNotNone(response["token"])
+
+        return user
+
+    def test_logout_user(self, display_name="Emilia Clarke", eppn="daeneryst@got.com",
+                                       email="daeneryst@got.com", role="User", password="5t0rmb0r~"):
+        user = self.test_login_user(display_name=display_name, eppn=eppn,
+                                       email=email, role=role, password=password)
+        rv = self.app.delete('/api/session',
+            content_type="application/json",
+            headers=self.logged_in_headers(user))
+        self.assertSuccess(rv)
+        response = json.loads(rv.get_data(as_text=True))
+        self.assertIsNone(response)
+
+        return user
 
     def test_admin_get_users(self):
         rv = self.app.get('/api/user')
@@ -2249,8 +2268,10 @@ class TestCase(unittest.TestCase):
         logs = EmailLog.query.all()
         self.assertIsNotNone(logs[-1].tracking_code)
 
-    def test_forgot_password_sends_email(self):
-        user = self.test_create_user_with_password()
+    def test_forgot_password_sends_email(self, display_name="Gemma Whelan", eppn="yara-greyjoy@got.com",
+                                       email="yara-greyjoy@got.com", role="User", password="AshaKraken"):
+        user = self.test_create_user_with_password(display_name=display_name, eppn=eppn,
+                                       email=email, role=role, password=password)
         message_count = len(TEST_MESSAGES)
         data = {"email": user.email}
         rv = self.app.post(
@@ -2655,6 +2676,54 @@ class TestCase(unittest.TestCase):
         search_results = self.search({}, user=u)
         self.assertEqual(len(result), search_results['total'])
 
+    def test_user_email_is_case_insensitive(self):
+        password = "s00p3rS3cur3"
+        email = email="Darth.maul@sith.net"
+        user = self.test_logout_user(
+            display_name="Darth Maul",
+            eppn="DARTH.MAUL@sith.net",
+            email=email,
+            role="User",
+            password=password
+        )
+
+        emails = [
+            "darth.maul@sith.net",
+            "DARTH.MAUL@SITH.NET",
+            "Darth.Maul@Sith.Net",
+            "dArTh.mAuL@sItH.nEt"
+        ]
+
+        for email_variant in emails:
+            data = {"email": email_variant, "password": password}
+
+            # Should be able to log in successfully
+            rv = self.app.post(
+                '/api/login_password',
+                data=json.dumps(data),
+                content_type="application/json")
+            self.assertSuccess(rv)
+            response = json.loads(rv.get_data(as_text=True))
+            self.assertIsNotNone(response["token"])
+
+            # Log out
+            rv = self.app.delete('/api/session',
+                content_type="application/json",
+                headers=self.logged_in_headers(user))
+            self.assertSuccess(rv)
+
+            # Make sure user can retrieve password
+            message_count = len(TEST_MESSAGES)
+            rv = self.app.post(
+                '/api/forgot_password',
+                data=json.dumps({"email": email_variant}),
+                content_type="application/json")
+            self.assertSuccess(rv)
+            self.assertGreater(len(TEST_MESSAGES), message_count)
+            self.assertEqual("iTHRIV: Password Reset Email", self.decode(TEST_MESSAGES[-1]['subject']))
+
+            logs = EmailLog.query.all()
+            self.assertIsNotNone(logs[-1].tracking_code)
 
 if __name__ == '__main__':
     unittest.main()
