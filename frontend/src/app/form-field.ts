@@ -14,11 +14,7 @@ export class FormField {
   placeholder: string;
   required?: boolean;
   showIcons = false;
-  type:
-    'button' | 'checkbox' | 'color' | 'date' | 'datetime-local' | 'email' |
-    'files' | 'hidden' | 'image' | 'month' | 'number' | 'password' | 'radio' |
-    'range' | 'reset' | 'richtexteditor' | 'search' | 'select' | 'submit' |
-    'tel' | 'text' | 'time' | 'tree' | 'url' | 'week';
+  type: string;
 
   // 'files' type
   attachments = new Map<string, FileAttachment>();
