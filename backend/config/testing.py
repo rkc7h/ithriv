@@ -2,6 +2,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join("./", "TEST_DB")
+# SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 TESTING = True
 CORS_ENABLED = True
 DEBUG = False
@@ -26,7 +27,7 @@ ELASTIC_SEARCH = {
 # the structure that actually comes back from Shibboleth.
 SSO_ATTRIBUTE_MAP = {
     'HTTP_EPPN': (True, 'eppn'),  # dhf8r@virginia.edu
-    'HTTP_UID': (False, 'uid'), # dhf8r
-    'HTTP_GIVENNAME': (False, 'givenName'), # Daniel
+    'HTTP_UID': (False, 'uid'),  # dhf8r
+    'HTTP_GIVENNAME': (False, 'givenName'),  # Daniel
     'HTTP_MAIL': (False, 'email')  # dhf8r@Virginia.EDU
 }

@@ -59,9 +59,7 @@ describe('IfSessionDirective', () => {
   });
 
   it('should show element if user is logged in', () => {
-    api.setResponse(user);
-    api.getSessionSpy(() => fixture.detectChanges());
-
+    api.spyAndReturnFake('getSession', user);
     fixture.detectChanges();
     const userFoundEl = fixture.debugElement.query(By.css('#userFound'));
     expect(userFoundEl).toBeTruthy();

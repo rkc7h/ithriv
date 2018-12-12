@@ -178,6 +178,13 @@ export class ResourceFormComponent implements OnInit {
         field.
       `
     }),
+    private: new FormField({
+      formControl: new FormControl(),
+      required: false,
+      placeholder: 'Private',
+      type: 'checkbox',
+      helpText: `If this box is checked, this resource will only be visible to iTHRIV administrators.`
+    }),
     categories: new FormField({
       formGroup: new FormGroup({}),
       required: true,

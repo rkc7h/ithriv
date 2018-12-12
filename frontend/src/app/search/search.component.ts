@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
   HostBinding,
   Input,
   OnInit,
@@ -9,7 +8,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatPaginator, MatSidenav } from '@angular/material';
+import { MatInput, MatPaginator, MatSidenav } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { Category } from '../category';
@@ -24,12 +23,11 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
   styleUrls: ['./search.component.scss'],
   animations: [fadeTransition()],
 })
-export class SearchComponent implements OnInit, AfterViewInit {
+export class SearchComponent implements OnInit {
   @HostBinding('@fadeTransition')
   @Input() resourceQuery: ResourceQuery;
 
   showFilters = false;
-
   searchForm: FormGroup;
   searchBox: FormControl;
   loading = false;
@@ -40,7 +38,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   @ViewChild('sidenav') public sideNav: MatSidenav;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild('query') query: ElementRef;
+  @ViewChild('searchInput', { read: MatInput }) public searchInput: MatInput;
 
   constructor(
     private api: ResourceApiService,
@@ -99,10 +97,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
       debounceTime(300)).subscribe(query => {
         this.updateQuery(query);
       });
-  }
 
-  ngAfterViewInit(): void {
-    this.query.nativeElement.focus();
+    this.searchInput.focus();
   }
 
   private checkWindowWidth(): void {

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as articles from './articles.json';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+import { Category } from '../category.js';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 
 @Component({
   selector: 'app-help',
@@ -9,12 +11,13 @@ import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/l
   styleUrls: ['./help.component.scss']
 })
 export class HelpComponent implements OnInit {
-
+  categories: Category[];
   privateArticles = [];
   publicArticles = [];
   breakpoint: string;
 
   constructor(
+    private api: ResourceApiService,
     private router: Router,
     public breakpointObserver: BreakpointObserver
   ) {
@@ -22,6 +25,8 @@ export class HelpComponent implements OnInit {
       this.privateArticles = articles.default.filter(a => !a.public);
       this.publicArticles = articles.default.filter(a => a.public);
     }
+
+    this.api.getCategories().subscribe(cats => this.categories = cats);
   }
 
   ngOnInit() {

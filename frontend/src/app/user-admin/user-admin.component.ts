@@ -1,12 +1,12 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {UserDataSource} from '../user-data-source';
-import {ResourceApiService} from '../shared/resource-api/resource-api.service';
-import {MatPaginator, MatSort} from '@angular/material';
-import {debounceTime, distinctUntilChanged, tap} from 'rxjs/operators';
-import {merge} from 'rxjs/internal/observable/merge';
-import {fromEvent} from 'rxjs/internal/observable/fromEvent';
-import {ActivatedRoute, Router} from '@angular/router';
-import {CategoryFormComponent} from '../category-form/category-form.component';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { UserDataSource } from '../user-data-source';
+import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { MatPaginator, MatSort } from '@angular/material';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
+import { merge } from 'rxjs/internal/observable/merge';
+import { fromEvent } from 'rxjs/internal/observable/fromEvent';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CategoryFormComponent } from '../category-form/category-form.component';
 
 @Component({
   selector: 'app-user-admin',
@@ -24,7 +24,7 @@ export class UserAdminComponent implements OnInit, AfterViewInit {
   @ViewChild('input') input: ElementRef;
 
   constructor(private api: ResourceApiService,
-              private router: Router) { }
+    private router: Router) { }
 
   ngOnInit() {
     this.dataSource = new UserDataSource(this.api);
@@ -33,7 +33,6 @@ export class UserAdminComponent implements OnInit, AfterViewInit {
   }
 
   onRowClicked(row) {
-    console.log('User Clicked:', row['id']);
     this.router.navigate(['admin/users', row['id']]);
   }
 

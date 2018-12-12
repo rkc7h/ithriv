@@ -46,8 +46,7 @@ describe('CategoryComponent', () => {
       })
       .compileComponents()
       .then(() => {
-        api.setResponse(category);
-        api.getCategorySpy(() => fixture.detectChanges());
+        api.spyAndReturnFake('getCategory', category);
         fixture = TestBed.createComponent(CategoryComponent);
         component = fixture.componentInstance;
         component.categoryResources = categoryResources;

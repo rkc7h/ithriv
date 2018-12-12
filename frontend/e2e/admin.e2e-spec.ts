@@ -49,27 +49,23 @@ describe('Admin User', () => {
     expect(page.getElements('app-category-tile').count()).toBeGreaterThan(0);
   });
 
-  it('should click the log in button', () => {
+  it('should click the log in button', async () => {
     page.clickElement('#login-button');
-    page.getUrl().then(url => {
-      expect(url.split('#')[1]).toEqual(`/login`);
-    });
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/login`);
   });
 
   it('should display login services', () => {
     page.waitForVisible('.login-service');
-    page.getElements('.login-service').then(sElements => {
-      expect(sElements.length).toBeGreaterThan(0);
-    });
+    expect(page.getElements('.login-service').count()).toBeGreaterThan(0);
   });
 
-  it('should click the second login service', () => {
+  it('should click the second login service', async () => {
     page.waitForVisible('.service-logo');
     page.getElements('.service-logo').get(1).click();
-    page.getSessionStorageVar('institution_id').then(institution_id => {
-      expect(institution_id).toBeTruthy();
-      expect(page.isVisible('#btn-institution-' + institution_id)).toBeTruthy();
-    });
+    const institution_id = await page.getSessionStorageVar('institution_id');
+    expect(institution_id).toBeTruthy();
+    expect(page.isVisible('#btn-institution-' + institution_id)).toBeTruthy();
   });
 
   it('should display system admin login option', () => {
@@ -98,12 +94,11 @@ describe('Admin User', () => {
     expect(passwordField.getAttribute('value')).toEqual(password);
   });
 
-  it('should log in as system admin', () => {
+  it('should log in as system admin', async () => {
     page.clickElement('#submit');
     page.waitForVisible('#logout-button');
-    page.getUrl().then(url => {
-      expect(url.split('#')[1]).toEqual(`/home`);
-    });
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/home`);
   });
 
   it('should display resources', () => {
@@ -115,15 +110,13 @@ describe('Admin User', () => {
     expect(page.getElements('app-resource-tile').count()).toBeGreaterThan(0);
   });
 
-  it('should click on resource tile', () => {
+  it('should click on resource tile', async () => {
     const resourceElement = page.getElement('app-resource-tile');
-    resourceElement.getAttribute('id').then(id => {
-      const resourceId = id.split('resource-tile-')[1];
-      resourceElement.click();
-      page.getUrl().then(url => {
-        expect(url.split('#')[1]).toEqual(`/resource/${resourceId}`);
-      });
-    });
+    const id = await resourceElement.getAttribute('id');
+    const resourceId = id.split('resource-tile-')[1];
+    resourceElement.click();
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/resource/${resourceId}`);
   });
 
   it('should link to resource website', () => {
@@ -172,6 +165,24 @@ describe('Admin User', () => {
     expect(websiteField.getAttribute('value')).toEqual(website);
   });
 
+  it('should mark resource as private', async () => {
+    const privateField = page.getElement('[title="Private"]');
+    expect(privateField.isPresent()).toEqual(true);
+
+    const inputEl = page.getElement('[title="Private"] input');
+    expect(inputEl.isPresent()).toEqual(true);
+
+    const isSelected = await inputEl.isSelected();
+
+    if (isSelected) {
+      privateField.click();
+      expect(inputEl.isSelected()).toEqual(false);
+    }
+
+    privateField.click();
+    expect(inputEl.isSelected()).toEqual(true);
+  });
+
   it('should save changes to resource', () => {
     page.clickElement('#save');
     page.waitForVisible('#resource-edit');
@@ -194,6 +205,79 @@ describe('Admin User', () => {
     approvalBadge.element(by.css('span')).click();
     page.waitForAnimations();
     expect(approvalBadge.getText()).toEqual('APPROVED');
+  });
+
+  it('should navigate to user admin screen', async () => {
+    await page.navigateToUserAdminScreen();
+  });
+
+  it('should navigate to user editing screen', async () => {
+    await page.navigateToUserEditingScreen();
+  });
+
+  it('should set institution to None', async () => {
+    page.clickDropdownItem('Home Institution', 1);
+    page.clickElement('#next_button');
+    page.waitForNotVisible('#next_button');
+
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/admin/users`);
+
+    const idStr = await page.getElement('.user-name').getAttribute('id');
+    const userId = idStr.split('_')[1];
+    expect(
+      page
+        .getElement(`#user_row_${userId} .mat-column-institution`)
+        .getText()
+    ).toBeFalsy();
+  });
+
+
+  it('should navigate to search screen', async () => {
+    page.clickElement('#search-button');
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/search`);
+  });
+
+  it('should not be able to see private resources if user has no institution', () => {
+    page.waitForVisible('app-resource-tile');
+    expect(page.getElements('app-resource-tile .resource.private').count()).toEqual(0);
+  });
+
+  it('should navigate to user admin screen', async () => {
+    await page.navigateToUserAdminScreen();
+  });
+
+  it('should navigate to user editing screen', async () => {
+    await page.navigateToUserEditingScreen();
+  });
+
+  it('should set institution to something', async () => {
+    page.clickDropdownItem('Home Institution', 2);
+    page.clickElement('#next_button');
+    page.waitForNotVisible('#next_button');
+
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/admin/users`);
+
+    const idStr = await page.getElement('.user-name').getAttribute('id');
+    const userId = idStr.split('_')[1];
+    expect(
+      page
+        .getElement(`#user_row_${userId} .mat-column-institution`)
+        .getText()
+    ).toBeTruthy();
+  });
+
+  it('should navigate to search screen', async () => {
+    page.clickElement('#search-button');
+    const url = await page.getUrl();
+    expect(url.split('#')[1]).toEqual(`/search`);
+  });
+
+  it('should be able to see private resource', () => {
+    page.waitForVisible('app-resource-tile');
+    expect(page.getElements('app-resource-tile .resource.private').count()).toBeGreaterThan(0);
   });
 
   it('should log out', async () => {

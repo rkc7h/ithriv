@@ -3,7 +3,7 @@
 from functools import wraps
 
 from itsdangerous import URLSafeTimedSerializer
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 from app import sso, app, RestException, db, auth, email_service
 from app.model.email_log import EmailLog
@@ -21,11 +21,12 @@ def login(user_info):
     else:
         eppn = user_info['eppn']
 
-    user = User.query.filter(or_(User.eppn == eppn, User.email == eppn)).first()
+    user = User.query.filter(
+        or_(func.lower(User.eppn) == func.lower(eppn), func.lower(User.email) == func.lower(eppn))).first()
     if user is None:
-        user = User(eppn=eppn,
-                    display_name=eppn,
-                    email=eppn)
+        user = User(eppn=eppn.lower(),
+                    display_name=eppn.lower(),
+                    email=eppn.lower())
         if "Surname" in user_info:
             user.display_name = user.display_name + " " + user_info["Surname"]
 
@@ -35,11 +36,11 @@ def login(user_info):
         # Link the user to their institution if possible
         institutions = ThrivInstitution.query.all()
         for i in institutions:
-            if i.domain and eppn.lower().endswith(i.domain):
+            if i.domain and eppn.lower().endswith(i.domain.lower()):
                 user.institution = i
     else:
-        user.eppn = eppn
-        user.email = eppn
+        user.eppn = eppn.lower()
+        user.email = eppn.lower()
 
     db.session.add(user)
     db.session.commit()
@@ -73,7 +74,7 @@ def confirm_email(email_token):
 def login_password():
     request_data = request.get_json()
     email = request_data['email']
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter(func.lower(User.email) == email.lower()).first()
 
     if user is None:
         raise RestException(RestException.LOGIN_FAILURE)
@@ -97,7 +98,7 @@ def login_password():
 def forgot_password():
     request_data = request.get_json()
     email = request_data['email']
-    user = User.query.filter_by(email=email).first_or_404()
+    user = User.query.filter(func.lower(User.email) == email.lower()).first_or_404()
 
     tracking_code = email_service.reset_email(user)
     log = EmailLog(user_id=user.id, type="reset_email", tracking_code=tracking_code)
@@ -117,7 +118,7 @@ def reset_password():
     except:
         raise RestException(RestException.TOKEN_INVALID)
 
-    user = User.query.filter_by(email=email).first_or_404()
+    user = User.query.filter(func.lower(User.email) == email.lower()).first_or_404()
     user.email_verified = True
     user.password = password
     db.session.add(user)

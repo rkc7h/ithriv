@@ -65,8 +65,7 @@ describe('SearchComponent', () => {
       })
       .compileComponents()
       .then(() => {
-        api.setResponse(resources);
-        api.searchResourcesSpy(() => fixture.detectChanges());
+        api.spyAndReturnFake('searchResources', resources);
         fixture = TestBed.createComponent(SearchComponent);
         component = fixture.componentInstance;
         component.resourceQuery = new ResourceQuery({
@@ -78,6 +77,7 @@ describe('SearchComponent', () => {
           start: 0,
           resources: [],
         });
+        fixture.detectChanges();
       });
   }));
 

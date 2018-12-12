@@ -12,3 +12,12 @@ mat-tab-group {
 .pad-md { padding: 4em 4em 4em 4em; }
 .pad-sm { padding: 2em 2em 2em 2em; }
 .pad-xs { padding: 1em 1em 1em 1em; }
+
+#site-map {
+  h2 {
+    margin-top: 2em;
+  }
+  h2, h3, h4 {
+    margin-bottom: 0px;
+  }
+}

@@ -71,7 +71,7 @@ class EmailService():
         token = ts.dumps(user.email, salt='email-reset-key')
         tracking_code = self.tracking_code()
 
-        subject = "iThriv: Confirm Email"
+        subject = "iTHRIV: Confirm Email"
         confirm_url = self.app.config['FRONTEND_EMAIL_RESET'] + token
         logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
         text_body = render_template("confirm_email.txt",
@@ -93,7 +93,7 @@ class EmailService():
         token = ts.dumps(user.email, salt='email-reset-key')
         tracking_code = self.tracking_code()
 
-        subject = "iThriv: Password Reset Email"
+        subject = "iTHRIV: Password Reset Email"
         reset_url = self.app.config['FRONTEND_EMAIL_RESET'] + token
         logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
         text_body = render_template("reset_email.txt",
@@ -113,7 +113,7 @@ class EmailService():
     def consult_email(self, user, request_data):
         tracking_code = self.tracking_code()
 
-        subject = "iThriv: Consult Request"
+        subject = "iTHRIV: Consult Request"
         logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
         text_body = render_template("consult_email.txt",
                                     user=user, request_data=request_data, tracking_code=tracking_code)
@@ -129,7 +129,7 @@ class EmailService():
     def approval_request_email(self, user, admin, resource):
         tracking_code = self.tracking_code()
 
-        subject = "iThriv: Resource Approval Request"
+        subject = "iTHRIV: Resource Approval Request"
         logo_url = url_for('track.logo', user_id=admin.id, code=tracking_code, _external=True)
         text_body = render_template("approval_request_email.txt",
                                     user=user, admin=admin, resource=resource, tracking_code=tracking_code)
@@ -145,7 +145,7 @@ class EmailService():
     def approval_request_confirm_email(self, user, resource):
         tracking_code = self.tracking_code()
 
-        subject = "iThriv: Resource Approval Request Confirmed"
+        subject = "iTHRIV: Resource Approval Request Confirmed"
         support_email = self.app.config['MAIL_CONSULT_RECIPIENT']
         logo_url = url_for('track.logo', user_id=user.id, code=tracking_code, _external=True)
         text_body = render_template("approval_request_confirm_email.txt",

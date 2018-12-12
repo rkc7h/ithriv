@@ -25,39 +25,87 @@
     dynamicHeight
     backgroundColor="primary"
   >
-    <ng-container>
-      <mat-tab
-        *ngFor="let article of publicArticles"
-        label="{{article.title}}"
+    <mat-tab
+      *ngFor="let article of publicArticles"
+      label="{{article.title}}"
+    >
+      <div [ngClass]="{
+        'pad-xl': breakpoint === 'xl',
+        'pad-lg': breakpoint === 'lg',
+        'pad-md': breakpoint === 'md',
+        'pad-sm': breakpoint === 'sm',
+        'pad-xs': breakpoint === 'xs'
+      }">
+        <mat-card>
+          <mat-card-content>
+            <h1 class="mat-display-1">{{article.title}}</h1>
+            <markdown>{{article.description}}</markdown>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+    <mat-tab label="Site Map">
+      <div
+        [ngClass]="{
+        'pad-xl': breakpoint === 'xl',
+        'pad-lg': breakpoint === 'lg',
+        'pad-md': breakpoint === 'md',
+        'pad-sm': breakpoint === 'sm',
+        'pad-xs': breakpoint === 'xs'
+      }"
+        id="site-map"
       >
-        <div [ngClass]="{
-                'pad-xl': breakpoint === 'xl',
-                'pad-lg': breakpoint === 'lg',
-                'pad-md': breakpoint === 'md',
-                'pad-sm': breakpoint === 'sm',
-                'pad-xs': breakpoint === 'xs'
-              }">
-          <mat-card>
-            <mat-card-content>
-              <h1 class="mat-display-1">{{article.title}}</h1>
-              <markdown>{{article.description}}</markdown>
-            </mat-card-content>
-          </mat-card>
-        </div>
-      </mat-tab>
-    </ng-container>
+        <mat-card>
+          <mat-card-content>
+            <h1 class="mat-display-1">Site Map</h1>
+            <p><a
+                class="pdf-link"
+                href="/assets/iTHRIV-site-map.pdf"
+              >
+                <mat-icon>save_alt</mat-icon>
+                Download a PDF of this site map
+              </a></p>
+            <ul>
+              <li *ngFor="let level0 of categories">
+                <h2 mat-subheader><a
+                    class="level0"
+                    href="/browse/{{level0.id}}"
+                  >{{level0.name}}</a></h2>
+                <ul>
+                  <li *ngFor="let level1 of level0.children">
+                    <h3 mat-subheader><a
+                        class="level1"
+                        href="/browse/{{level0.id}}?scrollTo={{level1.name}}"
+                      >{{level1.name}}</a></h3>
+                    <ul>
+                      <li *ngFor="let level2 of level1.children">
+                        <a
+                          class="level2"
+                          href="/category/level2.id"
+                        >{{level2.name}}</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+
+              </li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
     <ng-container *appIfSession>
       <mat-tab
         *ngFor="let article of privateArticles"
         label="{{article.title}}"
       >
         <div [ngClass]="{
-            'pad-xl': breakpoint === 'xl',
-            'pad-lg': breakpoint === 'lg',
-            'pad-md': breakpoint === 'md',
-            'pad-sm': breakpoint === 'sm',
-            'pad-xs': breakpoint === 'xs'
-          }">
+          'pad-xl': breakpoint === 'xl',
+          'pad-lg': breakpoint === 'lg',
+          'pad-md': breakpoint === 'md',
+          'pad-sm': breakpoint === 'sm',
+          'pad-xs': breakpoint === 'xs'
+        }">
           <mat-card>
             <mat-card-content>
               <h1 class="mat-display-1">{{article.title}}</h1>

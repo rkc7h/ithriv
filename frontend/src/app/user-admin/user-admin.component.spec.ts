@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatTableModule } from '@angular/material';
+import { MatPaginatorModule, MatSortModule, MatTableModule } from '@angular/material';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { getDummyUser } from '../shared/fixtures/user';
 import { MockResourceApiService } from '../shared/mocks/resource-api.service.mock';
@@ -19,6 +20,9 @@ describe('UserAdminComponent', () => {
       .configureTestingModule({
         declarations: [UserAdminComponent],
         imports: [
+          BrowserAnimationsModule,
+          MatPaginatorModule,
+          MatSortModule,
           MatTableModule,
           RouterTestingModule.withRoutes([])
         ],
@@ -29,10 +33,10 @@ describe('UserAdminComponent', () => {
       })
       .compileComponents()
       .then(() => {
-        api.setResponse([getDummyUser()]);
-        api.findUsersSpy(() => fixture.detectChanges());
+        api.spyAndReturnFake('findUsers', [getDummyUser()]);
         fixture = TestBed.createComponent(UserAdminComponent);
         component = fixture.componentInstance;
+        fixture.detectChanges();
       });
   }));
 

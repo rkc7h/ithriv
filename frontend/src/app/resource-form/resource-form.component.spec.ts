@@ -43,14 +43,19 @@ describe('ResourceFormComponent', () => {
       })
       .compileComponents()
       .then(() => {
-        api.setResponse([category]);
-        api.getCategoriesSpy(() => fixture.detectChanges());
+        api.spyAndReturnFake('getCategories', [category]);
         fixture = TestBed.createComponent(ResourceFormComponent);
         component = fixture.componentInstance;
+        fixture.detectChanges();
       });
   }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should have a checkbox for private resource', () => {
+    expect(component.fields.hasOwnProperty('private')).toBeTruthy();
+    expect(component.fields.private.type).toEqual('checkbox');
   });
 });

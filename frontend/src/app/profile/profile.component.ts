@@ -1,12 +1,12 @@
-import {Component, OnInit, ChangeDetectionStrategy, EventEmitter} from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ErrorMatcher } from '../error-matcher';
 import { FormField } from '../form-field';
 import { User } from '../user';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
-import {IThrivForm} from '../shared/IThrivForm';
+import { IThrivForm } from '../shared/IThrivForm';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,7 @@ export class ProfileComponent implements OnInit {
     }),
     institution_id: new FormField({
       formControl: new FormControl(),
-      required: true,
+      required: false,
       placeholder: 'Home Institution',
       type: 'select',
       apiSource: 'getInstitutions',
@@ -63,8 +63,10 @@ export class ProfileComponent implements OnInit {
   ) {
     this.iThrivForm.loadForm();
 
-    this.user = { id: null, display_name: this.fields.display_name.formControl.value,
-      email: this.fields.email.formControl.value, institution_id: this.fields.institution_id.formControl.value, role: 'User' };
+    this.user = {
+      id: null, display_name: this.fields.display_name.formControl.value,
+      email: this.fields.email.formControl.value, institution_id: this.fields.institution_id.formControl.value, role: 'User'
+    };
     this.iThrivForm.setObjectToEdit(this.user);
 
     this.route.params.subscribe(params => {
@@ -91,7 +93,7 @@ export class ProfileComponent implements OnInit {
     this.iThrivForm.updateObject(this.user);
     this.submitEmitter.emit(true);
     if (this.createNew) {
-      this.api.addUser(this.user).subscribe( user => {
+      this.api.addUser(this.user).subscribe(user => {
         this.router.navigate(['admin/users']);
         this.submitEmitter.emit(false);
       }, error1 => {
@@ -103,6 +105,7 @@ export class ProfileComponent implements OnInit {
         this.submitEmitter.emit(false);
       });
     } else {
+      this.user.institution_id = this.user.institution_id || null;
       this.api.updateUser(this.user).subscribe(user => {
         this.router.navigate(['admin/users']);
         this.submitEmitter.emit(false);

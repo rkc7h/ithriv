@@ -1,4 +1,7 @@
 import { Resource } from '../../resource';
+import { Institution } from '../../institution';
+
+const institution: Institution = { id: 777, name: 'The Old Republic' };
 
 export function getDummyResource(): Resource {
   return {
@@ -20,6 +23,12 @@ export function getDummyResource(): Resource {
     user_may_edit: false,
     last_updated: '1977-05-25T00:00:000Z',
     favorites: [],
-    availabilities: [],
+    availabilities: [{
+      institution_id: 0,
+      resource_id: 999,
+      available: true,
+      institution: institution
+    }],
+    institution: institution
   };
 }

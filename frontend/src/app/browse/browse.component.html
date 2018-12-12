@@ -48,7 +48,7 @@
         (updatedCategory)="addCategory($event)"
       ></app-add-category-button>
     </h1>
-    <markdown>{{rootCategory.brief_description || dummyText.category}}</markdown>
+    <markdown class="root-category-description">{{rootCategory.brief_description || dummyText.category}}</markdown>
     <button mat-raised-button>Start {{gerunding(rootCategory.name)}}</button>
     <div
       class="bg-img"
@@ -100,7 +100,7 @@
         class="down"
       ></app-move-category-button>
     </h1>
-    <markdown>{{category.description || dummyText.category}}</markdown>
+    <markdown class="category-description">{{category.description || dummyText.category}}</markdown>
     <div
       class="bg-img"
       [ngStyle]="{'background-image': headerImage(category)}"
@@ -155,7 +155,7 @@
         [direction]="'down'"
         class="down"
       ></app-move-category-button>
-      <markdown>{{c.description || dummyText.c}}</markdown>
+      <markdown class="sub-category-description">{{c.description || dummyText.c}}</markdown>
 
       <div
         class="sub-categories container"
@@ -184,7 +184,7 @@
             </div>
             <mat-card-title>{{sc.name}}</mat-card-title>
             <mat-card-subtitle>
-              <markdown>{{sc.brief_description || dummyText.sc}}</markdown>
+              <markdown class="sub-sub-category-description">{{sc.brief_description || dummyText.sc}}</markdown>
             </mat-card-subtitle>
           </mat-card-header>
           <mat-card-content></mat-card-content>

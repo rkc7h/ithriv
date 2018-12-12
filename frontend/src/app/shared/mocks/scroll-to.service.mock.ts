@@ -20,4 +20,8 @@ export class MockScrollToService extends SpyObject {
   setResponse(json: any): void {
     this.fakeResponse = json;
   }
+
+  spyAndReturnFake(methodName: string, fakeResponse: any) {
+    this.spy(methodName).andReturn({ subscribe: callback => callback(fakeResponse) });
+  }
 }

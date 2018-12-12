@@ -1,27 +1,31 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../category';
 import { Institution } from '../institution';
 import { Resource } from '../resource';
 import { ResourceCategory } from '../resource-category';
-import { zoomTransition } from '../shared/animations';
+import { zoomTransition, fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { FileAttachment } from '../file-attachment';
 import { ResourceType } from '../resourceType';
+import { User } from '../user';
 
 @Component({
   selector: 'app-resource',
   templateUrl: './resource.component.html',
   styleUrls: ['./resource.component.scss'],
-  animations: [zoomTransition()]
+  animations: [zoomTransition(), fadeTransition()]
 })
 export class ResourceComponent implements OnInit {
   resourceId: number;
   @Input() resource: Resource;
   @Input() categories: ResourceCategory[];
   attachments: FileAttachment[];
+  user: User;
 
   transitionState = '';
+
+  @HostBinding('@fadeTransition')
   isDataLoaded = false;
 
   constructor(
@@ -32,6 +36,7 @@ export class ResourceComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.resourceId = params['resource'];
       this.loadResource();
+      this.loadUser();
     });
   }
 
@@ -61,6 +66,10 @@ export class ResourceComponent implements OnInit {
     this.attachments = resource.files;
     this.transitionState = 'zoom-in-enter';
     this.isDataLoaded = true;
+  }
+
+  loadUser() {
+    this.api.getSession().subscribe(user => this.user = user);
   }
 
   getCategoryIcon(category: Category) {
@@ -115,5 +124,10 @@ export class ResourceComponent implements OnInit {
     } else {
       return `/assets/filetypes/unknown.svg`;
     }
+  }
+
+  togglePrivate(isPrivate: boolean) {
+    this.resource.private = isPrivate;
+    this.api.updateResource(this.resource).subscribe();
   }
 }

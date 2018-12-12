@@ -22,6 +22,7 @@ export interface Resource {
   website?: string;
   approved?: string;
   files?: FileAttachment[];
+  private?: boolean;
   user_may_view?: boolean;
   user_may_edit?: boolean;
   last_updated?: string;
