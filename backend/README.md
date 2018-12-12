@@ -240,9 +240,38 @@ token, and then redirect again to the front end, passing that token along as a G
 
 ## Testing
 
+### Start postgres and elasticsearch for backend tests
+```BASH
+./test-backend.sh
+```
+
 ### Run backend tests
 In the `backend` directory, execute the following command:
 ```BASH
 source python-env/bin/activate
 export FLASK_APP=./app/__init__.py
 python tests.py
+```
+
+### Start postgres, elasticsearch, flask, and reset database for frontend tests
+```BASH
+./test-frontend.sh
+```
+
+### Run frontend end-to-end tests
+In the `frontend` directory, execute the following command:
+```BASH
+ng serve
+```
+
+Then, in a new terminal window, execute the following command in the `frontend` directory:
+```BASH
+ng e2e --dev-server-target=
+```
+
+### Run frontend unit tests
+In the `frontend` directory, execute the following command:
+```BASH
+ng test
+```
+
