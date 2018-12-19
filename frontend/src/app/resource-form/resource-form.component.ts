@@ -154,15 +154,15 @@ export class ResourceFormComponent implements OnInit {
     private: new FormField({
       formControl: new FormControl(),
       required: false,
-      placeholder: 'Private',
+      placeholder: 'Only visible to Home Institution',
       type: 'checkbox',
       fieldsetId: 'institution_prefs',
-      helpText: `If this box is checked, this resource will only be visible to the home institution selected above.`
+      helpText: `If this box is checked, this resource will only be visible to the Home Institution selected above.`
     }),
     'availabilities.institution_id': new FormField({
       formControl: new FormControl(),
       required: true,
-      placeholder: 'Who can use this resource?',
+      placeholder: 'Who else can use this resource?',
       type: 'select',
       multiSelect: true,
       apiSource: 'getAvailabilityInstitutions',
