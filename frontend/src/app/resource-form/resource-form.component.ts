@@ -603,13 +603,19 @@ export class ResourceFormComponent implements OnInit {
   }
 
   userIsOwner() {
-    return (
+    if (
       this.user &&
       this.user.email &&
       this.resource &&
       this.resource.owners &&
-      (this.resource.owners.length > 0) &&
-      this.resource.owners.includes(this.user.email)
-    );
+      (this.resource.owners.length > 0)
+    ) {
+      for (const owner of this.resource.owners) {
+        if (owner.toLowerCase() === this.user.email.toLowerCase()) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
