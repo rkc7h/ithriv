@@ -233,9 +233,48 @@ I've created users for primary developers in our example_data, and that informat
 into the database automatically with a *flask reset*  Add yourself there if needed.
 
 #### Production Mode
-In production, the redirect on the front end needs to point to the url that will direct us out to
-Shibboleth.  The account we use will send the user back to an API endpoint that will generate a JWT
-token, and then redirect again to the front end, passing that token along as a GET parameter.
+In production, the redirect on the front end needs to point to the url that will direct us out to Shibboleth.  The account we use will send the user back to an API endpoint that will generate a JWT token, and then redirect again to the front end, passing that token along as a GET parameter.
+
+- Where does the instance live on production?
+The iTHRIV repo is deployed using a git hook that lives here:
+```
+/home/ubuntu/ithriv.git/hooks/post-receive
+```
+
+The actual instance (environment variable = `DEPLOY_ROOT`) lives here:
+```
+/var/www/ithriv
+```
+
+- What are the CLI commands to restart the server from SSH terminal?
+```
+cd /var/www/ithriv
+./prod_update.sh prod
+```
+
+Secrets live here:
+```
+~/ithriv_config.py
+```
+
+- Where are logs stored?
+SMTP (e-mail) server log:
+```
+/var/log/mail.log
+```
+
+Web server logs:
+```
+/var/log/apache2
+```
+
+System log:
+```
+/var/log/syslog
+```
+
+- How to push to production?
+Use SSH identity key
 
 
 ## Testing
