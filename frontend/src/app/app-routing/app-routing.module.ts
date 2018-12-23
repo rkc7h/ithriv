@@ -41,7 +41,7 @@ const routes: Routes = [
   { path: 'consult_request', component: ConsultRequestFormComponent, data: { title: 'Request a Consult', hideHeader: true } },
   { path: 'forgot_password', component: ForgotPasswordComponent, data: { title: 'Reset your iTHRIV password', hideHeader: true } },
   { path: 'help', component: HelpComponent, data: { title: 'iTHRIV Help' } },
-  { path: 'home', component: HomeComponent, data: { title: 'Welcome to iTHRIV' } },
+  { path: 'home', component: HomeComponent, data: { title: 'Find Health Research Resources' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iTHRIV', hideHeader: true } },
   { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iTHRIV', hideHeader: true } },
   { path: 'network', component: GraphComponent, data: { title: 'Find Resources' } },
