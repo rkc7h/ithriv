@@ -25,10 +25,8 @@
 </div>
 
 <mat-sidenav-container
-  fxLayout="row"
-  fxLayout.xs="column"
+  [id]="'sidenavContainer'"
   class="mat-typography"
-  fxFlexFill
   [hasBackdrop]="false"
 >
   <mat-sidenav
@@ -84,52 +82,56 @@
 
     </mat-accordion>
   </mat-sidenav>
+  <mat-sidenav-content>
+    <ul class="applied-filters">
+      <li *ngIf="!sidenav.opened">
+        <button
+          mat-icon-button
+          (click)="sidenav.open()"
+        >
+          <i class="material-icons">add_circle_outline</i>
+        </button>
+        Add a filter
+      </li>
+      <li *ngIf="resourceQuery.query">
+        <button
+          mat-icon-button
+          (click)="updateQuery()"
+        >
+          <i class="material-icons">remove_circle_outline</i>
+        </button>
+        Search: {{resourceQuery.query}}
+      </li>
 
-  <ul class="applied-filters">
-    <li *ngIf="!sidenav.opened">
-      <button
-        mat-icon-button
-        (click)="sidenav.open()"
+      <li *ngFor="let filter of resourceQuery.filters">
+        <button
+          mat-icon-button
+          (click)="removeFilter(filter)"
+        >
+          <i class="material-icons">remove_circle_outline</i>
+        </button>
+        {{filter.field}} : {{filter.value}}
+      </li>
+    </ul>
+
+    <div [hidden]="loading || hideResults">
+      <app-resource-list
+        [resources]="resources"
+        [resourceQuery]="resourceQuery"
+        [sidenavExpanded]="sidenav.opened"
+        fxFlexFill
+      ></app-resource-list>
+    </div>
+
+
+    <div [hidden]="loading || hideResults">
+      <mat-paginator
+        [length]="resourceQuery.total"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[pageSize, pageSize*3, pageSize*5]"
+        (page)="updatePage()"
       >
-        <i class="material-icons">add_circle_outline</i>
-      </button>
-      Add a filter
-    </li>
-    <li *ngIf="resourceQuery.query">
-      <button
-        mat-icon-button
-        (click)="updateQuery()"
-      >
-        <i class="material-icons">remove_circle_outline</i>
-      </button>
-      Search: {{resourceQuery.query}}
-    </li>
-
-    <li *ngFor="let filter of resourceQuery.filters">
-      <button
-        mat-icon-button
-        (click)="removeFilter(filter)"
-      >
-        <i class="material-icons">remove_circle_outline</i>
-      </button>
-      {{filter.field}} : {{filter.value}}
-    </li>
-  </ul>
-
-  <app-resource-list
-    [resources]="resources"
-    [resourceQuery]="resourceQuery"
-    [sidenavExpanded]="sidenav.opened"
-    fxFlexFill
-  ></app-resource-list>
-
-  <mat-paginator
-    [length]="resourceQuery.total"
-    [pageSize]="pageSize"
-    [pageSizeOptions]="[pageSize, pageSize*3, pageSize*5]"
-    (page)="updatePage()"
-  >
-  </mat-paginator>
-
-
+      </mat-paginator>
+    </div>
+  </mat-sidenav-content>
 </mat-sidenav-container>

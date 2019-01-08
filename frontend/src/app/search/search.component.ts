@@ -30,7 +30,8 @@ export class SearchComponent implements OnInit {
   showFilters = false;
   searchForm: FormGroup;
   searchBox: FormControl;
-  loading = false;
+  loading = true;
+  hideResults = true;
   resources: Resource[];
   categories: Category[];
   publicId: number;
@@ -102,7 +103,6 @@ export class SearchComponent implements OnInit {
   }
 
   private checkWindowWidth(): void {
-
     if (window.innerWidth > 768) {
       this.sideNav.mode = 'side';
       this.sideNav.opened = false;
@@ -113,6 +113,7 @@ export class SearchComponent implements OnInit {
   }
 
   updateQuery(query) {
+    this.hideResults = false;
     this.resourceQuery.query = query;
     this.resourceQuery.start = 0;
     this.paginator.firstPage();
@@ -136,10 +137,18 @@ export class SearchComponent implements OnInit {
   }
 
   doSearch() {
+    this.loading = true;
+
+    this.hideResults = (
+      (this.resourceQuery.query === '') &&
+      (this.resourceQuery.filters.length === 0)
+    );
+
     this.updateUrl(this.resourceQuery);
 
     this.api.searchResources(this.resourceQuery).subscribe(
       (query) => {
+        this.loading = false;
         this.resourceQuery = query;
         this.resources = query.resources;
         this.checkWindowWidth();
