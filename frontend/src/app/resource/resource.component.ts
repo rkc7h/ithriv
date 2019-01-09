@@ -92,12 +92,14 @@ export class ResourceComponent implements OnInit {
 
   goCategory($event, category: Category) {
     $event.preventDefault();
-    if (category.level === 0) {
-      this.router.navigate(['browse', category.id]);
-    } else if (category.level === 1) {
-      this.router.navigate(['browse', category.parent.id], { queryParams: { scrollTo: category.id } });
-    } else if (category.level === 2) {
+
+    if (category.level === 2) {
       this.router.navigate(['category', category.id]);
+    } else if (this.api.getViewPreferences().isNetworkView) {
+      this.router.navigate(['network', category.id]);
+    } else {
+      const id = (category.level === 1) ? category.parent.id : category.id;
+      this.router.navigate(['browse', id]);
     }
   }
 
