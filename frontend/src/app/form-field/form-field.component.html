@@ -161,7 +161,10 @@
   <app-file-upload [field]="field"></app-file-upload>
 </div>
 
-<div *ngIf="field.type === 'checkbox'">
+<div
+  *ngIf="field.type === 'checkbox'"
+  class="checkbox-container"
+>
   <app-form-field-label
     [field]="field"
     [errors]="errors"
@@ -189,5 +192,4 @@
       <strong>{{currentLength()}}</strong> characters.
     </span>
   </mat-error>
-
 </div>
