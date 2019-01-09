@@ -131,9 +131,10 @@ $animationDuration: 500ms;
 
   // Use mat-color to extract individual colors from a palette as necessary.
 
-  body {
+  body, .main {
     background-color: mat-color($primary, 50);
     margin: 0px;
+    min-height: 100vh;
   }
 
   #browse {

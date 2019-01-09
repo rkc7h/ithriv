@@ -10,14 +10,15 @@ form.search-box {
   padding-top: 1em;
   padding-bottom: 1em;
   display: flex;
+  transition: $animationDuration ease-in-out padding-top;
+
+  &.hidden-results {
+    padding-top: 100px;
+  }
 
   mat-form-field, mat-hint {
     flex: 2 0 auto;
   }
-}
-
-.container {
-  min-height: 600px;
 }
 
 #tiles {
@@ -26,38 +27,46 @@ form.search-box {
   padding-right: 2em;
 }
 
-.mat-sidenav {
-  width: 100%;
+::ng-deep mat-sidenav-container#sidenavContainer {
+  min-height: 100vh;
 
-  h2 {
-    display: flex;
+  ::ng-deep .mat-sidenav {
+    width: 100%;
 
-    span {
-      flex: 1 1 auto;
+    h2 {
+      display: flex;
+      margin-left: 24px;
+      line-height: 2.2;
+
+      span {
+        flex: 1 1 auto;
+      }
     }
   }
-}
 
-@media screen and (min-width: 720px) {
-  .mat-sidenav {
-    width: 400px;
+  @media screen and (min-width: 720px) {
+    ::ng-deep .mat-sidenav {
+      width: 400px;
+    }
+  }
+
+  .applied-filters > li {
+    list-style: none;
+  }
+
+  mat-list-item {
+    cursor: pointer;
+  }
+
+  mat-list-item:hover {
+    background-color: mat-color($uva-primary, 100)
+  }
+
+  button {
+    flex: 0 0 auto;
+    border: none;
   }
 }
 
-.applied-filters > li {
-  list-style: none;
-}
 
-mat-list-item {
-  cursor: pointer;
-}
-
-mat-list-item:hover {
-  background-color: mat-color($uva-primary, 100)
-}
-
-button {
-  flex: 0 0 auto;
-  border: none;
-}
 
