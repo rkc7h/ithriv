@@ -166,10 +166,10 @@ describe('Admin User', () => {
   });
 
   it('should mark resource as private', async () => {
-    const privateField = page.getElement('[title="Private"]');
+    const privateField = page.getElement('[title="Only visible to Home Institution"]');
     expect(privateField.isPresent()).toEqual(true);
 
-    const inputEl = page.getElement('[title="Private"] input');
+    const inputEl = page.getElement('[title="Only visible to Home Institution"] input');
     expect(inputEl.isPresent()).toEqual(true);
 
     const isSelected = await inputEl.isSelected();
@@ -239,6 +239,25 @@ describe('Admin User', () => {
     expect(url.split('#')[1]).toEqual(`/search`);
   });
 
+  it('should not show any results until the user enters a query', () => {
+    page.waitForNotVisible('app-resource-tile');
+    expect(page.getElements('[hidden] app-resource-tile').count()).toBeGreaterThan(0);
+  });
+
+  it('should enter a query', () => {
+    const query = 'a';
+    const searchField = page.getElement('[placeholder="Search"]');
+
+    searchField.clear();
+    expect(searchField.getAttribute('value')).toEqual('');
+
+    searchField.sendKeys(query);
+    expect(searchField.getAttribute('value')).toEqual(query);
+
+    page.waitForVisible('app-resource-tile');
+    expect(page.getElements('app-resource-tile').count()).toBeGreaterThan(0);
+  });
+
   it('should not be able to see private resources if user has no institution', () => {
     page.waitForVisible('app-resource-tile');
     expect(page.getElements('app-resource-tile .resource.private').count()).toEqual(0);
@@ -273,6 +292,25 @@ describe('Admin User', () => {
     page.clickElement('#search-button');
     const url = await page.getUrl();
     expect(url.split('#')[1]).toEqual(`/search`);
+  });
+
+  it('should not show any results until the user enters a query', () => {
+    page.waitForNotVisible('app-resource-tile');
+    expect(page.getElements('[hidden] app-resource-tile').count()).toBeGreaterThan(0);
+  });
+
+  it('should enter a query', () => {
+    const query = 'a';
+    const searchField = page.getElement('[placeholder="Search"]');
+
+    searchField.clear();
+    expect(searchField.getAttribute('value')).toEqual('');
+
+    searchField.sendKeys(query);
+    expect(searchField.getAttribute('value')).toEqual(query);
+
+    page.waitForVisible('app-resource-tile');
+    expect(page.getElements('app-resource-tile').count()).toBeGreaterThan(0);
   });
 
   it('should be able to see private resource', () => {
