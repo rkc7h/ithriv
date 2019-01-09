@@ -10,6 +10,11 @@ form.search-box {
   padding-top: 1em;
   padding-bottom: 1em;
   display: flex;
+  transition: $animationDuration ease-in-out padding-top;
+
+  &.hidden-results {
+    padding-top: 100px;
+  }
 
   mat-form-field, mat-hint {
     flex: 2 0 auto;
