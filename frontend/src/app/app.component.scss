@@ -4,6 +4,7 @@
 @include ithriv-theme($ithriv-theme);
 
 mat-toolbar {
+
   mat-toolbar-row {
     a {
       text-decoration: none;
@@ -28,6 +29,10 @@ mat-toolbar {
     height: 30px;
     font-size: 12px;
     background-color: mat-color($ithriv-primary, 900, 1.0);
+
+    &.logged-in {
+      background-color: red;
+    }
 
     &.menubar-xs {
       height: 56px;

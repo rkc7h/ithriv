@@ -538,10 +538,6 @@ export class ResourceFormComponent implements OnInit {
     return this.api.addFileAttachmentBlob(attachment.id, file, this.progress);
   }
 
-  updateAttachmentFiles(fa: FileAttachment) {
-    return this.api.linkResourceAndAttachment(this.resource, fa);
-  }
-
   onCancel() {
     this.close();
   }

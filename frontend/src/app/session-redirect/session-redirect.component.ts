@@ -17,7 +17,9 @@ export class SessionRedirectComponent {
     private router: Router) {
 
     this.route.params.subscribe(params => {
-      this.api.openSession(params['token']).subscribe(session => {
+      const token = params['token'];
+      localStorage.setItem('token', token);
+      this.api.getUserSession().subscribe(session => {
         const prevUrl = localStorage.getItem('prev_url');
         if (prevUrl) {
           this.router.navigateByUrl(prevUrl).then(() => {

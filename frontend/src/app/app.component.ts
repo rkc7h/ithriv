@@ -19,7 +19,6 @@ import {
   Router,
   RouterOutlet
 } from '@angular/router';
-import { environment } from '../environments/environment';
 import { Icon } from './icon';
 import { Institution } from './institution';
 import { fadeTransition } from './shared/animations';
@@ -47,6 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'iTHRIV';
   pageTitle = 'Find Resources';
   trustUrl;
+  isLoggedIn = false;
 
   private _mobileQueryListener: () => void;
 
@@ -55,12 +55,22 @@ export class AppComponent implements OnInit, OnDestroy {
     media: MediaMatcher,
     private api: ResourceApiService,
     private location: Location,
-    private route: ActivatedRoute,
     private router: Router,
     private sanitizer: DomSanitizer,
     private titleService: Title,
     public iconRegistry: MatIconRegistry,
   ) {
+    const token = localStorage.getItem('token');
+
+    this.api.getSession(token).subscribe(user => {
+      this.session = user;
+      this.isLoggedIn = true;
+      this.getInstitution();
+    }, _ => {
+      this.session = null;
+      this.isLoggedIn = false;
+    });
+
     this.trustUrl = this.sanitizer.bypassSecurityTrustResourceUrl;
     this.loadIcons();
     this.mobileQuery = media.matchMedia('(max-width: 959px)');
@@ -86,15 +96,29 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     this.isNetworkView = this.getIsNetworkView();
+
+    const self = this;
+
+    // const intervalId = setInterval(() => {
+    //   self.api.getSessionStatus().subscribe((timestamp: number) => {
+    //     const now = new Date();
+    //     const exp = new Date(timestamp * 1000);
+    //     const msLeft: number = exp.getTime() - now.getTime();
+
+    //     if ((timestamp <= 0) || (msLeft <= 0)) {
+    //       self.api.closeSession().subscribe(_ => {
+    //         self.isLoggedIn = false;
+    //         clearInterval(intervalId);
+    //       });
+    //     } else {
+    //       self.isLoggedIn = true;
+    //     }
+    //   });
+    // }, 10 * 1000); // Check every 5 seconds
   }
 
   ngOnInit() {
-    this.getInstitution();
-    this.api.getSession().subscribe(user => {
-      this.session = user;
-    }, error1 => {
-      this.session = null;
-    });
+
   }
 
   ngOnDestroy(): void {
@@ -156,7 +180,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   goLogout($event) {
     $event.preventDefault();
-    this.api.closeSession().subscribe();
+    this.api.closeSession().subscribe(result => {
+      this.isLoggedIn = false;
+      this.session = null;
+    });
   }
 
   getInstitution() {

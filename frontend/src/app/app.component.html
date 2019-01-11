@@ -26,7 +26,7 @@
             User Administration
           </button>
         </mat-list-item>
-        <mat-list-item *ngIf="!session">
+        <mat-list-item *ngIf="!session || !isLoggedIn">
           <button
             mat-button
             (click)="closeSidenav(); goLogin($event)"
@@ -36,7 +36,7 @@
             Log in
           </button>
         </mat-list-item>
-        <mat-list-item *appIfSession>
+        <mat-list-item *ngIf="session && isLoggedIn">
           <button
             mat-button
             (click)="closeSidenav(); goHome($event)"
@@ -45,7 +45,7 @@
             {{session.display_name}}
           </button>
         </mat-list-item>
-        <mat-list-item *appIfSession>
+        <mat-list-item *ngIf="session">
           <button
             mat-button
             (click)="closeSidenav(); goLogout($event)"
@@ -118,7 +118,7 @@
           </button>
           <button
             mat-button
-            *appIfSession
+            *ngIf="session"
             (click)="goHome($event)"
             id="user_{{session.id}}"
             [ngClass]="{'user-name': true}"
@@ -128,7 +128,7 @@
           </button>
           <button
             mat-button
-            *appIfSession
+            *ngIf="session"
             (click)="goLogout($event)"
             id="logout-button"
           >
