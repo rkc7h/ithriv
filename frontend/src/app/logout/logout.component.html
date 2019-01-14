@@ -1,0 +1,22 @@
+<div
+  class="container mat-typography"
+  fxLayout="row"
+  fxLayout.xs="column"
+  fxLayoutWrap
+  fxLayoutGap="10px"
+  fxLayoutAlign="center center"
+>
+  <div
+    fxFlex="50%"
+    class="message"
+  >
+    <app-logo (click)="goHome()"></app-logo>
+    <h1>You have been logged out.</h1>
+    <p>To ensure that your {{institution ? institution.name : ''}} session is completely closed, please quit your
+      browser.</p>
+    <button
+      mat-flat-button
+      (click)="goHome()"
+    >Ok</button>
+  </div>
+</div>

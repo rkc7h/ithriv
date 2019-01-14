@@ -85,9 +85,13 @@ export class ResourceApiService {
     private httpClient: HttpClient,
     private router: Router
   ) {
-    this.getUserSession().subscribe(user => {
-      this.hasSession = true;
-    }); // Try to set up the session when starting up.
+    this.getSessionStatus().subscribe(timestamp => {
+      if (timestamp > 0) {
+        this.getUserSession().subscribe(user => {
+          this.hasSession = true;
+        }); // Try to set up the session when starting up.
+      }
+    });
   }
 
   /** getSession */
@@ -130,12 +134,10 @@ export class ResourceApiService {
   closeSession(): Observable<User> {
     this.httpClient.delete<User>(this._apiUrl('session')).subscribe(x => {
       localStorage.removeItem('token');
-      sessionStorage.clear();
       this.hasSession = false;
       this.sessionSubject.next(null);
     }, (error) => {
       localStorage.removeItem('token');
-      sessionStorage.clear();
       this.hasSession = false;
       this.sessionSubject.error(error);
     });

@@ -32,9 +32,12 @@ import { User } from './user';
   animations: [fadeTransition()],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  @HostBinding('@fadeTransition')
+  session: User = null;
+
   @ViewChild('sidenav') sidenav: MatSidenav;
   categoryId: string;
+
+  @HostBinding('@fadeTransition')
   hideHeader = false;
   icons: Icon[];
   institution: Institution;
@@ -42,11 +45,10 @@ export class AppComponent implements OnInit, OnDestroy {
   isNetworkView: boolean;
   isResourceView = false;
   mobileQuery: MediaQueryList;
-  session: User;
   title = 'iTHRIV';
   pageTitle = 'Find Resources';
   trustUrl;
-  isLoggedIn = false;
+  intervalId: number;
 
   private _mobileQueryListener: () => void;
 
@@ -59,18 +61,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private titleService: Title,
     public iconRegistry: MatIconRegistry,
+    private route: ActivatedRoute,
   ) {
-    const token = localStorage.getItem('token');
-
-    this.api.getSession(token).subscribe(user => {
-      this.session = user;
-      this.isLoggedIn = true;
-      this.getInstitution();
-    }, _ => {
-      this.session = null;
-      this.isLoggedIn = false;
-    });
-
     this.trustUrl = this.sanitizer.bypassSecurityTrustResourceUrl;
     this.loadIcons();
     this.mobileQuery = media.matchMedia('(max-width: 959px)');
@@ -95,26 +87,57 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.route.queryParams.subscribe(queryParams => {
+      if (queryParams && queryParams.hasOwnProperty('auth_token')) {
+        const token = queryParams.auth_token;
+
+        if (token) {
+          localStorage.setItem('token', token);
+        }
+      }
+
+      this.checkStatus();
+    });
+
     this.isNetworkView = this.getIsNetworkView();
-
     const self = this;
+    const numMinutes = 10;
 
-    // const intervalId = setInterval(() => {
-    //   self.api.getSessionStatus().subscribe((timestamp: number) => {
-    //     const now = new Date();
-    //     const exp = new Date(timestamp * 1000);
-    //     const msLeft: number = exp.getTime() - now.getTime();
+    this.intervalId = window.setInterval(() => {
+      self.checkStatus(self);
+    }, numMinutes * 60 * 1000);
+  }
 
-    //     if ((timestamp <= 0) || (msLeft <= 0)) {
-    //       self.api.closeSession().subscribe(_ => {
-    //         self.isLoggedIn = false;
-    //         clearInterval(intervalId);
-    //       });
-    //     } else {
-    //       self.isLoggedIn = true;
-    //     }
-    //   });
-    // }, 10 * 1000); // Check every 5 seconds
+  checkStatus(self?: any) {
+    const token = localStorage.getItem('token');
+
+    self = self || this;
+    if (token) {
+      self.api.getSessionStatus().subscribe((timestamp: number) => {
+        const now = new Date();
+        const exp = new Date(timestamp * 1000);
+        const msLeft: number = exp.getTime() - now.getTime();
+        const loggedOut = (timestamp <= 0) || (msLeft <= 0);
+
+        if (loggedOut) {
+          self.api.closeSession().subscribe((_: any) => {
+            window.clearInterval(self.intervalId);
+            self.router.navigate(['timedout']);
+          });
+        } else {
+          self.api.getUserSession(token).subscribe(user => {
+            self.session = user;
+            self.getInstitution();
+
+            const prevUrl = localStorage.getItem('prev_url');
+            if (prevUrl) {
+              localStorage.removeItem('prev_url');
+              self.router.navigate([prevUrl]);
+            }
+          });
+        }
+      });
+    }
   }
 
   ngOnInit() {
@@ -181,8 +204,8 @@ export class AppComponent implements OnInit, OnDestroy {
   goLogout($event) {
     $event.preventDefault();
     this.api.closeSession().subscribe(result => {
-      this.isLoggedIn = false;
       this.session = null;
+      this.router.navigate(['logout']);
     });
   }
 

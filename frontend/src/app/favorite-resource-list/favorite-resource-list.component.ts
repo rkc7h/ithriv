@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Institution } from '../institution';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
@@ -12,7 +12,7 @@ import { User } from '../user';
 export class FavoriteResourceListComponent implements OnInit {
 
   resources: Resource[];
-  session: User;
+  @Input() session: User;
   institution: Institution;
 
   constructor(
@@ -22,17 +22,15 @@ export class FavoriteResourceListComponent implements OnInit {
   }
 
   getFavoriteResources() {
-    this.api.getSession().subscribe(user => {
-      if (user) {
-        this.api.getUserFavorites().subscribe(
-          (favorites) => {
-            for (const f of favorites) {
-              this.resources.push(f.resource);
-            }
+    if (this.session) {
+      this.api.getUserFavorites().subscribe(
+        (favorites) => {
+          for (const f of favorites) {
+            this.resources.push(f.resource);
           }
-        );
-      }
-    });
+        }
+      );
+    }
   }
 
   getInstitution() {
@@ -46,10 +44,10 @@ export class FavoriteResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.api.getSession().subscribe(user => {
-      this.session = user;
-    });
-    this.getFavoriteResources();
+    if (this.session) {
+      this.getFavoriteResources();
+    }
+
     this.getInstitution();
   }
 }

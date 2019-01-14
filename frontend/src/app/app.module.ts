@@ -98,6 +98,8 @@ import { UserResourceListComponent } from './user-resource-list/user-resource-li
 import { MoveCategoryButtonComponent } from './move-category-button/move-category-button.component';
 import { HelpComponent } from './help/help.component';
 import { IfSessionDirective } from './if-session.directive';
+import { LogoutComponent } from './logout/logout.component';
+import { TimedoutComponent } from './timedout/timedout.component';
 
 @NgModule({
   declarations: [
@@ -147,7 +149,9 @@ import { IfSessionDirective } from './if-session.directive';
     UserAdminComponent,
     UserResourceListComponent,
     HelpComponent,
-    IfSessionDirective
+    IfSessionDirective,
+    LogoutComponent,
+    TimedoutComponent
   ],
   imports: [
     Angular2CsvModule,

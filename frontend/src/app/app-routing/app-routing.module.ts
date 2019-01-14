@@ -17,6 +17,8 @@ import { ResourceComponent } from '../resource/resource.component';
 import { SearchComponent } from '../search/search.component';
 import { SessionRedirectComponent } from '../session-redirect/session-redirect.component';
 import { UserAdminComponent } from '../user-admin/user-admin.component';
+import { LogoutComponent } from '../logout/logout.component';
+import { TimedoutComponent } from '../timedout/timedout.component';
 
 export function searchFilterMatcher(url: UrlSegment[]) {
   if (
@@ -44,6 +46,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent, data: { title: 'Find Health Research Resources' } },
   { path: 'login', component: LoginComponent, data: { title: 'Log in to iTHRIV', hideHeader: true } },
   { path: 'login/:email_token', component: LoginComponent, data: { title: 'Log in to iTHRIV', hideHeader: true } },
+  { path: 'logout', component: LogoutComponent, data: { title: 'Logged out from iTHRIV', hideHeader: true } },
   { path: 'network', component: GraphComponent, data: { title: 'Find Resources' } },
   { path: 'network/:category', component: GraphComponent, data: { title: 'Find Resources' } },
   { path: 'profile', component: ProfileComponent, data: { title: 'Edit your iTHRIV profile' } },
@@ -58,7 +61,8 @@ const routes: Routes = [
   { path: 'search', component: SearchComponent, data: { title: 'Search Resources' } },
   { path: 'search/:query', component: SearchComponent, data: { title: 'Search Resources' } },
   { matcher: searchFilterMatcher, component: SearchComponent, data: { title: 'Search Resources' } },
-  { path: 'session/:token', component: SessionRedirectComponent, data: { title: 'Logging in...' } },
+  { path: 'session/:token', component: SessionRedirectComponent, data: { title: 'Logging in...', hideHeader: true } },
+  { path: 'timedout', component: TimedoutComponent, data: { title: 'iTHRIV session timed out', hideHeader: true } },
   { path: '**', component: NotFoundComponent }
 ];
 

@@ -17,16 +17,32 @@ export class SessionRedirectComponent {
     private router: Router) {
 
     this.route.params.subscribe(params => {
-      const token = params['token'];
-      localStorage.setItem('token', token);
-      this.api.getUserSession().subscribe(session => {
-        const prevUrl = localStorage.getItem('prev_url');
-        if (prevUrl) {
-          this.router.navigateByUrl(prevUrl).then(() => {
-            localStorage.removeItem('prev_url');
+
+      if (params.hasOwnProperty('token')) {
+        const token = params['token'];
+
+        if (token) {
+          localStorage.setItem('token', token);
+
+          console.log(`params['token']: ${params['token']}`);
+        }
+      }
+
+      const storedToken = localStorage.getItem('token');
+      console.log('storedToken:', storedToken);
+
+      this.api.getSessionStatus().subscribe(timestamp => {
+        if (timestamp > 0) {
+          this.api.getUserSession().subscribe(session => {
+            const prevUrl = localStorage.getItem('prev_url');
+            if (prevUrl) {
+              this.router.navigateByUrl(prevUrl).then(() => {
+                localStorage.removeItem('prev_url');
+              });
+            } else {
+              // this.router.navigate(['']);
+            }
           });
-        } else {
-          // this.router.navigate(['']);
         }
       });
     });

@@ -74,6 +74,8 @@ export class LoginServicesComponent implements OnInit {
   }
 
   goLoginService(loginService: LoginService) {
+    sessionStorage.setItem('institution_id', loginService.id.toString());
+
     if (this.router.url !== '/login') {
       const prevUrl = this.router.url;
       localStorage.setItem('prev_url', prevUrl);
@@ -87,7 +89,6 @@ export class LoginServicesComponent implements OnInit {
           if (institutions.hasOwnProperty(id)) {
             const inst = institutions[id];
             if (inst.name === loginService.name) {
-              sessionStorage.setItem('institution_id', inst.id.toString());
               sessionStorage.setItem('institution_name', loginService.name);
               this.getInstitution();
             }

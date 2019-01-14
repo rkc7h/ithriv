@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { Institution } from '../institution';
 import { Resource } from '../resource';
@@ -12,7 +12,7 @@ import { User } from '../user';
 })
 export class UserResourceListComponent implements OnInit {
   resources: Resource[];
-  session: User;
+  @Input() session: User;
   institution: Institution;
 
   constructor(
@@ -22,15 +22,13 @@ export class UserResourceListComponent implements OnInit {
   }
 
   getUserResources() {
-    this.api.getSession().subscribe(user => {
-      if (user) {
-        this.api.getUserResources().subscribe(
-          (resources) => {
-            this.resources = resources;
-          }
-        );
-      }
-    });
+    if (this.session) {
+      this.api.getUserResources().subscribe(
+        (resources) => {
+          this.resources = resources;
+        }
+      );
+    }
   }
 
   getInstitution() {
@@ -44,10 +42,10 @@ export class UserResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.api.getSession().subscribe(user => {
-      this.session = user;
-    });
-    this.getUserResources();
+    if (this.session) {
+      this.getUserResources();
+    }
+
     this.getInstitution();
   }
 

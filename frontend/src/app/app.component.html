@@ -16,7 +16,7 @@
             Home
           </button>
         </mat-list-item>
-        <mat-list-item *appIsAdmin>
+        <mat-list-item *ngIf="session && (session.role === 'Admin')">
           <button
             mat-button
             (click)="closeSidenav(); goUserAdmin($event)"
@@ -26,7 +26,7 @@
             User Administration
           </button>
         </mat-list-item>
-        <mat-list-item *ngIf="!session || !isLoggedIn">
+        <mat-list-item *ngIf="!session">
           <button
             mat-button
             (click)="closeSidenav(); goLogin($event)"
@@ -36,7 +36,7 @@
             Log in
           </button>
         </mat-list-item>
-        <mat-list-item *ngIf="session && isLoggedIn">
+        <mat-list-item *ngIf="session">
           <button
             mat-button
             (click)="closeSidenav(); goHome($event)"
@@ -91,50 +91,55 @@
           *ngIf="!mobileQuery.matches"
         >
           <span class="fill-remaining-space"></span>
-          <button
-            mat-button
-            *appIsAdmin
-            (click)="goUserAdmin($event)"
-            id="user-admin-button"
-          >
-            <mat-icon>person_add</mat-icon>
-            User Administration
-          </button>
-          <button
-            mat-button
-            *ngIf="!session && institution"
-            (click)="goLogin($event)"
-          >
-            {{ institution.name }} View
-          </button>
-          <button
-            mat-button
-            *ngIf="!session"
-            (click)="goLogin($event)"
-            id="login-button"
-          >
-            <mat-icon>account_circle</mat-icon>
-            Log in
-          </button>
-          <button
-            mat-button
-            *ngIf="session"
-            (click)="goHome($event)"
-            id="user_{{session.id}}"
-            [ngClass]="{'user-name': true}"
-          >
-            <mat-icon>account_circle</mat-icon>
-            {{session.display_name}}
-          </button>
-          <button
-            mat-button
-            *ngIf="session"
-            (click)="goLogout($event)"
-            id="logout-button"
-          >
-            <mat-icon>exit_to_app</mat-icon>
-            Log Out
-          </button>
+
+          <ng-container *ngIf="session">
+            <button
+              mat-button
+              *ngIf="session.role === 'Admin'"
+              (click)="goUserAdmin($event)"
+              id="user-admin-button"
+            >
+              <mat-icon>person_add</mat-icon>
+              User Administration
+            </button>
+            <button
+              mat-button
+              *ngIf="session"
+              (click)="goHome($event)"
+              id="user_{{session.id}}"
+              [ngClass]="{'user-name': true}"
+            >
+              <mat-icon>account_circle</mat-icon>
+              {{session.display_name}}
+            </button>
+            <button
+              mat-button
+              *ngIf="session"
+              (click)="goLogout($event)"
+              id="logout-button"
+            >
+              <mat-icon>exit_to_app</mat-icon>
+              Log Out
+            </button>
+          </ng-container>
+          <ng-container *ngIf="!session">
+            <button
+              mat-button
+              *ngIf="!session && institution"
+              (click)="goLogin($event)"
+            >
+              {{ institution.name }} View
+            </button>
+            <button
+              mat-button
+              *ngIf="!session"
+              (click)="goLogin($event)"
+              id="login-button"
+            >
+              <mat-icon>account_circle</mat-icon>
+              Log in
+            </button>
+          </ng-container>
         </mat-toolbar-row>
 
         <mat-toolbar-row
