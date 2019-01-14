@@ -53,7 +53,7 @@ def login(user_info):
     auth_token = user.encode_auth_token().decode()
     response_url = (
         "%s%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
-w    return redirect(response_url)
+    return redirect(response_url)
 
 
 def confirm_email(email_token):
