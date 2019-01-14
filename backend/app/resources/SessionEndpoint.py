@@ -1,4 +1,3 @@
-
 import flask_restful
 from flask import g, jsonify
 
@@ -15,11 +14,8 @@ class SessionEndpoint(flask_restful.Resource):
         return jsonify(self.schema.dump(g.user).data)
 
     @staticmethod
-    @auth.login_required
+    # @auth.login_required
     def delete():
         if "user" in g:
             g.user = None
         return None
-
-
-

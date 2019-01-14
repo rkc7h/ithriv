@@ -20,7 +20,6 @@ class SessionStatusEndpoint(flask_restful.Resource):
                     auth_token,
                     app.config.get('SECRET_KEY'),
                     algorithms='HS256')
-
                 return payload['exp']
             except Exception as e:
                 return 0

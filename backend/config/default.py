@@ -31,17 +31,18 @@ SSO_DEVELOPMENT_EPPN = 'dhf8r@virginia.edu'
 SSO_ATTRIBUTE_MAP = {
     'eppn': (False, 'eppn'),  # dhf8r@virginia.edu
     'uid': (False, 'uid'),  # dhf8r
-    'givenName': (False, 'givenName'), # Daniel
-    'mail': (False, 'email'), # dhf8r@Virginia.EDU
-    'sn': (False, 'surName'), # Funk
-    'affiliation': (False, 'affiliation'), #  'staff@virginia.edu;member@virginia.edu'
-    'displayName': (False, 'displayName'), # Daniel Harold Funk
+    'givenName': (False, 'givenName'),  # Daniel
+    'mail': (False, 'email'),  # dhf8r@Virginia.EDU
+    'sn': (False, 'surName'),  # Funk
+    'affiliation':
+    (False, 'affiliation'),  #  'staff@virginia.edu;member@virginia.edu'
+    'displayName': (False, 'displayName'),  # Daniel Harold Funk
     'title': (False, 'title')  # SOFTWARE ENGINEER V
 }
 
 API_URL = "http://localhost:5000"
 SITE_URL = "http://localhost:4200"
-FRONTEND_AUTH_CALLBACK = SITE_URL + "/#/session"
+FRONTEND_AUTH_CALLBACK = SITE_URL + "/#/home?auth_token="
 FRONTEND_EMAIL_RESET = SITE_URL + "/#/reset_password/"
 SSO_LOGIN_URL = '/api/login'
 
@@ -51,8 +52,8 @@ MAIL_USE_SSL = False
 MAIL_USE_TLS = False
 MAIL_USERNAME = "YOUR-MAILTRIP-NAME - Copy these lines to your instance/config! edit there."
 MAIL_PASSWORD = "YOUR-MAILTRIP-PASSWORD - Copy these lines to your instance/config! edit there."
-MAIL_DEFAULT_SENDER='someaddress@fake.com'
-MAIL_DEFAULT_USER='someaddress@fake.com'
+MAIL_DEFAULT_SENDER = 'someaddress@fake.com'
+MAIL_DEFAULT_USER = 'someaddress@fake.com'
 MAIL_TIMEOUT = 10
 
 MAIL_CONSULT_RECIPIENT = 'ResearchConcierge@hscmail.mcc.virginia.edu'
