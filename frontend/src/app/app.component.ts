@@ -70,6 +70,21 @@ export class AppComponent implements OnInit, OnDestroy {
     this.mobileQuery.addListener(this._mobileQueryListener);
 
     this.router.events.subscribe((e) => {
+      if (e instanceof NavigationEnd) {
+        this.route.queryParams.subscribe(queryParams => {
+          if (queryParams && queryParams.hasOwnProperty('auth_token')) {
+            const token = queryParams.auth_token;
+
+            if (token) {
+              localStorage.setItem('token', token);
+            }
+          }
+
+          this.checkStatus();
+        });
+
+      }
+
       if (e instanceof ActivationStart || e instanceof ActivationEnd) {
         if (e.snapshot && e.snapshot.data) {
           const data = e.snapshot.data;
@@ -87,53 +102,33 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.route.queryParams.subscribe(queryParams => {
-      if (queryParams && queryParams.hasOwnProperty('auth_token')) {
-        const token = queryParams.auth_token;
-
-        if (token) {
-          localStorage.setItem('token', token);
-        }
-      }
-
-      this.checkStatus();
-    });
-
     this.isNetworkView = this.getIsNetworkView();
-    const self = this;
-    const numMinutes = 10;
+    const numMinutes = 1;
 
     this.intervalId = window.setInterval(() => {
-      self.checkStatus(self);
+      this.checkStatus();
     }, numMinutes * 60 * 1000);
   }
 
-  checkStatus(self?: any) {
+  checkStatus() {
     const token = localStorage.getItem('token');
 
-    self = self || this;
     if (token) {
-      self.api.getSessionStatus().subscribe((timestamp: number) => {
+      this.api.getSessionStatus().subscribe((timestamp: number) => {
         const now = new Date();
         const exp = new Date(timestamp * 1000);
         const msLeft: number = exp.getTime() - now.getTime();
         const loggedOut = (timestamp <= 0) || (msLeft <= 0);
 
         if (loggedOut) {
-          self.api.closeSession().subscribe((_: any) => {
-            window.clearInterval(self.intervalId);
-            self.router.navigate(['timedout']);
+          this.api.closeSession().subscribe((_: any) => {
+            window.clearInterval(this.intervalId);
+            this.router.navigate(['timedout']);
           });
         } else {
-          self.api.getUserSession(token).subscribe(user => {
-            self.session = user;
-            self.getInstitution();
-
-            const prevUrl = localStorage.getItem('prev_url');
-            if (prevUrl) {
-              localStorage.removeItem('prev_url');
-              self.router.navigate([prevUrl]);
-            }
+          this.api.getUserSession().subscribe(user => {
+            this.session = user;
+            this.getInstitution();
           });
         }
       });

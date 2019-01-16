@@ -207,7 +207,10 @@
               <img [src]="fileIcon(file)" /> {{file.display_name || file.name || file.file_name}}
             </a>
           </mat-list-item>
-          <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
+          <app-favorite-resource-button
+            [resource]="resource"
+            [user]="user"
+          ></app-favorite-resource-button>
         </mat-list>
       </mat-card-content>
       <mat-card-actions>

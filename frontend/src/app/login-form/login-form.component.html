@@ -3,6 +3,7 @@
     <form
       [formGroup]="loginForm"
       (ngSubmit)="onSubmit()"
+      (keydown)="onKeydown($event)"
     >
       <app-form-field
         *ngFor="let field of getFields()"

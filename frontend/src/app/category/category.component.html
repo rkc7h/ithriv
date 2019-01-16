@@ -87,6 +87,7 @@
             <app-resource-list
               *ngIf="getResources(getInstitutionId()).length > 0"
               [resources]="getResources(getInstitutionId())"
+              [user]="user"
               [sidenavExpanded]="true"
               fxFlexFill
             ></app-resource-list>
@@ -117,6 +118,7 @@
           <mat-tab label="View all in category ({{getAllResources().length}})">
             <app-resource-list
               [resources]="getAllResources()"
+              [user]="user"
               [sidenavExpanded]="true"
               fxFlexFill
             ></app-resource-list>

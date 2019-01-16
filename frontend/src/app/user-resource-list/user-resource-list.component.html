@@ -1,22 +1,23 @@
 <div
-  *appIfSession
+  *ngIf="user"
   fxFlexFill
 >
   <app-resource-list
     [resources]="resources"
+    [user]="user"
     [sidenavExpanded]="false"
     fxFlexFill
   ></app-resource-list>
 </div>
 <div
-  *ngIf="!session && !institution"
+  *ngIf="!user && !institution"
   class="please-log-in"
 >
   <h2>Please log in to view your resources.</h2>
   <app-login-services></app-login-services>
 </div>
 <div
-  *ngIf="!session && institution"
+  *ngIf="!user && institution"
   class="please-log-in"
 >
   <h2>{{ institution.name }} View</h2>

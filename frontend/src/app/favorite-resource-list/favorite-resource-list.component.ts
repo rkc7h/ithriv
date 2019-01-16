@@ -12,7 +12,7 @@ import { User } from '../user';
 export class FavoriteResourceListComponent implements OnInit {
 
   resources: Resource[];
-  @Input() session: User;
+  @Input() user: User;
   institution: Institution;
 
   constructor(
@@ -22,7 +22,7 @@ export class FavoriteResourceListComponent implements OnInit {
   }
 
   getFavoriteResources() {
-    if (this.session) {
+    if (this.user) {
       this.api.getUserFavorites().subscribe(
         (favorites) => {
           for (const f of favorites) {
@@ -44,7 +44,7 @@ export class FavoriteResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.session) {
+    if (this.user) {
       this.getFavoriteResources();
     }
 

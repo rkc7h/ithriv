@@ -39,6 +39,12 @@ export class ForgotPasswordComponent implements OnInit {
     return this.iThrivForm.getFields();
   }
 
+  onKeydown($event: KeyboardEvent) {
+    if ($event.keyCode === 13) {
+      this.onSubmit();
+    }
+  }
+
   onSubmit() {
     this.iThrivForm.validate();
     if (!this.forgotPasswordForm.valid) { return; }

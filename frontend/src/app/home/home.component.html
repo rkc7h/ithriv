@@ -20,20 +20,21 @@
 >
   <mat-tab label="My Favorite Resources">
     <div class="example-large-box mat-elevation-z4">
-      <app-favorite-resource-list [session]="user"></app-favorite-resource-list>
+      <app-favorite-resource-list [user]="user"></app-favorite-resource-list>
     </div>
   </mat-tab>
   <mat-tab label="Recently Updated Resources">
     <div class="example-small-box mat-elevation-z4">
       <app-resource-list
         [resources]="resources"
+        [user]="user"
         [sidenavExpanded]="false"
       ></app-resource-list>
     </div>
   </mat-tab>
   <mat-tab label="My Resources">
     <div class="example-large-box mat-elevation-z4">
-      <app-user-resource-list [session]="user"></app-user-resource-list>
+      <app-user-resource-list [user]="user"></app-user-resource-list>
     </div>
   </mat-tab>
 </mat-tab-group>

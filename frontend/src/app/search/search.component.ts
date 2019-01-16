@@ -16,6 +16,7 @@ import { Resource } from '../resource';
 import { Filter, ResourceQuery } from '../resource-query';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { User } from '../user';
 
 @Component({
   selector: 'app-search',
@@ -26,6 +27,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 export class SearchComponent implements OnInit {
   @HostBinding('@fadeTransition')
   @Input() resourceQuery: ResourceQuery;
+  user: User;
 
   showFilters = false;
   searchForm: FormGroup;
@@ -50,6 +52,8 @@ export class SearchComponent implements OnInit {
     this.resources = [];
     this.categories = [];
     this.publicId = 87;
+
+    this.api.getSession().subscribe(user => this.user = user);
 
     this.api.getCategories().subscribe(
       (categories) => {

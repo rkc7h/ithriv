@@ -9,9 +9,9 @@ import {
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgressComponent } from '@ngx-progressbar/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of as observableOf } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { catchError, last, map, tap } from 'rxjs/operators';
+import { catchError, last, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Availability } from '../../availability';
 import { Category } from '../../category';
@@ -85,13 +85,6 @@ export class ResourceApiService {
     private httpClient: HttpClient,
     private router: Router
   ) {
-    this.getSessionStatus().subscribe(timestamp => {
-      if (timestamp > 0) {
-        this.getUserSession().subscribe(user => {
-          this.hasSession = true;
-        }); // Try to set up the session when starting up.
-      }
-    });
   }
 
   /** getSession */
@@ -108,8 +101,10 @@ export class ResourceApiService {
   }
 
   /** getUserSession */
-  public getUserSession(token?: string): Observable<User> {
-    return this.httpClient.get<User>(this._apiUrl('session'));
+  public getUserSession(): Observable<User> {
+    console.log('=== getUserSession ===');
+    return this.httpClient.get<User>(this._apiUrl('session'))
+      .pipe(catchError(this.handleError));
   }
 
   /** _fetchSession */
@@ -126,7 +121,9 @@ export class ResourceApiService {
 
   /** openSession */
   openSession(token: string): Observable<User> {
-    localStorage.setItem('token', token);
+    if (token) {
+      localStorage.setItem('token', token);
+    }
     return this.getSession(token);
   }
 
@@ -146,16 +143,23 @@ export class ResourceApiService {
 
   /** getSessionStatus */
   getSessionStatus(): Observable<number> {
-    const token: string = localStorage.getItem('token') || 'null';
-    return this.httpClient.get<number>(this._apiUrl('sessionstatus').replace('<auth_token>', token))
-      .pipe(catchError(this.handleError));
+    const token: string = localStorage.getItem('token');
+
+    console.log('token', token);
+
+    if (token) {
+      return this.httpClient.get<number>(this._apiUrl('sessionstatus').replace('<auth_token>', token))
+        .pipe(catchError(this.handleError));
+    } else {
+      return observableOf(0);
+    }
   }
 
   /** loginUser - An alternative to single sign on, allow users to log into the system with a user name and password.
    * email_token is not required, only send this if user is logging in for the first time
    * after an email verification link. */
   login(email: string, password: string, email_token = ''): Observable<any> {
-    const options = { email: email, password: password, email_token: email_token };
+    const options = { email, password, email_token };
     return this.httpClient.post(this._apiUrl('login_password'), options)
       .pipe(catchError(this.handleError));
   }

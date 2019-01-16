@@ -57,30 +57,40 @@ export class LoginFormComponent {
     this.router.navigate(['forgot_password']);
   }
 
+  onKeydown($event: KeyboardEvent) {
+    if ($event.keyCode === 13) {
+      this.onSubmit();
+    }
+  }
+
   onSubmit() {
     this.iThrivForm.validate();
-    if (!this.loginForm.valid) { return; }
+    if (!this.loginForm.valid) {
+      return;
+    }
 
-    this.api.login(this.fields['email'].formControl.value,
+    this.api.login(
+      this.fields['email'].formControl.value,
       this.fields['password'].formControl.value,
-      this.emailToken).subscribe(token => {
-        this.api.openSession(token['token']).subscribe(user => {
-          const prevUrl = localStorage.getItem('prev_url');
-          if (prevUrl) {
-            this.router.navigateByUrl(prevUrl).then(() => {
-              localStorage.removeItem('prev_url');
-            });
-          } else {
-            // this.router.navigate(['']);
-          }
-        });
-      }, error1 => {
-        if (error1) {
-          this.errorEmitter.emit(error1);
+      this.emailToken
+    ).subscribe(token => {
+      this.api.openSession(token['token']).subscribe(user => {
+        const prevUrl = localStorage.getItem('prev_url');
+        if (prevUrl) {
+          this.router.navigateByUrl(prevUrl).then(() => {
+            localStorage.removeItem('prev_url');
+          });
         } else {
-          this.errorEmitter.emit('An unexpected error occurred.  Please contact support.');
+          // this.router.navigate(['']);
         }
       });
+    }, error1 => {
+      if (error1) {
+        this.errorEmitter.emit(error1);
+      } else {
+        this.errorEmitter.emit('An unexpected error occurred.  Please contact support.');
+      }
+    });
   }
 
   onCancel() {

@@ -12,7 +12,7 @@ import { User } from '../user';
 })
 export class UserResourceListComponent implements OnInit {
   resources: Resource[];
-  @Input() session: User;
+  @Input() user: User;
   institution: Institution;
 
   constructor(
@@ -22,7 +22,7 @@ export class UserResourceListComponent implements OnInit {
   }
 
   getUserResources() {
-    if (this.session) {
+    if (this.user) {
       this.api.getUserResources().subscribe(
         (resources) => {
           this.resources = resources;
@@ -42,7 +42,7 @@ export class UserResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.session) {
+    if (this.user) {
       this.getUserResources();
     }
 

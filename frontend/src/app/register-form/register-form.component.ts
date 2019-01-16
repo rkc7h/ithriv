@@ -83,6 +83,12 @@ export class RegisterFormComponent {
     return this.iThrivForm.getFields();
   }
 
+  onKeydown($event: KeyboardEvent) {
+    if ($event.keyCode === 13) {
+      this.onSubmit();
+    }
+  }
+
   onSubmit() {
     this.iThrivForm.validate();
 

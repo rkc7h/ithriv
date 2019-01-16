@@ -34,7 +34,10 @@
       <mat-card-header (click)="goResource($event, resource)">
         <mat-card-title>{{resource.name}}</mat-card-title>
         <app-approved-badge [resource]="resource"></app-approved-badge>
-        <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
+        <app-favorite-resource-button
+          [resource]="resource"
+          [user]="user"
+        ></app-favorite-resource-button>
       </mat-card-header>
       <mat-card-content (click)="goResource($event, resource)">
         <markdown [data]="truncateWords(resource.description, 20)"></markdown>

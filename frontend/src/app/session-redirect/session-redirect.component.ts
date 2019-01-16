@@ -4,7 +4,8 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 
 @Component({
   selector: 'app-session-redirect',
-  template: ''
+  templateUrl: 'session-redirect.component.html',
+  styleUrls: ['./session-redirect.component.scss']
 })
 export class SessionRedirectComponent {
   // Accepts a token from the server, then redirects the user
@@ -17,34 +18,24 @@ export class SessionRedirectComponent {
     private router: Router) {
 
     this.route.params.subscribe(params => {
-
       if (params.hasOwnProperty('token')) {
         const token = params['token'];
 
         if (token) {
           localStorage.setItem('token', token);
-
-          console.log(`params['token']: ${params['token']}`);
+          this.api.getUserSession().subscribe(_ => this.goPrevUrl(token));
         }
       }
 
-      const storedToken = localStorage.getItem('token');
-      console.log('storedToken:', storedToken);
+      // this.goPrevUrl();
+    });
+  }
 
-      this.api.getSessionStatus().subscribe(timestamp => {
-        if (timestamp > 0) {
-          this.api.getUserSession().subscribe(session => {
-            const prevUrl = localStorage.getItem('prev_url');
-            if (prevUrl) {
-              this.router.navigateByUrl(prevUrl).then(() => {
-                localStorage.removeItem('prev_url');
-              });
-            } else {
-              // this.router.navigate(['']);
-            }
-          });
-        }
-      });
+  goPrevUrl(token?: string) {
+    const prevUrl = localStorage.getItem('prev_url') || '/';
+    const queryString = token ? '?auth_token=' + token : '';
+    this.router.navigateByUrl(prevUrl + queryString).then(() => {
+      localStorage.removeItem('prev_url');
     });
   }
 }

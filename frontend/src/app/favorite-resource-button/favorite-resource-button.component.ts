@@ -12,16 +12,13 @@ import { User } from '../user';
 export class FavoriteResourceButtonComponent implements OnInit {
   @Input() resource: Resource;
   favorite: Favorite;
-  user: User;
+  @Input() user: User;
 
   constructor(
     private api: ResourceApiService
   ) { }
 
   ngOnInit() {
-    this.api.getSession().subscribe(user => {
-      this.user = user;
-    });
   }
 
   userFavorite() {
