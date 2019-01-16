@@ -47,12 +47,12 @@ def login(user_info):
 
     db.session.add(user)
     db.session.commit()
-
     g.user = user
+
     # redirect users back to the front end, include the new auth token.
     auth_token = user.encode_auth_token().decode()
     response_url = (
-        "%s%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
+        "%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
     return redirect(response_url)
 
 

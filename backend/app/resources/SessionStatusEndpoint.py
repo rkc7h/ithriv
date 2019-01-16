@@ -2,7 +2,7 @@ import datetime
 import flask_restful
 from flask import g, jsonify
 import jwt
-from app import app
+from app import app, auth
 
 
 class SessionStatusEndpoint(flask_restful.Resource):
@@ -11,10 +11,9 @@ class SessionStatusEndpoint(flask_restful.Resource):
     or 0 if there is no current session.
     """
 
+    @auth.login_required
     def get(self, auth_token):
-        if not auth_token:
-            return 0
-        else:
+        if "user" in g and auth_token:
             try:
                 payload = jwt.decode(
                     auth_token,
@@ -23,3 +22,5 @@ class SessionStatusEndpoint(flask_restful.Resource):
                 return payload['exp']
             except Exception as e:
                 return 0
+        else:
+            return 0

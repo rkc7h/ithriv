@@ -42,7 +42,7 @@ SSO_ATTRIBUTE_MAP = {
 
 API_URL = "http://localhost:5000"
 SITE_URL = "http://localhost:4200"
-FRONTEND_AUTH_CALLBACK = SITE_URL + "/#/home?auth_token="
+FRONTEND_AUTH_CALLBACK = SITE_URL + "/#/session"
 FRONTEND_EMAIL_RESET = SITE_URL + "/#/reset_password/"
 SSO_LOGIN_URL = '/api/login'
 
