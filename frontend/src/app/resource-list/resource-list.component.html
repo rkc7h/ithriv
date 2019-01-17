@@ -17,7 +17,7 @@
   }"
 >
   <div
-    *appIsAdmin
+    *ngIf="user && user.role === 'Admin'"
     fxFlex="100%"
     fxFlexFill
     fxLayout="row"

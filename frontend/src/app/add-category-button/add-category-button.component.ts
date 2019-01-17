@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Category } from '../category';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 import { MatDialog } from '@angular/material';
+import { User } from '../user';
 
 @Component({
   selector: 'app-add-category-button',
@@ -10,6 +11,7 @@ import { MatDialog } from '@angular/material';
 })
 export class AddCategoryButtonComponent implements OnInit {
   @Input() category: Category;
+  @Input() user: User;
 
   constructor(
     private dialog: MatDialog

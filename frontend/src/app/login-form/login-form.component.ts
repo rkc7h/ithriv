@@ -15,6 +15,7 @@ import { IThrivForm } from '../shared/IThrivForm';
 })
 export class LoginFormComponent {
   @HostBinding('@fadeTransition')
+  submitting = false;
   title: string;
   emailToken: string;
   errorEmitter = new EventEmitter<string>();
@@ -64,6 +65,7 @@ export class LoginFormComponent {
   }
 
   onSubmit() {
+    this.submitting = true;
     this.iThrivForm.validate();
     if (!this.loginForm.valid) {
       return;
@@ -81,7 +83,7 @@ export class LoginFormComponent {
             localStorage.removeItem('prev_url');
           });
         } else {
-          // this.router.navigate(['']);
+          this.router.navigate(['']);
         }
       });
     }, error1 => {

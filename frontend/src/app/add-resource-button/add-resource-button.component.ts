@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
+import { User } from '../user';
 
 @Component({
   selector: 'app-add-resource-button',
@@ -9,6 +10,7 @@ import { Category } from '../category';
 })
 export class AddResourceButtonComponent implements OnInit {
   @Input() category: Category;
+  @Input() user: User;
 
   constructor(
     private router: Router

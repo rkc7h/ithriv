@@ -13,7 +13,7 @@ export class FavoriteResourceListComponent implements OnInit {
 
   resources: Resource[];
   @Input() user: User;
-  institution: Institution;
+  @Input() institution: Institution;
 
   constructor(
     private api: ResourceApiService,
@@ -33,21 +33,9 @@ export class FavoriteResourceListComponent implements OnInit {
     }
   }
 
-  getInstitution() {
-    if (sessionStorage.getItem('institution_id')) {
-      this.api.getInstitution(parseInt(sessionStorage.getItem('institution_id'), 10)).subscribe(
-        (inst) => {
-          this.institution = inst;
-        }
-      );
-    }
-  }
-
   ngOnInit() {
     if (this.user) {
       this.getFavoriteResources();
     }
-
-    this.getInstitution();
   }
 }

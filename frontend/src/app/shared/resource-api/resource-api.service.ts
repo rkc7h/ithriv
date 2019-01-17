@@ -77,9 +77,7 @@ export class ResourceApiService {
     logo: '/api/track/<user_id>/<code>/logo.png',
   };
 
-  private hasSession: boolean;
   private sessionSubject = new BehaviorSubject<User>(null);
-  private intervalId;
 
   constructor(
     private httpClient: HttpClient,
@@ -88,35 +86,13 @@ export class ResourceApiService {
   }
 
   /** getSession */
-  public getSession(token?: string): Observable<User> {
-    if (!token) {
-      token = localStorage.getItem('token');
+  public getSession(): Observable<User> {
+    if (localStorage.getItem('token')) {
+      return this.httpClient.get<User>(this._apiUrl('session'))
+        .pipe(catchError(this.handleError));
+    } else {
+      return observableOf(null);
     }
-
-    if (!this.hasSession && token) {
-      this._fetchSession();
-    }
-
-    return this.sessionSubject.asObservable();
-  }
-
-  /** getUserSession */
-  public getUserSession(): Observable<User> {
-    console.log('=== getUserSession ===');
-    return this.httpClient.get<User>(this._apiUrl('session'))
-      .pipe(catchError(this.handleError));
-  }
-
-  /** _fetchSession */
-  public _fetchSession(): void {
-    this.httpClient.get<User>(this._apiUrl('session')).subscribe(user => {
-      this.hasSession = true;
-      this.sessionSubject.next(user);
-    }, (error) => {
-      localStorage.removeItem('token');
-      this.hasSession = false;
-      this.sessionSubject.error(error);
-    });
   }
 
   /** openSession */
@@ -124,29 +100,18 @@ export class ResourceApiService {
     if (token) {
       localStorage.setItem('token', token);
     }
-    return this.getSession(token);
+    return this.getSession();
   }
 
   /** closeSession */
   closeSession(): Observable<User> {
-    this.httpClient.delete<User>(this._apiUrl('session')).subscribe(x => {
-      localStorage.removeItem('token');
-      this.hasSession = false;
-      this.sessionSubject.next(null);
-    }, (error) => {
-      localStorage.removeItem('token');
-      this.hasSession = false;
-      this.sessionSubject.error(error);
-    });
-    return this.sessionSubject.asObservable();
+    localStorage.removeItem('token');
+    return this.httpClient.delete<User>(this._apiUrl('session'));
   }
 
   /** getSessionStatus */
   getSessionStatus(): Observable<number> {
     const token: string = localStorage.getItem('token');
-
-    console.log('token', token);
-
     if (token) {
       return this.httpClient.get<number>(this._apiUrl('sessionstatus').replace('<auth_token>', token))
         .pipe(catchError(this.handleError));
@@ -182,7 +147,7 @@ export class ResourceApiService {
       message = error.error.message;
       // If this was a 401 error, re-verify they have a valid session.
       if (error.error.code === 401) {
-        this._fetchSession();
+        this.getSession();
       }
     }
     // return an observable with a user-facing error message

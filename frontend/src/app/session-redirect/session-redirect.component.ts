@@ -23,7 +23,7 @@ export class SessionRedirectComponent {
 
         if (token) {
           localStorage.setItem('token', token);
-          this.api.getUserSession().subscribe(_ => this.goPrevUrl(token));
+          this.api.getSession().subscribe(_ => this.goPrevUrl(token));
         }
       }
 

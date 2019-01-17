@@ -126,7 +126,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.router.navigate(['timedout']);
           });
         } else {
-          this.api.getUserSession().subscribe(user => {
+          this.api.getSession().subscribe(user => {
             this.session = user;
             this.getInstitution();
           });
@@ -198,10 +198,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   goLogout($event) {
     $event.preventDefault();
-    this.api.closeSession().subscribe(result => {
-      this.session = null;
-      this.router.navigate(['logout']);
-    });
+    this.api.closeSession().subscribe();
+    this.session = null;
+    this.router.navigate(['logout']);
   }
 
   getInstitution() {

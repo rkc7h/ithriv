@@ -8,6 +8,7 @@ import { ResourceQuery } from '../resource-query';
 import { fadeTransition } from '../shared/animations';
 
 import { User } from '../user';
+import { Institution } from '../institution';
 
 @Component({
   selector: 'app-home',
@@ -25,6 +26,7 @@ export class HomeComponent implements OnInit {
   resources: Resource[];
   categories: Category[];
   user: User;
+  institution: Institution;
 
   constructor(
     private api: ResourceApiService,
@@ -57,7 +59,18 @@ export class HomeComponent implements OnInit {
   loadUser() {
     this.api.getSession().subscribe(user => {
       this.user = user;
+      this.getInstitution();
     });
+  }
+
+  getInstitution() {
+    if (sessionStorage.getItem('institution_id')) {
+      this.api.getInstitution(parseInt(sessionStorage.getItem('institution_id'), 10)).subscribe(
+        (inst) => {
+          this.institution = inst;
+        }
+      );
+    }
   }
 
   goSearch() {

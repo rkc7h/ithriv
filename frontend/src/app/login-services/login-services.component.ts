@@ -28,6 +28,16 @@ export class LoginServicesComponent implements OnInit {
   ) {
     this.selectedTabIndex = (this.route.routeConfig.path === 'register') ? 1 : 0;
     this.loadServices();
+
+    this.route.queryParams.subscribe(params => {
+      if (params.hasOwnProperty('institutionId')) {
+        const instituttionId = parseInt(params['institutionId'], 10);
+        this.api.getInstitution(instituttionId).subscribe(institution => {
+          this.institution = institution;
+          sessionStorage.setItem('institution_name', institution.name);
+        });
+      }
+    });
   }
 
   ngOnInit() { }
@@ -74,9 +84,12 @@ export class LoginServicesComponent implements OnInit {
   }
 
   goLoginService(loginService: LoginService) {
-    sessionStorage.setItem('institution_id', loginService.id.toString());
+    const institutionId = loginService.id.toString();
+    sessionStorage.setItem('institution_id', institutionId);
 
-    if (this.router.url !== '/login') {
+    const onLoginScreen = /^\/login/.test(this.router.url);
+
+    if (!onLoginScreen) {
       const prevUrl = this.router.url;
       localStorage.setItem('prev_url', prevUrl);
     }
@@ -84,17 +97,7 @@ export class LoginServicesComponent implements OnInit {
     if (loginService.url) {
       window.location.href = loginService.url;
     } else {
-      this.api.getInstitutions().subscribe(institutions => {
-        for (const id in institutions) {
-          if (institutions.hasOwnProperty(id)) {
-            const inst = institutions[id];
-            if (inst.name === loginService.name) {
-              sessionStorage.setItem('institution_name', loginService.name);
-              this.getInstitution();
-            }
-          }
-        }
-      });
+      this.router.navigate(['login'], { queryParams: { institutionId: institutionId } });
     }
   }
 }

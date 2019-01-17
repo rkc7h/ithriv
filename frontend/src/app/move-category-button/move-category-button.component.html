@@ -1,4 +1,4 @@
-<div *appIsAdmin>
+<div *ngIf="user && user.role === 'Admin'">
   <button
     *ngIf="direction === 'up'"
     mat-icon-button

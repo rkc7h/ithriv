@@ -1,7 +1,8 @@
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Category } from '../category';
 import { CategoryFormComponent } from '../category-form/category-form.component';
 import { MatDialog } from '@angular/material';
+import { User } from '../user';
 
 @Component({
   selector: 'app-edit-category-button',
@@ -10,6 +11,7 @@ import { MatDialog } from '@angular/material';
 })
 export class EditCategoryButtonComponent implements OnInit {
   @Input() category: Category;
+  @Input() user: User;
   @Input() parent: Category;
   @Output() updatedCategory: EventEmitter<Category> = new EventEmitter();
 
