@@ -13,11 +13,12 @@ class SessionEndpoint(flask_restful.Resource):
     def get(self):
         if "user" in g:
             return jsonify(self.schema.dump(g.user).data)
-        return None
+        else:
+            return None
 
     @staticmethod
-    @auth.login_required
     def delete():
         if "user" in g:
             g.user = None
-        return None
+        else:
+            return None
