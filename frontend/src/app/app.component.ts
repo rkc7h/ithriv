@@ -6,7 +6,8 @@ import {
   HostBinding,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
+  NgZone
 } from '@angular/core';
 import { MatSidenav } from '@angular/material';
 import { MatIconRegistry } from '@angular/material';
@@ -62,6 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private titleService: Title,
     public iconRegistry: MatIconRegistry,
     private route: ActivatedRoute,
+    private ngZone: NgZone
   ) {
     this.trustUrl = this.sanitizer.bypassSecurityTrustResourceUrl;
     this.loadIcons();
@@ -105,9 +107,11 @@ export class AppComponent implements OnInit, OnDestroy {
     this.isNetworkView = this.getIsNetworkView();
     const numMinutes = 1;
 
-    this.intervalId = window.setInterval(() => {
-      this.checkStatus();
-    }, numMinutes * 60 * 1000);
+    this.ngZone.runOutsideAngular(() => {
+      this.intervalId = window.setInterval(() => {
+        this.ngZone.run(this.checkStatus);
+      }, numMinutes * 60 * 1000);
+    });
   }
 
   checkStatus() {
@@ -198,6 +202,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   goLogout($event) {
     $event.preventDefault();
+    localStorage.setItem('prev_url', this.router.url);
     this.api.closeSession().subscribe();
     this.session = null;
     this.router.navigate(['logout']);
