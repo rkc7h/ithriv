@@ -99,6 +99,7 @@ import { HelpComponent } from './help/help.component';
 import { LogoutComponent } from './logout/logout.component';
 import { TimedoutComponent } from './timedout/timedout.component';
 import { LoadingComponent } from './loading/loading.component';
+import { IntervalService } from './shared/interval/interval.service';
 
 @NgModule({
   declarations: [
@@ -209,7 +210,8 @@ import { LoadingComponent } from './loading/loading.component';
       useClass: AuthInterceptor,
       multi: true
     },
-    ResourceApiService
+    ResourceApiService,
+    IntervalService
   ],
   bootstrap: [AppComponent]
 })

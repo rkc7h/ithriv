@@ -6,8 +6,7 @@ import {
   HostBinding,
   OnDestroy,
   OnInit,
-  ViewChild,
-  NgZone
+  ViewChild
 } from '@angular/core';
 import { MatSidenav } from '@angular/material';
 import { MatIconRegistry } from '@angular/material';
@@ -25,6 +24,7 @@ import { Institution } from './institution';
 import { fadeTransition } from './shared/animations';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { User } from './user';
+import { IntervalService } from './shared/interval/interval.service';
 
 @Component({
   selector: 'app-root',
@@ -63,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private titleService: Title,
     public iconRegistry: MatIconRegistry,
     private route: ActivatedRoute,
-    private ngZone: NgZone
+    private intervalService: IntervalService
   ) {
     this.trustUrl = this.sanitizer.bypassSecurityTrustResourceUrl;
     this.loadIcons();
@@ -107,14 +107,14 @@ export class AppComponent implements OnInit, OnDestroy {
     this.isNetworkView = this.getIsNetworkView();
     const numMinutes = 1;
 
-    this.ngZone.runOutsideAngular(() => {
-      this.intervalId = window.setInterval(() => {
-        this.ngZone.run(this.checkStatus);
-      }, numMinutes * 60 * 1000);
-    });
+    this.intervalService.setInterval(() => {
+      this.checkStatus();
+    }, numMinutes * 60 * 1000);
   }
 
   checkStatus() {
+    console.log('*** CHECK STATUS ***');
+
     const token = localStorage.getItem('token');
 
     if (token) {
@@ -126,7 +126,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         if (loggedOut) {
           this.api.closeSession().subscribe((_: any) => {
-            window.clearInterval(this.intervalId);
+            this.intervalService.clearInterval();
             this.router.navigate(['timedout']);
           });
         } else {

@@ -120,7 +120,7 @@ export class ResourceApiService {
     }
   }
 
-  /** loginUser - An alternative to single sign on, allow users to log into the system with a user name and password.
+  /** login - An alternative to single sign on, allow users to log into the system with a user name and password.
    * email_token is not required, only send this if user is logging in for the first time
    * after an email verification link. */
   login(email: string, password: string, email_token = ''): Observable<any> {
