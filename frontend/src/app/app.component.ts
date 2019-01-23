@@ -123,8 +123,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   checkStatus() {
-    console.log('*** CHECK STATUS ***');
-
     const token = localStorage.getItem('token');
 
     if (token) {
