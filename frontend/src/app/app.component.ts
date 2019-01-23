@@ -109,8 +109,15 @@ export class AppComponent implements OnInit, OnDestroy {
     const numMinutes = 1;
 
     this.intervalService.setInterval(() => {
-      this.checkStatus();
-    }, numMinutes * 60 * 1000);
+      // Update seconds
+      this.timeLeftInSession -= 1000;
+
+      // Check status every numMinutes
+      if ((this.timeLeftInSession % (numMinutes * 60 * 1000)) < 1000) {
+        this.checkStatus();
+      }
+    }, 1000);
+
   }
 
   // Warn the user if there session has less than 5 minutes remaining.

@@ -10,12 +10,15 @@ export class TimeLeftPipe implements PipeTransform {
     const oneMinute = oneSecond * 60;
     const oneHour = oneMinute * 60;
     const oneDay = oneHour * 24;
-    const minutes = Math.floor((ms % oneHour) / oneMinute);
-    const hours = Math.floor((ms % oneDay) / oneHour);
-
-    let timeString = '';
-    timeString += hours + 'h:' + minutes + 'm';
-    return timeString;
+    const h = Math.floor((ms % oneDay) / oneHour);
+    const m = Math.floor((ms % oneHour) / oneMinute);
+    const s = Math.floor((ms % oneMinute) / oneSecond);
+    return `${this._pad(h)}:${this._pad(m)}:${this._pad(s)}`;
   }
+
+  private _pad(n: number): string {
+    return n.toLocaleString('en', { minimumIntegerDigits: 2 });
+  }
+
 
 }
