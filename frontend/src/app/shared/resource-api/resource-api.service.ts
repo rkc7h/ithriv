@@ -59,7 +59,7 @@ export class ResourceApiService {
     rootcategorylist: '/api/category/root',
     search: '/api/search',
     session: '/api/session',
-    sessionstatus: '/api/session_status/<auth_token>',
+    sessionstatus: '/api/session_status',
     type: '/api/type/<id>',
     typelist: '/api/type',
     user: '/api/user/<id>',
@@ -113,14 +113,24 @@ export class ResourceApiService {
   getSessionStatus(): Observable<number> {
     const token: string = localStorage.getItem('token');
     if (token) {
-      return this.httpClient.get<number>(this._apiUrl('sessionstatus').replace('<auth_token>', token))
-        .pipe(catchError(this.handleError));
+      return this.httpClient.get<number>(this._apiUrl('sessionstatus'))
+        .pipe(catchError(this.sessionStatusError));
     } else {
       return observableOf(0);
     }
   }
 
-  /** login - An alternative to single sign on, allow users to log into the system with a user name and password.
+  // Special error handler for get Session Status clears out the users local session if we get
+  // an unauthorized message.
+  private sessionStatusError(error: HttpErrorResponse) {
+    if (error.status === 401) {
+      localStorage.removeItem('token');
+    }
+    return this.handleError(error);
+  }
+
+
+    /** login - An alternative to single sign on, allow users to log into the system with a user name and password.
    * email_token is not required, only send this if user is logging in for the first time
    * after an email verification link. */
   login(email: string, password: string, email_token = ''): Observable<any> {
@@ -130,7 +140,7 @@ export class ResourceApiService {
   }
 
   private handleError(error: HttpErrorResponse) {
-    let message = 'Something bad happened; please try again later.';
+    let message = 'Something bad happened; please try again lather.';
 
     console.error(error);
 

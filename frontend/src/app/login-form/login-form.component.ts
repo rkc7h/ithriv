@@ -18,7 +18,7 @@ export class LoginFormComponent {
   submitting = false;
   title: string;
   emailToken: string;
-  errorEmitter = new EventEmitter<string>();
+  error: string;
   errorMatcher = new ErrorMatcher();
   loginForm: FormGroup = new FormGroup({});
   fields = {
@@ -68,6 +68,7 @@ export class LoginFormComponent {
     this.submitting = true;
     this.iThrivForm.validate();
     if (!this.loginForm.valid) {
+      this.submitting = false;
       return;
     }
 
@@ -87,10 +88,11 @@ export class LoginFormComponent {
         }
       });
     }, error1 => {
+      this.submitting = false;
       if (error1) {
-        this.errorEmitter.emit(error1);
-      } else {
-        this.errorEmitter.emit('An unexpected error occurred.  Please contact support.');
+        this.error = error1;
+        } else {
+        this.error = 'An unexpected error occurred.  Please contact support.';
       }
     });
   }
