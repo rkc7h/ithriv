@@ -94,7 +94,10 @@
       fxFlex.sm="50%"
       fxFlex.xs="100%"
     >
-      <app-approved-badge [resource]="resource"></app-approved-badge>
+      <app-approved-badge
+        [resource]="resource"
+        [user]="user"
+      ></app-approved-badge>
       <mat-card-title>
         Information
       </mat-card-title>
@@ -207,7 +210,10 @@
               <img [src]="fileIcon(file)" /> {{file.display_name || file.name || file.file_name}}
             </a>
           </mat-list-item>
-          <app-favorite-resource-button [resource]="resource"></app-favorite-resource-button>
+          <app-favorite-resource-button
+            [resource]="resource"
+            [user]="user"
+          ></app-favorite-resource-button>
         </mat-list>
       </mat-card-content>
       <mat-card-actions>

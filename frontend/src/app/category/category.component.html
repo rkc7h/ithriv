@@ -68,7 +68,10 @@
         </h1>
         <markdown>{{category.description}}</markdown>
         <p>
-          <app-add-resource-button [category]="category"></app-add-resource-button>
+          <app-add-resource-button
+            [category]="category"
+            [user]="user"
+          ></app-add-resource-button>
         </p>
       </div>
       <div
@@ -87,6 +90,7 @@
             <app-resource-list
               *ngIf="getResources(getInstitutionId()).length > 0"
               [resources]="getResources(getInstitutionId())"
+              [user]="user"
               [sidenavExpanded]="true"
               fxFlexFill
             ></app-resource-list>
@@ -117,6 +121,7 @@
           <mat-tab label="View all in category ({{getAllResources().length}})">
             <app-resource-list
               [resources]="getAllResources()"
+              [user]="user"
               [sidenavExpanded]="true"
               fxFlexFill
             ></app-resource-list>

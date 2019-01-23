@@ -4,11 +4,29 @@
 @include ithriv-theme($ithriv-theme);
 
 mat-toolbar {
+
+  @keyframes glowing {
+    0% { background-color:  mat-color($ithriv-warn, default, 0.5); }
+    20% { background-color: mat-color($ithriv-warn, default, 0.6); }
+    40% { background-color: mat-color($ithriv-warn, default, 0.7); }
+    60% { background-color: mat-color($ithriv-warn, default, 0.8); }
+    80% { background-color: mat-color($ithriv-warn, default, 0.9); }
+    100% { background-color: mat-color($ithriv-warn, default, 1); }
+  }
+
+  mat-toolbar-row.warning {
+    //  box-shadow: -1px -1px #888;
+    //  box-shadow: 0 0 0 rgba(204,169,44, 0.4);
+    background-color:  mat-color($ithriv-warn, default, 1);
+    animation: glowing 1000ms 10 500ms;
+  }
+
   mat-toolbar-row {
     a {
       text-decoration: none;
       color:inherit;
     }
+
 
     a:hover {
       color: mat-color($ithriv-accent, default, 1.0);
@@ -28,6 +46,10 @@ mat-toolbar {
     height: 30px;
     font-size: 12px;
     background-color: mat-color($ithriv-primary, 900, 1.0);
+
+    &.logged-in {
+      background-color: red;
+    }
 
     &.menubar-xs {
       height: 56px;

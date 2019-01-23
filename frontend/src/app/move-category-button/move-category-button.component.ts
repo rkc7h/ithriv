@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Category } from '../category';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { User } from '../user';
 
 @Component({
   selector: 'app-move-category-button',
@@ -9,6 +10,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 })
 export class MoveCategoryButtonComponent implements OnInit {
   @Input() category: Category;
+  @Input() user: User;
   @Input() siblings: Category[];
   @Input() direction: string;
   @Output() updatedCategory: EventEmitter<Category> = new EventEmitter();

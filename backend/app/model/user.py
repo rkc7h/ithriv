@@ -37,15 +37,9 @@ class User(db.Model):
 
     def encode_auth_token(self):
         try:
-            payload = {
-                'exp':
-                datetime.datetime.utcnow() + datetime.timedelta(
-                    hours=2, minutes=0, seconds=0),
-                'iat':
-                datetime.datetime.utcnow(),
-                'sub':
-                self.id
-            }
+            iat = datetime.datetime.utcnow()
+            exp = iat + datetime.timedelta(hours=2, minutes=0, seconds=0)
+            payload = {'exp': exp, 'iat': iat, 'sub': self.id}
             return jwt.encode(
                 payload, app.config.get('SECRET_KEY'), algorithm='HS256')
         except Exception as e:

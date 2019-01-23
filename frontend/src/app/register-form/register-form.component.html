@@ -1,13 +1,33 @@
 <mat-card>
   <mat-card-content>
-    <h1 class="mat-display-1" color="primary">Create an iTHRIV account</h1>
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <app-form-field *ngFor="let field of getFields()" [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
-        [field]="field" [formGroup]="registerForm" [errorMatcher]="errorMatcher"></app-form-field>
+    <h1
+      class="mat-display-1"
+      color="primary"
+    >Create an iTHRIV account</h1>
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      (keydown)="onKeydown($event)"
+    >
+      <app-form-field
+        *ngFor="let field of getFields()"
+        [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
+        [field]="field"
+        [formGroup]="registerForm"
+        [errorMatcher]="errorMatcher"
+      ></app-form-field>
 
-      <div id="error_message" class="display mat-error">{{errorMessage}}</div>
+      <div
+        id="error_message"
+        class="display mat-error"
+      >{{errorMessage}}</div>
       <footer *ngIf="registerState === 'form'">
-        <button type="button" color="primary" mat-raised-button (click)="onSubmit()">Next</button>
+        <button
+          type="button"
+          color="primary"
+          mat-raised-button
+          (click)="onSubmit()"
+        >Next</button>
       </footer>
       <footer *ngIf="registerState === 'submitting'">
         <mat-spinner></mat-spinner>
@@ -15,15 +35,28 @@
       <footer *ngIf="registerState === 'wait_for_email'">
         <b>Account Created! </b>
         <p>Please check your email to complete the signin process.</p>
-        <button type="button" color="primary" (click)="goHome()" mat-button>
+        <button
+          type="button"
+          color="primary"
+          (click)="goHome()"
+          mat-button
+        >
           Continue
         </button>
       </footer>
     </form>
   </mat-card-content>
 </mat-card>
-<div fxLayout="row" fxLayoutAlign="center center" *ngIf="registerState === 'form'">
-  <button type="button" (click)="onCancel()" mat-button>
+<div
+  fxLayout="row"
+  fxLayoutAlign="center center"
+  *ngIf="registerState === 'form'"
+>
+  <button
+    type="button"
+    (click)="onCancel()"
+    mat-button
+  >
     Cancel
   </button>
 </div>

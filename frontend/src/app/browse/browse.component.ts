@@ -6,6 +6,7 @@ import { ScrollToConfigOptions, ScrollToService } from '@nicky-lenaers/ngx-scrol
 import { Category } from '../category';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { User } from '../user';
 
 @Component({
   selector: 'app-browse',
@@ -16,6 +17,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 export class BrowseComponent implements OnInit {
   @HostBinding('@fadeTransition')
   category: Category;
+  user: User;
   allCategories: Category[];
   categoryId = 1;
   isDataLoaded = false;
@@ -54,6 +56,7 @@ export class BrowseComponent implements OnInit {
         this.categoryId = params['category'];
         this.loadCategory(this.categoryId);
       }
+      this.api.getSession().subscribe(user => this.user = user);
       this.loadAllCategories();
     });
   }

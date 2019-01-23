@@ -1,5 +1,10 @@
-<div *appIsAdmin>
-  <button mat-mini-fab color="accent" (click)="openEdit()" aria-label="Edit Category">
+<div *ngIf="user && user.role === 'Admin'">
+  <button
+    mat-mini-fab
+    color="accent"
+    (click)="openEdit()"
+    aria-label="Edit Category"
+  >
     <mat-icon>edit</mat-icon>
   </button>
 </div>

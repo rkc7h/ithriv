@@ -4,6 +4,7 @@ import { Input } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceQuery } from '../resource-query';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { User } from '../user';
 
 @Component({
   selector: 'app-resource-list',
@@ -13,6 +14,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 export class ResourceListComponent implements OnInit {
 
   @Input() resources: Resource[];
+  @Input() user: User;
   @Input() resourceQuery: ResourceQuery;
   @Input() sidenavExpanded: boolean;
   csvDataReady = false;

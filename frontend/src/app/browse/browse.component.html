@@ -26,6 +26,7 @@
       <app-move-category-button
         *ngIf="showMoveButtons()"
         [category]="rootCategory"
+        [user]="user"
         [siblings]="allCategories"
         (updatedCategory)="updateCategory(rootCategory)"
         [direction]="'up'"
@@ -34,6 +35,7 @@
       <app-move-category-button
         *ngIf="showMoveButtons()"
         [category]="rootCategory"
+        [user]="user"
         [siblings]="allCategories"
         (updatedCategory)="updateCategory(rootCategory)"
         [direction]="'down'"
@@ -41,10 +43,12 @@
       ></app-move-category-button>
       <app-edit-category-button
         [category]="rootCategory"
+        [user]="user"
         (updatedCategory)="updateCategory($event)"
       ></app-edit-category-button>
       <app-add-category-button
         [category]="rootCategory"
+        [user]="user"
         (updatedCategory)="addCategory($event)"
       ></app-add-category-button>
     </h1>
@@ -77,15 +81,18 @@
       {{category.name}}
       <app-edit-category-button
         [category]="category"
+        [user]="user"
         (updatedCategory)="updateCategory($event)"
       ></app-edit-category-button>
       <app-add-category-button
         [category]="category"
+        [user]="user"
         (updatedCategory)="addCategory($event)"
       ></app-add-category-button>
       <app-move-category-button
         *ngIf="showMoveButtons()"
         [category]="category"
+        [user]="user"
         [siblings]="getSiblings(category)"
         (updatedCategory)="updateCategory(category)"
         [direction]="'up'"
@@ -94,6 +101,7 @@
       <app-move-category-button
         *ngIf="showMoveButtons()"
         [category]="category"
+        [user]="user"
         [siblings]="getSiblings(category)"
         (updatedCategory)="updateCategory(category)"
         [direction]="'down'"
@@ -132,16 +140,19 @@
       </div>
       <app-edit-category-button
         [category]="c"
+        [user]="user"
         [parent]="category"
         (updatedCategory)="updateCategory($event)"
       ></app-edit-category-button>
       <app-add-category-button
         [category]="c"
+        [user]="user"
         (updatedCategory)="addCategory($event)"
       ></app-add-category-button>
       <app-move-category-button
         *ngIf="showMoveButtons()"
         [category]="c"
+        [user]="user"
         [siblings]="category.children"
         (updatedCategory)="updateCategory(c)"
         [direction]="'up'"
@@ -150,6 +161,7 @@
       <app-move-category-button
         *ngIf="showMoveButtons()"
         [category]="c"
+        [user]="user"
         [siblings]="category.children"
         (updatedCategory)="updateCategory(c)"
         [direction]="'down'"
@@ -194,11 +206,13 @@
           <app-edit-category-button
             [category]="sc"
             [parent]="c"
+            [user]="user"
             (updatedCategory)="updateCategory($event)"
           ></app-edit-category-button>
           <app-move-category-button
             *ngIf="showMoveButtons()"
             [category]="sc"
+            [user]="user"
             [siblings]="c.children"
             (updatedCategory)="updateCategory(sc)"
             [direction]="'up'"
@@ -207,6 +221,7 @@
           <app-move-category-button
             *ngIf="showMoveButtons()"
             [category]="sc"
+            [user]="user"
             [siblings]="c.children"
             (updatedCategory)="updateCategory(sc)"
             [direction]="'down'"

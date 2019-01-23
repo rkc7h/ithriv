@@ -4,6 +4,7 @@ import * as articles from './articles.json';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { Category } from '../category.js';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { User } from '../user.js';
 
 @Component({
   selector: 'app-help',
@@ -12,6 +13,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 })
 export class HelpComponent implements OnInit {
   categories: Category[];
+  user: User;
   privateArticles = [];
   publicArticles = [];
   breakpoint: string;
@@ -26,6 +28,7 @@ export class HelpComponent implements OnInit {
       this.publicArticles = articles.default.filter(a => a.public);
     }
 
+    this.api.getSession().subscribe(user => this.user = user);
     this.api.getCategories().subscribe(cats => this.categories = cats);
   }
 

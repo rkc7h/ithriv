@@ -4,7 +4,7 @@
   class="mat-typography"
 >
   <div
-    *appIfSession
+    *ngIf="user"
     class="pad-sm"
     fxLayout="column"
     fxLayoutAlign="center center"
@@ -94,7 +94,7 @@
         </mat-card>
       </div>
     </mat-tab>
-    <ng-container *appIfSession>
+    <ng-container *ngIf="user">
       <mat-tab
         *ngFor="let article of privateArticles"
         label="{{article.title}}"

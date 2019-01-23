@@ -3,12 +3,11 @@ import { SpyObject } from './helper.mock';
 import Spy = jasmine.Spy;
 
 export class MockResourceApiService extends SpyObject {
-
   getSessionSpy: Spy;
-  _fetchSessionSpy: Spy;
   openSessionSpy: Spy;
   closeSessionSpy: Spy;
-  loginUserSpy: Spy;
+  getSessionStatusSpy: Spy;
+  loginSpy: Spy;
   updateViewPreferencesSpy: Spy;
   getViewPreferencesSpy: Spy;
   searchResourcesSpy: Spy;
@@ -33,14 +32,8 @@ export class MockResourceApiService extends SpyObject {
   addResourceSpy: Spy;
   linkResourceAndCategorySpy: Spy;
   unlinkResourceAndCategorySpy: Spy;
-  unlinkResourceAndAttachmentSpy: Spy;
-  linkResourceAndAttachmentSpy: Spy;
   deleteResourceSpy: Spy;
-  getResourceAttachmentsSpy: Spy;
-  getResourceAttachmentSpy: Spy;
   getAttachmentsByResourcesSpy: Spy;
-  updateResourceAttachmentSpy: Spy;
-  addResourceAttachmentSpy: Spy;
   getFileAttachmentSpy: Spy;
   addFileAttachmentSpy: Spy;
   addFileAttachmentBlobSpy: Spy;
@@ -67,10 +60,10 @@ export class MockResourceApiService extends SpyObject {
     super(ResourceApiService);
     this.fakeResponse = null;
     this.getSessionSpy = this.spy('getSession').andReturn(this);
-    this._fetchSessionSpy = this.spy('_fetchSession').andReturn(this);
     this.openSessionSpy = this.spy('openSession').andReturn(this);
     this.closeSessionSpy = this.spy('closeSession').andReturn(this);
-    this.loginUserSpy = this.spy('loginUser').andReturn(this);
+    this.getSessionStatusSpy = this.spy('getSessionStatus').andReturn(this);
+    this.loginSpy = this.spy('login').andReturn(this);
     this.updateViewPreferencesSpy = this.spy('updateViewPreferences').andReturn(this);
     this.getViewPreferencesSpy = this.spy('getViewPreferences').andReturn(this);
     this.searchResourcesSpy = this.spy('searchResources').andReturn(this);
@@ -93,16 +86,10 @@ export class MockResourceApiService extends SpyObject {
     this.updateResourceSpy = this.spy('updateResource').andReturn(this);
     this.updateResourceAvailabilitySpy = this.spy('updateResourceAvailability').andReturn(this);
     this.addResourceSpy = this.spy('addResource').andReturn(this);
-    this.unlinkResourceAndCategorySpy = this.spy('unlinkResourceAndCategory').andReturn(this);
     this.linkResourceAndCategorySpy = this.spy('linkResourceAndCategory').andReturn(this);
-    this.unlinkResourceAndAttachmentSpy = this.spy('unlinkResourceAndAttachment').andReturn(this);
-    this.linkResourceAndAttachmentSpy = this.spy('linkResourceAndAttachment').andReturn(this);
+    this.unlinkResourceAndCategorySpy = this.spy('unlinkResourceAndCategory').andReturn(this);
     this.deleteResourceSpy = this.spy('deleteResource').andReturn(this);
-    this.getResourceAttachmentsSpy = this.spy('getResourceAttachments').andReturn(this);
-    this.getResourceAttachmentSpy = this.spy('getResourceAttachment').andReturn(this);
     this.getAttachmentsByResourcesSpy = this.spy('getAttachmentsByResources').andReturn(this);
-    this.updateResourceAttachmentSpy = this.spy('updateResourceAttachment').andReturn(this);
-    this.addResourceAttachmentSpy = this.spy('addResourceAttachment').andReturn(this);
     this.getFileAttachmentSpy = this.spy('getFileAttachment').andReturn(this);
     this.addFileAttachmentSpy = this.spy('addFileAttachment').andReturn(this);
     this.addFileAttachmentBlobSpy = this.spy('addFileAttachmentBlob').andReturn(this);

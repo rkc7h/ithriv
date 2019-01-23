@@ -19,12 +19,12 @@ import {
   Router,
   RouterOutlet
 } from '@angular/router';
-import { environment } from '../environments/environment';
 import { Icon } from './icon';
 import { Institution } from './institution';
 import { fadeTransition } from './shared/animations';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { User } from './user';
+import { IntervalService } from './shared/interval/interval.service';
 
 @Component({
   selector: 'app-root',
@@ -33,9 +33,13 @@ import { User } from './user';
   animations: [fadeTransition()],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  @HostBinding('@fadeTransition')
+  session: User = null;
+  timeLeftInSession: number;
+
   @ViewChild('sidenav') sidenav: MatSidenav;
   categoryId: string;
+
+  @HostBinding('@fadeTransition')
   hideHeader = false;
   icons: Icon[];
   institution: Institution;
@@ -43,10 +47,10 @@ export class AppComponent implements OnInit, OnDestroy {
   isNetworkView: boolean;
   isResourceView = false;
   mobileQuery: MediaQueryList;
-  session: User;
   title = 'iTHRIV';
   pageTitle = 'Find Resources';
   trustUrl;
+  intervalId: number;
 
   private _mobileQueryListener: () => void;
 
@@ -55,11 +59,12 @@ export class AppComponent implements OnInit, OnDestroy {
     media: MediaMatcher,
     private api: ResourceApiService,
     private location: Location,
-    private route: ActivatedRoute,
     private router: Router,
     private sanitizer: DomSanitizer,
     private titleService: Title,
     public iconRegistry: MatIconRegistry,
+    private route: ActivatedRoute,
+    private intervalService: IntervalService
   ) {
     this.trustUrl = this.sanitizer.bypassSecurityTrustResourceUrl;
     this.loadIcons();
@@ -68,6 +73,21 @@ export class AppComponent implements OnInit, OnDestroy {
     this.mobileQuery.addListener(this._mobileQueryListener);
 
     this.router.events.subscribe((e) => {
+      if (e instanceof NavigationEnd) {
+        this.route.queryParams.subscribe(queryParams => {
+          if (queryParams && queryParams.hasOwnProperty('auth_token')) {
+            const token = queryParams.auth_token;
+
+            if (token) {
+              localStorage.setItem('token', token);
+            }
+          }
+
+          this.checkStatus();
+        });
+
+      }
+
       if (e instanceof ActivationStart || e instanceof ActivationEnd) {
         if (e.snapshot && e.snapshot.data) {
           const data = e.snapshot.data;
@@ -86,15 +106,58 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     this.isNetworkView = this.getIsNetworkView();
+    const numMinutes = 1;
+
+    this.intervalService.setInterval(() => {
+      // Update seconds
+      this.timeLeftInSession -= 1000;
+
+      // Check status every numMinutes
+      if ((this.timeLeftInSession % (numMinutes * 60 * 1000)) < 1000) {
+        this.checkStatus();
+      }
+    }, 1000);
+
+  }
+
+  // Warn the user if there session has less than 5 minutes remaining.
+  toolBarWarningClass() {
+    if (this.session && this.timeLeftInSession < 300000) {
+      return 'warning';
+    } else {
+      return '';
+    }
+  }
+
+  checkStatus() {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      this.api.getSessionStatus().subscribe((timestamp: number) => {
+        const now = new Date();
+        const exp = new Date(timestamp * 1000);
+        const msLeft: number = exp.getTime() - now.getTime();
+        const loggedOut = (timestamp <= 0) || (msLeft <= 0);
+        this.timeLeftInSession = msLeft;
+
+        if (loggedOut) {
+          this.api.closeSession().subscribe((_: any) => {
+            this.intervalService.clearInterval();
+            this.session = null;
+            this.router.navigate(['timedout']);
+          });
+        } else {
+          this.api.getSession().subscribe(user => {
+            this.session = user;
+            this.getInstitution();
+          });
+        }
+      });
+    }
   }
 
   ngOnInit() {
-    this.getInstitution();
-    this.api.getSession().subscribe(user => {
-      this.session = user;
-    }, error1 => {
-      this.session = null;
-    });
+
   }
 
   ngOnDestroy(): void {
@@ -156,7 +219,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   goLogout($event) {
     $event.preventDefault();
+    localStorage.setItem('prev_url', this.router.url);
     this.api.closeSession().subscribe();
+    this.session = null;
+    this.router.navigate(['logout']);
   }
 
   getInstitution() {

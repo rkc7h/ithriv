@@ -4,7 +4,8 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 
 @Component({
   selector: 'app-session-redirect',
-  template: ''
+  templateUrl: 'session-redirect.component.html',
+  styleUrls: ['./session-redirect.component.scss']
 })
 export class SessionRedirectComponent {
   // Accepts a token from the server, then redirects the user
@@ -17,16 +18,23 @@ export class SessionRedirectComponent {
     private router: Router) {
 
     this.route.params.subscribe(params => {
-      this.api.openSession(params['token']).subscribe(session => {
-        const prevUrl = localStorage.getItem('prev_url');
-        if (prevUrl) {
-          this.router.navigateByUrl(prevUrl).then(() => {
-            localStorage.removeItem('prev_url');
-          });
-        } else {
-          // this.router.navigate(['']);
+      if (params.hasOwnProperty('token')) {
+        const token = params['token'];
+
+        if (token) {
+          localStorage.setItem('token', token);
+          this.api.getSession().subscribe(_ => this.goPrevUrl(token));
         }
-      });
+      }
+
+      // this.goPrevUrl();
+    });
+  }
+
+  goPrevUrl(token?: string) {
+    const prevUrl = localStorage.getItem('prev_url') || '/';
+    this.router.navigateByUrl(prevUrl).then(() => {
+      localStorage.removeItem('prev_url');
     });
   }
 }

@@ -9,9 +9,9 @@ import {
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgProgressComponent } from '@ngx-progressbar/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of as observableOf } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { catchError, last, map, tap } from 'rxjs/operators';
+import { catchError, last, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Availability } from '../../availability';
 import { Category } from '../../category';
@@ -36,108 +36,111 @@ export class ResourceApiService {
 
   // REST endpoints
   endpoints = {
-    resourceList: '/api/resource',
-    resource: '/api/resource/<id>',
-    categoryByResource: '/api/resource/<resource_id>/category',
-    categoryList: '/api/category',
-    rootCategoryList: '/api/category/root',
-    category: '/api/category/<id>',
-    resourceByCategory: '/api/category/<category_id>/resource',
-    institution: '/api/institution/<id>',
-    institutionList: '/api/institution',
-    institutionAvailabilityList: '/api/institution/availability',
-    type: '/api/type/<id>',
-    typeList: '/api/type',
-    search: '/api/search',
-    resourceAvailabilityList: '/api/resource_institution',
-    resourceAvailability: '/api/resource_institution/<id>',
-    availabilityList: '/api/availability',
     availability: '/api/availability/<id>',
-    fileAttachment: '/api/file/<file_id>', // One file
-    fileAttachmentList: '/api/file', // All files
-    resourceCategoryList: '/api/resource_category',
-    resourceCategory: '/api/resource_category/<id>',
-    resourceAttachment: '/api/resource/attachment/<id>', // One attachment
-    resourceAttachmentList: '/api/resource/attachment', // All attachments on every resource
-    attachmentByResource: '/api/resource/<resource_id>/attachment', // All attachments for given resource
-    iconList: '/api/icon',
-    icon: '/api/icon/<id>',
-    favoriteList: '/api/favorite',
+    availabilitylist: '/api/availability',
+    categorybyresource: '/api/resource/<resource_id>/category',
+    category: '/api/category/<id>',
+    categorylist: '/api/category',
     favorite: '/api/favorite/<id>',
-    userFavorites: '/api/session/favorite',
-    userResources: '/api/session/resource',
-    userList: '/api/user',
-    login_password: '/api/login_password',
+    favoritelist: '/api/favorite',
+    file: '/api/file/<id>',
+    filelist: '/api/file',
+    icon: '/api/icon/<id>',
+    iconlist: '/api/icon',
+    institutionavailabilitylist: '/api/institution/availability',
+    institution: '/api/institution/<id>',
+    institutionlist: '/api/institution',
+    resourceavailability: '/api/resource/<resource_id>/availability',
+    resourcebycategory: '/api/category/<category_id>/resource',
+    resourcecategory: '/api/resource_category/<id>',
+    resourcecategorylist: '/api/resource_category',
+    resource: '/api/resource/<id>',
+    resourcelist: '/api/resource',
+    rootcategorylist: '/api/category/root',
+    search: '/api/search',
+    session: '/api/session',
+    sessionstatus: '/api/session_status',
+    type: '/api/type/<id>',
+    typelist: '/api/type',
+    user: '/api/user/<id>',
+    userfavorite: '/api/session/favorite',
+    userlist: '/api/user',
+    userresource: '/api/session/resource',
+    approval_request: '/api/approval_request',
     forgot_password: '/api/forgot_password',
+    login_password: '/api/login_password',
     reset_password: '/api/reset_password',
     consult_request: '/api/consult_request',
-    approval_request: '/api/approval_request',
-    session: '/api/session'
+    root: '/',
+    sso_login: '/api/login',
+    static: '/static/<filename>',
+    logo: '/api/track/<user_id>/<code>/logo.png',
   };
 
-  private hasSession: boolean;
   private sessionSubject = new BehaviorSubject<User>(null);
 
   constructor(
     private httpClient: HttpClient,
     private router: Router
   ) {
-    this.getSession().subscribe(); // Try to set up the session when starting up.
   }
 
   /** getSession */
   public getSession(): Observable<User> {
-    if (!this.hasSession && localStorage.getItem('token')) {
-      this._fetchSession();
+    if (localStorage.getItem('token')) {
+      return this.httpClient.get<User>(this._apiUrl('session'))
+        .pipe(catchError(this.handleError));
+    } else {
+      return observableOf(null);
     }
-    return this.sessionSubject.asObservable();
-  }
-
-  /** _fetchSession */
-  public _fetchSession(): void {
-    this.httpClient.get<User>(this.apiRoot + this.endpoints.session).subscribe(user => {
-      this.hasSession = true;
-      this.sessionSubject.next(user);
-    }, (error) => {
-      localStorage.removeItem('token');
-      this.hasSession = false;
-      this.sessionSubject.error(error);
-    });
   }
 
   /** openSession */
   openSession(token: string): Observable<User> {
-    localStorage.setItem('token', token);
+    if (token) {
+      localStorage.setItem('token', token);
+    }
     return this.getSession();
   }
 
   /** closeSession */
   closeSession(): Observable<User> {
-    this.httpClient.delete<User>(this.apiRoot + this.endpoints.session).subscribe(x => {
-      localStorage.removeItem('token');
-      sessionStorage.clear();
-      this.hasSession = false;
-      this.sessionSubject.next(null);
-    }, (error) => {
-      localStorage.removeItem('token');
-      sessionStorage.clear();
-      this.hasSession = false;
-      this.sessionSubject.error(error);
-    });
-    return this.sessionSubject.asObservable();
+    localStorage.removeItem('token');
+    return this.httpClient.delete<User>(this._apiUrl('session'));
   }
 
-  /** loginUser - An alternative to single sign on, allow users to log into the system with a user name and password.
+  /** getSessionStatus */
+  getSessionStatus(): Observable<number> {
+    const token: string = localStorage.getItem('token');
+    if (token) {
+      return this.httpClient.get<number>(this._apiUrl('sessionstatus'))
+        .pipe(catchError(this.sessionStatusError));
+    } else {
+      return observableOf(0);
+    }
+  }
+
+  // Special error handler for get Session Status clears out the users local session if we get
+  // an unauthorized message.
+  private sessionStatusError(error: HttpErrorResponse) {
+    if (error.status === 401) {
+      localStorage.removeItem('token');
+    }
+    return this.handleError(error);
+  }
+
+
+    /** login - An alternative to single sign on, allow users to log into the system with a user name and password.
    * email_token is not required, only send this if user is logging in for the first time
    * after an email verification link. */
   login(email: string, password: string, email_token = ''): Observable<any> {
-    const options = { email: email, password: password, email_token: email_token };
-    return this.httpClient.post(this.apiRoot + this.endpoints.login_password, options)
+    const options = { email, password, email_token };
+    return this.httpClient.post(this._apiUrl('login_password'), options)
       .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {
-    let message = 'Something bad happened; please try again later.';
+    let message = 'Something bad happened; please try again lather.';
 
     console.error(error);
 
@@ -154,7 +157,7 @@ export class ResourceApiService {
       message = error.error.message;
       // If this was a 401 error, re-verify they have a valid session.
       if (error.error.code === 401) {
-        this._fetchSession();
+        this.getSession();
       }
     }
     // return an observable with a user-facing error message
@@ -181,25 +184,25 @@ export class ResourceApiService {
 
   /** searchResources */
   searchResources(query: ResourceQuery): Observable<ResourceQuery> {
-    return this.httpClient.post<ResourceQuery>(this.apiRoot + this.endpoints.search, query)
+    return this.httpClient.post<ResourceQuery>(this._apiUrl('search'), query)
       .pipe(catchError(this.handleError));
   }
 
   /** getCategories */
   getCategories(): Observable<Category[]> {
-    return this.httpClient.get<Category[]>(this.apiRoot + this.endpoints.categoryList)
+    return this.httpClient.get<Category[]>(this._apiUrl('categorylist'))
       .pipe(catchError(this.handleError));
   }
 
   /** getRootCategories */
   getRootCategories(): Observable<Category[]> {
-    return this.httpClient.get<Category[]>(this.apiRoot + this.endpoints.rootCategoryList)
+    return this.httpClient.get<Category[]>(this._apiUrl('rootcategorylist'))
       .pipe(catchError(this.handleError));
   }
 
   /** getCategory */
   getCategory(id: Number): Observable<Category> {
-    return this.httpClient.get<Category>(`${this.apiRoot + this.endpoints.categoryList}/${id}`)
+    return this.httpClient.get<Category>(`${this._apiUrl('categorylist')}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
@@ -217,7 +220,7 @@ export class ResourceApiService {
 
   /** addCategory */
   addCategory(category: Category): Observable<Category> {
-    return this.httpClient.post<Category>(this.apiRoot + this.endpoints.categoryList, category)
+    return this.httpClient.post<Category>(this._apiUrl('categorylist'), category)
       .pipe(catchError(this.handleError));
   }
 
@@ -229,50 +232,50 @@ export class ResourceApiService {
 
   /** getIcons */
   getIcons(): Observable<Icon[]> {
-    return this.httpClient.get<Icon[]>(this.apiRoot + this.endpoints.iconList)
+    return this.httpClient.get<Icon[]>(this._apiUrl('iconlist'))
       .pipe(catchError(this.handleError));
   }
 
   /** getInstitutions */
   getInstitutions(): Observable<Institution[]> {
-    return this.httpClient.get<Institution[]>(this.apiRoot + this.endpoints.institutionList)
+    return this.httpClient.get<Institution[]>(this._apiUrl('institutionlist'))
       .pipe(catchError(this.handleError));
   }
 
   /** getAvailabilityInstitutions */
   getAvailabilityInstitutions(): Observable<Institution[]> {
-    return this.httpClient.get<Institution[]>(this.apiRoot + this.endpoints.institutionAvailabilityList)
+    return this.httpClient.get<Institution[]>(this._apiUrl('institutionavailabilitylist'))
       .pipe(catchError(this.handleError));
   }
 
   /** getInstitution */
   getInstitution(id: Number): Observable<Institution> {
-    return this.httpClient.get<Institution>(`${this.apiRoot + this.endpoints.institutionList}/${id}`)
+    return this.httpClient.get<Institution>(`${this._apiUrl('institutionlist')}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
   /** getTypes */
   getTypes(): Observable<ResourceType[]> {
-    return this.httpClient.get<ResourceType[]>(this.apiRoot + this.endpoints.typeList)
+    return this.httpClient.get<ResourceType[]>(this._apiUrl('typelist'))
       .pipe(catchError(this.handleError));
   }
 
   /** getResource */
   getResource(id: Number): Observable<Resource> {
-    return this.httpClient.get<Resource>(`${this.apiRoot + this.endpoints.resourceList}/${id}`)
+    return this.httpClient.get<Resource>(`${this._apiUrl('resourcelist')}/${id}`)
       .pipe(catchError(this.handleError));
   }
 
   /** getResources */
   getResources(): Observable<Resource[]> {
-    return this.httpClient.get<Resource[]>(this.apiRoot + this.endpoints.resourceList)
+    return this.httpClient.get<Resource[]>(this._apiUrl('resourcelist'))
       .pipe(catchError(this.handleError));
   }
 
   /** getResourceCategories */
   getResourceCategories(resource: Resource): Observable<ResourceCategory[]> {
-    const url = this.endpoints.categoryByResource.replace('<resource_id>', resource.id.toString());
-    return this.httpClient.get<ResourceCategory[]>(this.apiRoot + url)
+    const url = this._apiUrl('categorybyresource').replace('<resource_id>', resource.id.toString());
+    return this.httpClient.get<ResourceCategory[]>(url)
       .pipe(catchError(this.handleError));
   }
 
@@ -296,14 +299,14 @@ export class ResourceApiService {
 
   /** addResource */
   addResource(resource: Resource): Observable<Resource> {
-    return this.httpClient.post<Resource>(this.apiRoot + this.endpoints.resourceList, resource)
+    return this.httpClient.post<Resource>(this._apiUrl('resourcelist'), resource)
       .pipe(catchError(this.handleError));
   }
 
   /** linkResourceAndCategory */
   linkResourceAndCategory(resource: Resource, category: Category): Observable<ResourceCategory> {
     const options = { resource_id: resource.id, category_id: category.id };
-    return this.httpClient.post<ResourceCategory>(this.apiRoot + this.endpoints.resourceCategoryList, options)
+    return this.httpClient.post<ResourceCategory>(this._apiUrl('resourcecategorylist'), options)
       .pipe(catchError(this.handleError));
   }
 
@@ -313,35 +316,9 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
-  /** linkResourceAndAttachment */
-  linkResourceAndAttachment(resource: Resource, attachment: FileAttachment): Observable<ResourceAttachment> {
-    const options = { resource_id: resource.id, attachment_id: attachment.id };
-    return this.httpClient.post<ResourceAttachment>(this.apiRoot + this.endpoints.resourceAttachmentList, options)
-      .pipe(catchError(this.handleError));
-  }
-
-  /** unlinkResourceAndAttachment */
-  unlinkResourceAndAttachment(rc: ResourceAttachment): Observable<ResourceAttachment> {
-    return this.httpClient.delete<ResourceAttachment>(this.apiRoot + rc._links.self)
-      .pipe(catchError(this.handleError));
-  }
-
   /** deleteResource */
   deleteResource(resource: Resource): Observable<Resource> {
     return this.httpClient.delete<Resource>(this.apiRoot + resource._links.self)
-      .pipe(catchError(this.handleError));
-  }
-
-  /** getResourceAttachments */
-  getResourceAttachments(): Observable<ResourceAttachment[]> {
-    return this.httpClient.get<ResourceAttachment[]>(this.apiRoot + this.endpoints.resourceAttachmentList)
-      .pipe(catchError(this.handleError));
-  }
-
-  /** getResourceAttachment */
-  getResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
-    const url = this.endpoints.resourceAttachment.replace('<id>', attachment.id.toString());
-    return this.httpClient.get<ResourceAttachment>(this.apiRoot + url)
       .pipe(catchError(this.handleError));
   }
 
@@ -351,25 +328,10 @@ export class ResourceApiService {
       .pipe(catchError(this.handleError));
   }
 
-  /** updateResourceAttachment */
-  updateResourceAttachment(attachment: ResourceAttachment): Observable<ResourceAttachment> {
-    const url = this.endpoints.resourceAttachment.replace('<id>', attachment.id.toString());
-    return this.httpClient.put<ResourceAttachment>(this.apiRoot + url, attachment)
-      .pipe(catchError(this.handleError));
-  }
-
-  /** addResourceAttachment */
-  addResourceAttachment(resourceId: Number, filenames: string[]): Observable<ResourceAttachment[]> {
-    const url = this.endpoints.attachmentByResource.replace('<resource_id>', resourceId.toString());
-    const options = { filenames: filenames };
-    return this.httpClient.post<ResourceAttachment[]>(this.apiRoot + url, options)
-      .pipe(catchError(this.handleError));
-  }
-
   /** getFileAttachment */
   getFileAttachment(id?: number, md5?: string): Observable<FileAttachment> {
     const params = { id: String(id), md5: md5 };
-    const url = this.apiRoot + this.endpoints.fileAttachmentList;
+    const url = this._apiUrl('filelist');
 
     return this.httpClient.get<FileAttachment>(url, { params: params })
       .pipe(catchError(this.handleError));
@@ -377,7 +339,7 @@ export class ResourceApiService {
 
   /** addFileAttachment */
   addFileAttachment(attachment: FileAttachment): Observable<FileAttachment> {
-    const url = this.apiRoot + this.endpoints.fileAttachmentList;
+    const url = this._apiUrl('filelist');
     const attachmentMetadata = {
       file_name: attachment.name,
       display_name: attachment.name,
@@ -393,7 +355,7 @@ export class ResourceApiService {
 
   /** addFileAttachmentBlob */
   addFileAttachmentBlob(attachmentId: number, attachment: FileAttachment, progress: NgProgressComponent): Observable<FileAttachment> {
-    const url = this.endpoints.fileAttachment.replace('<file_id>', attachmentId.toString());
+    const url = this._apiUrl('file').replace('<id>', attachmentId.toString());
     const options: {
       headers?: HttpHeaders,
       observe: 'events',
@@ -407,7 +369,7 @@ export class ResourceApiService {
       responseType: 'blob' as 'json'
     };
 
-    return this.httpClient.put<File>(this.apiRoot + url, attachment, options)
+    return this.httpClient.put<File>(url, attachment, options)
       .pipe(
         map(event => this.showProgress(event, attachment, progress)),
         last(), // return last (completed) message to caller
@@ -417,7 +379,7 @@ export class ResourceApiService {
 
   /** updateFileAttachment */
   updateFileAttachment(attachment: FileAttachment): Observable<FileAttachment> {
-    const url = this.endpoints.fileAttachment.replace('<file_id>', attachment.id.toString());
+    const url = this._apiUrl('file').replace('<id>', attachment.id.toString());
     const attachmentMetadata = {
       display_name: attachment.display_name,
       date_modified: new Date(attachment.lastModified || attachment.date_modified),
@@ -427,7 +389,7 @@ export class ResourceApiService {
       resource_id: attachment.resource_id
     };
 
-    return this.httpClient.put<FileAttachment>(this.apiRoot + url, attachmentMetadata)
+    return this.httpClient.put<FileAttachment>(url, attachmentMetadata)
       .pipe(catchError(this.handleError));
   }
 
@@ -450,22 +412,22 @@ export class ResourceApiService {
 
   /** deleteFileAttachment */
   deleteFileAttachment(attachment: FileAttachment): Observable<FileAttachment> {
-    const url = this.endpoints.fileAttachment.replace('<file_id>', attachment.id.toString());
-    return this.httpClient.delete<FileAttachment>(this.apiRoot + url)
+    const url = this._apiUrl('file').replace('<id>', attachment.id.toString());
+    return this.httpClient.delete<FileAttachment>(url)
       .pipe(catchError(this.handleError));
   }
 
   /** getUserResources
    * get resources that the user owns */
   getUserResources(): Observable<Resource[]> {
-    return this.httpClient.get<Resource[]>(this.apiRoot + this.endpoints.userResources)
+    return this.httpClient.get<Resource[]>(this._apiUrl('userresource'))
       .pipe(catchError(this.handleError));
   }
 
   /** addFavorite */
   addFavorite(user: User, resource: Resource): Observable<Favorite> {
     const options = { resource_id: resource.id, user_id: user.id };
-    return this.httpClient.post<Favorite>(this.apiRoot + this.endpoints.favoriteList, options)
+    return this.httpClient.post<Favorite>(this._apiUrl('favoritelist'), options)
       .pipe(catchError(this.handleError));
   }
 
@@ -477,14 +439,14 @@ export class ResourceApiService {
 
   /** getUserFavorites */
   getUserFavorites(): Observable<Favorite[]> {
-    return this.httpClient.get<Favorite[]>(this.apiRoot + this.endpoints.userFavorites)
+    return this.httpClient.get<Favorite[]>(this._apiUrl('userfavorite'))
       .pipe(catchError(this.handleError));
   }
 
   /** getUser
    * retrieve a user */
   getUser(id: number): Observable<User> {
-    return this.httpClient.get<User>(this.apiRoot + this.endpoints.userList + '/' + id)
+    return this.httpClient.get<User>(this._apiUrl('userlist') + '/' + id)
       .pipe(catchError(this.handleError));
   }
 
@@ -496,7 +458,7 @@ export class ResourceApiService {
 
   /** addUser */
   addUser(user: User): Observable<User> {
-    return this.httpClient.post<User>(this.apiRoot + this.endpoints.userList, user)
+    return this.httpClient.post<User>(this._apiUrl('userlist'), user)
       .pipe(catchError(this.handleError));
   }
 
@@ -509,7 +471,7 @@ export class ResourceApiService {
   /** findUsers */
   findUsers(filter = '', sort = 'display_name', sortOrder = 'asc', pageNumber = 0, pageSize = 3): Observable<UserSearchResults> {
     const search_data = { filter: filter, sort: sort, sortOrder: sortOrder, pageNumber: String(pageNumber), pageSize: String(pageSize) };
-    return this.httpClient.get<UserSearchResults>(this.apiRoot + this.endpoints.userList, { params: search_data })
+    return this.httpClient.get<UserSearchResults>(this._apiUrl('userlist'), { params: search_data })
       .pipe(catchError(this.handleError));
   }
 
@@ -517,7 +479,7 @@ export class ResourceApiService {
    * Reset password */
   sendResetPasswordEmail(email: String): Observable<any> {
     const email_data = { email: email };
-    return this.httpClient.post<any>(this.apiRoot + this.endpoints.forgot_password, email_data)
+    return this.httpClient.post<any>(this._apiUrl('forgot_password'), email_data)
       .pipe(catchError(this.handleError));
   }
 
@@ -525,7 +487,7 @@ export class ResourceApiService {
    * Reset password */
   resetPassword(newPassword: string, email_token: string): Observable<string> {
     const reset = { password: newPassword, email_token: email_token };
-    return this.httpClient.post<string>(this.apiRoot + this.endpoints.reset_password, reset)
+    return this.httpClient.post<string>(this._apiUrl('reset_password'), reset)
       .pipe(catchError(this.handleError));
   }
 
@@ -533,7 +495,7 @@ export class ResourceApiService {
    * Request a Consult */
   sendConsultRequestEmail(user: User, request_category: string, request_text: string): Observable<any> {
     const request_data = { user_id: user.id, request_category: request_category, request_text: request_text };
-    return this.httpClient.post<any>(this.apiRoot + this.endpoints.consult_request, request_data)
+    return this.httpClient.post<any>(this._apiUrl('consult'), request_data)
       .pipe(catchError(this.handleError));
   }
 
@@ -541,7 +503,7 @@ export class ResourceApiService {
    * Request Resource Approval */
   sendApprovalRequestEmail(user: User, resource: Resource): Observable<any> {
     const request_data = { user_id: user.id, resource_id: resource.id };
-    return this.httpClient.post<any>(this.apiRoot + this.endpoints.approval_request, request_data)
+    return this.httpClient.post<any>(this._apiUrl('approval_request'), request_data)
       .pipe(catchError(this.handleError));
   }
 
@@ -563,6 +525,13 @@ export class ResourceApiService {
         return attachment;
       default:
         break;
+    }
+  }
+
+  private _apiUrl(key: string) {
+    if (this.endpoints.hasOwnProperty(key)) {
+      return this.apiRoot + this.endpoints[key];
+    } else {
     }
   }
 }

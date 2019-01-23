@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../category';
 import { Resource } from '../resource';
+import { User } from '../user';
 
 @Component({
   selector: 'app-edit-resource-button',
@@ -11,6 +12,7 @@ import { Resource } from '../resource';
 export class EditResourceButtonComponent implements OnInit {
   @Input() resource: Resource;
   @Input() category: Category;
+  @Input() user: User;
 
   constructor(
     private router: Router

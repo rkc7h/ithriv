@@ -73,7 +73,6 @@ import { FormFieldComponent } from './form-field/form-field.component';
 import { GradientBackgroundDirective } from './gradient-background.directive';
 import { GradientBorderDirective } from './gradient-border.directive';
 import { HomeComponent } from './home/home.component';
-import { IsAdminDirective } from './is-admin.directive';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { LoginServicesComponent } from './login-services/login-services.component';
 import { LoginComponent } from './login/login.component';
@@ -97,7 +96,11 @@ import { UserAdminComponent } from './user-admin/user-admin.component';
 import { UserResourceListComponent } from './user-resource-list/user-resource-list.component';
 import { MoveCategoryButtonComponent } from './move-category-button/move-category-button.component';
 import { HelpComponent } from './help/help.component';
-import { IfSessionDirective } from './if-session.directive';
+import { LogoutComponent } from './logout/logout.component';
+import { TimedoutComponent } from './timedout/timedout.component';
+import { LoadingComponent } from './loading/loading.component';
+import { IntervalService } from './shared/interval/interval.service';
+import { TimeLeftPipe } from './shared/filters/time-left.pipe';
 
 @NgModule({
   declarations: [
@@ -125,7 +128,6 @@ import { IfSessionDirective } from './if-session.directive';
     GradientBorderDirective,
     GraphComponent,
     HomeComponent,
-    IsAdminDirective,
     LoginComponent,
     LoginFormComponent,
     LoginServicesComponent,
@@ -147,7 +149,10 @@ import { IfSessionDirective } from './if-session.directive';
     UserAdminComponent,
     UserResourceListComponent,
     HelpComponent,
-    IfSessionDirective
+    LogoutComponent,
+    TimedoutComponent,
+    LoadingComponent,
+    TimeLeftPipe
   ],
   imports: [
     Angular2CsvModule,
@@ -207,7 +212,8 @@ import { IfSessionDirective } from './if-session.directive';
       useClass: AuthInterceptor,
       multi: true
     },
-    ResourceApiService
+    ResourceApiService,
+    IntervalService
   ],
   bootstrap: [AppComponent]
 })

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
+import { User } from '../user';
 
 @Component({
   selector: 'app-approved-badge',
@@ -9,6 +10,7 @@ import { ResourceApiService } from '../shared/resource-api/resource-api.service'
 })
 export class ApprovedBadgeComponent implements OnInit {
   @Input() resource: Resource;
+  @Input() user: User;
 
   constructor(
     private api: ResourceApiService

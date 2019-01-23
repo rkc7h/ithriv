@@ -321,6 +321,8 @@ describe('Admin User', () => {
   it('should log out', async () => {
     const urlBefore = await page.getUrl();
     page.clickElement('#logout-button');
+    page.waitForVisible('#logout-message');
+    page.clickElement('#ok-button');
     page.waitForVisible('#login-button');
     const urlAfter = await page.getUrl();
     expect(urlAfter).toEqual(urlBefore);

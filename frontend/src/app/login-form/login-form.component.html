@@ -1,50 +1,57 @@
-<mat-card>
-  <mat-card-content>
-    <form
-      [formGroup]="loginForm"
-      (ngSubmit)="onSubmit()"
-    >
-      <app-form-field
-        *ngFor="let field of getFields()"
-        [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
-        [field]="field"
+<div *ngIf="!submitting">
+  <mat-card>
+    <mat-card-content>
+      <form
         [formGroup]="loginForm"
-        [errorMatcher]="errorMatcher"
-      ></app-form-field>
+        (ngSubmit)="onSubmit()"
+        (keydown)="onKeydown($event)"
+      >
+        <app-form-field
+          *ngFor="let field of getFields()"
+          [errors]="field.formControl ? field.formControl.errors : field.formGroup.errors"
+          [field]="field"
+          [formGroup]="loginForm"
+          [errorMatcher]="errorMatcher"
+        ></app-form-field>
 
-      <div
-        id="error_message"
-        class="display mat-error"
-      >{{errorEmitter | async}}</div>
-      <footer>
-        <button
-          type="button"
-          color="primary"
-          mat-raised-button
-          (click)="onSubmit()"
-          id="submit"
-        >Next</button>
-      </footer>
-    </form>
-  </mat-card-content>
-</mat-card>
-<div
-  fxLayout="row"
-  fxLayoutAlign="center center"
->
-  <button
-    type="button"
-    mat-button
-    (click)="goForgotPassword()"
+        <div
+          id="error_message"
+          class="display mat-error"
+        >{{error}}</div>
+        <footer>
+          <button
+            type="button"
+            color="primary"
+            mat-raised-button
+            (click)="onSubmit()"
+            id="submit"
+          >Next</button>
+        </footer>
+      </form>
+    </mat-card-content>
+  </mat-card>
+  <div
+    fxLayout="row"
+    fxLayoutAlign="center center"
   >
-    Forgot password?
-  </button>
-  <div fxFlex></div>
-  <button
-    type="button"
-    (click)="onCancel()"
-    mat-button
-  >
-    Cancel
-  </button>
+    <button
+      type="button"
+      mat-button
+      (click)="goForgotPassword()"
+    >
+      Forgot password?
+    </button>
+    <div fxFlex></div>
+    <button
+      type="button"
+      (click)="onCancel()"
+      mat-button
+    >
+      Cancel
+    </button>
+  </div>
 </div>
+<app-loading
+  *ngIf="submitting"
+  [message]="'Logging in...'"
+></app-loading>

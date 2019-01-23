@@ -22,15 +22,18 @@ def login(user_info):
         eppn = user_info['eppn']
 
     user = User.query.filter(
-        or_(func.lower(User.eppn) == func.lower(eppn), func.lower(User.email) == func.lower(eppn))).first()
+        or_(
+            func.lower(User.eppn) == func.lower(eppn),
+            func.lower(User.email) == func.lower(eppn))).first()
     if user is None:
-        user = User(eppn=eppn.lower(),
-                    display_name=eppn.lower(),
-                    email=eppn.lower())
+        user = User(
+            eppn=eppn.lower(), display_name=eppn.lower(), email=eppn.lower())
         if "Surname" in user_info:
             user.display_name = user.display_name + " " + user_info["Surname"]
 
-        if "displayName" in user_info and user_info["displayName"] is not None and len(user_info["displayName"]) > 1:
+        if "displayName" in user_info and user_info[
+                "displayName"] is not None and len(
+                    user_info["displayName"]) > 1:
             user.display_name = user_info["displayName"]
 
         # Link the user to their institution if possible
@@ -44,11 +47,12 @@ def login(user_info):
 
     db.session.add(user)
     db.session.commit()
-
     g.user = user
+
     # redirect users back to the front end, include the new auth token.
     auth_token = user.encode_auth_token().decode()
-    response_url = ("%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
+    response_url = (
+        "%s/%s" % (app.config["FRONTEND_AUTH_CALLBACK"], auth_token))
     return redirect(response_url)
 
 
@@ -98,10 +102,12 @@ def login_password():
 def forgot_password():
     request_data = request.get_json()
     email = request_data['email']
-    user = User.query.filter(func.lower(User.email) == email.lower()).first_or_404()
+    user = User.query.filter(
+        func.lower(User.email) == email.lower()).first_or_404()
 
     tracking_code = email_service.reset_email(user)
-    log = EmailLog(user_id=user.id, type="reset_email", tracking_code=tracking_code)
+    log = EmailLog(
+        user_id=user.id, type="reset_email", tracking_code=tracking_code)
     db.session.add(log)
     db.session.commit()
     return ''
@@ -118,7 +124,8 @@ def reset_password():
     except:
         raise RestException(RestException.TOKEN_INVALID)
 
-    user = User.query.filter(func.lower(User.email) == email.lower()).first_or_404()
+    user = User.query.filter(
+        func.lower(User.email) == email.lower()).first_or_404()
     user.email_verified = True
     user.password = password
     db.session.add(user)
@@ -148,7 +155,8 @@ def login_optional(f):
     def decorated(*args, **kwargs):
         if request.method != 'OPTIONS':  # pragma: no cover
             try:
-                auth = verify_token(request.headers['AUTHORIZATION'].split(' ')[1])
+                auth = verify_token(
+                    request.headers['AUTHORIZATION'].split(' ')[1])
             except:
                 auth = False
 

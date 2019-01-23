@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Institution } from '../institution';
 import { Resource } from '../resource';
 import { ResourceType } from '../resourceType';
+import { User } from '../user';
 
 @Component({
   selector: 'app-resource-tile',
@@ -11,6 +12,7 @@ import { ResourceType } from '../resourceType';
 })
 export class ResourceTileComponent implements OnInit {
   @Input() resource: Resource;
+  @Input() user: User;
 
   constructor(private router: Router) { }
 
