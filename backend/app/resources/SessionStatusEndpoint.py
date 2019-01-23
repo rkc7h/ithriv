@@ -1,6 +1,6 @@
 import datetime
 import flask_restful
-from flask import g, jsonify
+from flask import g, jsonify, request
 import jwt
 from app import app, auth
 
@@ -12,7 +12,10 @@ class SessionStatusEndpoint(flask_restful.Resource):
     """
 
     @auth.login_required
-    def get(self, auth_token):
+    def get(self):
+        # We don't need to send in the auth token as an argument, it is in the
+        # header.
+        auth_token = request.headers['AUTHORIZATION'].split(' ')[1];
         if "user" in g and auth_token:
             try:
                 payload = jwt.decode(
