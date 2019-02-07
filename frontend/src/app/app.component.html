@@ -42,7 +42,7 @@
             (click)="closeSidenav(); goHome($event)"
           >
             <mat-icon>account_circle</mat-icon>
-            {{session.display_name}}
+            {{session.display_name}} ({{timeLeftInSession | timeLeft }})
           </button>
         </mat-list-item>
         <mat-list-item *ngIf="session">
@@ -88,6 +88,7 @@
 
         <mat-toolbar-row
           class="menubar"
+          [ngClass]="toolBarWarningClass()"
           *ngIf="!mobileQuery.matches"
         >
           <span class="fill-remaining-space"></span>
@@ -110,17 +111,18 @@
               [ngClass]="{'user-name': true}"
             >
               <mat-icon>account_circle</mat-icon>
-              {{session.display_name}}
-            </a>
-            <button
-              mat-button
-              *ngIf="session"
-              (click)="goLogout($event)"
-              id="logout-button"
-            >
-              <mat-icon>exit_to_app</mat-icon>
-              Log Out
-            </button>
+              {{session.display_name}}&nbsp;
+              ({{timeLeftInSession | timeLeft }})
+              </button>
+              <button
+                mat-button
+                *ngIf="session"
+                (click)="goLogout($event)"
+                id="logout-button"
+              >
+                <mat-icon>exit_to_app</mat-icon>
+                Log Out
+              </button>
           </ng-container>
           <ng-container *ngIf="!session">
             <button

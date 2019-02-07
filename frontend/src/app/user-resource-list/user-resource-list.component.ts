@@ -18,35 +18,23 @@ export class UserResourceListComponent implements OnInit {
   constructor(
     private api: ResourceApiService,
   ) {
-    this.resources = [];
+    this.getUserResources();
+    this.getInstitution();
+
   }
 
   getUserResources() {
-    if (this.user) {
-      this.api.getUserResources().subscribe(
-        (resources) => {
-          this.resources = resources;
-        }
-      );
-    }
+    this.api.getUserResources().subscribe(resources => this.resources = resources);
   }
 
   getInstitution() {
-    if (sessionStorage.getItem('institution_id')) {
-      this.api.getInstitution(parseInt(sessionStorage.getItem('institution_id'), 10)).subscribe(
-        (inst) => {
-          this.institution = inst;
-        }
-      );
+    const instId = parseInt(sessionStorage.getItem('institution_id'), 10);
+    if (isFinite(instId)) {
+      this.api.getInstitution(instId).subscribe(inst => this.institution = inst);
     }
   }
 
   ngOnInit() {
-    if (this.user) {
-      this.getUserResources();
-    }
-
-    this.getInstitution();
   }
 
 }

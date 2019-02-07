@@ -100,6 +100,7 @@ import { LogoutComponent } from './logout/logout.component';
 import { TimedoutComponent } from './timedout/timedout.component';
 import { LoadingComponent } from './loading/loading.component';
 import { IntervalService } from './shared/interval/interval.service';
+import { TimeLeftPipe } from './shared/filters/time-left.pipe';
 
 @NgModule({
   declarations: [
@@ -150,7 +151,8 @@ import { IntervalService } from './shared/interval/interval.service';
     HelpComponent,
     LogoutComponent,
     TimedoutComponent,
-    LoadingComponent
+    LoadingComponent,
+    TimeLeftPipe
   ],
   imports: [
     Angular2CsvModule,

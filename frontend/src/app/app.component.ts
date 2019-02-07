@@ -34,6 +34,7 @@ import { IntervalService } from './shared/interval/interval.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   session: User = null;
+  timeLeftInSession: number;
 
   @ViewChild('sidenav') sidenav: MatSidenav;
   categoryId: string;
@@ -108,13 +109,27 @@ export class AppComponent implements OnInit, OnDestroy {
     const numMinutes = 1;
 
     this.intervalService.setInterval(() => {
-      this.checkStatus();
-    }, numMinutes * 60 * 1000);
+      // Update seconds
+      this.timeLeftInSession -= 1000;
+
+      // Check status every numMinutes
+      if ((this.timeLeftInSession % (numMinutes * 60 * 1000)) < 1000) {
+        this.checkStatus();
+      }
+    }, 1000);
+
+  }
+
+  // Warn the user if there session has less than 5 minutes remaining.
+  toolBarWarningClass() {
+    if (this.session && this.timeLeftInSession < 300000) {
+      return 'warning';
+    } else {
+      return '';
+    }
   }
 
   checkStatus() {
-    console.log('*** CHECK STATUS ***');
-
     const token = localStorage.getItem('token');
 
     if (token) {
@@ -123,10 +138,12 @@ export class AppComponent implements OnInit, OnDestroy {
         const exp = new Date(timestamp * 1000);
         const msLeft: number = exp.getTime() - now.getTime();
         const loggedOut = (timestamp <= 0) || (msLeft <= 0);
+        this.timeLeftInSession = msLeft;
 
         if (loggedOut) {
           this.api.closeSession().subscribe((_: any) => {
             this.intervalService.clearInterval();
+            this.session = null;
             this.router.navigate(['timedout']);
           });
         } else {

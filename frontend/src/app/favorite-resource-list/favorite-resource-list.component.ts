@@ -1,8 +1,12 @@
-import { Component, OnInit, Input } from '@angular/core';
 import { Institution } from '../institution';
 import { Resource } from '../resource';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
 import { User } from '../user';
+import {
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 
 @Component({
   selector: 'app-favorite-resource-list',
@@ -19,23 +23,15 @@ export class FavoriteResourceListComponent implements OnInit {
     private api: ResourceApiService,
   ) {
     this.resources = [];
+    this.getFavoriteResources();
   }
 
   getFavoriteResources() {
-    if (this.user) {
-      this.api.getUserFavorites().subscribe(
-        (favorites) => {
-          for (const f of favorites) {
-            this.resources.push(f.resource);
-          }
-        }
-      );
-    }
+    this.api.getUserFavorites().subscribe(favs => {
+      this.resources = favs.map(f => f.resource);
+    });
   }
 
   ngOnInit() {
-    if (this.user) {
-      this.getFavoriteResources();
-    }
   }
 }

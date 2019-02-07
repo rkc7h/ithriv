@@ -33,8 +33,7 @@ export class SessionRedirectComponent {
 
   goPrevUrl(token?: string) {
     const prevUrl = localStorage.getItem('prev_url') || '/';
-    const queryString = token ? '?auth_token=' + token : '';
-    this.router.navigateByUrl(prevUrl + queryString).then(() => {
+    this.router.navigateByUrl(prevUrl).then(() => {
       localStorage.removeItem('prev_url');
     });
   }
