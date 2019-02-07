@@ -74,7 +74,7 @@
           </button>
           <a
             mat-button
-            [routerLink]="['']"
+            [routerLink]="['/']"
             aria-label="Go Home"
           >
             <img
@@ -98,7 +98,7 @@
               mat-button
               *ngIf="session.role === 'Admin'"
               id="user-admin-button"
-              [routerLink]="['admin/users']"
+              [routerLink]="['/admin/users']"
             >
               <mat-icon>person_add</mat-icon>
               User Administration
@@ -106,7 +106,7 @@
             <a
               mat-button
               *ngIf="session"
-              [routerLink]="['']"
+              [routerLink]="['/']"
               id="user_{{session.id}}"
               [ngClass]="{'user-name': true}"
             >
@@ -157,7 +157,7 @@
           <h1 *ngIf="!mobileQuery.matches">
             <a
               href="#"
-              [routerLink]="['']"
+              [routerLink]="['/']"
               aria-label="Go Home"
               id="logomark-link"
             >
@@ -176,7 +176,7 @@
           <button
             id="search-button"
             mat-stroked-button
-            (click)="goSearch($event)"
+            [routerLink]="['/search']"
             fxFlex.xs="calc(50% - 20px)"
           >
             <mat-icon>search</mat-icon>

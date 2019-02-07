@@ -12,7 +12,7 @@
     [ngStyle]="{'background-color': category.hover ? category.color : categoryColorLight(), 'border-color': category.hover ? category.color : categoryColorLight()}"
   >
     <a
-      (click)="goCategory(category)"
+      [routerLink]="categoryRoute(category)"
       [appGradientBorder]="category.color"
       [ngStyle]="{'color': category.hover ? 'white' : 'black'}"
     >{{category.name}}</a>

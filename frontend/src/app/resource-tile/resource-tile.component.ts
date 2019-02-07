@@ -19,19 +19,16 @@ export class ResourceTileComponent implements OnInit {
   ngOnInit() {
   }
 
-  goResource($event, resource: Resource) {
-    $event.preventDefault();
-    this.router.navigate(['resource', resource.id]);
+  resourceRoute(resource: Resource) {
+    return (['/resource', resource.id]);
   }
 
-  goInstitution($event, institution: Institution) {
-    $event.preventDefault();
-    this.router.navigateByUrl(`/search/filter?Institution=${institution.name}`);
+  institutionRoute(institution: Institution) {
+    return (`/search/filter?Institution=${institution.name}`);
   }
 
-  goType($event, type: ResourceType) {
-    $event.preventDefault();
-    this.router.navigateByUrl(`/search/filter?Type=${type.name}`);
+  typeRoute(type: ResourceType) {
+    return (`/search/filter?Type=${type.name}`);
   }
 
   typeIconId(resource: Resource) {

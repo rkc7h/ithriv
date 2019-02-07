@@ -99,16 +99,15 @@ export class BrowseComponent implements OnInit {
     });
   }
 
-  goCategory($event, category: Category) {
-    $event.preventDefault();
-
+  categoryRoute(category: Category) {
+    console.log('category', category);
     if (category.level === 2) {
-      this.router.navigate(['category', category.id]);
+      return ['/category', category.id];
     } else if (this.api.getViewPreferences().isNetworkView) {
-      this.router.navigate(['network', category.id]);
+      return ['/network', category.id];
     } else {
-      const id = (category.level === 1) ? category.parent.id : category.id;
-      this.router.navigate(['browse', id]);
+      const id = (category.level === 1) ? category.parent_id : category.id;
+      return ['/browse', id];
     }
   }
 

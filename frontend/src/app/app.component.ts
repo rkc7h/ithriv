@@ -212,11 +212,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.navigate(['admin/users']);
   }
 
-  goSearch($event) {
-    $event.preventDefault();
-    this.router.navigate(['search']);
-  }
-
   goLogout($event) {
     $event.preventDefault();
     localStorage.setItem('prev_url', this.router.url);
