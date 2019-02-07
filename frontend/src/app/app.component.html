@@ -113,16 +113,16 @@
               <mat-icon>account_circle</mat-icon>
               {{session.display_name}}&nbsp;
               ({{timeLeftInSession | timeLeft }})
-              </button>
-              <button
-                mat-button
-                *ngIf="session"
-                (click)="goLogout($event)"
-                id="logout-button"
-              >
-                <mat-icon>exit_to_app</mat-icon>
-                Log Out
-              </button>
+            </a>
+            <button
+              mat-button
+              *ngIf="session"
+              (click)="goLogout($event)"
+              id="logout-button"
+            >
+              <mat-icon>exit_to_app</mat-icon>
+              Log Out
+            </button>
           </ng-container>
           <ng-container *ngIf="!session">
             <button
