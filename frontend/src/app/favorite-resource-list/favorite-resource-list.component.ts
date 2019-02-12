@@ -23,7 +23,10 @@ export class FavoriteResourceListComponent implements OnInit {
     private api: ResourceApiService,
   ) {
     this.resources = [];
-    this.getFavoriteResources();
+
+    if (this.user) {
+      this.getFavoriteResources();
+    }
   }
 
   getFavoriteResources() {

@@ -34,7 +34,7 @@ describe('Admin User', () => {
       page
         .getElement('#logomark-link')
         .getAttribute('href')
-    ).toEqual('http://localhost:4200/#');
+    ).toEqual('http://localhost:4200/#/');
   });
 
   it('should link back to www.ithriv.org', () => {
@@ -111,9 +111,10 @@ describe('Admin User', () => {
   });
 
   it('should click on resource tile', async () => {
-    const resourceElement = page.getElement('app-resource-tile');
+    const resourceElement = page.getElement('.mat-tab-body-active app-resource-tile');
     const id = await resourceElement.getAttribute('id');
     const resourceId = id.split('resource-tile-')[1];
+    page.waitForClickable('#' + id);
     resourceElement.click();
     const url = await page.getUrl();
     expect(url.split('#')[1]).toEqual(`/resource/${resourceId}`);

@@ -34,7 +34,7 @@ describe('Anonymous User', () => {
       page
         .getElement('#logomark-link')
         .getAttribute('href')
-    ).toEqual('http://localhost:4200/#');
+    ).toEqual('http://localhost:4200/#/');
   });
 
   it('should link back to www.ithriv.org', () => {

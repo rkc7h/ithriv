@@ -100,7 +100,6 @@ export class BrowseComponent implements OnInit {
   }
 
   categoryRoute(category: Category) {
-    console.log('category', category);
     if (category.level === 2) {
       return ['/category', category.id];
     } else if (this.api.getViewPreferences().isNetworkView) {
