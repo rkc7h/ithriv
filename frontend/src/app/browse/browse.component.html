@@ -2,7 +2,7 @@
   *ngFor="let c of prevCategories()"
   class="mat-typography prev-category"
   [ngStyle]="{'background-color': c.color}"
-  (click)="goCategory($event, c)"
+  [routerLink]="categoryRoute(c)"
 >
   <h1>{{c.name}}</h1>
 </div>
@@ -15,7 +15,7 @@
   <div
     class="header"
     *ngFor="let rootCategory of allCategories"
-    (click)="goCategory($event, rootCategory)"
+    [routerLink]="categoryRoute(rootCategory)"
   >
     <h1 class="mat-display-1">
       <mat-icon
@@ -134,7 +134,7 @@
           [ngStyle]="c.hover ? {'background-color': category.color, 'border-color': category.color} : {'color': category.color, 'border-color': category.color}"
           (mouseover)="c.hover=true"
           (mouseleave)="c.hover=false"
-          (click)="goCategory($event, c)"
+          [routerLink]="categoryRoute(c)"
         ></mat-icon>
         <h2 id="category_{{c.id}}">{{c.name}}</h2>
       </div>
@@ -180,7 +180,7 @@
           *ngFor="let sc of c.children"
           class="sub-sub-category"
           fxFlex="30%"
-          (click)="goCategory($event, sc)"
+          [routerLink]="categoryRoute(sc)"
           id="category_{{sc.id}}"
         >
           <mat-card-header>
@@ -237,7 +237,7 @@
   *ngFor="let c of nextCategories()"
   class="mat-typography next-category"
   [ngStyle]="{'background-color': c.color}"
-  (click)="goCategory($event, c)"
+  [routerLink]="categoryRoute(c)"
 >
   <h1>{{c.name}}</h1>
 </div>

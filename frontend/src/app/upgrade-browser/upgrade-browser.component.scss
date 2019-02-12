@@ -1,0 +1,12 @@
+// Import theming functions
+@import '~@angular/material/theming';
+@import '../../ithriv_material';
+@include ithriv-theme($ithriv-theme);
+
+.container {
+  min-height: 100vh;
+}
+
+div.message {
+  text-align: center;
+}

@@ -25,6 +25,7 @@ import { fadeTransition } from './shared/animations';
 import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { User } from './user';
 import { IntervalService } from './shared/interval/interval.service';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: 'app-root',
@@ -64,8 +65,18 @@ export class AppComponent implements OnInit, OnDestroy {
     private titleService: Title,
     public iconRegistry: MatIconRegistry,
     private route: ActivatedRoute,
-    private intervalService: IntervalService
+    private intervalService: IntervalService,
+    private deviceDetector: DeviceDetectorService
   ) {
+
+    if (
+      this.deviceDetector &&
+      this.deviceDetector.browser &&
+      (this.deviceDetector.browser.toLowerCase() === 'ie')
+    ) {
+      this.router.navigate(['upgrade_browser']);
+    }
+
     this.trustUrl = this.sanitizer.bypassSecurityTrustResourceUrl;
     this.loadIcons();
     this.mobileQuery = media.matchMedia('(max-width: 959px)');
@@ -210,11 +221,6 @@ export class AppComponent implements OnInit, OnDestroy {
   goUserAdmin($event) {
     $event.preventDefault();
     this.router.navigate(['admin/users']);
-  }
-
-  goSearch($event) {
-    $event.preventDefault();
-    this.router.navigate(['search']);
   }
 
   goLogout($event) {

@@ -19,6 +19,7 @@ import { SessionRedirectComponent } from '../session-redirect/session-redirect.c
 import { UserAdminComponent } from '../user-admin/user-admin.component';
 import { LogoutComponent } from '../logout/logout.component';
 import { TimedoutComponent } from '../timedout/timedout.component';
+import { UpgradeBrowserComponent } from '../upgrade-browser/upgrade-browser.component';
 
 export function searchFilterMatcher(url: UrlSegment[]) {
   if (
@@ -63,6 +64,7 @@ const routes: Routes = [
   { matcher: searchFilterMatcher, component: SearchComponent, data: { title: 'Search Resources' } },
   { path: 'session/:token', component: SessionRedirectComponent, data: { title: 'Logging in...', hideHeader: true } },
   { path: 'timedout', component: TimedoutComponent, data: { title: 'iTHRIV session timed out', hideHeader: true } },
+  { path: 'upgrade_browser', component: UpgradeBrowserComponent, data: { title: 'Please upgrade your browser', hideHeader: true } },
   { path: '**', component: NotFoundComponent }
 ];
 

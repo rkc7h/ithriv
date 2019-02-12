@@ -24,15 +24,15 @@ export class CategoryTileComponent implements OnInit {
   ngOnInit() {
   }
 
-  goCategory(category: Category) {
+  categoryRoute(category: Category) {
     const viewPrefs = this.api.getViewPreferences();
     const isNetworkView = viewPrefs && viewPrefs.hasOwnProperty('isNetworkView') ? viewPrefs.isNetworkView : true;
     const catId = category.id.toString();
 
     if (isNetworkView) {
-      this.router.navigate(['network', catId]);
+      return (['/network', catId]);
     } else {
-      this.router.navigate(['browse', catId]);
+      return (['/browse', catId]);
     }
   }
 

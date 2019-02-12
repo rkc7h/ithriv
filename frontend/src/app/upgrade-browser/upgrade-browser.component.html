@@ -1,0 +1,35 @@
+<div
+  class="container mat-typography"
+  fxLayout="row"
+  fxLayout.xs="column"
+  fxLayoutWrap
+  fxLayoutGap="10px"
+  fxLayoutAlign="center center"
+>
+  <div
+    fxFlex="50%"
+    class="message"
+  >
+    <app-logo [routerLink]="['/']"></app-logo>
+    <h1>Internet Explorer is not supported</h1>
+    <p>
+      In order to use all the features of iThriv, please open this website in
+      <a
+        href="https://www.google.com/chrome/"
+        target="_blank"
+      >Chrome</a>,
+      <a
+        href="https://www.mozilla.org/firefox/"
+        target="_blank"
+      >Firefox</a>
+      , or <a
+        href="https://www.microsoft.com/en-us/windows/microsoft-edge"
+        target="_blank"
+      >Edge</a>.
+    </p>
+    <button
+      mat-flat-button
+      [routerLink]="['/']"
+    >Ok</button>
+  </div>
+</div>

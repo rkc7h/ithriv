@@ -1,6 +1,6 @@
 <mat-card
   *ngIf="resource && resource.id"
-  (click)="goResource($event, resource)"
+  [routerLink]="resourceRoute(resource)"
   [ngClass]="{'resource': true, 'private': resource.private}"
   [hidden]="!resource.user_may_view"
 >
@@ -18,20 +18,20 @@
         <mat-icon
           svgIcon="ithriv_{{typeIconId(resource)}}"
           matTooltip="{{resource.type.name}}"
-          (click)="goType($event, resource.type)"
+          [routerLink]="typeRoute(resource.type)"
         ></mat-icon>
       </div>
       <div
         class="institution"
         matTooltip="{{resource.institution.name}}"
-        (click)="goInstitution($event, resource.institution)"
+        [routerLink]="institutionRoute(resource.institution)"
       >
         <img src="/assets/institutions/{{resource.institution.name}}.png" />
       </div>
     </div>
 
     <div>
-      <mat-card-header (click)="goResource($event, resource)">
+      <mat-card-header [routerLink]="resourceRoute(resource)">
         <mat-card-title>{{resource.name}}</mat-card-title>
         <app-approved-badge
           [resource]="resource"
@@ -42,7 +42,7 @@
           [user]="user"
         ></app-favorite-resource-button>
       </mat-card-header>
-      <mat-card-content (click)="goResource($event, resource)">
+      <mat-card-content [routerLink]="resourceRoute(resource)">
         <markdown [data]="truncateWords(resource.description, 20)"></markdown>
       </mat-card-content>
     </div>

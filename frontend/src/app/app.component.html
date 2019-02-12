@@ -72,9 +72,9 @@
           >
             <mat-icon>menu</mat-icon>
           </button>
-          <button
+          <a
             mat-button
-            (click)="goHome($event)"
+            [routerLink]="['/']"
             aria-label="Go Home"
           >
             <img
@@ -83,7 +83,7 @@
               class="logomark"
             />
             iTHRIV Research Concierge Portal
-          </button>
+          </a>
         </mat-toolbar-row>
 
         <mat-toolbar-row
@@ -94,26 +94,26 @@
           <span class="fill-remaining-space"></span>
 
           <ng-container *ngIf="session">
-            <button
+            <a
               mat-button
               *ngIf="session.role === 'Admin'"
-              (click)="goUserAdmin($event)"
               id="user-admin-button"
+              [routerLink]="['/admin/users']"
             >
               <mat-icon>person_add</mat-icon>
               User Administration
-            </button>
-            <button
+            </a>
+            <a
               mat-button
               *ngIf="session"
-              (click)="goHome($event)"
+              [routerLink]="['/']"
               id="user_{{session.id}}"
               [ngClass]="{'user-name': true}"
             >
-              <mat-icon >account_circle</mat-icon>
+              <mat-icon>account_circle</mat-icon>
               {{session.display_name}}&nbsp;
               ({{timeLeftInSession | timeLeft }})
-            </button>
+            </a>
             <button
               mat-button
               *ngIf="session"
@@ -157,7 +157,7 @@
           <h1 *ngIf="!mobileQuery.matches">
             <a
               href="#"
-              (click)="goHome($event)"
+              [routerLink]="['/']"
               aria-label="Go Home"
               id="logomark-link"
             >
@@ -176,7 +176,7 @@
           <button
             id="search-button"
             mat-stroked-button
-            (click)="goSearch($event)"
+            [routerLink]="['/search']"
             fxFlex.xs="calc(50% - 20px)"
           >
             <mat-icon>search</mat-icon>
@@ -184,7 +184,7 @@
           </button>
           <button
             mat-stroked-button
-            (click)="goHelp($event)"
+            [routerLink]="['/help']"
             fxFlex.xs="calc(50% - 20px)"
           >
             <mat-icon>help</mat-icon>
