@@ -18,9 +18,7 @@ export class UserResourceListComponent implements OnInit {
   constructor(
     private api: ResourceApiService,
   ) {
-    if (this.user) {
-      this.getUserResources();
-    }
+    this.getUserResources();
   }
 
   getUserResources() {
