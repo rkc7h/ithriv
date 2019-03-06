@@ -51,7 +51,6 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'iTHRIV';
   pageTitle = 'Find Resources';
   trustUrl;
-  intervalId: number;
 
   private _mobileQueryListener: () => void;
 
