@@ -36,20 +36,21 @@ export class ResourceTileComponent implements OnInit {
   }
 
   truncateWords(str: string, numWords: number) {
-    const maxChars = 36 * 3;
-    const allWords = str.split(' ');
-    const someWords = allWords.slice(0, numWords);
-    if (allWords.length > someWords.length) {
-      const someStr = someWords.join(' ');
+    if (str) {
+      const maxChars = 36 * 3;
+      const allWords = str.split(' ');
+      const someWords = allWords.slice(0, numWords);
+      if (allWords.length > someWords.length) {
+        const someStr = someWords.join(' ');
 
-      if (someStr.length + 3 > maxChars) {
-        return this.truncateWords(someStr, numWords - 1);
-      } else {
-        return someStr + '...';
+        if (someStr.length + 3 > maxChars) {
+          return this.truncateWords(someStr, numWords - 1);
+        } else {
+          return someStr + '...';
+        }
       }
-    } else {
-      return str;
     }
+    return str;
   }
 }
 

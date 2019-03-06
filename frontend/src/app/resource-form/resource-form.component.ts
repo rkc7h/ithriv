@@ -9,7 +9,6 @@ import { ErrorMatcher } from '../error-matcher';
 import { Fieldset } from '../fieldset';
 import { FormField } from '../form-field';
 import { Resource } from '../resource';
-import { ResourceAttachment } from '../resource-attachment';
 import { ResourceCategory } from '../resource-category';
 import { fadeTransition } from '../shared/animations';
 import { ResourceApiService } from '../shared/resource-api/resource-api.service';
@@ -49,162 +48,7 @@ export class ResourceFormComponent implements OnInit {
   fieldsets: Fieldset[] = [];
 
   // Form Fields
-  fields = {
-    name: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      maxLength: 140,
-      minLength: 1,
-      placeholder: 'Resource Name',
-      type: 'text',
-      helpText: `
-        You must be one of the persons responsible for a research resource to add it.
-        After saving your resource page, a system administrator must review and approve
-        it before it will be live in the system.
-      `
-    }),
-    description: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      placeholder: 'Description',
-      type: 'richtexteditor',
-      options: {
-        status: ['words'],
-      },
-      helpText: `
-        Describe your resource or service and when a researcher or community member
-        should access it.  You may use the hyperlink feature here to link to multiple
-        external websites or other related portal pages, but you should use the WEBSITE
-        field below for the main associated webpage.
-      `
-    }),
-    contact_notes: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      maxLength: 100,
-      minLength: 1,
-      placeholder: 'Contact Details',
-      type: 'text',
-      fieldsetId: 'contact_info',
-      fieldsetLabel: 'Contact:',
-      helpText: `Contact information is optional, but will be displayed to the users.`
-    }),
-    contact_email: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      maxLength: 100,
-      minLength: 1,
-      placeholder: 'Contact Email',
-      type: 'email',
-      fieldsetId: 'contact_info'
-    }),
-    contact_phone: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      maxLength: 100,
-      minLength: 1,
-      placeholder: 'Contact Phone',
-      type: 'text',
-      fieldsetId: 'contact_info'
-    }),
-    owner: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      maxLength: 1000,
-      minLength: 1,
-      placeholder: 'Owners',
-      type: 'text',
-      helpText: `
-        Enter the **email addresses** of the people who are responsible for this
-        resource page and should be able to edit in the future.  The email must be
-        in one of the following formats: xxx@virginia.edu, xxx@vt.edu,
-        xxx@carilionclinic.org, xxx@inova.org.
-      `
-    }),
-    cost: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      placeholder: 'Cost Type',
-      type: 'select',
-      selectOptions: [
-        'N / A',
-        'Variable',
-        'Free Across iTHRIV',
-        'Free to Home Institution',
-        'Cost Recovery',
-      ],
-      helpText: `
-        This is an optional field and can be used to generally indicate if there are
-        charges associated with use of this resource.
-      `
-    }),
-    type_id: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'Select Type',
-      type: 'select',
-      apiSource: 'getTypes'
-    }),
-    institution_id: new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'Home Institution',
-      type: 'select',
-      apiSource: 'getInstitutions',
-      fieldsetId: 'institution_prefs',
-      fieldsetLabel: 'Institutions'
-    }),
-    private: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      placeholder: 'Only visible to Home Institution',
-      type: 'checkbox',
-      fieldsetId: 'institution_prefs',
-      helpText: `If this box is checked, this resource will only be visible to the Home Institution selected above.`
-    }),
-    'availabilities.institution_id': new FormField({
-      formControl: new FormControl(),
-      required: true,
-      placeholder: 'Which institutions can use this resource?',
-      type: 'select',
-      multiSelect: true,
-      apiSource: 'getAvailabilityInstitutions',
-      fieldsetId: 'institution_prefs',
-      helpText: `
-        Select the audiences or user groups that have access to this resource or
-        service. These user groups will see this in their "resources you have access
-        to" category tabs. User groups not selected here will only see this resource
-        page when they select the "view all in category" tab.
-      `
-    }),
-    website: new FormField({
-      formControl: new FormControl(),
-      required: false,
-      maxLength: 200,
-      minLength: 7,
-      placeholder: 'Website',
-      type: 'url',
-      helpText: `
-        Provide the primary URL associated with this resource. This is an optional
-        field.
-      `
-    }),
-    categories: new FormField({
-      formGroup: new FormGroup({}),
-      required: true,
-      placeholder: 'Select Categories',
-      type: 'tree',
-      apiSource: 'getCategories',
-      multiSelect: true
-    }),
-    attachments: new FormField({
-      formControl: new FormControl(),
-      attachments: new Map<number | string, FileAttachment>(),
-      required: false,
-      placeholder: 'Attachments',
-      type: 'files'
-    }),
-  };
+  fields: any = {};
 
   constructor(
     private api: ResourceApiService,
@@ -213,7 +57,12 @@ export class ResourceFormComponent implements OnInit {
     public snackBar: MatSnackBar,
     private intervalService: IntervalService
   ) {
-    this.loadData();
+
+    this.api.getSession().subscribe(user => {
+      this.user = user;
+      this.loadFields();
+      this.loadData();
+    });
 
     const numMinutes = 1;
     this.intervalService.setInterval(() => {
@@ -243,12 +92,9 @@ export class ResourceFormComponent implements OnInit {
 
   checkStatus() {
     const token = localStorage.getItem('token');
-    console.log('token', token);
 
     if (token) {
       this.api.getSessionStatus().subscribe((timestamp: number) => {
-        console.log('timestamp', timestamp);
-
         const now = new Date();
         const exp = new Date(timestamp * 1000);
         const msLeft: number = exp.getTime() - now.getTime();
@@ -358,6 +204,166 @@ export class ResourceFormComponent implements OnInit {
     }
   }
 
+  loadFields() {
+    this.fields = {
+      name: new FormField({
+        formControl: new FormControl(),
+        required: true,
+        maxLength: 140,
+        minLength: 1,
+        placeholder: 'Resource Name',
+        type: 'text',
+        helpText: `
+        You must be one of the persons responsible for a research resource to add it.
+        After saving your resource page, a system administrator must review and approve
+        it before it will be live in the system.
+      `
+      }),
+      description: new FormField({
+        formControl: new FormControl(),
+        required: false,
+        placeholder: 'Description',
+        type: 'richtexteditor',
+        options: {
+          status: ['words'],
+        },
+        helpText: `
+        Describe your resource or service and when a researcher or community member
+        should access it.  You may use the hyperlink feature here to link to multiple
+        external websites or other related portal pages, but you should use the WEBSITE
+        field below for the main associated webpage.
+      `
+      }),
+      contact_notes: new FormField({
+        formControl: new FormControl(),
+        required: false,
+        maxLength: 100,
+        minLength: 1,
+        placeholder: 'Contact Details',
+        type: 'text',
+        fieldsetId: 'contact_info',
+        fieldsetLabel: 'Contact:',
+        helpText: `Contact information is optional, but will be displayed to the users.`
+      }),
+      contact_email: new FormField({
+        formControl: new FormControl(),
+        required: false,
+        maxLength: 100,
+        minLength: 1,
+        placeholder: 'Contact Email',
+        type: 'email',
+        fieldsetId: 'contact_info'
+      }),
+      contact_phone: new FormField({
+        formControl: new FormControl(),
+        required: false,
+        maxLength: 100,
+        minLength: 1,
+        placeholder: 'Contact Phone',
+        type: 'text',
+        fieldsetId: 'contact_info'
+      }),
+      owner: new FormField({
+        formControl: new FormControl(),
+        required: true,
+        maxLength: 1000,
+        minLength: 1,
+        placeholder: 'Owners',
+        type: 'text',
+        helpText: `
+          Enter the **email addresses** of the people who are responsible for this
+          resource page and should be able to edit in the future.  The email must be
+          in one of the following formats: xxx@virginia.edu, xxx@vt.edu,
+          xxx@carilionclinic.org, xxx@inova.org.
+        `,
+        defaultValue: this.user.email.toLowerCase()
+      }),
+      cost: new FormField({
+        formControl: new FormControl(),
+        required: false,
+        placeholder: 'Cost Type',
+        type: 'select',
+        selectOptions: [
+          'N / A',
+          'Variable',
+          'Free Across iTHRIV',
+          'Free to Home Institution',
+          'Cost Recovery',
+        ],
+        helpText: `
+        This is an optional field and can be used to generally indicate if there are
+        charges associated with use of this resource.
+      `
+      }),
+      type_id: new FormField({
+        formControl: new FormControl(),
+        required: true,
+        placeholder: 'Select Type',
+        type: 'select',
+        apiSource: 'getTypes'
+      }),
+      institution_id: new FormField({
+        formControl: new FormControl(),
+        required: true,
+        placeholder: 'Home Institution',
+        type: 'select',
+        apiSource: 'getInstitutions',
+        fieldsetId: 'institution_prefs',
+        fieldsetLabel: 'Institutions'
+      }),
+      private: new FormField({
+        formControl: new FormControl(),
+        required: false,
+        placeholder: 'Only visible to Home Institution',
+        type: 'checkbox',
+        fieldsetId: 'institution_prefs',
+        helpText: `If this box is checked, this resource will only be visible to the Home Institution selected above.`
+      }),
+      'availabilities.institution_id': new FormField({
+        formControl: new FormControl(),
+        required: true,
+        placeholder: 'Which institutions can use this resource?',
+        type: 'select',
+        multiSelect: true,
+        apiSource: 'getAvailabilityInstitutions',
+        fieldsetId: 'institution_prefs',
+        helpText: `
+        Select the audiences or user groups that have access to this resource or
+        service. These user groups will see this in their "resources you have access
+        to" category tabs. User groups not selected here will only see this resource
+        page when they select the "view all in category" tab.
+      `
+      }),
+      website: new FormField({
+        formControl: new FormControl(),
+        required: false,
+        maxLength: 200,
+        minLength: 7,
+        placeholder: 'Website',
+        type: 'url',
+        helpText: `
+        Provide the primary URL associated with this resource. This is an optional
+        field.
+      `
+      }),
+      categories: new FormField({
+        formGroup: new FormGroup({}),
+        required: true,
+        placeholder: 'Select Categories',
+        type: 'tree',
+        apiSource: 'getCategories',
+        multiSelect: true
+      }),
+      attachments: new FormField({
+        formControl: new FormControl(),
+        attachments: new Map<number | string, FileAttachment>(),
+        required: false,
+        placeholder: 'Attachments',
+        type: 'files'
+      }),
+    };
+  }
+
   loadForm() {
     this.isDataLoaded = false;
 
@@ -415,11 +421,15 @@ export class ResourceFormComponent implements OnInit {
           if (field.formControl) {
             field.formControl.setValidators(validators);
 
-            if (fieldName === 'availabilities.institution_id') {
+            if (fieldName === 'owner' && !this.resource[fieldName]) {
+              field.formControl.patchValue(this.user.email.toLowerCase());
+            } else if (fieldName === 'availabilities.institution_id') {
               const selectedInstitutions = this.resource.availabilities.filter(av => av.available);
               const selectedInstitutionIds = selectedInstitutions.map(i => i.institution_id);
               field.formControl.patchValue(selectedInstitutionIds);
-            } else {
+            } else if (!this.resource[fieldName] && field.defaultValue) {
+              field.formControl.patchValue(field.defaultValue);
+            } else if (this.resource[fieldName]) {
               field.formControl.patchValue(this.resource[fieldName]);
             }
 
@@ -436,20 +446,31 @@ export class ResourceFormComponent implements OnInit {
     this.loadFieldsets();
   }
 
-  getFields(): FormField[] {
-    return Object.entries(this.fields).map(f => f[1]);
-  }
-
   onSubmit($event, submitForApproval = false) {
     $event.preventDefault();
     this.validate();
 
     if (this.resourceForm.valid) {
       this.isDataLoaded = false;
+      const fieldNames = Object.keys(this.fields);
 
-      for (const fieldName in this.fields) {
+      for (const fieldName of fieldNames) {
         if (this.fields[fieldName].formControl) {
-          this.resource[fieldName] = this.fields[fieldName].formControl.value;
+
+          // If the resource is being added, check that
+          // the user's email address is in the owner field
+          if (this.createNew && (fieldName === 'owner')) {
+            const email = this.user.email.toLowerCase();
+            const oldOwner = this.fields[fieldName].formControl.value.toLowerCase();
+
+            if (oldOwner.includes(email)) {
+              this.resource.owner = oldOwner;
+            } else {
+              this.resource.owner = `${email}, ${oldOwner}`;
+            }
+          } else {
+            this.resource[fieldName] = this.fields[fieldName].formControl.value;
+          }
         }
       }
 
@@ -474,8 +495,6 @@ export class ResourceFormComponent implements OnInit {
             map(ras => {
               ras.subscribe(resourceAttachment => {
                 numDone++;
-                console.log('resourceAttachment updated:', resourceAttachment);
-                console.log(`${numDone} of ${numAttachments} complete.`);
 
                 if (numDone === numAttachments) {
                   if (submitForApproval) {
