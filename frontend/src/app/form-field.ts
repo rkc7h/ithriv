@@ -15,6 +15,7 @@ export class FormField {
   required?: boolean;
   showIcons = false;
   type: string;
+  defaultValue?: any;
 
   // 'files' type
   attachments = new Map<string, FileAttachment>();
