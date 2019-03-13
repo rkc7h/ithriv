@@ -18,7 +18,9 @@
     fxFlex="90%"
   >
     <h2>Resource Details</h2>
-    <!-- TODO:  Add Type, Institution, and Availability -->
+    <p>Minutes remaining before your login times out: <strong>{{timeLeftInSession | timeLeft }}</strong>. Please save
+      your work.</p>
+
     <fieldset
       *ngFor="let fieldset of fieldsets"
       [ngClass]="{'show': !!fieldset.label}"

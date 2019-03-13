@@ -17,6 +17,7 @@ import { ValidateUrl } from '../shared/validators/url.validator';
 import { FileAttachment } from '../file-attachment';
 import { NgProgressComponent } from '@ngx-progressbar/core';
 import { User } from '../user';
+import { IntervalService } from '../shared/interval/interval.service';
 
 @Component({
   selector: 'app-resource-form',
@@ -41,6 +42,8 @@ export class ResourceFormComponent implements OnInit {
   progress: NgProgressComponent;
   progressMessage: '';
   user: User;
+  timeLeftInSession: number;
+
 
   // Field groupings
   fieldsets: Fieldset[] = [];
@@ -207,13 +210,64 @@ export class ResourceFormComponent implements OnInit {
     private api: ResourceApiService,
     private route: ActivatedRoute,
     private router: Router,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    private intervalService: IntervalService
   ) {
     this.loadData();
+
+    const numMinutes = 1;
+    this.intervalService.setInterval(() => {
+      // Update seconds
+      this.timeLeftInSession -= 1000;
+
+      // Check status every numMinutes
+      if ((this.timeLeftInSession % (numMinutes * 60 * 1000)) < 1000) {
+        this.checkStatus();
+      }
+    }, 1000);
   }
 
   ngOnInit() {
-    this.api.getSession().subscribe(user => this.user = user);
+    // this.api.getSession().subscribe(user => this.user = user);
+    this.checkStatus();
+  }
+
+  // Warn the user if there session has less than 5 minutes remaining.
+  toolBarWarningClass() {
+    if (this.user && this.timeLeftInSession < 300000) {
+      return 'warning';
+    } else {
+      return '';
+    }
+  }
+
+  checkStatus() {
+    const token = localStorage.getItem('token');
+    console.log('token', token);
+
+    if (token) {
+      this.api.getSessionStatus().subscribe((timestamp: number) => {
+        console.log('timestamp', timestamp);
+
+        const now = new Date();
+        const exp = new Date(timestamp * 1000);
+        const msLeft: number = exp.getTime() - now.getTime();
+        const loggedOut = (timestamp <= 0) || (msLeft <= 0);
+        this.timeLeftInSession = msLeft;
+
+        if (loggedOut) {
+          this.api.closeSession().subscribe((_: any) => {
+            this.intervalService.clearInterval();
+            this.user = null;
+            this.router.navigate(['timedout']);
+          });
+        } else {
+          this.api.getSession().subscribe(user => {
+            this.user = user;
+          });
+        }
+      });
+    }
   }
 
   loadData() {
