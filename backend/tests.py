@@ -292,7 +292,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response['api.resourceendpoint'], '/api/resource/<id>')
         self.assertEqual(response['api.resourcelistendpoint'], '/api/resource')
         self.assertEqual(response['api.sessionendpoint'], '/api/session')
-        self.assertEqual(response['api.sessionstatusendpoint'], '/api/session_status/<auth_token>')
+        self.assertEqual(response['api.sessionstatusendpoint'], '/api/session_status')
         self.assertEqual(response['api.userendpoint'], '/api/user/<id>')
         self.assertEqual(response['auth.forgot_password'], '/api/forgot_password')
         self.assertEqual(response['auth.login_password'], '/api/login_password')
