@@ -3,8 +3,8 @@ from flask import g, request
 
 from app import db, RestException, auth
 from app.resources.schema import FavoriteSchema, UserFavoritesSchema
-from app.model.favorite import Favorite
-from app.model.resource import ThrivResource
+from app.models import Favorite
+from app.models import ThrivResource
 
 
 class UserFavoriteEndpoint(flask_restful.Resource):

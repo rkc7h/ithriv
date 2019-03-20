@@ -14,6 +14,10 @@ from app.elastic_index import ElasticIndex
 from app.email_service import EmailService
 from app.file_server import FileServer
 from app.rest_exception import RestException
+from sqlalchemy import create_engine
+from sqlalchemy_utils import database_exists, create_database, drop_database
+import logging
+from alembic import command
 
 app = Flask(__name__, instance_relative_config=True)
 
@@ -27,10 +31,13 @@ if "APP_CONFIG_FILE" in os.environ:
     app.config.from_envvar('APP_CONFIG_FILE')
 
 # Enable CORS
-if(app.config["CORS_ENABLED"]) :
+if(app.config['CORS_ENABLED']) :
     cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 # Database Configuration
+logging.basicConfig()
+logger = logging.getLogger('sqlalchemy.engine')
+logger.setLevel(app.config['SQLALCHEMY_LOG_LEVEL'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -89,7 +96,6 @@ def handle_invalid_usage(error):
 def handle_404(error):
     return handle_invalid_usage(RestException(RestException.NOT_FOUND, 404))
 
-
 def _load_data(data_loader):
     data_loader.load_institutions()
     data_loader.load_resources()
@@ -100,12 +106,93 @@ def _load_data(data_loader):
     data_loader.load_users()
     data_loader.load_user_favorites()
 
-@app.cli.command()
-def initdb():
+def _loadicons():
+    """Load the SVG icon images onto the S3 bucket and create records in the database"""
+    click.echo('Loading SVG Images to S3, creating Icon Records')
+    from app import data_loader
+    data_loader = data_loader.DataLoader()
+    data_loader.load_icons()
+
+def _loaddb():
     """Initialize the database."""
     from app import data_loader
     data_loader = data_loader.DataLoader()
     _load_data(data_loader)
+
+def _loadindex():
+    """Load all information into the elastic search Index."""
+    click.echo('Loading data into Elastic Search')
+    from app import data_loader
+    data_loader = data_loader.DataLoader()
+    data_loader.build_index()
+
+def _clearindex():
+    """Delete all information from the elasticsearch index"""
+    click.echo('Removing Data from Elastic Search')
+    from app import data_loader
+    data_loader = data_loader.DataLoader()
+    data_loader.clear_index()
+
+def _setup():
+    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    if not database_exists(engine.url):
+        try:
+            create_database(engine.url)
+            click.echo("Database created..........")
+            command.upgrade(migrate.get_config(), "head")
+            click.echo("Database revision changes applied..........")
+            _loadicons()
+            click.echo("Database SVG icon images loaded into the S3 bucket and respective records initialized in the database..........")
+            _loaddb()
+            click.echo("Database initialized with data..........")
+            _loadindex()
+            click.echo("Elastic search database initalized with data..........")
+        except Exception as ex:
+            click.echo('Failed to teardown. Please DEBUG and try again')
+            raise ex
+    else:
+        click.echo("Cannot setup: Database already exists");
+
+def _teardown():
+    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    if database_exists(engine.url):
+        try:
+            drop_database(engine.url)
+            click.echo("Database dropped..........")
+            _clearindex()
+            click.echo("Elastic search database indexes cleared..........")
+        except Exception as ex:
+            click.echo('Failed to teardown. Please DEBUG and try again')
+            raise ex
+    else:
+        click.echo("Cannot teardown: Database doesn't exist");
+
+@app.cli.command()
+def setup():
+    _setup()
+    click.echo('Setup completed...............')
+
+@app.cli.command()
+def teardown():
+    _teardown()
+    click.echo('Teardwon completed...............')
+
+@app.cli.command()
+def resetall():
+    _teardown()
+    _setup()
+
+@app.cli.command()
+def loadicons():
+    _loadicons()
+
+@app.cli.command()
+def initdb():
+    _loaddb()
+
+@app.cli.command()
+def initindex():
+    _loadindex()
 
 @app.cli.command()
 def cleardb():
@@ -116,20 +203,8 @@ def cleardb():
     data_loader.clear()
 
 @app.cli.command()
-def initindex():
-    """Delete all information from the elastic search Index."""
-    click.echo('Loading data into Elastic Search')
-    from app import data_loader
-    data_loader = data_loader.DataLoader()
-    data_loader.build_index()
-
-@app.cli.command()
 def clearindex():
-    """Delete all information from the elasticsearch index"""
-    click.echo('Removing Data from Elastic Search')
-    from app import data_loader
-    data_loader = data_loader.DataLoader()
-    data_loader.clear_index()
+    _clearindex()
 
 @app.cli.command()
 def reset():
@@ -142,13 +217,6 @@ def reset():
     _load_data(data_loader)
     data_loader.build_index()
 
-@app.cli.command()
-def loadicons():
-    """Load the SVG icon images onto the S3 bucket and create records in the database"""
-    click.echo('Loading SVG Images to S3, creating Icon Records')
-    from app import data_loader
-    data_loader = data_loader.DataLoader()
-    data_loader.load_icons()
-
 
 from app import views
+

@@ -2,9 +2,9 @@
 # *****************************
 
 from app import db, auth, email_service
-from app.model.email_log import EmailLog
-from app.model.user import User
-from app.model.resource import ThrivResource
+from app.models import EmailLog
+from app.models import User
+from app.models import ThrivResource
 from flask import request, Blueprint
 
 approval_blueprint = Blueprint('approval', __name__, url_prefix='/api')

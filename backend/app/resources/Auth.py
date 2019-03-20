@@ -6,9 +6,9 @@ from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy import or_, func
 
 from app import sso, app, RestException, db, auth, email_service
-from app.model.email_log import EmailLog
-from app.model.institution import ThrivInstitution
-from app.model.user import User
+from app.models import EmailLog
+from app.models import ThrivInstitution
+from app.models import User
 from flask import jsonify, redirect, g, request, Blueprint
 
 auth_blueprint = Blueprint('auth', __name__, url_prefix='/api')

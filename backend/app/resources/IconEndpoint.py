@@ -3,7 +3,7 @@ from flask import request
 from marshmallow import ValidationError
 
 from app import RestException, db, file_server
-from app.model.icon import Icon
+from app.models import Icon
 from app.resources.schema import IconSchema
 
 

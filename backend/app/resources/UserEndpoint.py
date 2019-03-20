@@ -5,8 +5,8 @@ from sqlalchemy import exists, or_, func
 from sqlalchemy.exc import IntegrityError
 
 from app import RestException, db, email_service, auth
-from app.model.email_log import EmailLog
-from app.model.user import User
+from app.models import EmailLog
+from app.models import User
 from app.resources.schema import UserSchema, UserSearchSchema
 from app.wrappers import requires_roles
 

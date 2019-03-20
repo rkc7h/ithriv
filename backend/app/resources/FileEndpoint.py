@@ -2,7 +2,7 @@ import flask_restful
 from flask import request
 
 from app import RestException, db, file_server, auth
-from app.model.uploaded_file import UploadedFile
+from app.models import UploadedFile
 from app.resources.schema import FileSchema
 from app.wrappers import requires_roles
 
