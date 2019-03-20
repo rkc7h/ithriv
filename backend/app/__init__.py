@@ -168,17 +168,17 @@ def _teardown():
         click.echo("Cannot teardown: Database doesn't exist");
 
 @app.cli.command()
-def setup():
+def setupapp():
     _setup()
     click.echo('Setup completed...............')
 
 @app.cli.command()
-def teardown():
+def teardownapp():
     _teardown()
     click.echo('Teardwon completed...............')
 
 @app.cli.command()
-def resetall():
+def resetapp():
     _teardown()
     _setup()
 
