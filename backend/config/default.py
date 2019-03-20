@@ -5,6 +5,7 @@ CORS_ENABLED = False
 DEVELOPMENT = True
 TESTING = True
 SQLALCHEMY_DATABASE_URI = "postgresql://ed_user:ed_pass@localhost/ithriv"
+SQLALCHEMY_LOG_LEVEL = logging.WARN
 PHOTO_SERVE_URL = "https://ithriv.s3.aws.com"
 
 # Amazon S3 Bucket for storing images.

@@ -82,7 +82,7 @@ elasticsearch
 ## Add a config file
 In the `backend` directory, execute the following command:
 ```BASH
-mkdir instance && cp -r config instance/config && cp instance/config/default.py instance/config.py
+mkdir instance && cd instance && ln -s ../config/ . && ln -s ../config/default.py config.py && cd ..
 export FLASK_APP=app/__init__.py
 ```
 
