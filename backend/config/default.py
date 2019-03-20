@@ -1,3 +1,5 @@
+import logging
+
 NAME = "iThriv Resource Database"
 VERSION = "0.1"
 
