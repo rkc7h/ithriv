@@ -94,7 +94,7 @@ Place your s3 credentials in this file (will need to get a copy from someone els
 ### Create, initalize and Load in the seed data
 This will pull in initial values into the database.
 ```BASH
-flask setup
+flask setup or flask resetall
 ```
 
 ### Start the backend app
