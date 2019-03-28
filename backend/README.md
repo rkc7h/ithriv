@@ -82,7 +82,9 @@ elasticsearch
 ## Add a config file
 In the `backend` directory, execute the following command:
 ```BASH
-mkdir instance && cd instance && ln -s ../config/ . && ln -s ../config/default.py config.py && cd ..
+mkdir instance && cd instance && ln -s ../config/local.py settings.py && cd ..
+create a folder called "ithriv" under /etc/private
+Place  a copy of connections.json in this folder (will need to get a copy from app/sys admin)
 export FLASK_APP=app/__init__.py
 ```
 
@@ -167,9 +169,6 @@ MAIL_PASSWORD = "lettersandnumbers"
 Also note that mail is handled differently for tests. Make sure that your instance config has
 
 TESTING = False
-
-
-
 
 ## Maintenance
 

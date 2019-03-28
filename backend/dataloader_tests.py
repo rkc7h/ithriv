@@ -1,12 +1,12 @@
 # Set enivoronment variable to testing before loading.
 import os
-os.environ["APP_CONFIG_FILE"] = '../config/testing.py'
-
 import unittest
-from app.model.availability import Availability
-from app.model.user import User
-from app.model.resource import ThrivResource
-from app import app, db, elastic_index, data_loader
+
+from app import app, data_loader, db, elastic_index
+
+from app.models import Availability, ThrivResource, User
+
+os.environ["APP_CONFIG_FILE"] = '../config/qa.py'
 
 
 class TestCase(unittest.TestCase):
