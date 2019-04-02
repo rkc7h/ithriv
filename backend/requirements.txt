@@ -16,7 +16,7 @@ cssselect==1.0.3
 docutils==0.14
 elasticsearch==6.3.1
 elasticsearch-dsl==6.1.0
-Flask==0.12.2
+Flask==0.12.4
 Flask-Bcrypt==0.7.1
 Flask-Cors==3.0.3
 Flask-HTTPAuth==3.2.4
@@ -35,7 +35,7 @@ jmespath==0.9.4
 lxml==4.3.2
 Mako==1.0.7
 MarkupSafe==1.1.1
-marshmallow==2.15.0
+marshmallow==2.15.1
 marshmallow-sqlalchemy==0.13.2
 parsel==1.5.1
 psycopg2==2.7.5
