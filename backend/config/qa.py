@@ -7,7 +7,6 @@ SQLALCHEMY_LOG_LEVEL = logging.ERROR
 # SQLALCHEMY/ALEMBIC Settings
 
 # Amazon S3 Bucket for storing images.
-S3['bucket'] = 'edplatform-ithriv-test-bucket'
 
 # Elastic Search Settings
 

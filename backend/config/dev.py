@@ -9,7 +9,6 @@ ALEMBIC_PRINT_SQL = False
 # SQLALCHEMY/ALEMBIC Settings
 
 # Amazon S3 Bucket for storing images.
-S3['bucket'] = 'edplatform-ithriv-test-bucket'
 
 # Elastic Search Settings
 
@@ -17,4 +16,3 @@ S3['bucket'] = 'edplatform-ithriv-test-bucket'
 
 # Single Signon configuration Settings
 SSO_ATTRIBUTE_MAP['uid'] = (False, 'uid')
-
