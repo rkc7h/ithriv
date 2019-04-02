@@ -47,7 +47,7 @@ ELASTIC_SEARCH = {
     'index_prefix': ''.join(['ithriv-', conn_info['ENV']]),
     'timeout': 20,
     'verify_certs': False,
-    'use_ssl': False,
+    'use_ssl': False
 }
 
 # SMTP Email Settings
