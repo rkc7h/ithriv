@@ -314,4 +314,3 @@ In the `frontend` directory, execute the following command:
 ```BASH
 ng test
 ```
-
