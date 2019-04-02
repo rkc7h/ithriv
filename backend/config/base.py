@@ -33,8 +33,9 @@ ALEMBIC_PRINT_SQL = False
 
 # Amazon S3 Bucket for storing images.
 S3 = {
-    'bucket': 'edplatform-ithriv-test-bucket',
-    'base_url': ''.join(['https://', conn_info["AMAZON_S3"]["HOSTS"][0]])
+    'bucket': 'ithriv-media',
+    'base_url': ''.join(['https://', conn_info["AMAZON_S3"]["HOSTS"][0]]),
+    'base_path': conn_info['ENV']
 }
 
 # Elastic Search Settings
@@ -43,7 +44,7 @@ ELASTIC_SEARCH = {
     'port': conn_info["ELASTIC_SEARCH"]["PORT"],
     'http_auth_user': conn_info["ELASTIC_SEARCH"]["CLIENT_ID"],
     'http_auth_pass': conn_info["ELASTIC_SEARCH"]["CLIENT_SECRET"],
-    'index_prefix': 'ithriv',
+    'index_prefix': ''.join(['ithriv-', conn_info['ENV']]),
     'timeout': 20,
     'verify_certs': False,
     'use_ssl': False,
@@ -79,8 +80,8 @@ SSO_ATTRIBUTE_MAP = {
 SSO_LOGIN_URL = '/api/login'
 
 
-API_URL = ''.join(['https:///service.ithriv-', 'dev', '.org'])
-SITE_URL = ''.join(['https://portal.ithriv-', 'dev', '.org'])
+API_URL = ''.join(['https:///service.', conn_info['ENV'], '.ithriv.org'])
+SITE_URL = ''.join(['https://portal.', conn_info['ENV'], '.ithriv.org'])
 FRONTEND_AUTH_CALLBACK, FRONTEND_EMAIL_RESET, FRONTEND_EMAIL_CONFIRM = auth_callback_url_tuple(
     SITE_URL, '/#/session', '/#/reset_password/', '/#/login/')
 PHOTO_SERVE_URL = 'https://ithriv.s3.aws.com'
