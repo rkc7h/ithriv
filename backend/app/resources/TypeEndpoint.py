@@ -3,7 +3,7 @@ from flask import request
 from marshmallow import ValidationError
 
 from app import RestException, db
-from app.model.type import ThrivType
+from app.models import ThrivType
 from app.resources.schema import ThrivTypeSchema
 
 

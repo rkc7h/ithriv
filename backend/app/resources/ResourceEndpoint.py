@@ -8,10 +8,10 @@ from flask import jsonify, request, g
 from marshmallow import ValidationError
 
 from app import app, RestException, db, elastic_index, auth
-from app.model.availability import Availability
-from app.model.favorite import Favorite
-from app.model.resource_category import ResourceCategory
-from app.model.resource import ThrivResource
+from app.models import Availability
+from app.models import Favorite
+from app.models import ResourceCategory
+from app.models import ThrivResource
 from app.resources.schema import ThrivResourceSchema
 from app.resources.Auth import login_optional
 

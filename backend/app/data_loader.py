@@ -3,19 +3,19 @@ import sys
 import magic
 from flask import json
 
-from app.model.availability import Availability
-from app.model.category import Category
-from app.model.email_log import EmailLog
-from app.model.icon import Icon
-from app.model.resource import ThrivResource
-from app.model.institution import ThrivInstitution
-from app.model.resource_category import ResourceCategory
-from app.model.type import ThrivType
-from app.model.favorite import Favorite
+from app.models import Availability
+from app.models import Category
+from app.models import EmailLog
+from app.models import Icon
+from app.models import ThrivResource
+from app.models import ThrivInstitution
+from app.models import ResourceCategory
+from app.models import ThrivType
+from app.models import Favorite
 from app import db, elastic_index, file_server
 import csv
 
-from app.model.user import User
+from app.models import User
 from app.resources.schema import CategorySchema
 
 

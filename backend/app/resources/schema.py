@@ -3,17 +3,17 @@ from marshmallow import fields, post_load
 from sqlalchemy import func
 
 from app import ma, db
-from app.model.availability import Availability
-from app.model.category import Category
-from app.model.icon import Icon
-from app.model.institution import ThrivInstitution
-from app.model.resource import ThrivResource
-from app.model.resource_category import ResourceCategory
-from app.model.search import Filter, Search
-from app.model.type import ThrivType
-from app.model.uploaded_file import UploadedFile
-from app.model.user import User
-from app.model.favorite import Favorite
+from app.models import Availability
+from app.models import Category
+from app.models import Icon
+from app.models import ThrivInstitution
+from app.models import ThrivResource
+from app.models import ResourceCategory
+from app.models import Filter, Search
+from app.models import ThrivType
+from app.models import UploadedFile
+from app.models import User
+from app.models import Favorite
 
 
 class ThrivInstitutionSchema(ModelSchema):

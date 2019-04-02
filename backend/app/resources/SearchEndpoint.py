@@ -3,8 +3,8 @@ import flask_restful
 from flask import request, g
 
 from app import elastic_index, RestException
-from app.model.resource import ThrivResource
-from app.model.search import Facet, FacetCount, Filter, Search
+from app.models import ThrivResource
+from app.models import Facet, FacetCount, Filter, Search
 from app.resources.schema import SearchSchema, ThrivResourceSchema
 from app.resources.Auth import login_optional
 

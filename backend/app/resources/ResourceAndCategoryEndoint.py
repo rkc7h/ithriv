@@ -2,9 +2,9 @@ import flask_restful
 from flask import request
 
 from app import db, RestException
-from app.model.category import Category
-from app.model.resource import ThrivResource
-from app.model.resource_category import ResourceCategory
+from app.models import Category
+from app.models import ThrivResource
+from app.models import ResourceCategory
 from app.resources.Auth import login_optional
 from app.resources.schema import CategorySchema, ThrivResourceSchema, ResourceCategorySchema, CategoryResourcesSchema, \
     ResourceCategoriesSchema

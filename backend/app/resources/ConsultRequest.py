@@ -2,8 +2,8 @@
 # *****************************
 
 from app import db, auth, email_service
-from app.model.email_log import EmailLog
-from app.model.user import User
+from app.models import EmailLog
+from app.models import User
 from flask import request, Blueprint
 
 consult_blueprint = Blueprint('consult', __name__, url_prefix='/api')

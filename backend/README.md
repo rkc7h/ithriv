@@ -26,22 +26,18 @@ export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
 
 * Debian:
 ```BASH
-apt-get install postgresql postgresql-client
+brew install Postgres or apt-get install postgresql postgresql-client
 ```
 
 #### ElasticSearch
 MacOS
 ```BASH
 brew install elasticsearch
+brew install libmagic
 ```
 
 Debian:
 [follow these instructions](https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html).
-
-#### Angular
-```BASH
-npm install -g @angular/cli
-```
 
 ### Project Setup
 * Please use Python 3's virtual environment setup, and install the dependencies in requirements.txt
@@ -58,53 +54,17 @@ pip3 install -r requirements.txt
 * MacOS:
 ```BASH
 postgres -D /usr/local/var/postgres
-createuser --no-createdb --no-superuser --pwprompt ed_user
-createdb ithriv -O ed_user ed_platform
+createuser --createdb --pwprompt ed_user
 ```
 
 * Debian
 ```BASH
 sudo su postgres
-createuser --no-createdb --no-superuser --pwprompt ed_user
-createdb ithriv -O ed_user ed_platform
+postgres -D /usr/local/var/postgres
+createuser --createdb --pwprompt ed_user
 exit
 ```
 If you are using Ubuntu you will likely need to [enable PSQL](https://help.ubuntu.com/community/PostgreSQL#Managing_users_and_rights) to manage its own users.
-
-### Update the Database
-You will need to update your database each time you return to do a pull to make sure all the migrations are run. In the `backend` directory, execute the following command:
-```BASH
-flask db upgrade
-```
-### Database Reset
-If you encounter errors with the database, you can blow it away completely and reset with the following commands in PSQL:
-```SQL
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO public;
-COMMENT ON SCHEMA public IS 'standard public schema';
-```
-
-### Update Data Models
-Each time you modify your data models you will need to create new migrations. The following command will compare the database to the code and create new migrations as needed.  You can edit this newly generated file - it will show up under migrations/versions
-```BASH
-flask db migrate
-```
-
-### Set up your connection to S3
-Create a .aws directory in your home direction
-create a file called "credentials"
-Place your s3 credentials in this file (will need to get a copy from someone else)
-
-
-
-### Load in the seed data
-This will pull in initial values into the database.
-```BASH
-flask loadicons
-flask initdb
-flask initindex
 ```
 
 ### Starting Elastic Search
@@ -114,10 +74,47 @@ when you need it by running:
 sudo service elasticsearch start
 ```
 
+### Start ElasticSearch
+```BASH
+elasticsearch
+```
+
 ## Add a config file
 In the `backend` directory, execute the following command:
 ```BASH
-mkdir instance && cp -r config instance/config && cp instance/config/default.py instance/config.py
+mkdir instance && cd instance && ln -s ../config/local.py settings.py && cd ..
+create a folder called "ithriv" under /etc/private
+Place  a copy of connections.json in this folder (will need to get a copy from app/sys admin)
+export FLASK_APP=app/__init__.py
+```
+
+### Set up your connection to S3
+Create a .aws directory in your home direction
+create a file called "credentials"
+Place your s3 credentials in this file (will need to get a copy from someone else)
+
+### Create, initalize and Load in the seed data
+This will pull in initial values into the database.
+```BASH
+flask setup or flask resetapp
+```
+
+### Start the backend app
+In the `backend` directory, execute the following command:
+```BASH
+flask run
+```
+
+### Update the Database
+You will need to update your database each time you return to do a pull to make sure all the migrations are run. In the `backend` directory, execute the following command:
+```BASH
+flask db upgrade (to check run flask db migrate and should see no changed detected)
+```
+
+### Update Data Models
+Each time you modify your data models you will need to create new migrations. The following command will compare the database to the code and create new migrations as needed.  You can edit this newly generated file - it will show up under migrations/versions
+```BASH
+flask db migrate
 ```
 
 ## Run the app
@@ -133,15 +130,19 @@ Alternatively, you could start each of the services individually, using the comm
 pg_ctl -D /usr/local/var/postgres start
 ```
 
-### Start ElasticSearch
-```BASH
-elasticsearch
+### Database Reset
+If you encounter errors with the database, you can blow it away completely and reset with the following commands in PSQL:
+```SQL
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+COMMENT ON SCHEMA public IS 'standard public schema';
 ```
 
-### Start the backend app
-In the `backend` directory, execute the following command:
+#### Angular
 ```BASH
-flask run
+npm install -g @angular/cli
 ```
 
 ### Start the frontend app
@@ -169,9 +170,6 @@ Also note that mail is handled differently for tests. Make sure that your instan
 
 TESTING = False
 
-
-
-
 ## Maintenance
 
 ### Clear out the database, indexes, and reseed the database
@@ -186,6 +184,9 @@ flask db migrate
 flask loadicons
 flask initdb
 flask initindex
+or 
+flask teardownapp
+flask setupapp
 ```
 
 ### Migration Conflicts
@@ -223,7 +224,7 @@ connections with more institutions.  We'll also need to offer direct log-ins for
 Once credentials are established, the front end (Angular) and backend (Flask/Python) will use a JWT
 token.
 
-#### Develoment Mode
+#### Development Mode
 The SSO aspect is bypassed in Development mode.  Clicking the log in button will immediately
 log you in as the user specified in your instance/config.py.
 ```

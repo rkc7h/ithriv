@@ -2,7 +2,7 @@ import flask_restful
 from flask import request
 
 from app import db, RestException
-from app.model.availability import Availability
+from app.models import Availability
 from app.resources.schema import AvailabilitySchema, ThrivResourceSchema
 
 
