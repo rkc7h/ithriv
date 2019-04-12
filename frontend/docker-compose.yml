@@ -1,0 +1,15 @@
+version: '3.2'
+networks:
+  backend_ithriv_network:
+    external: true
+services:
+  ithriv_web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ithriv_web
+    ports:
+      - 4200:4200
+    networks:
+      - backend_ithriv_network
+

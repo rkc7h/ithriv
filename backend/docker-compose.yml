@@ -1,0 +1,55 @@
+version: '3.2'
+networks:
+  ithriv_network:
+    external: false
+services:
+  redis:
+    image: "redis:alpine"
+    networks:
+      - ithriv_network
+  ithriv_web_check:
+    image: appropriate/curl:latest
+    networks:
+      - ithriv_network
+    command: "curl http://ithriv_web:4200"
+  ithriv_es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.7.1
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+    networks:
+      - ithriv_network
+    hostname: elasticsearch
+    domainname: elasticsearch
+  ithriv_db:
+    image: postgres
+    volumes:
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgres
+    ports:
+      - 5432:5432
+    networks:
+      - ithriv_network
+    depends_on:
+      - ithriv_es
+  ithriv_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/ithriv_service
+      - /private/etc/private/ithriv/connections.json:/etc/private/ithriv/connections.json
+      - ~/.aws/.:/root/.aws
+      - ~/.aws/.:/home/.aws
+      - ./nginx_app.conf:/etc/nginx/sites-available/default
+      - ./supervisor_app.conf:/etc/supervisor/conf.d/supervisor_app.conf
+      - ./supervisor_app.conf:/etc/supervisor/supervisord.conf
+    container_name: ithriv_service
+    ports:
+      - 5000:5000
+    networks:
+      - ithriv_network
+    depends_on:
+      - ithriv_es
+      - ithriv_db
+

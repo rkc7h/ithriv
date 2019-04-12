@@ -15,16 +15,16 @@ class FileServer:
         return self._get_remote_path(filename)
 
     def _get_remote_path(self, filename):
-        return "{0}/{1}/{2}/{3}".format(self.base_url, self.bucket, self.base_path, filename)
+        return "{0}/{1}/{2}".format(self.base_url, self.bucket, filename)
 
     def save_icon(self, data, icon, file_extension, mime_type):
-        path = "ithriv/icon/%s.%s" % (icon.id, file_extension)
+        path = "%s/ithriv/icon/%s.%s" % (self.base_path, icon.id, file_extension)
         file_name = self._save_file(data, path, mime_type)
         return file_name
 
     def get_key(self, file):
         extension = file.file_name.split('.', 1)[1].lower()
-        return "ithriv/resource/attachment/%s.%s" % (file.id, extension)
+        return "%s/ithriv/resource/attachment/%s.%s" % (self.base_path, file.id, extension)
 
     def save_file(self, data, file, mime_type):
         key = self.get_key(file)

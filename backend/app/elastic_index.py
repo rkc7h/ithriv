@@ -29,30 +29,30 @@ class ElasticIndex:
             self.logger.info(
                 "Failed to create the index(s).  They may already exist.")
 
+    def __get_connection(self, settings):
+        return connections.create_connection(
+            hosts=settings["hosts"],
+            port=settings["port"],
+            timeout=settings["timeout"],
+            verify_certs=settings["verify_certs"],
+            use_ssl=settings["use_ssl"],
+            http_auth=(settings["http_auth_user"],
+                       settings["http_auth_pass"])
+        ) if settings["http_auth_user"] != '' else connections.create_connection(
+            hosts=settings["hosts"],
+            port=settings["port"],
+            timeout=settings["timeout"],
+            verify_certs=settings["verify_certs"],
+            use_ssl=settings["use_ssl"]
+        )
+
     def establish_connection(self, settings):
         """Establish connection to an ElasticSearch host, and initialize the Submission collection"""
-        if settings["http_auth_user"] != '':
-            self.connection = connections.create_connection(
-                hosts=settings["hosts"],
-                port=settings["port"],
-                timeout=settings["timeout"],
-                verify_certs=settings["verify_certs"],
-                use_ssl=settings["use_ssl"],
-                http_auth=(settings["http_auth_user"],
-                           settings["http_auth_pass"]))
-        else:
-            # Don't set an http_auth at all for connecting to AWS ElasticSearch or you will
-            # get a cryptic message that is darn near ungoogleable.
-            self.connection = connections.create_connection(
-                hosts=settings["hosts"],
-                port=settings["port"],
-                timeout=settings["timeout"],
-                verify_certs=settings["verify_certs"],
-                use_ssl=settings["use_ssl"])
+        self.connection = self.__get_connection(settings)
 
     def clear(self):
         try:
-            es = Elasticsearch()
+            es = Elasticsearch(self.connection)
             es.indices.delete(
                 index=self.resource_index_name, ignore=[400, 404])
             self.logger.info("Clearing the index.")

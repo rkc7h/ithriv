@@ -1,23 +1,24 @@
-from flask import Flask, jsonify
-from flask_cors import CORS
-from flask_httpauth import HTTPTokenAuth
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-import click
+import logging
 import os
 import signal
-from flask_marshmallow import Marshmallow
-from flask_sso import SSO
+
+import click
+from alembic import command
+from flask import Flask, jsonify
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
+from flask_httpauth import HTTPTokenAuth
+from flask_marshmallow import Marshmallow
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from flask_sso import SSO
+from sqlalchemy import create_engine
+from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.elastic_index import ElasticIndex
 from app.email_service import EmailService
 from app.file_server import FileServer
 from app.rest_exception import RestException
-from sqlalchemy import create_engine
-from sqlalchemy_utils import database_exists, create_database, drop_database
-import logging
-from alembic import command
 
 app = Flask(__name__, instance_relative_config=True)
 
@@ -27,6 +28,9 @@ app.config.from_pyfile('settings.py')
 # Variables defined here will override those in the default configuration
 if "APP_CONFIG_FILE" in os.environ:
     app.config.from_envvar('APP_CONFIG_FILE')
+
+if(app.config['DEBUG']):
+    app.debug = True
 
 # Enable CORS
 if(app.config['CORS_ENABLED']):
@@ -161,7 +165,7 @@ def _setup():
             _loadindex()
             click.echo('Elastic search database initalized with data..........')
         except Exception as ex:
-            click.echo('Failed to teardown. Please DEBUG and try again')
+            click.echo('Failed to setup. Please DEBUG and try again')
             raise ex
     else:
         click.echo('Cannot setup: Database already exists')

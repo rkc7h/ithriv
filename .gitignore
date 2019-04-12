@@ -2,3 +2,5 @@ backend/app/TEST_DB
 
 # IDE - VSCode
 .vscode/*
+/.pydevproject
+/.project

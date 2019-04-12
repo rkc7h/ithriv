@@ -66,7 +66,7 @@ MAIL_TIMEOUT = 10
 # Single Signon configuration Settings
 SECRET_KEY = conn_info["INCOMMON_SSO"]["CLIENT_SECRET"]
 if DEVELOPMENT:
-    SSO_DEVELOPMENT_EPPN = 'dhf8r@virginia.edu'
+    SSO_DEVELOPMENT_EPPN = 'ithriv_user@virginia.edu'
 SSO_ATTRIBUTE_MAP = {
     'eppn': (False, 'eppn'),  # valid email address
     'uid': (True, 'uid'),  # computing id

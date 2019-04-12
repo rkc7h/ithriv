@@ -1,15 +1,24 @@
 from config.base import *
 
+conn_info = fetch_connections_info()
+
 CORS_ENABLED = True
 
+SQLALCHEMY_LOG_LEVEL = logging.INFO
 ALEMBIC_PRINT_SQL = True
 DEBUG = True
 
+
 # SQLALCHEMY/ALEMBIC Settings
+SQLALCHEMY_DATABASE_URI = ''.join(['postgresql://',
+                                   conn_info["RDBMS"]["CLIENT_ID"], ':', conn_info["RDBMS"]["CLIENT_SECRET"],
+                                   '@postgres', ':', conn_info["RDBMS"]["PORT"],
+                                   ''.join(['/ithriv-', conn_info['ENV']])])
 
 # Amazon S3 Bucket for storing images.
 
 # Elastic Search Settings
+ELASTIC_SEARCH['hosts'] = ["elasticsearch"]
 
 # SMTP Email Settings
 
