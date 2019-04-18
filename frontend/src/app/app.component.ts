@@ -26,6 +26,7 @@ import { ResourceApiService } from './shared/resource-api/resource-api.service';
 import { User } from './user';
 import { IntervalService } from './shared/interval/interval.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -53,6 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
   trustUrl;
 
   private _mobileQueryListener: () => void;
+  public ga_tracking_code: string;
 
   public constructor(
     changeDetectorRef: ChangeDetectorRef,
@@ -67,7 +69,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private intervalService: IntervalService,
     private deviceDetector: DeviceDetectorService
   ) {
-
+    this.ga_tracking_code = environment.ga_tracking_id;
+    (<any>window).ga('create', this.ga_tracking_code, 'auto');
     if (
       this.deviceDetector &&
       this.deviceDetector.browser &&
@@ -84,6 +87,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.router.events.subscribe((e) => {
       if (e instanceof NavigationEnd) {
+        (<any>window).ga('set', 'page', e.urlAfterRedirects);
+        (<any>window).ga('send', 'pageview');
         this.route.queryParams.subscribe(queryParams => {
           if (queryParams && queryParams.hasOwnProperty('auth_token')) {
             const token = queryParams.auth_token;

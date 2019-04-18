@@ -7,5 +7,6 @@ const localhost = navigator.platform.includes('Win') ? '10.0.2.2' : 'localhost';
 
 export const environment = {
   production: false,
-  api: `http://${localhost}:5000`
+  api: `http://${localhost}:5000`,
+  ga_tracking_id: 'UA-138286052-1'
 };

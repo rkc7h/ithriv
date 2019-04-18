@@ -97,7 +97,12 @@ export class RegisterFormComponent {
     this.registerState = 'submitting';
     this.errorMessage = '';
     console.log('Register state is submitting');
-
+    (<any>window).ga('send', 'event', {
+      eventCategory: 'UserAdmin',
+      eventLabel: 'Registration',
+      eventAction: 'Submit',
+      eventValue: 10
+    });
     for (const fieldName in this.fields) {
       if (this.fields[fieldName].formControl) {
         this.user[fieldName] = this.fields[fieldName].formControl.value;

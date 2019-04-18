@@ -38,6 +38,12 @@ export class UserAdminComponent implements OnInit, AfterViewInit {
 
   openAdd() {
     this.router.navigate(['admin/new_user']);
+    (<any>window).ga('send', 'event', {
+      eventCategory: 'UserAdmin',
+      eventLabel: 'NewUser',
+      eventAction: 'Add',
+      eventValue: 10
+    });
   }
 
   ngAfterViewInit() {
